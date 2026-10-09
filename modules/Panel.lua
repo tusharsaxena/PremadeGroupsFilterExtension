@@ -36,7 +36,7 @@ local function stoodDown() return NS.IsStoodDown() end
 local function trim(s) return type(s) == "string" and s:match("^%s*(.-)%s*$") or "" end
 
 local function rangeText()
-    return NS.Apply.LastRange or NS.Targeting.RangeText(NS.Filters.Get().keyLevel)
+    return NS.Targeting.RangeText(NS.Filters.Get().keyLevel)
 end
 
 local function tooltip(widget, text)

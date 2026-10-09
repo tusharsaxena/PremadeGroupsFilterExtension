@@ -50,12 +50,14 @@ function Apply.Run(opts)
     local text, xErr = NS.Expression.Merge(NS.Bridge.GetExpression(),
         NS.Expression.BuildClauses(NS.Filters.ToClauseOpts(portal)))
     if not text then return false, EXPR_MSG[xErr] end
-    if targets then NS.Bridge.SetDungeons(NS.Targeting.ToSet(targets)) end
+    -- The rows PGF actually has for the targets, not #targets (a row without a cmId is skipped).
+    local ticked = targets and NS.Bridge.SetDungeons(NS.Targeting.ToSet(targets))
     NS.Bridge.SetExpression(text)
     NS.Bridge.Commit()
     Apply.LastRange = NS.Targeting.RangeText(f.keyLevel)
     if opts and opts.search then NS.Bridge.Search() end
-    return true, "MSG_APPLIED", targets and #targets or 0, Apply.LastRange
+    if not targets then return true, "MSG_APPLIED_NO_TARGETING", Apply.LastRange end
+    return true, "MSG_APPLIED", ticked, Apply.LastRange
 end
 
 --- Remove the managed block, restoring the user's own expression text.

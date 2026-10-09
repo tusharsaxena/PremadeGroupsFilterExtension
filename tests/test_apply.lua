@@ -162,3 +162,18 @@ test("apply: PGF minimized → refuses Apply and Clear, nothing written or searc
     NS.addon:OnSlashCommand("apply")
     assertTrue(printed(m, NS.L.MSG_MINIMIZED)); assertEqual(m.pgf.calls.refresh, 0)
 end)
+
+-- Review F-009 / spec-adversary #6: the message reports the PGF rows actually ticked.
+test("apply: the message counts the rows ticked, and says so when targeting is off", function()
+    local NS, _, m = T.enableAddon{}
+    seasonFromScreenshot(m)
+    NS.Filters.Get().keyLevel = 14
+    m.pgf.panel.Dungeons.Dungeon5.cmId = nil -- a target PGF has no row for
+    local ok, key, n = NS.Apply.Run{}
+    assertTrue(ok); assertEqual(key, "MSG_APPLIED")
+    -- red under: report #targets instead of SetDungeons' return
+    assertEqual(n, 3)
+    NS.Filters.Get().keyTargeting = false
+    local ok2, key2, range = NS.Apply.Run{}
+    assertTrue(ok2); assertEqual(key2, "MSG_APPLIED_NO_TARGETING"); assertEqual(range, "14-14")
+end)

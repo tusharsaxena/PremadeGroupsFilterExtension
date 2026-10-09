@@ -154,7 +154,7 @@ Total.
 - bridge: env hook refuses when the seam is missing
 - bridge: HookDialog wires SwitchToPanel and both scripts
 
-### test_apply.lua (12)
+### test_apply.lua (13)
 
 - apply: the module publishes its namespace table
 - apply: N=14 ticks AOF/RLP/BV/KR, writes block, triggers, searches
@@ -168,8 +168,9 @@ Total.
 - apply: /pgfe apply prints the refusal with its argument
 - apply: after Apply then /pgfe disable, PGF's evaluation passes groups again
 - apply: PGF minimized → refuses Apply and Clear, nothing written or searched
+- apply: the message counts the rows ticked, and says so when targeting is off
 
-### test_panel.lua (27)
+### test_panel.lua (28)
 
 - panel: the module publishes its namespace table
 - panel: anchored under PGF dialog, both edges
@@ -191,6 +192,7 @@ Total.
 - panel: checkboxes write their filter option
 - panel: Refresh re-reads the filters into the widgets
 - panel: Apply searches and prints; the range field follows
+- panel: after an Apply the range field still follows the level
 - panel: Apply does nothing while stood down
 - panel: a missing PGF seam shows one line and disables Apply
 - panel: collapse folds to the title bar and is remembered in the profile
@@ -284,8 +286,8 @@ Total.
 | test_presets.lua | 4 |
 | test_envinject.lua | 9 |
 | test_bridge.lua | 13 |
-| test_apply.lua | 12 |
-| test_panel.lua | 27 |
+| test_apply.lua | 13 |
+| test_panel.lua | 28 |
 | test_vendor_sync.lua | 3 |
 | test_eol.lua | 2 |
 | test_prose.lua | 15 |
@@ -293,4 +295,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **195** |
+| **Total** | **197** |

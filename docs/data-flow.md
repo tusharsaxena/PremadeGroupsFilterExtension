@@ -35,7 +35,9 @@ return is `ok, msgKey, ...` and `Apply.Report` prints `NS.L[msgKey]:format(...)`
    the game's own advanced filter (`UpdateAdvancedFilters`). Minimized: nothing more; PGF re-reads the
    stored state on the next `SwitchToPanel`.
 8. **Search.** `Apply.LastRange = "N-N"`; with `opts.search`, `Bridge.Search()` clicks
-   `PremadeGroupsFilterDialog.RefreshButton`. Returns `MSG_APPLIED` with the target count and range.
+   `PremadeGroupsFilterDialog.RefreshButton`. Returns `MSG_APPLIED` with the count of PGF rows actually ticked (`Bridge.SetDungeons`' return) and
+   the range, or `MSG_APPLIED_NO_TARGETING` with the range when key targeting is off. The panel's range
+   field always shows the level box's `N-N`, not the last applied one.
 
 With key targeting off, step 4 is skipped and PGF's dungeon checkboxes are left as they are.
 

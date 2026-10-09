@@ -59,6 +59,7 @@ L.MSG_NO_REGIONS   = "Server regions are on but none is selected for your region
 L.MSG_DAMAGED      = "The [pgfe] block in the Advanced Filter Expression is damaged; fix or delete it by hand."
 L.MSG_TOOLONG      = "The Advanced Filter Expression would exceed 2000 characters; nothing was applied."
 L.MSG_APPLIED      = "Applied: %d dungeon(s) targeted, key range %s."
+L.MSG_APPLIED_NO_TARGETING = "Applied (dungeon checkboxes left as they were), key range %s."
 L.MSG_CLEARED      = "Removed this addon's block from the Advanced Filter Expression."
 
 -- The attached panel (modules/Panel.lua; the key is a widget id, the value its text)

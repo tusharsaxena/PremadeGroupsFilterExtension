@@ -221,6 +221,19 @@ test("panel: Apply searches and prints; the range field follows", function()
     assertTrue(#m.prints > 0)
 end)
 
+-- Review F-008: after an Apply the range field kept the applied range instead of the level box's.
+test("panel: after an Apply the range field still follows the level", function()
+    local NS, _, m = T.enableAddon{}
+    seasonFromScreenshot(m)
+    NS.Filters.Get().keyLevel = 14
+    NS.Panel.Create(); NS.Panel.Refresh()
+    NS.Panel.frame.applyButton:__fire("OnClick")
+    local box = NS.Panel.frame.levelBox
+    box.__text = "15"; box:__fire("OnEnterPressed")
+    -- red under: prefer Apply.LastRange in Panel's rangeText
+    assertEqual(NS.Panel.frame.rangeBox:GetText(), "15-15")
+end)
+
 test("panel: Apply does nothing while stood down", function()
     local NS, _, m = T.enableAddon{}
     seasonFromScreenshot(m)
