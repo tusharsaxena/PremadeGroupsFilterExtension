@@ -41,6 +41,13 @@ test("regions: unknown realm, nil/empty name, unsupported portal → nil", funct
     assertNil(NS.Regions.GetPortal())
 end)
 
+-- Review F-011: the hook runs inside PGF's per-result loop; a non-string leader must not raise.
+test("regions: a non-string leader name → nil, no error", function()
+    local NS = T.bootAddon{ currentRegion = 1 }
+    -- red under: drop the type check in Regions.GetRegion
+    T.assertNil(NS.Regions.GetRegion(42)); T.assertNil(NS.Regions.GetRegion({}))
+end)
+
 test("regions: the same realm name resolves per portal", function()
     local NS, _, m = T.newAddon(); m.currentRegion = 1
     assertEqual(NS.Regions.GetPortal(), "US")

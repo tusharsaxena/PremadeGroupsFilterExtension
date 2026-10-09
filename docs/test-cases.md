@@ -66,7 +66,7 @@ Total.
 - disabled: a profile stored disabled stands down at the next enable
 - disabled: every verb keeps answering while disabled
 
-### test_regions.lua (10)
+### test_regions.lua (11)
 
 - regions: the module publishes its namespace table
 - regions: normalize strips spaces, punctuation, case
@@ -74,6 +74,7 @@ Total.
 - regions: leader without suffix uses the player's realm
 - regions: EU realm with accent
 - regions: unknown realm, nil/empty name, unsupported portal → nil
+- regions: a non-string leader name → nil, no error
 - regions: the same realm name resolves per portal
 - regions: key and label tables cover all twelve buckets
 - regions: data integrity — no realm in two buckets, only known keys
@@ -278,7 +279,7 @@ Total.
 | test_setup.lua | 14 |
 | test_slash.lua | 6 |
 | test_disabled.lua | 5 |
-| test_regions.lua | 10 |
+| test_regions.lua | 11 |
 | test_targeting.lua | 7 |
 | test_season.lua | 6 |
 | test_expression.lua | 11 |
@@ -295,4 +296,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **197** |
+| **Total** | **198** |

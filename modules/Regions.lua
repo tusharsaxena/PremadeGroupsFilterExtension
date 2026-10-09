@@ -44,7 +44,8 @@ function Regions.Lookup(portal)
 end
 
 function Regions.GetRegion(leaderName)
-    if not leaderName or leaderName == "" then return nil end
+    -- A type check, not a pcall: this runs once per search result inside PGF's loop.
+    if type(leaderName) ~= "string" or leaderName == "" then return nil end
     local portal = Regions.GetPortal()
     if not portal then return nil end
     local realm = leaderName:match("%-(.+)") or GetRealmName()
