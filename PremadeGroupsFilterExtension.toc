@@ -61,6 +61,8 @@ core\LifecycleSetup.lua
 core\PerfSetup.lua
 # Conventional: the PGF bridge; every PGF read happens at call time.
 core\PGFBridge.lua
+# Conventional: the EllesmereUI bridge; every EllesmereUI read happens at call time.
+core\EUIBridge.lua
 
 # Defaults
 # LOAD-BEARING: publishes NS.C, which settings\Schema.lua takes as a file-scope upvalue.

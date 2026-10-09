@@ -177,6 +177,24 @@ Total.
 - bridge: env hook refuses when the seam is missing
 - bridge: HookDialog wires SwitchToPanel and both scripts
 
+### test_euibridge.lua (15)
+
+- euibridge: the module publishes its namespace table and the skin name
+- euibridge: four conditions, in display order, each with a label and a hint
+- euibridge: everything on opens the gate, and there is no why
+- euibridge: EllesmereUI absent closes every condition, without raising
+- euibridge: the window-skin child not loaded closes the gate at eui
+- euibridge: an EllesmereUI without RegisterSkin is not ready
+- euibridge: the master switch off closes the gate at master, and only master
+- euibridge: our own entry off closes the gate at own
+- euibridge: PGF's skin entry off closes the gate at pgf
+- euibridge: PGF's skin addon not loaded closes the gate at pgf
+- euibridge: nil switches read as on (EllesmereUI's own nil = on)
+- euibridge: WhyClosed lists every failing hint, one per line
+- euibridge: the reads are live, at call time
+- euibridge: a raising or absent C_AddOns reads as not loaded
+- euibridge: nothing is ever written to EllesmereUI's saved variables
+
 ### test_apply.lua (16)
 
 - apply: the module publishes its namespace table
@@ -357,6 +375,7 @@ Total.
 | test_envinject.lua | 10 |
 | test_regiontags.lua | 8 |
 | test_bridge.lua | 13 |
+| test_euibridge.lua | 15 |
 | test_apply.lua | 16 |
 | test_panel.lua | 72 |
 | test_vendor_sync.lua | 3 |
@@ -366,4 +385,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **264** |
+| **Total** | **279** |

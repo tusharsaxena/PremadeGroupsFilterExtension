@@ -99,6 +99,7 @@ Kit.run{
         "test_envinject",
         "test_regiontags",
         "test_bridge",
+        "test_euibridge",
         "test_apply",
         "test_panel",
         "test_vendor_sync",

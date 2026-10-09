@@ -153,3 +153,19 @@ L["%s is unavailable: the LibKa0s library did not load."] =
     "%s is unavailable: the LibKa0s library did not load."
 L["Diagnostic report written to the debug console: %d lines. Use Copy to share it."] =
     "Diagnostic report written to the debug console: %d lines. Use Copy to share it."
+
+-- EllesmereUI skin: the gate's four conditions (core/EUIBridge.lua), each a status line and a hint
+L["EllesmereUI and its Blizzard Skin module are loaded"] =
+    "EllesmereUI and its Blizzard Skin module are loaded"
+L["Install and enable EllesmereUI, including EllesmereUI Blizzard Skin."] =
+    "Install and enable EllesmereUI, including EllesmereUI Blizzard Skin."
+L["EllesmereUI third-party skinning is on"] = "EllesmereUI third-party skinning is on"
+L["In EllesmereUI, turn on Blizz UI Enhanced > Blizzard Window Skins > Third-Party Addons > Skin Third-Party Addons."] =
+    "In EllesmereUI, turn on Blizz UI Enhanced > Blizzard Window Skins > Third-Party Addons > Skin Third-Party Addons."
+L["PremadeGroupsFilterExtension is on in EllesmereUI's Third-Party Addons list"] =
+    "PremadeGroupsFilterExtension is on in EllesmereUI's Third-Party Addons list"
+L["In EllesmereUI's Third-Party Addons list, turn on PremadeGroupsFilterExtension."] =
+    "In EllesmereUI's Third-Party Addons list, turn on PremadeGroupsFilterExtension."
+L["Premade Groups Filter's own EllesmereUI skin is on"] = "Premade Groups Filter's own EllesmereUI skin is on"
+L["Install and enable Premade Groups Filter - EllesmereUI Skin, and turn on PremadeGroupsFilter in EllesmereUI's Third-Party Addons list."] =
+    "Install and enable Premade Groups Filter - EllesmereUI Skin, and turn on PremadeGroupsFilter in EllesmereUI's Third-Party Addons list."

@@ -24,6 +24,7 @@
 --   fireEvent      fireEvent(name, ...) dispatches a game event to AceEvent handlers
 --   pgf            the PGF fake's handle (tests/pgf_fake.lua): calls, dialog, panel, state, PGF
 --   hooks          every hooksecurefunc post-hook installed, in order: { target, name, fn }
+--   installEUI     installEUI(spec) installs the EllesmereUI fake (see below); m.eui is its handle
 
 local base = dofile("tests/_kit/mock_base.lua")
 local pgfFake = assert(loadfile("tests/pgf_fake.lua"))()
@@ -254,6 +255,95 @@ local function build()
             end
         end
         return f
+    end
+
+    -- ELLESMEREUI, OPT-IN. Absent by default, as on a client without it: a case installs it from the
+    -- loader's `mock` option (before any source loads), `m.installEUI{ ... }`. Modeled on EllesmereUI
+    -- v9.4: the parent's RegisterSkin stub queues (first name wins), the window-skin child's
+    -- dispatcher fires each entry ONCE, and only while the master switch and that entry are on
+    -- (nil = on), handing it a facade S. The facade RECORDS every primitive call rather than
+    -- no-opping it, so a case can ask what was painted.
+    --   spec.child = false    EllesmereUIBlizzardSkin not loaded
+    --   spec.pgfSkin = false  PremadeGroupsFilter_EllesmereUI not loaded
+    --   spec.masterOff        EllesmereUIDB.thirdPartySkinsOff = true
+    --   spec.entries          EllesmereUIDB.thirdPartySkinAddons (e.g. { PremadeGroupsFilter = false })
+    -- Installs C_AddOns too (the base deliberately leaves it out), answering from `m.loadedAddons`,
+    -- with this addon's own folder loaded. Handle: m.eui = { registry, order, fired, calls, looks,
+    -- dispatch(name), dispatchAll(), callsFor(fn, target), count(fn) }.
+    M.installEUI = function(spec)
+        spec = spec or {}
+        local eui = { registry = {}, order = {}, fired = {}, calls = {}, looks = {} }
+        M.eui = eui
+        M.loadedAddons = {
+            PremadeGroupsFilterExtension = true, PremadeGroupsFilter = true, EllesmereUI = true,
+            EllesmereUIBlizzardSkin = spec.child ~= false,
+            PremadeGroupsFilter_EllesmereUI = spec.pgfSkin ~= false,
+        }
+        M.C_AddOns = {
+            IsAddOnLoaded = function(name)
+                local on = M.loadedAddons[name] == true
+                return on, on
+            end,
+            GetAddOnMetadata = function() return nil end,
+        }
+        M.EllesmereUIDB = {
+            thirdPartySkinsOff = spec.masterOff and true or nil,
+            thirdPartySkinAddons = spec.entries or {},
+        }
+        local function masterOn()
+            local d = M.EllesmereUIDB
+            return not (d and d.thirdPartySkinsOff)
+        end
+        local function addonOn(name)
+            local t = M.EllesmereUIDB and M.EllesmereUIDB.thirdPartySkinAddons
+            return not (t and t[name] == false)
+        end
+        local PRIMITIVES = { "Shell", "Panel", "Inset", "FadeRegions", "FadeNineSlice", "Button",
+            "WhiteButtonLabel", "StateButtonLabel", "EditBox", "Checkbox", "Dropdown", "ScrollBar",
+            "CloseButton", "Font", "White" }
+        local function facade(name)
+            local S = { apiVersion = 3 }
+            for _, fname in ipairs(PRIMITIVES) do
+                S[fname] = function(target, opts)
+                    eui.calls[#eui.calls + 1] = { fn = fname, target = target, opts = opts, skin = name }
+                end
+            end
+            S.GetAccentColor = function() return 0.05, 0.8, 0.6 end
+            S.GetFont = function() return "Fonts\\EUI.ttf", "" end
+            S.GetStyle = function() return "eui" end
+            S.OnLooksChanged = function(fn) eui.looks[#eui.looks + 1] = fn end
+            S.IsEnabled = function() return masterOn() and addonOn(name) end
+            return S
+        end
+        function eui.dispatch(name)
+            local fn = eui.registry[name]
+            if not fn or eui.fired[name] or not (masterOn() and addonOn(name)) then return false end
+            if M.loadedAddons.EllesmereUIBlizzardSkin ~= true then return false end
+            eui.fired[name] = true
+            fn(facade(name))
+            return true
+        end
+        function eui.dispatchAll()
+            local any = false
+            for _, name in ipairs(eui.order) do any = eui.dispatch(name) or any end
+            return any
+        end
+        function eui.callsFor(fname, target)
+            local out = {}
+            for _, c in ipairs(eui.calls) do
+                if c.fn == fname and (target == nil or c.target == target) then out[#out + 1] = c end
+            end
+            return out
+        end
+        function eui.count(fname) return #eui.callsFor(fname) end
+        M.EllesmereUI = {
+            RegisterSkin = function(name, fn)
+                if type(name) ~= "string" or type(fn) ~= "function" or eui.registry[name] then return end
+                eui.registry[name] = fn
+                eui.order[#eui.order + 1] = name
+            end,
+        }
+        return eui
     end
 
     return M
