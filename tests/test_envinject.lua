@@ -1,12 +1,80 @@
--- tests/test_envinject.lua — NS.EnvInject (docs/superpowers/plans/2026-10-09-m-plus-v0.1.md, Task 6).
---
--- Registered in tests/run.lua from the scaffold so the task that fills the module adds its cases
--- here without touching the suite list.
+-- tests/test_envinject.lua — NS.EnvInject, the post-hook body on PGF's PutPremadeRegionInfo
+-- (docs/superpowers/plans/2026-10-09-m-plus-v0.1.md, Task 6). The hook is reached only through
+-- PGF's own function, which tests/wow_mock.lua's hooksecurefunc genuinely wraps.
 
 local T = _G.PGFE_TEST
-local test, assertEqual = T.test, T.assertEqual
+local test, assertEqual, assertTrue, assertFalse, assertNil =
+    T.test, T.assertEqual, T.assertTrue, T.assertFalse, T.assertNil
+
+local function runHook(m, env, leader) m.pgf.PGF.PutPremadeRegionInfo(env, leader); return env end
 
 test("envinject: the module publishes its namespace table", function()
     local NS = T.newAddon()
     assertEqual(type(NS.EnvInject), "table")
+end)
+
+test("envinject: keywords follow PGF's formula", function()
+    local NS, _, m = T.bootAddon()
+    local s, cr = NS.EnvInject.PlayerKeywords(253, "DAMAGER", "HUNTER", m.pgf.PGF.C.SPECIALIZATIONS)
+    assertEqual(s, "beastmastery_hunters"); assertEqual(cr, "dps_hunters")
+    s, cr = NS.EnvInject.PlayerKeywords(262, "HEALER", "SHAMAN", m.pgf.PGF.C.SPECIALIZATIONS)
+    assertEqual(s, "elemental_shamans"); assertEqual(cr, "heal_shamans")
+end)
+
+test("envinject: unknown spec / role / missing table → nil keywords, no error", function()
+    local NS = T.bootAddon()
+    local s, cr = NS.EnvInject.PlayerKeywords(nil, nil, nil, nil)
+    assertNil(s); assertNil(cr)
+    s, cr = NS.EnvInject.PlayerKeywords(999, "DAMAGER", "HUNTER", {})
+    assertNil(s); assertEqual(cr, "dps_hunters")
+end)
+
+test("envinject: samespec / sameclassrole from env counts", function()
+    local _, _, m = T.enableAddon{ specID = 253, role = "DAMAGER", classFile = "HUNTER" }
+    local env = runHook(m, { beastmastery_hunters = 1, dps_hunters = 2 }, "Bob-Frostmourne")
+    assertEqual(env.pgfe_samespec, 1); assertEqual(env.pgfe_sameclassrole, 2)
+    env = runHook(m, {}, "Bob-Frostmourne")
+    assertEqual(env.pgfe_samespec, 0); assertEqual(env.pgfe_sameclassrole, 0)
+end)
+
+test("envinject: spec change is picked up without re-apply", function()
+    local _, _, m = T.enableAddon{ specID = 253, role = "DAMAGER", classFile = "HUNTER" }
+    m.specID = 262; m.role = "DAMAGER"; m.classFile = "SHAMAN"
+    m.fireEvent("ACTIVE_PLAYER_SPECIALIZATION_CHANGED")
+    local env = runHook(m, { elemental_shamans = 1, dps_shamans = 1 }, "Bob")
+    assertEqual(env.pgfe_samespec, 1)
+end)
+
+test("envinject: PLAYER_SPECIALIZATION_CHANGED refreshes for the player only", function()
+    local _, _, m = T.enableAddon{ specID = 253, role = "DAMAGER", classFile = "HUNTER" }
+    m.specID = 262; m.classFile = "SHAMAN"
+    m.fireEvent("PLAYER_SPECIALIZATION_CHANGED", "party1")
+    local env = runHook(m, { beastmastery_hunters = 1, elemental_shamans = 1 }, "Bob")
+    assertEqual(env.pgfe_samespec, 1, "still the cached hunter keyword")
+    m.fireEvent("PLAYER_SPECIALIZATION_CHANGED", "player")
+    env = runHook(m, { beastmastery_hunters = 0, elemental_shamans = 2 }, "Bob")
+    assertEqual(env.pgfe_samespec, 2)
+end)
+
+-- PGF's own PutPremadeRegionInfo (Plugins/PremadeRegions.lua:25-46) resets every region key to
+-- false and fills them from PremadeRegions when it is loaded; this addon fills them itself only
+-- when it is not. Frostmourne is an OCE realm in this addon's map, so `oce` staying false below
+-- proves the addon's own lookup did not run over PremadeRegions' answer.
+test("envinject: regions injected only without PremadeRegions", function()
+    local _, _, m = T.enableAddon{}
+    m.currentRegion = 1
+    local env = runHook(m, {}, "Bob-Frostmourne")
+    assertEqual(env.region, "oce"); assertTrue(env.oce); assertFalse(env.chi); assertFalse(env.eng)
+    m.PremadeRegions = { GetRegion = function() return "la" end }
+    env = runHook(m, {}, "Bob-Frostmourne")
+    assertEqual(env.region, "la"); assertTrue(env.la); assertFalse(env.oce)
+end)
+
+test("envinject: stood down → hook is a no-op", function()
+    local NS, _, m = T.enableAddon{}
+    NS.addon:OnSlashCommand("disable")
+    assertTrue(NS.IsStoodDown())
+    local env = runHook(m, { beastmastery_hunters = 1 }, "Bob-Frostmourne")
+    assertNil(env.pgfe_samespec); assertNil(env.pgfe_sameclassrole)
+    assertNil(env.region); assertFalse(env.oce)
 end)

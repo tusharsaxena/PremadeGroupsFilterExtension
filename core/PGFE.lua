@@ -122,6 +122,10 @@ end
 function PGFE:OnEnable()
     registerFeatureEvents(self)
 
+    -- The player's spec keywords for the PGF env hook (modules/EnvInject.lua). The stand-up re-reads
+    -- them too, but a first enable that is not stood down never crosses that edge.
+    if NS.EnvInject and NS.EnvInject.RefreshPlayer then NS.EnvInject.RefreshPlayer() end
+
     -- Eager category registration (options-ui-§1); bodies stay lazy.
     if self.Settings and self.Settings.Register then self.Settings.Register() end
 

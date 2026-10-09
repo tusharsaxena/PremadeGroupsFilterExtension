@@ -9,7 +9,17 @@ return function(env)
         },
     }
     local PGF = { C = C }
-    function PGF.PutPremadeRegionInfo(e) e.region = nil end
+    -- Mirrors PGF's own Plugins/PremadeRegions.lua:25-46: every region key reset to false, then
+    -- filled from PremadeRegions when that addon is loaded. This addon's hook runs AFTER it.
+    local REGION_KEYS = { "oce", "la", "chi", "mex", "bzl", "eng", "ger", "fra", "ita", "spa", "por", "rus" }
+    function PGF.PutPremadeRegionInfo(e, leaderName)
+        e.region = nil
+        for _, k in ipairs(REGION_KEYS) do e[k] = false end
+        if leaderName and env.PremadeRegions then
+            local region = env.PremadeRegions.GetRegion(leaderName)
+            if region then e.region = region; e[region] = true end
+        end
+    end
     env.PremadeGroupsFilter = { Debug = PGF }
 
     local panel = { name = "dungeon", Dungeons = {}, state = nil, Advanced = { Expression = { EditBox = {

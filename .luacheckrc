@@ -24,6 +24,7 @@ read_globals = {
   "C_AddOns", "C_Timer", "C_ChallengeMode", "C_MythicPlus", "C_SpecializationInfo",
   "CreateFrame", "UIParent", "GameTooltip",
   "InCombatLockdown", "GetCurrentRegion", "GetRealmName", "UnitClass",
+  "GetSpecialization", "GetSpecializationInfo",
   "Settings", "StaticPopup_Show", "YES", "NO",
   "debugprofilestop",                     -- the perf bracket's clock (performance-§2)
   -- Premade Groups Filter (## Dependencies) and PremadeRegions (## OptionalDeps). Read only by
