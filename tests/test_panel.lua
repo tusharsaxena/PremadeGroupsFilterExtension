@@ -991,7 +991,7 @@ end)
 
 -- Owner request: with "Untimed dungeons at key level" off, the copy box and its label are dimmed and
 -- the box disabled; ticked again, both come back.
-test("panel: the copy box and its label dim and disable while key targeting is off", function()
+test("panel: the copy box and its label dim, disable and empty while key targeting is off", function()
     local NS, _, m = T.enableAddon{}
     seasonFromScreenshot(m)
     local f = NS.Panel.Create(); NS.Panel.Refresh()
@@ -1001,9 +1001,13 @@ test("panel: the copy box and its label dim and disable while key targeting is o
     -- red under: drop setCopyEnabled from Panel.Refresh
     assertFalse(f.rangeBox:IsEnabled())
     assertEqual(f.copyLabel.__textColor[1], 0.5)
+    -- Owner request: with key targeting off there is no range to copy, so the box is empty.
+    -- red under: rangeText ignoring keyTargeting
+    assertEqual(f.rangeBox:GetText(), "")
     cb:SetChecked(true); cb:__fire("OnClick")
     assertTrue(f.rangeBox:IsEnabled())
     assertEqual(f.copyLabel.__textColor[1], 1)
+    assertEqual(f.rangeBox:GetText(), NS.Targeting.RangeText(NS.Filters.Get().keyLevel), "the range comes back")
 end)
 
 -- Owner report (screenshot): with the panel raised into the dialog's bottom edge, PGF's border drew

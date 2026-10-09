@@ -136,7 +136,7 @@ substitute its numbers.
   Finder search box (if it stays in the copy field, the client refused the focus change: record
   it); Ctrl+V, Enter → the search runs with `14-14`, no Lua error and no "action blocked"
   (`/console taintLog 1`, then check `Logs/taint.log` for this addon). Untick *Untimed dungeons at
-  key level* → the copy box and its label dim and the box cannot be focused; tick it again → both return. Result:
+  key level* → the copy box and its label dim, the box is empty and cannot be focused; tick it again → both return. Result:
 - **APPLY-9. Targeting at N=15.** Key level 15, Apply → all eight dungeons ticked in PGF and in the
   game's Filter → Dungeons menu. Result:
 - **APPLY-10. Experienced leader.** *Experienced leader* on at N=14, Apply → the block holds

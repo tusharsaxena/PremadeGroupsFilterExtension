@@ -68,8 +68,12 @@ local function stoodDown() return NS.IsStoodDown() end
 
 local function trim(s) return type(s) == "string" and s:match("^%s*(.-)%s*$") or "" end
 
+-- The copy box's N-N, or empty while "Untimed dungeons at key level" is off: there is no key level
+-- to search for then (owner request), and the box is dimmed and disabled anyway.
 local function rangeText()
-    return NS.Targeting.RangeText(NS.Filters.Get().keyLevel)
+    local f = NS.Filters.Get()
+    if not f.keyTargeting then return "" end
+    return NS.Targeting.RangeText(f.keyLevel)
 end
 
 -- ── tooltips ────────────────────────────────────────────────────────────────────────────────────

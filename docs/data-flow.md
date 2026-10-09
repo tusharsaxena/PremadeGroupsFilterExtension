@@ -46,7 +46,8 @@ return is `ok, msgKey, ...` and `Apply.Report` prints `NS.L[msgKey]:format(...)`
 9. **Search.** `Apply.LastRange = "N-N"`; with `opts.search`, `Bridge.Search()` clicks
    `PremadeGroupsFilterDialog.RefreshButton`. Returns `MSG_APPLIED` with the count of PGF rows actually ticked (`Bridge.SetDungeons`' return) and
    the range, or `MSG_APPLIED_NO_TARGETING` with the range when key targeting is off. The panel's copy box
-   (*Copy into search box*) always shows the level box's `N-N`, not the last applied one.
+   (*Copy into search box*) shows the level box's `N-N`, not the last applied one, and is empty
+   (dimmed and disabled) while key targeting is off.
 
 With key targeting off, step 5 is skipped and PGF's dungeon checkboxes are left as they are.
 

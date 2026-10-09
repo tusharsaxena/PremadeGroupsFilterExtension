@@ -288,7 +288,7 @@ Total.
 - panel: unticking Toggle PGF Extension Filters removes the block; ticking writes it back
 - panel: presets never switch the extension on or off
 - panel: the title is centered on the whole header
-- panel: the copy box and its label dim and disable while key targeting is off
+- panel: the copy box and its label dim, disable and empty while key targeting is off
 - panel: the panel's frame level is above PGF's dialog and its border
 - panel: the title is the full addon name, and the copy box centers its range
 - panel: a click on the header strip collapses and expands, like the arrow
