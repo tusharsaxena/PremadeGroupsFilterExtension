@@ -32,22 +32,23 @@ archaeology, for the same reason a skip is never a pass (`automated-tests-§4`).
 
 | Run | Commit | Tree | Version | Lint w/e | Files | Tests | Perf | NLOC | Funcs | Avg NLOC | Avg CCN | Max CCN | CCN warn | Verdict |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| [`20261009-082905`](20261009-082905/) | `2c78ddb` | clean | 0.1.0 → 0.1.0 | 0/0 | 51 | 186/1/187 | skip | 4144 | 653 | 4.8 | 2.0 | 13 | 0 | **green** |
 | [`20261009-075822`](20261009-075822/) | `5939cc7` | clean | 0.1.0 | 0/0 | 50 | 102/1/103 | skip | 2010 | 404 | 4.0 | 1.9 | 13 | 0 | **green** |
 
 ## Test suite
 
-**103 cases** — 102 passed, 0 failed, 1 skipped. The generated inventory
-[`20261009-075822/test-cases.md`](20261009-075822/test-cases.md) is the authority on which cases existed at this run;
+**187 cases** — 186 passed, 0 failed, 1 skipped. The generated inventory
+[`20261009-082905/test-cases.md`](20261009-082905/test-cases.md) is the authority on which cases existed at this run;
 `docs/test-cases.md` is that same list at HEAD.
 
-This is the first recorded run, so there is no trend to read yet.
+Moved **103 → 187** since the previous run.
 
 **1 case(s) reported a `skip`.** A skip is counted in the total and never in `passed`, and at
 the release gate it is NOT EVALUATED rather than passed (`automated-tests-§3`).
 
 ## Lint
 
-**0 warnings / 0 errors over 50 files** (`luacheck .`).
+**0 warnings / 0 errors over 51 files** (`luacheck .`).
 
 Read that figure with its scope attached: `.luacheckrc` excludes 6 path(s) from it — `libs/`, `docs/audits/`, `docs/reviews/`, `docs/revendor/`, `_dev/`, `tests/_kit/` —
 so nothing under them is in the count above. A `0/0` that never moves is partly a statement about
@@ -64,7 +65,7 @@ never asked.
 
 ## Complexity watch list
 
-Current as of [`20261009-075822`](20261009-075822/) — **this run's measurement, not its diff.** Max CCN **13** across 404
+Current as of [`20261009-082905`](20261009-082905/) — **this run's measurement, not its diff.** Max CCN **13** across 653
 functions, **0** of them warned on; 0 file(s) in the 1000–1500 band and 0 over the 1500 cap
 (`layout-§1`).
 

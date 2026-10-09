@@ -1,0 +1,189 @@
+  PASS  harness: the load list is derived from the TOC, in TOC order
+  PASS  harness: every factory returns (NS, env, mock) with env and mock the same table
+  PASS  harness: the PGF fake is installed before the addon loads
+  PASS  harness: factory opts seed the mock fields
+  PASS  harness: client-data mock fields answer through their APIs
+  PASS  harness: hooksecurefunc is a real post-hook on a table member
+  PASS  harness: fireEvent dispatches to AceEvent handlers
+  PASS  harness: the explicit LibKa0s list matches LibKa0s.xml, in XML order (anti-pattern #48)
+  PASS  parity: the Core seam's namespace surface survives the library's absence
+  PASS  parity: the DebugLog stub carries the whole live surface
+  PASS  parity: the Slash stub carries the whole live surface
+  PASS  parity: the Options helpers stub carries the whole live surface
+  PASS  parity: the Schema host stub's instance carries the whole live instance surface
+  PASS  parity: the Schema host stub carries the library's own members
+  PASS  parity: the Launcher stub carries the whole live surface
+  PASS  parity: the Lifecycle stub carries the whole live surface
+  PASS  parity: the Perf stub carries every member the addon calls
+  PASS  parity: the Compat arm carries every library member the addon wires
+  PASS  setup: NS is the AceAddon object, with the cyan [PGFE] tag
+  PASS  setup: NS.Print is reclaimed from AceConsole and is NS.Util.print
+  PASS  setup: per-character filter defaults (char.filters)
+  PASS  setup: global defaults hold the presets store and LibDBIcon's table
+  PASS  setup: profile defaults hold the master switch and the panel's collapsed state
+  PASS  setup: migrations stamp the schema version
+  PASS  setup: the Master controls rows are in the schema, frameless
+  PASS  setup: the Minimap button row inverts onto LibDBIcon's hide
+  PASS  setup: enable registers the settings category and the launcher, and stands up
+  PASS  setup: the debug console is built with the addon's folder and brand
+  PASS  setup: the perf harness is wired to the lifecycle latch, with no bucket declared yet
+  PASS  setup: the Compat spec readers route through LibKa0s-Compat-1.0
+  PASS  setup: the media seam names this addon's folder
+  PASS  setup: the landing page lists every NS.COMMANDS row
+  PASS  slash: NS.COMMANDS is ordered positional triples with every reserved verb
+  PASS  slash: /pgfe and /premadegroupsfilterextension are registered through AceConsole
+  PASS  slash: disable and enable write the Enable row through the write seam
+  PASS  slash: perf answers through the harness and prints its lines
+  PASS  slash: the library-absent stub pins the library's disabled line
+  PASS  slash: the library-absent stub still answers version and refuses enable honestly
+  PASS  disabled: a feature event is registered at enable and UNREGISTERED at disable
+  PASS  disabled: enable rebuilds from current state
+  PASS  disabled: the perf hold stands the addon down through the same latch
+  PASS  disabled: a profile stored disabled stands down at the next enable
+  PASS  disabled: every verb keeps answering while disabled
+  PASS  regions: the module publishes its namespace table
+  PASS  regions: normalize strips spaces, punctuation, case
+  PASS  regions: suffixed leader resolves on US portal
+  PASS  regions: leader without suffix uses the player's realm
+  PASS  regions: EU realm with accent
+  PASS  regions: unknown realm, nil/empty name, unsupported portal → nil
+  PASS  regions: the same realm name resolves per portal
+  PASS  regions: key and label tables cover all twelve buckets
+  PASS  regions: data integrity — no realm in two buckets, only known keys
+  PASS  regions: every bucket is populated
+  PASS  targeting: the module publishes its namespace table
+  PASS  targeting: N=14 targets the four dungeons timed below 14
+  PASS  targeting: N=15 targets all eight
+  PASS  targeting: N=2 targets none
+  PASS  targeting: never-timed counts as 0
+  PASS  targeting: ToSet keys the targets by cmID
+  PASS  targeting: level validation and range text
+  PASS  season: the module publishes its namespace table
+  PASS  season: nil map table → nil (loading)
+  PASS  season: empty map table → nil (loading)
+  PASS  season: best timed from intimeInfo, untimed → 0, short from PGF keyword
+  PASS  season: dungeon never run (GetSeasonBestForMap → nil) → best timed 0
+  PASS  season: unknown mapID falls back to initials
+  PASS  expression: clauses in fixed order
+  PASS  expression: empty user text → bare block
+  PASS  expression: user text is parenthesized so its OR cannot leak
+  PASS  expression: re-apply is idempotent and replaces the block
+  PASS  expression: strip restores the user text exactly
+  PASS  expression: no clauses → user text only (block removed)
+  PASS  expression: comment-only user text treated as empty (no `and ( )`)
+  PASS  expression: damaged block (begin without end) → error, text untouched
+  PASS  expression: over 2000 chars → toolong
+  PASS  filters: clause opts honor enable flags and portal order
+  PASS  filters: validation
+  PASS  filters: set and region toggle write the live table
+  PASS  filters: per-character defaults
+  PASS  presets: save/load round-trip is a deep copy into the same table
+  PASS  presets: list sorted, delete, bad names, missing
+  PASS  presets: names are trimmed and saving overwrites
+  PASS  envinject: the module publishes its namespace table
+  PASS  envinject: keywords follow PGF's formula
+  PASS  envinject: unknown spec / role / missing table → nil keywords, no error
+  PASS  envinject: samespec / sameclassrole from env counts
+  PASS  envinject: spec change is picked up without re-apply
+  PASS  envinject: PLAYER_SPECIALIZATION_CHANGED refreshes for the player only
+  PASS  envinject: regions injected only without PremadeRegions
+  PASS  envinject: stood down → hook is a no-op
+  PASS  bridge: the module publishes its namespace table
+  PASS  bridge: seams present
+  PASS  bridge: missing seam is named, no error
+  PASS  bridge: SetDungeons maps cmID → positional key, shuffled order
+  PASS  bridge: non-dungeon category → no state
+  PASS  bridge: missing dungeon state table is created on the active category
+  PASS  bridge: expression read clears focus first; commit inits + triggers; search clicks
+  PASS  bridge: commit with minimized dialog writes state only
+  PASS  bridge: dialog shown and accessor
+  PASS  bridge: env hook installs once, as a post-hook on PGF's own function
+  PASS  bridge: env hook refuses when the seam is missing
+  PASS  bridge: HookDialog wires SwitchToPanel and both scripts
+  PASS  apply: the module publishes its namespace table
+  PASS  apply: N=14 ticks AOF/RLP/BV/KR, writes block, triggers, searches
+  PASS  apply: everything timed → refuses, nothing written
+  PASS  apply: combat, wrong category, missing PGF seam, loading
+  PASS  apply: invalid options refuse before anything is written
+  PASS  apply: key targeting off leaves checkboxes alone; no search when not requested
+  PASS  apply: keeps user text; clear restores it
+  PASS  apply: a damaged managed block refuses Apply and Clear
+  PASS  apply: /pgfe apply searches and prints; /pgfe clear prints
+  PASS  apply: /pgfe apply prints the refusal with its argument
+  PASS  panel: the module publishes its namespace table
+  PASS  panel: anchored under PGF dialog, both edges
+  PASS  panel: Create is idempotent
+  PASS  panel: visible only for shown dialog on the dungeon category
+  PASS  panel: created lazily, on the first UpdateVisibility that wants it
+  PASS  panel: the dialog's SwitchToPanel is hooked at load
+  PASS  panel: hidden when stood down, and the dialog hook is a no-op
+  PASS  panel: region chips follow portal
+  PASS  panel: a chip click toggles the region and its highlight
+  PASS  panel: unsupported portal shows the note and no chips
+  PASS  panel: range field shows N-N for the current level
+  PASS  panel: typing into the range field puts the range back
+  PASS  panel: typing a level writes keyLevel and updates the range; junk is ignored
+  PASS  panel: readout highlights targeted dungeons, grays the rest
+  PASS  panel: readout says loading until the season data arrives
+  PASS  panel: checkboxes write their filter option
+  PASS  panel: Refresh re-reads the filters into the widgets
+  PASS  panel: Apply searches and prints; the range field follows
+  PASS  panel: Apply does nothing while stood down
+  PASS  panel: a missing PGF seam shows one line and disables Apply
+  PASS  panel: collapse folds to the title bar and is remembered in the profile
+  PASS  panel: preset Save as stores a named preset; Load refills the widgets
+  PASS  panel: preset Delete removes the selected preset after confirming
+  PASS  panel: Enter in the Save as box saves and closes the popup
+  PASS  panel: a blank preset name is refused
+  PASS  libs/LibKa0s is the LibKa0s release CLAUDE.md says this addon bundles
+  PASS  tests/_kit is the test kit that shipped with that release
+  PASS  the automated-test runner is recorded executable (100755)
+  PASS  eol: every tracked file carries the terminator .gitattributes declares for it
+  PASS  eol: .gitattributes is line-endings-§5's canonical body for this repo kind
+  PASS  prose: no authored file carries a British spelling from localization-§5's published list
+  PASS  prose: the gate carries localization-§5's two lists whole, and nothing of its own
+  PASS  prose self-test: the carve-out suppresses the named generated folder, and only it
+  PASS  prose self-test: a path the carve-out does not name is not covered by one that looks like it
+  PASS  prose self-test: a carve-out that is not a set of path strings is a failure, not a silence
+  PASS  prose self-test: a TOC's file lines are read as paths, and its directives and comments are not
+  PASS  prose self-test: a .pkgmeta's ignore block is read, and the keys around it are not
+  PASS  prose self-test: an ignore entry covers a path exactly, by folder, and by wildcard
+  PASS  prose self-test: the carve-out admits a generated dump and refuses a file the TOC loads
+  PASS  prose self-test: a waiver-file exclusion meets the same two refusals as the carve-out
+  PASS  prose self-test: each list is refused on the matching rule its own scan uses
+  PASS  prose self-test: the scan and the refusals read the added exclusions through one reader
+  PASS  prose self-test: a narrowing is refused by what it suppresses, not by how it is written
+  PASS  prose self-test: the disclosure names what each entry suppressed, and says when it is bounded
+  PASS  prose self-test: a malformed waived is a failure, not a silence
+  PASS  layoutcap: every authored file over the 1500-line cap is named in the census
+  PASS  layoutcap: no census row outlives the breach it records
+  PASS  layoutcap: every over-cap census row carries one of layout-§1's three terminal states
+  PASS  layoutcap: the census and the exempt set agree about which paths were exempted
+  PASS  layoutcap: an empty census is written as a result rather than left standing empty
+  PASS  layoutcap self-test: the parser reads the census nested under the register, and stops there
+  PASS  layoutcap self-test: a census outside its register, or at the wrong level, is not read
+  PASS  layoutcap self-test: an over-cap file missing from the census is reported, and an exempt one is not
+  PASS  layoutcap self-test: a census row that outlives its breach is reported
+  PASS  layoutcap self-test: an over-cap row that names no terminal state is reported
+  PASS  layoutcap self-test: the census and the exempt set are held to naming the same paths
+  PASS  layoutcap self-test: a census that states nothing is told apart from one that states none
+  PASS  layoutcap self-test: the exempt set takes folders as well as paths
+  PASS  diagnostics contract: both forms run the report
+  PASS  diagnostics contract: the debug word is matched in any case
+  PASS  diagnostics contract: both markers carry the brand and the end counts the report
+  PASS  diagnostics contract: the report appends after what the console already holds
+  PASS  diagnostics contract: the report lands with logging off and turns it on for the session
+  SKIP  diagnostics contract: an addon that opts out lands the report and leaves logging off — this addon keeps the default (Kit.diagnostics.enablesLogging is not false), so its report turns logging on; the case above holds it
+  PASS  diagnostics contract: with logging already on, the report writes no second enable line
+  PASS  diagnostics contract: both forms run while the addon is disabled
+  PASS  diagnostics contract: no other name runs the report
+  PASS  lizard sighted: every hazard lizard loses a function over is neutralized
+  PASS  lizard sighted: fields, strings, comments and look-alike names come through unchanged
+  PASS  lizard sighted: a method definition is rewritten to its dot form with self
+  PASS  lizard sighted: no line is added or removed, CRLF included
+  PASS  lizard sighted: countFunctions counts the keyword, not strings, comments or longer names
+  PASS  lizard sighted: listedCounts reads the per-file table, once per file
+  PASS  lizard sighted: parity names every file whose counts differ, and only those
+  PASS  lizard sighted: lizard lists every function of a hazard fixture once it is sanitized
+
+186 passed, 0 failed, 1 skipped, 187 total
