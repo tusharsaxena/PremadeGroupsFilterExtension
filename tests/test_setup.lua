@@ -110,3 +110,22 @@ test("setup: the landing page lists every NS.COMMANDS row", function()
     local rows = NS.SlashCommands:LandingRows()
     assertEqual(#rows, #NS.COMMANDS)
 end)
+
+-- Owner report: the landing page showed the logo twice, the second under the Slash Commands
+-- heading. A private body drew it on a pooled AceGUI frame and never took it off; the library's
+-- BuildLandingPage hides it on release. The page body must go through the library's builder.
+test("setup: the landing page is drawn by the library's BuildLandingPage, logo and commands", function()
+    local NS = T.enableAddon()
+    local H = NS.addon.Settings.Helpers
+    local seen
+    local real = H.BuildLandingPage
+    H.BuildLandingPage = function(ctx, spec) seen = spec; return real(ctx, spec) end
+    H.BuildMainContent({})
+    H.BuildLandingPage = real
+    -- red under: the private addLogo / addCommandRows body in settings/Panel.lua
+    assertTrue(seen ~= nil, "BuildMainContent delegates to the library")
+    assertTrue(seen.logo:find("media\\logos\\pgfe.logo.tga", 1, true) ~= nil, seen.logo)
+    assertEqual(seen.logoSize, nil, "the library's 300x300 default (options-ui-§5)")
+    assertEqual(#seen.sections, 1)
+    assertEqual(#seen.sections[1].rows(), #NS.COMMANDS)
+end)

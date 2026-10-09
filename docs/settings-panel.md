@@ -15,7 +15,11 @@ they live on the panel attached under PGF's dialog (`modules/Panel.lua`, describ
 
 ### Landing page
 
-Untabbed by rule (options-ui-§13): the host's `buildMain` in `settings/Panel.lua`.
+Untabbed by rule (options-ui-§13): the host's `buildMain` (`Helpers.BuildMainContent` in
+`settings/Panel.lua`) hands the logo, the TOC notes line and the `NS.COMMANDS` rows to the library's
+`BuildLandingPage`, which owns the clear and the logo's lifecycle. Never draw on a pooled AceGUI
+frame here: a private copy that did left a second logo under the Slash Commands heading after a
+re-render.
 
 ### General
 
