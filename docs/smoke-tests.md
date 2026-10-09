@@ -20,6 +20,7 @@ takes the next free number in its theme and a retired number is never reused.
 | DEGRADED-1 | Degraded install | LibKa0s absent |
 | APPLY-1..24 | Attached panel and Apply | The panel under PGF, targeting, regions, playstyle, composition, leader, leader score, age, presets, Clear, PGF minimized, collapse, layout, tooltips, Smart key level, filters toggle, row spacing, region tags |
 | LOC-1..2 | Non-English client | Realm-name and dungeon-name seams on a deDE/frFR client |
+| SKIN-1..10 | EllesmereUI skin | The gate's four conditions, the PGF skin's install states and link, the settings tab, the painted panel, live on, reload off |
 
 ## Before you start
 
@@ -201,7 +202,7 @@ substitute its numbers.
 - **APPLY-23. Row spacing.** Every row, from Untimed dungeons to Presets (the dungeon readout
   included), is the same distance from the next as the Server regions and Playstyle rows are; only
   the gaps under the toggle row, around the Presets row and above Apply are wider. Result:
-- **APPLY-22. Title centered, 2px gap.** A 2px gap separates PGF's dialog from the panel: the two
+- **APPLY-22. Title centered, 1px gap.** A 1px gap separates PGF's dialog from the panel: the two
   metal borders neither touch nor overlap (tune `ATTACH_RAISE` in `modules/Panel.lua`), and PGF's
   border never draws over the panel's title strip, expanded or
   collapsed. The panel's title is centered on the whole header strip, expanded
@@ -212,6 +213,53 @@ substitute its numbers.
   their region. Settings → General → untick *Show server regions in the Group Finder*, refresh →
   no tags. Enable PremadeRegions again → exactly one tag per row (its own). No Lua error and no
   "action blocked" with `/console taintLog 1`. Result:
+
+## EllesmereUI skin
+
+Needs EllesmereUI (with EllesmereUI Blizzard Skin) and Premade Groups Filter - EllesmereUI Skin
+installed, unless a check says otherwise. EllesmereUI's switches are under *Blizz UI Enhanced >
+Blizzard Window Skins > Third-Party Addons*; check the wording there matches the hints on our
+settings tab and record any difference.
+
+- **SKIN-1. EllesmereUI absent.** Disable EllesmereUI, `/reload` → no Lua error; the panel looks
+  exactly as without this feature (metal border, 1px gap under PGF's dialog). Settings → General →
+  *EllesmereUI skin*: four red lines (each with its hint), "a condition above is not met", the box
+  checked but disabled; hovering it lists what is missing. `/pgfe set euiSkin false` works;
+  `/pgfe set euiSkin true` is then refused with the reasons. Result:
+- **SKIN-2. Everything on.** All four conditions on, *Use the EllesmereUI skin* ticked, `/reload`,
+  open PGF on Dungeons → the panel wears the same flat shell as PGF's dialog, with a 1px gap between
+  them and neither drawn over the other; title white and centered in the 25px top bar; 16px
+  checkboxes with the accent block and ring when ticked; flat number boxes (Smart's grayed level and
+  the dimmed copy box keep their gray); flat dropdowns with EllesmereUI's arrow, opening
+  EllesmereUI-styled menus; flat buttons (gray when disabled); the readout's gold/gray colors kept.
+  The settings tab shows four green lines and "The skin is applied." Result:
+- **SKIN-3. Collapse.** Fold the skinned panel → only the 25px bar is left, the border closes
+  cleanly around it (no squashed atlas corners, no metal header pieces), and the glyph is a plus;
+  unfold → a minus, the body back. The glyph brightens on hover. Result:
+- **SKIN-4. Master off.** In EllesmereUI turn off *Skin Third-Party Addons*, `/reload` → the panel is
+  stock; our tab shows the master line red and the box disabled. Turn it back on in EllesmereUI
+  (no reload) → PGF's dialog and our panel are painted at once (or on the panel's next show). Result:
+- **SKIN-5. Our entry off.** Untick *PremadeGroupsFilterExtension* in EllesmereUI's Third-Party
+  Addons list, `/reload` → stock panel, that line red, box disabled. Result:
+- **SKIN-6. PGF's skin off.** Untick *PremadeGroupsFilter* there (or disable Premade Groups Filter -
+  EllesmereUI Skin), `/reload` → both windows stock; our pgf line red, box disabled. Re-tick it
+  without a reload, then reopen PGF on Dungeons → our panel is painted on that show. Result:
+- **SKIN-10. PGF's skin missing or disabled.** Remove the Premade Groups Filter - EllesmereUI Skin
+  folder, restart → the pgf line reads *not installed* and a box below the lines holds
+  `https://www.curseforge.com/wow/addons/premade-groups-filter-ellesmereui`; click it → the link is
+  selected, Ctrl+C copies it, typing puts it back. Reinstall it but disable it in the AddOns list →
+  the line reads *installed but disabled*, no link box. Enable it and untick *PremadeGroupsFilter*
+  in EllesmereUI → *turned off in EllesmereUI*. Result:
+- **SKIN-7. Our switch.** Everything on, untick *Use the EllesmereUI skin*, `/reload` → stock panel,
+  "The skin is off." Tick it → the panel is painted at once, no reload. Untick it again → a popup
+  asks to reload; *Later* leaves the panel painted, *Reload* reloads into the stock panel. Result:
+- **SKIN-8. Live re-read.** With the settings tab open in one window, change an EllesmereUI switch,
+  come back and reopen the page → the lines and the box's disabled state follow without a reload.
+  Result:
+- **SKIN-9. Stand-down and theme.** `/pgfe disable` then `/pgfe enable` on a skinned panel → no
+  error, still painted. Change EllesmereUI's accent color → the checkbox accent follows; change the UI
+  scale → the accent block stays centered. `/pgfe diagnostics` → the dependencies section names the
+  four conditions and `applied=true`. Result:
 
 ## Non-English client
 
@@ -240,3 +288,4 @@ or wrong. These are the addon's locale seams.
 |---|---|---|
 | INSTALL-1..3, SLASH-1..3, PANEL-1..3, PROFILE-1..2, STATE-1..2, COMBAT-2, DIAG-1..2, DEGRADED-1 | Scaffold, 2026-10-09 | No client pass recorded yet |
 | COMBAT-1, APPLY-1..24, LOC-1..2 | M+ v0.1 (0.1.0) | Built and covered headlessly; no client pass recorded yet |
+| SKIN-1..10 | EllesmereUI skin (2026-10-09) | Built and covered headlessly against an EllesmereUI fake; the look needs the client |

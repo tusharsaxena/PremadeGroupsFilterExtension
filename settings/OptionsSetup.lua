@@ -27,6 +27,7 @@ if not lib then
     H.ClearScroll          = function() end
     H.AddSpacer            = function() end
     H.Section              = function() end
+    H.TextRow              = function() end
     H.AttachTooltip        = function() end
     H.InlineButtonPair     = function() end
     H.RenderField          = function() end

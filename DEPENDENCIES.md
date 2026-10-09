@@ -21,6 +21,12 @@ such rather than listed as a requirement.
   It stays first in `## OptionalDeps:` only so that, if a player still has it loaded, this addon
   sees it at load and steps aside (PGF's variables come from it, and this addon paints no second
   tag).
+- **EllesmereUI, EllesmereUI Blizzard Skin and Premade Groups Filter - EllesmereUI Skin —
+  optional.** `## OptionalDeps: EllesmereUI`, presence-guarded (library-stack-§6): without them the
+  panel keeps its Blizzard look and nothing else changes. With all three (EllesmereUI's third-party
+  skinning and both addons' Third-Party Addons entries on) the attached panel is painted in the
+  EllesmereUI theme (`modules/EUISkin.lua`). Read against EllesmereUI 9.4 and
+  PremadeGroupsFilter_EllesmereUI 1.1.0.
 - **Nothing else.** Every library is vendored under `libs/` and committed (library-stack), so the
   player installs no separate library addon. The rest of `## OptionalDeps:` names the vendored libs
   for load ordering, not as things to download.

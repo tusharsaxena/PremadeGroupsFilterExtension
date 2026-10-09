@@ -42,6 +42,16 @@ local function dependencies(out)
         _G.PremadeGroupsFilter ~= nil, _G.PremadeGroupsFilterDialog ~= nil,
         _G.PremadeGroupsFilterDungeonPanel ~= nil)
     out:add(TAG, "PremadeRegions loaded=%s", _G.PremadeRegions ~= nil)
+    -- The optional EllesmereUI skin: its four gate conditions, our switch, and what happened.
+    local B, K = NS.EUIBridge, NS.EUISkin
+    if B then
+        out:add(TAG, "EllesmereUI suite=%s master=%s ownEntry=%s pgfSkin=%s", read(B.IsSuiteReady),
+            read(B.IsMasterOn), read(B.IsEntryOn, B.SKIN_NAME), read(B.IsPGFSkinOn))
+    end
+    if K then
+        out:add(TAG, "EllesmereUI skin: registered=%s facade=%s wanted=%s applied=%s", K.registered == true,
+            read(K.HasFacade), read(K.IsWanted), read(K.IsApplied))
+    end
 end
 
 local function registration(out)

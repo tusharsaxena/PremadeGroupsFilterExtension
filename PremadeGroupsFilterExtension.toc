@@ -6,7 +6,7 @@
 ## IconTexture: Interface\AddOns\PremadeGroupsFilterExtension\media\logos\pgfe.logo.128.tga
 ## SavedVariables: PremadeGroupsFilterExtensionDB, PremadeGroupsFilterExtensionPerfDB
 ## Dependencies: PremadeGroupsFilter
-## OptionalDeps: PremadeRegions, Ace3, LibStub, CallbackHandler-1.0, LibSharedMedia-3.0, LibDataBroker-1.1, LibDBIcon-1.0
+## OptionalDeps: PremadeRegions, EllesmereUI, Ace3, LibStub, CallbackHandler-1.0, LibSharedMedia-3.0, LibDataBroker-1.1, LibDBIcon-1.0
 ## DefaultState: enabled
 ## Category-enUS: Group
 ## X-License: MIT
@@ -61,6 +61,8 @@ core\LifecycleSetup.lua
 core\PerfSetup.lua
 # Conventional: the PGF bridge; every PGF read happens at call time.
 core\PGFBridge.lua
+# Conventional: the EllesmereUI bridge; every EllesmereUI read happens at call time.
+core\EUIBridge.lua
 
 # Defaults
 # LOAD-BEARING: publishes NS.C, which settings\Schema.lua takes as a file-scope upvalue.
@@ -79,6 +81,9 @@ modules\EnvInject.lua
 modules\RegionTags.lua
 modules\Apply.lua
 modules\Panel.lua
+# LOAD-BEARING: registers with EllesmereUI at file load (EllesmereUI is an OptionalDep, so it is
+# loaded first when present) and reads NS.EUIBridge, published by core\EUIBridge.lua above.
+modules\EUISkin.lua
 # Conventional: core\DebugLogSetup.lua's descriptor reads NS.Diagnostics at RUN time.
 modules\Diagnostics.lua
 

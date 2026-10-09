@@ -24,6 +24,7 @@
 --   fireEvent      fireEvent(name, ...) dispatches a game event to AceEvent handlers
 --   pgf            the PGF fake's handle (tests/pgf_fake.lua): calls, dialog, panel, state, PGF
 --   hooks          every hooksecurefunc post-hook installed, in order: { target, name, fn }
+--   installEUI     installEUI(spec) installs the EllesmereUI fake (see below); m.eui is its handle
 
 local base = dofile("tests/_kit/mock_base.lua")
 local pgfFake = assert(loadfile("tests/pgf_fake.lua"))()
@@ -225,11 +226,69 @@ local function build()
         f.SetOnMinimizedCallback = function(self, fn) self.__onMinimized = fn; return self end
         f.CreateFontString = function(self)
             local fs = decorate(M.__stubFrame())
+            fs.__objType = "FontString"
             self.__children[#self.__children + 1] = fs
+            self.__regions[#self.__regions + 1] = fs
             return fs
         end
+        -- What the EllesmereUI skin (modules/EUISkin.lua) reads back and writes: regions, alpha,
+        -- frame level, hit-rect insets, the button state textures, and a texture's color.
+        f.__regions = {}
+        f.CreateTexture = function(self)
+            local t = decorate(M.__stubFrame())
+            t.__objType = "Texture"
+            self.__regions[#self.__regions + 1] = t
+            return t
+        end
+        f.GetRegions = function(self) return unpack(self.__regions) end
+        f.GetParent = function(self) return self.__parent end
+        f.GetObjectType = function(self) return self.__objType or "Frame" end
+        f.IsObjectType = function(self, t) return (self.__objType or "Frame") == t end
+        -- A test-armed geometry (__setGeom, the kit's opt-in) wins; else what the code set.
+        f.GetHeight = function(self) return (self.__geomLive and self.__geomH) or self.__height or 0 end
+        f.GetWidth = function(self) return (self.__geomLive and self.__geomW) or self.__width or 0 end
+        f.GetHitRectInsets = function(self)
+            local r = self.__hitRect or { 0, 0, 0, 0 }
+            return r[1], r[2], r[3], r[4]
+        end
+        f.SetAlpha = function(self, a) self.__alpha = a; return self end
+        f.GetAlpha = function(self) return self.__alpha or 1 end
+        f.SetFrameLevel = function(self, l) self.__level = l; return self end
+        f.GetFrameLevel = function(self) return self.__level or 1 end
+        f.GetEffectiveScale = function() return 1 end
+        f.SetColorTexture = function(self, r, g, b, a) self.__color = { r, g, b, a }; return self end
+        f.SetVertexColor = function(self, r, g, b, a) self.__vertexColor = { r, g, b, a }; return self end
+        local function stateTexture(key)
+            return function(self)
+                self.__tex = self.__tex or {}
+                if not self.__tex[key] then
+                    self.__tex[key] = decorate(M.__stubFrame())
+                    self.__tex[key].__objType = "Texture"
+                end
+                return self.__tex[key]
+            end
+        end
+        f.GetCheckedTexture = stateTexture("checked")
+        f.GetNormalTexture = stateTexture("normal")
+        f.GetPushedTexture = stateTexture("pushed")
+        f.GetHighlightTexture = stateTexture("highlight")
+        f.GetDisabledTexture = stateTexture("disabled")
         return f
     end
+    -- Client helpers the EllesmereUI skin (modules/EUISkin.lua) uses: pixel snapping at a 1:1 scale,
+    -- Round, an atlas lookup that knows every atlas, and C_UI.Reload, recorded.
+    M.reloads = 0
+    M.C_UI = { Reload = function() M.reloads = M.reloads + 1 end }
+    M.Round = function(x) return math.floor(x + 0.5) end
+    M.PixelUtil = {
+        GetPixelToUIUnitFactor = function() return 1 end,
+        SetHeight = function(region, h) region:SetHeight(h) end,
+        SetWidth = function(region, w) region:SetWidth(w) end,
+    }
+    M.C_Texture = { GetAtlasInfo = function(atlas) return { atlas = atlas } end }
+    -- StaticPopup_Show(which, ...), recorded: { which, ... } in order.
+    M.popupsShown = {}
+    M.StaticPopup_Show = function(which, ...) M.popupsShown[#M.popupsShown + 1] = { which, ... } end
     -- StaticPopup_Hide(which), recorded: the preset popups close themselves through it.
     M.popupsHidden = {}
     M.StaticPopup_Hide = function(which) M.popupsHidden[#M.popupsHidden + 1] = which end
@@ -239,6 +298,9 @@ local function build()
         local f = baseCreateFrame(frameType, name, parent, template)
         if parent ~= nil and (parent == M.PremadeGroupsFilterDialog or parent.__panelFrame) then
             decorate(f)
+            f.__objType = frameType
+            -- UICheckButtonTemplate's own size (Blizzard SharedUIPanelTemplates.xml).
+            if template == "UICheckButtonTemplate" then f.__width, f.__height = 32, 32 end
             parent.__children = parent.__children or {}
             parent.__children[#parent.__children + 1] = f
             -- PortraitFrameTemplate's own close button (a parentKey in the template's XML).
@@ -246,6 +308,8 @@ local function build()
                 f.CloseButton = decorate(M.__stubFrame())
                 f.NineSlice = decorate(M.__stubFrame())   -- the border art's container
                 f.TitleContainer = decorate(M.__stubFrame()) -- the title text's container
+                f.TitleContainer.TitleText = decorate(M.__stubFrame())
+                f.TitleContainer.TitleText.__objType = "FontString"
             end
             -- MaximizeMinimizeButtonFrameTemplate's two arrow buttons (parentKeys in its XML).
             if template == "MaximizeMinimizeButtonFrameTemplate" then
@@ -254,6 +318,102 @@ local function build()
             end
         end
         return f
+    end
+
+    -- ELLESMEREUI, OPT-IN. Absent by default, as on a client without it: a case installs it from the
+    -- loader's `mock` option (before any source loads), `m.installEUI{ ... }`. Modeled on EllesmereUI
+    -- v9.4: the parent's RegisterSkin stub queues (first name wins), the window-skin child's
+    -- dispatcher fires each entry ONCE, and only while the master switch and that entry are on
+    -- (nil = on), handing it a facade S. The facade RECORDS every primitive call rather than
+    -- no-opping it, so a case can ask what was painted.
+    --   spec.child = false    EllesmereUIBlizzardSkin not loaded
+    --   spec.pgfSkin = false  PremadeGroupsFilter_EllesmereUI installed but not loaded (disabled);
+    --                         "missing" = not installed at all (C_AddOns.DoesAddOnExist false)
+    --   spec.masterOff        EllesmereUIDB.thirdPartySkinsOff = true
+    --   spec.entries          EllesmereUIDB.thirdPartySkinAddons (e.g. { PremadeGroupsFilter = false })
+    -- Installs C_AddOns too (the base deliberately leaves it out), answering from `m.loadedAddons`,
+    -- with this addon's own folder loaded. Handle: m.eui = { registry, order, fired, calls, looks, accent,
+    -- dispatch(name), dispatchAll(), callsFor(fn, target), count(fn) }.
+    M.installEUI = function(spec)
+        spec = spec or {}
+        local eui = { registry = {}, order = {}, fired = {}, calls = {}, looks = {},
+                      accent = { 0.05, 0.8, 0.6 } }
+        M.eui = eui
+        M.loadedAddons = {
+            PremadeGroupsFilterExtension = true, PremadeGroupsFilter = true, EllesmereUI = true,
+            EllesmereUIBlizzardSkin = spec.child ~= false,
+            PremadeGroupsFilter_EllesmereUI = spec.pgfSkin ~= false and spec.pgfSkin ~= "missing",
+        }
+        M.C_AddOns = {
+            IsAddOnLoaded = function(name)
+                local on = M.loadedAddons[name] == true
+                return on, on
+            end,
+            GetAddOnMetadata = function() return nil end,
+            DoesAddOnExist = function(name)
+                if name == "PremadeGroupsFilter_EllesmereUI" then return spec.pgfSkin ~= "missing" end
+                return M.loadedAddons[name] ~= nil
+            end,
+        }
+        M.EllesmereUIDB = {
+            thirdPartySkinsOff = spec.masterOff and true or nil,
+            thirdPartySkinAddons = spec.entries or {},
+        }
+        local function masterOn()
+            local d = M.EllesmereUIDB
+            return not (d and d.thirdPartySkinsOff)
+        end
+        local function addonOn(name)
+            local t = M.EllesmereUIDB and M.EllesmereUIDB.thirdPartySkinAddons
+            return not (t and t[name] == false)
+        end
+        local PRIMITIVES = { "Shell", "Panel", "Inset", "FadeRegions", "FadeNineSlice", "Button",
+            "WhiteButtonLabel", "StateButtonLabel", "EditBox", "Checkbox", "Dropdown", "ScrollBar",
+            "CloseButton", "Font", "White" }
+        local function facade(name)
+            local S = { apiVersion = 3 }
+            for _, fname in ipairs(PRIMITIVES) do
+                S[fname] = function(target, opts)
+                    eui.calls[#eui.calls + 1] = { fn = fname, target = target, opts = opts, skin = name }
+                end
+            end
+            -- The theme's accent: tests change eui.accent to drive a live looks change.
+            S.GetAccentColor = function() local a = eui.accent; return a[1], a[2], a[3] end
+            S.GetFont = function() return "Fonts\\EUI.ttf", "" end
+            S.GetStyle = function() return "eui" end
+            S.OnLooksChanged = function(fn) eui.looks[#eui.looks + 1] = fn end
+            S.IsEnabled = function() return masterOn() and addonOn(name) end
+            return S
+        end
+        function eui.dispatch(name)
+            local fn = eui.registry[name]
+            if not fn or eui.fired[name] or not (masterOn() and addonOn(name)) then return false end
+            if M.loadedAddons.EllesmereUIBlizzardSkin ~= true then return false end
+            eui.fired[name] = true
+            fn(facade(name))
+            return true
+        end
+        function eui.dispatchAll()
+            local any = false
+            for _, name in ipairs(eui.order) do any = eui.dispatch(name) or any end
+            return any
+        end
+        function eui.callsFor(fname, target)
+            local out = {}
+            for _, c in ipairs(eui.calls) do
+                if c.fn == fname and (target == nil or c.target == target) then out[#out + 1] = c end
+            end
+            return out
+        end
+        function eui.count(fname) return #eui.callsFor(fname) end
+        M.EllesmereUI = {
+            RegisterSkin = function(name, fn)
+                if type(name) ~= "string" or type(fn) ~= "function" or eui.registry[name] then return end
+                eui.registry[name] = fn
+                eui.order[#eui.order + 1] = name
+            end,
+        }
+        return eui
     end
 
     return M

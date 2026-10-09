@@ -30,6 +30,9 @@ read_globals = {
   -- core/PGFBridge.lua, modules/EnvInject.lua and modules/Diagnostics.lua.
   "PremadeGroupsFilter", "PremadeGroupsFilterDialog", "PremadeGroupsFilterDungeonPanel",
   "PremadeGroupsFilterState", "PremadeRegions",
+  -- EllesmereUI (## OptionalDeps), read only by core/EUIBridge.lua and modules/EUISkin.lua.
+  "EllesmereUI", "EllesmereUIDB",
+  "PixelUtil", "Round", "C_Texture", "C_UI",   -- the skin's pixel snapping, atlas check and reload
 }
 
 -- The harness global, declared for tests/ only so no shipped file can reach for it. The

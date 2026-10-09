@@ -28,9 +28,9 @@ test("panel: anchored under PGF dialog, both edges", function()
     assertEqual(p1, "TOPLEFT"); assertEqual(rel1, m.PremadeGroupsFilterDialog); assertEqual(rp1, "BOTTOMLEFT")
     local p2, rel2, rp2, x2, y2 = f:GetPoint(2)
     assertEqual(p2, "TOPRIGHT"); assertEqual(rel2, m.PremadeGroupsFilterDialog); assertEqual(rp2, "BOTTOMRIGHT")
-    -- Owner request: a 2px gap between the two borders (0 left ~4 units, 5 closed it).
+    -- Owner request: a 1px gap between the two borders (0 left ~4 units, 5 closed it; 2 was 1px too wide).
     -- red under: anchor at y = 0 or 5
-    assertEqual(x1, 0); assertEqual(x2, 0); assertEqual(y1, 2); assertEqual(y2, 2)
+    assertEqual(x1, 0); assertEqual(x2, 0); assertEqual(y1, 3); assertEqual(y2, 3)
     assertEqual(f.__name, "PremadeGroupsFilterExtensionPanel")
     assertEqual(f.__template, "PortraitFrameTemplateMinimizable")
 end)

@@ -178,6 +178,26 @@ Total.
 - bridge: env hook refuses when the seam is missing
 - bridge: HookDialog wires SwitchToPanel and both scripts
 
+### test_euibridge.lua (17)
+
+- euibridge: the module publishes its namespace table and the skin name
+- euibridge: four conditions, in display order, each with a label and a hint
+- euibridge: everything on opens the gate, and there is no why
+- euibridge: EllesmereUI absent closes every condition, without raising
+- euibridge: the window-skin child not loaded closes the gate at eui
+- euibridge: an EllesmereUI without RegisterSkin is not ready
+- euibridge: a truthy non-boolean master value reads as off, as the dispatcher reads it
+- euibridge: the master switch off closes the gate at master, and only master
+- euibridge: our own entry off closes the gate at own
+- euibridge: PGF's skin entry off closes the gate at pgf
+- euibridge: PGF's skin addon not loaded closes the gate at pgf
+- euibridge: nil switches read as on (EllesmereUI's own nil = on)
+- euibridge: WhyClosed lists every failing hint, one per line
+- euibridge: the reads are live, at call time
+- euibridge: a raising or absent C_AddOns reads as not loaded
+- euibridge: nothing is ever written to EllesmereUI's saved variables
+- euibridge: the PGF skin's state is missing / disabled / off / on, and its line says which
+
 ### test_apply.lua (16)
 
 - apply: the module publishes its namespace table
@@ -272,6 +292,54 @@ Total.
 - panel: the copy box and its label dim and disable while key targeting is off
 - panel: the panel's frame level is above PGF's dialog and its border
 
+### test_euiskin.lua (26)
+
+- euiskin: the module publishes its namespace table
+- euiskin: registers once, at file load, under the folder name
+- euiskin: EllesmereUI absent registers nothing and leaves the panel stock
+- euiskin: every condition on, the login dispatch paints the built panel
+- euiskin: a dispatch before the panel exists keeps S, and Panel.Create paints
+- euiskin: TryApply is idempotent
+- euiskin: any one failing condition keeps the panel stock
+- euiskin: a condition turned off mid-session refuses a later paint
+- euiskin: our switch off keeps S and paints nothing; turning it on paints live
+- euiskin: turning the switch off after a paint asks for a reload and does not unpaint
+- euiskin: turning the switch off before any paint asks for nothing
+- euiskin: master off at login, turned on in EllesmereUI later, paints live
+- euiskin: stood down, the callback paints nothing; the stand-up paints
+- euiskin: a profile switch to one with the switch on paints
+- euiskin: a profile switch to one with the switch off, after a paint, asks for a reload
+- euiskin: a profile switch to a disabled profile with the switch on paints nothing
+- euiskin: skinned, the collapsed panel is the shell's 25px bar and the metal copies are hidden
+- euiskin: skinned, the panel hangs 2px below PGF's dialog, both edges
+- euiskin: the min/max buttons get the minus (collapse) and the plus (expand)
+- euiskin: checkboxes shrink to 24, row boxes stay on their row, hit rects follow the label
+- euiskin: the accent ring follows the check, and not while stood down
+- euiskin: only the title is whitened; readout, copy label and number boxes keep their color
+- euiskin: a live looks change recolors the accent block and ring
+- euiskin: a scale change re-lays out the accent block in whole pixels
+- euiskin: theme and scale changes while stood down catch up at the stand-up
+- euiskin: the diagnostics dependencies section reports the gate and the skin
+
+### test_euisettings.lua (16)
+
+- euisettings: euiSkin is a schema row, default on, in its own group on the General page
+- euisettings: the General page's tabs are Master controls, then EllesmereUI skin
+- euisettings: the tab draws the switch, a line per condition, then a state line
+- euisettings: each failing condition disables the switch and is named on its line
+- euisettings: a re-show re-reads the lines and the switch after EllesmereUI changed
+- euisettings: the switch's tooltip says why it is disabled, live
+- euisettings: /pgfe set euiSkin true is refused, with the reason, while a condition fails
+- euisettings: a bulk reset is never refused
+- euisettings: the switch on paints live through the write seam; off asks for a reload
+- euisettings: the state line names what is waiting
+- euisettings: a gate opened in EllesmereUI's options paints on the panel's next show
+- euisettings: LibKa0s absent with EllesmereUI present loads, registers and keeps the row
+- euisettings: a missing PGF skin gets a box with its CurseForge link; installed, no box
+- euisettings: the state line sits below a gap, in an empty icon slot like the hints
+- euisettings: the switch comes first, then a gap, then the condition lines
+- euisettings: each condition line and the state line have a what / why / how tooltip
+
 ### test_vendor_sync.lua (3)
 
 - libs/LibKa0s is the LibKa0s release CLAUDE.md says this addon bundles
@@ -358,8 +426,11 @@ Total.
 | test_envinject.lua | 10 |
 | test_regiontags.lua | 8 |
 | test_bridge.lua | 13 |
+| test_euibridge.lua | 17 |
 | test_apply.lua | 16 |
 | test_panel.lua | 72 |
+| test_euiskin.lua | 26 |
+| test_euisettings.lua | 16 |
 | test_vendor_sync.lua | 3 |
 | test_eol.lua | 2 |
 | test_prose.lua | 15 |
@@ -367,4 +438,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **265** |
+| **Total** | **324** |

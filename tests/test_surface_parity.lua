@@ -34,7 +34,7 @@ test("parity: the Options helpers stub carries the whole live surface", function
         "PADDING_X", "ROW_VSPACER", "SECTION_HEADING_H", "BUTTON_PAIR_REL",
         "CHROME_GAP", "TAB_H", "BANNER_H",
         "AceGUI",
-        "BuildLandingPage", "TextRow", "RestoreDefaults",
+        "BuildLandingPage", "RestoreDefaults",
         "FONT_FLAGS", "FONT_FLAGS_SORT", "VISIBILITY_VALUES", "VISIBILITY_SORT",
         "MASTER_GROUP", "CLASS_COLOR_NOTE",
     })

@@ -62,6 +62,13 @@ local function reloadProfile(self)
         NS.Lifecycle:Set(NS.HOLD_DISABLED, not (self.db and self.db.profile and self.db.profile.enabled))
         NS.Lifecycle:Reevaluate()
     end
+    -- The incoming profile's EllesmereUI skin switch, through the switch's own handler: on paints
+    -- (refused while stood down, so a disabled profile never gets the one-way paint), off after a
+    -- paint asks for the reload. After the latch re-read, so the paint sees the final state.
+    if NS.EUISkin then
+        local p = self.db and self.db.profile
+        NS.EUISkin.OnSwitch(p ~= nil and p.euiSkin == true)
+    end
 end
 
 -- Logged here, once (debug-logging-§10): a profile switch rewrites no row through the write seam.

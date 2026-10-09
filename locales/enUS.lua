@@ -153,3 +153,41 @@ L["%s is unavailable: the LibKa0s library did not load."] =
     "%s is unavailable: the LibKa0s library did not load."
 L["Diagnostic report written to the debug console: %d lines. Use Copy to share it."] =
     "Diagnostic report written to the debug console: %d lines. Use Copy to share it."
+
+-- EllesmereUI skin: the gate's four conditions (core/EUIBridge.lua), each a status line and a hint
+L["EllesmereUI and its Blizzard Skin module are loaded"] =
+    "EllesmereUI and its Blizzard Skin module are loaded"
+L["Install and enable EllesmereUI, including EllesmereUI Blizzard Skin."] =
+    "Install and enable EllesmereUI, including EllesmereUI Blizzard Skin."
+L["EllesmereUI third-party skinning is on"] = "EllesmereUI third-party skinning is on"
+L["In EllesmereUI, turn on Blizz UI Enhanced > Blizzard Window Skins > Third-Party Addons > Skin Third-Party Addons."] =
+    "In EllesmereUI, turn on Blizz UI Enhanced > Blizzard Window Skins > Third-Party Addons > Skin Third-Party Addons."
+L["PremadeGroupsFilterExtension is on in EllesmereUI's Third-Party Addons list"] =
+    "PremadeGroupsFilterExtension is on in EllesmereUI's Third-Party Addons list"
+L["In EllesmereUI's Third-Party Addons list, turn on PremadeGroupsFilterExtension."] =
+    "In EllesmereUI's Third-Party Addons list, turn on PremadeGroupsFilterExtension."
+L["Premade Groups Filter's own EllesmereUI skin is on"] = "Premade Groups Filter's own EllesmereUI skin is on"
+L["Install and enable Premade Groups Filter - EllesmereUI Skin, and turn on PremadeGroupsFilter in EllesmereUI's Third-Party Addons list."] =
+    "Install and enable Premade Groups Filter - EllesmereUI Skin, and turn on PremadeGroupsFilter in EllesmereUI's Third-Party Addons list."
+L["The EllesmereUI skin comes off after a reload. Reload the UI now?"] =
+    "The EllesmereUI skin comes off after a reload. Reload the UI now?"
+L["Reload"] = "Reload"
+L["Later"]  = "Later"
+
+-- EllesmereUI skin: the settings tab (settings/Panel.lua)
+L["EllesmereUI skin"] = "EllesmereUI skin"
+L["Use the EllesmereUI skin"] = "Use the EllesmereUI skin"
+L["Paint the attached filter panel in your EllesmereUI theme, matching Premade Groups Filter's own EllesmereUI skin. Needs every condition listed above. Turning it off takes effect after a reload."] =
+    "Paint the attached filter panel in your EllesmereUI theme, matching Premade Groups Filter's own EllesmereUI skin. Needs every condition listed above. Turning it off takes effect after a reload."
+L["The EllesmereUI skin cannot be turned on until every condition is met:"] =
+    "The EllesmereUI skin cannot be turned on until every condition is met:"
+L["Disabled until every condition is met:"] = "Disabled until every condition is met:"
+L["The skin is applied."] = "The skin is applied."
+L["The skin is applied until you reload the UI."] = "The skin is applied until you reload the UI."
+L["The skin is not applied while the addon is disabled."] =
+    "The skin is not applied while the addon is disabled."
+L["The skin is not applied: a condition above is not met."] =
+    "The skin is not applied: a condition above is not met."
+L["The skin is off."] = "The skin is off."
+L["The skin is applied after a reload."] = "The skin is applied after a reload."
+L["The skin is applied when the panel next shows."] = "The skin is applied when the panel next shows."

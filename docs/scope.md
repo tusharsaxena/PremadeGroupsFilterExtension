@@ -26,6 +26,10 @@ Mythic+ conveniences on top of Premade Groups Filter (PGF), applied through PGF'
 - **Region tags** — the leader's colored server region in front of every Group Finder listing, and
   each applicant's in front of their name: the display half of PremadeRegions, which this addon
   replaces.
+- **EllesmereUI skin** (optional) — with EllesmereUI installed, the panel is painted in its theme
+  to match PGF's own EllesmereUI skin, when EllesmereUI's third-party skinning, this addon's entry
+  and PGF's skin are all on; a settings tab shows each condition and a switch that can turn it off,
+  never force it on.
 - **Apply** writes PGF's dungeon checkboxes and a marked block in PGF's Advanced Filter Expression,
   then runs PGF's search. **Clear** removes only the marked block.
 
@@ -43,5 +47,7 @@ Mythic+ conveniences on top of Premade Groups Filter (PGF), applied through PGF'
 - **Raids, PvP, leader blocklists.** Tracked as GitHub issues, not in v0.1.
 - **KR, TW and CN regions.** No realm data; the regions row shows a one-line note there instead of the region dropdown.
 - **Raider.IO data.** Targeting uses the client's own season-best data only.
+- **Skin PGF's own dialog.** That is `PremadeGroupsFilter_EllesmereUI`'s job; this addon skins only
+  its own panel, and only through EllesmereUI's public skinning API.
 - **Classic flavors.** Retail only.
 - **Translations.** English only for now; strings go through `NS.L` so a locale can be added.

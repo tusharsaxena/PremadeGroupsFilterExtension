@@ -3,7 +3,7 @@
 ![WoW](https://img.shields.io/badge/WoW-Midnight_12.1.0-purple)
 ![License](https://img.shields.io/badge/License-MIT-orange)
 ![Standard](https://img.shields.io/badge/Ka0s-WoW_Addon_Standard-yellow)
-![Tests](https://img.shields.io/badge/Tests-265%2F265_passing-green)
+![Tests](https://img.shields.io/badge/Tests-324%2F324_passing-green)
 
 A small companion to [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter) for Mythic+. You type the key level you want to push (or let Smart pick it), and it ticks every dungeon you haven't timed at that level yet. It can also narrow the list to leaders from the server regions you pick and to the playstyles you want, hide groups that already have your spec or your class in your role, ask for a leader who has timed the dungeon or has a minimum M+ score, and drop old listings. One Apply button sets all of it in Premade Groups Filter and runs the search. It also shows each listing's server region in the Group Finder, so you no longer need PremadeRegions.
 
@@ -22,6 +22,8 @@ Type a key level and the panel lists your best timed level in each dungeon this 
 The game doesn't let addons type into the Group Finder's search box, so the panel shows the key range as text in the **Copy into search box** field at the bottom right, for example `14-14`. Click it to select the text, press Ctrl+C, then Enter to jump to the search box, then Ctrl+V and Enter to search listings by title.
 
 The first option, **Toggle PGF Extension Filters** (also under Settings → AddOns), switches the filtering off without turning the addon off: unticking it takes the extension's part out of the advanced filter (your own text and the dungeon ticks stay), and ticking it writes it back. Filter choices are saved per character. Presets let you store a setup under a name and load it on any character. **Clear** takes the extension's part back out of the advanced filter and leaves anything you typed there yourself. If the panel is in your way, the arrow in its top corner folds it down to just its title strip; the same arrow opens it again.
+
+If you use EllesmereUI with Premade Groups Filter's EllesmereUI skin, the panel gets the same EllesmereUI look as Premade Groups Filter's dialog. That needs EllesmereUI's third-party skinning turned on (Blizz UI Enhanced → Blizzard Window Skins → Third-Party Addons), with both PremadeGroupsFilter and PremadeGroupsFilterExtension ticked there. Settings → AddOns → Ka0s Premade Groups Filter Extension → General → EllesmereUI skin shows which of these are on, and has a switch to keep the panel's Blizzard look anyway. The switch can't turn the skin on while something is missing, and turning it off takes effect after a reload.
 
 `/pgfe apply` does what the Apply button does, so it works in a macro. Like the button, it only runs while Premade Groups Filter is on the dungeon category.
 
@@ -74,7 +76,7 @@ Please file bugs and ideas as [GitHub issues](https://github.com/tusharsaxena/Pr
 
 | Version | Date | Highlights |
 |---|---|---|
-| 0.1.0 | in development | - First release: untimed-dungeon targeting by key level (with Smart), server regions, playstyle, composition, experienced-leader and min leader M+ score filters, group age, presets, the filters toggle, and server-region tags on Group Finder rows (replaces PremadeRegions) |
+| 0.1.0 | in development | - First release: untimed-dungeon targeting by key level (with Smart), server regions, playstyle, composition, experienced-leader and min leader M+ score filters, group age, presets, the filters toggle, and server-region tags on Group Finder rows (replaces PremadeRegions), and an optional EllesmereUI skin for the attached panel (gated on EllesmereUI's third-party skinning and Premade Groups Filter's own EllesmereUI skin) |
 
 ## Credits
 
