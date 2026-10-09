@@ -5,7 +5,7 @@
 ![Standard](https://img.shields.io/badge/Ka0s-WoW_Addon_Standard-yellow)
 ![Tests](https://img.shields.io/badge/Tests-324%2F324_passing-green)
 
-A small companion to [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter) for Mythic+. You type the key level you want to push (or let Smart pick it), and it ticks every dungeon you haven't timed at that level yet. It can also narrow the list to leaders from the server regions you pick and to the playstyles you want, hide groups that already have your spec or your class in your role, ask for a leader who has timed the dungeon or has a minimum M+ score, and drop old listings. One Apply button sets all of it in Premade Groups Filter and runs the search. It also shows each listing's server region in the Group Finder, so you no longer need PremadeRegions.
+A small companion to [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter) for Mythic+. You type the key level you want to push (or let Smart pick it), and it ticks every dungeon you haven't timed at that level yet. It can also narrow the list to leaders from the server regions you pick and to the playstyles you want, hide groups that already have your spec or your class in your role, ask for a leader who has timed the dungeon, and drop old listings. One Apply button sets all of it in Premade Groups Filter and runs the search. It also shows each listing's server region in the Group Finder, so you no longer need PremadeRegions.
 
 It doesn't replace Premade Groups Filter's filtering. It sets the same checkboxes and the same advanced filter you could set by hand, so you can always see and edit what it did. Premade Groups Filter has to be installed; without it this addon doesn't load.
 
@@ -17,7 +17,7 @@ I'll add screenshots of the panel under Premade Groups Filter's dialog here with
 
 Open the Group Finder, start a Mythic+ search and open Premade Groups Filter's dialog on the dungeon category. The extension's panel sits right under that dialog and is exactly as wide. Switch Premade Groups Filter to another category, or close it, and the panel goes away with it.
 
-Type a key level and the panel lists your best timed level in each dungeon this season. The ones you still need at that level show in gold, the rest in gray. Or leave **Smart** (next to the level box, on for a new character) ticked and the addon picks the level for you: the lowest one where at least one dungeon is still untimed. If your best timed runs are 12, 13, 13 and 14, Smart picks 13; once everything is timed at 13, it picks 14. Turn on whatever else you want (server regions and playstyles, each picked from a dropdown that starts with **Any**, which is the same as ticking none or ticking all; composition, a dropdown where you tick one or both exclusions; experienced leader, minimum leader M+ score, group age) and press **Apply**. Hover over any option to see what it does. Premade Groups Filter's dungeon checkboxes and advanced filter update, and the search runs.
+Type a key level and the panel lists your best timed level in each dungeon this season. The ones you still need at that level show in gold, the rest in gray. Or leave **Smart** (next to the level box, on for a new character) ticked and the addon picks the level for you: the lowest one where at least one dungeon is still untimed. If your best timed runs are 12, 13, 13 and 14, Smart picks 13; once everything is timed at 13, it picks 14. Turn on whatever else you want (server regions and playstyles, each picked from a dropdown that starts with **Any**, which is the same as ticking none or ticking all; composition, a dropdown where you tick one or both exclusions; experienced leader, group age) and press **Apply**. Hover over any option to see what it does. Premade Groups Filter's dungeon checkboxes and advanced filter update, and the search runs.
 
 The game doesn't let addons type into the Group Finder's search box, so the panel shows the key range as text in the **Copy into search box** field at the bottom right, for example `14-14`. Click it to select the text, press Ctrl+C, then Enter to jump to the search box, then Ctrl+V and Enter to search listings by title.
 
@@ -42,7 +42,7 @@ Everything else is under **Settings → AddOns → Ka0s Premade Groups Filter Ex
 | Question | Answer |
 |---|---|
 | Can it fill in the search box for me? | No. The game blocks addons from typing into it, and a listing's title is hidden from addons, so the key level can't be filtered any other way. Click the Copy into search box field, then Ctrl+C, Enter, Ctrl+V, Enter. |
-| Can it filter on the leader's item level? | No. The game only tells addons the item level a group *requires*, not the leader's. Minimum leader M+ score works. |
+| Can it filter on the leader's item level? | No. The game only tells addons the item level a group *requires*, not the leader's. For the leader's M+ rating, use Premade Groups Filter's own M+ Rating row. |
 | Do I need PremadeRegions? | No, this addon replaces it. It shows each listing's server region in front of the dungeon name (and each applicant's in front of their name), and the region filter uses its own realm list. You can uninstall PremadeRegions; while it is still installed, this addon leaves the tags to it so you don't see two. Turn the tags off under Settings → AddOns → Ka0s Premade Groups Filter Extension → General. |
 | Why does it need Premade Groups Filter? | It works through Premade Groups Filter's own checkboxes and advanced filter, so there is nothing for it to do on its own. |
 | Does it change anything I typed in the advanced filter? | No. Apply adds its own marked block around your text, and Clear removes only that block. |
@@ -76,7 +76,7 @@ Please file bugs and ideas as [GitHub issues](https://github.com/tusharsaxena/Pr
 
 | Version | Date | Highlights |
 |---|---|---|
-| 0.1.0 | in development | - First release: untimed-dungeon targeting by key level (with Smart), server regions, playstyle, composition, experienced-leader and min leader M+ score filters, group age, presets, the filters toggle, and server-region tags on Group Finder rows (replaces PremadeRegions), and an optional EllesmereUI skin for the attached panel (gated on EllesmereUI's third-party skinning and Premade Groups Filter's own EllesmereUI skin) |
+| 0.1.0 | in development | - First release: untimed-dungeon targeting by key level (with Smart), server regions, playstyle, composition, experienced-leader filter, group age, presets, the filters toggle, and server-region tags on Group Finder rows (replaces PremadeRegions), and an optional EllesmereUI skin for the attached panel (gated on EllesmereUI's third-party skinning and Premade Groups Filter's own EllesmereUI skin) |
 
 ## Credits
 

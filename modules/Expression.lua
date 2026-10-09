@@ -43,7 +43,8 @@ function Expression.Normalize(text)
     return table.concat(parts, " ")
 end
 
--- Clause order is fixed: regions, playstyles, samespec, sameclassrole, experienced leader, leader score, age.
+-- Clause order is fixed: regions, playstyles, samespec, sameclassrole, experienced leader, age.
+-- (No leader-rating clause: PGF's own M+ Rating row filters on mprating.)
 function Expression.BuildClauses(opts)
     local c = {}
     if opts.regions and #opts.regions > 0 then
@@ -57,8 +58,6 @@ function Expression.BuildClauses(opts)
     if opts.experiencedLeader and opts.keyLevel then
         c[#c + 1] = ("( mpmapintime and mpmapmaxkey >= %d )"):format(opts.keyLevel)
     end
-    -- mprating is the leader's overall Mythic+ rating (PGF Main.lua: leaderOverallDungeonScore).
-    if opts.minScore then c[#c + 1] = ("mprating >= %d"):format(opts.minScore) end
     if opts.maxAge then c[#c + 1] = ("age <= %d"):format(opts.maxAge) end
     return c
 end

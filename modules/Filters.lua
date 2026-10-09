@@ -100,7 +100,6 @@ function Filters.SelectedRegions(portal)
 end
 
 Filters.MAX_AGE   = 240
-Filters.MAX_SCORE = 5000
 
 -- The selected regions as a clause list, or nil for no region clause: regions off, an unsupported
 -- portal, or Any (none selected, or every one of this portal's regions).
@@ -120,7 +119,7 @@ local function playstyleClause(f)
 end
 
 -- The opts table Expression.BuildClauses takes. Regions per regionClause, playstyles per
--- playstyleClause; minScore and maxAge only when enabled; keyLevel always.
+-- playstyleClause; maxAge only when enabled; keyLevel always.
 function Filters.ToClauseOpts(portal)
     local f = Filters.Get()
     return {
@@ -129,7 +128,6 @@ function Filters.ToClauseOpts(portal)
         noSameSpec = f.compositionEnabled and f.noSameSpec or nil,
         noSameClassRole = f.compositionEnabled and f.noSameClassRole or nil,
         experiencedLeader = f.experiencedLeader, keyLevel = f.keyLevel,
-        minScore = f.minScoreEnabled and f.minScore or nil,
         maxAge = f.maxAgeEnabled and f.maxAge or nil,
     }
 end
@@ -139,13 +137,10 @@ function Filters.IsWholeInRange(n, max)
     return type(n) == "number" and n >= 1 and n <= max and n == math.floor(n)
 end
 
--- ok, errKey: "badLevel", "badScore" (integer 1..MAX_SCORE), "badAge" (integer 1..MAX_AGE).
+-- ok, errKey: "badLevel", "badAge" (integer 1..MAX_AGE).
 function Filters.Validate()
     local f = Filters.Get()
     if not NS.Targeting.IsValidLevel(f.keyLevel) then return false, "badLevel" end
-    if f.minScoreEnabled and not Filters.IsWholeInRange(f.minScore, Filters.MAX_SCORE) then
-        return false, "badScore"
-    end
     if f.maxAgeEnabled and not Filters.IsWholeInRange(f.maxAge, Filters.MAX_AGE) then
         return false, "badAge"
     end

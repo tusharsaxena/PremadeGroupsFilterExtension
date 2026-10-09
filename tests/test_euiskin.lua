@@ -56,8 +56,8 @@ test("euiskin: every condition on, the login dispatch paints the built panel", f
     assertTrue(NS.EUISkin.IsApplied())
     assertEqual(#m.eui.callsFor("Shell", f), 1)
     assertEqual(#m.eui.callsFor("FadeNineSlice", f.NineSlice), 1)
-    assertEqual(m.eui.count("Checkbox"), 9, "the Toggle row and the eight filter boxes")
-    assertEqual(m.eui.count("EditBox"), 4, "level, score, age and the copy box")
+    assertEqual(m.eui.count("Checkbox"), 8, "the Toggle row and the seven filter boxes")
+    assertEqual(m.eui.count("EditBox"), 3, "level, age and the copy box")
     assertEqual(m.eui.count("Dropdown"), 4, "regions, playstyle, composition, presets")
     assertEqual(m.eui.count("Button"), 5, "Save, Save as, Delete, Apply, Clear")
     assertEqual(m.eui.count("StateButtonLabel"), 5)
@@ -210,15 +210,15 @@ test("euiskin: skinned, the collapsed panel is the shell's 25px bar and the meta
     assertEqual(f.__height, f.expandedHeight)
 end)
 
-test("euiskin: skinned, the panel hangs 2px below PGF's dialog, both edges", function()
+test("euiskin: skinned, the panel sits flush under PGF's dialog, both edges", function()
     local _, m, f = painted()
     local p1, rel1, rp1, x1, y1 = f:GetPoint(1)
     local p2, rel2, rp2, _, y2 = f:GetPoint(2)
     assertEqual(p1, "TOPLEFT"); assertEqual(rel1, m.PremadeGroupsFilterDialog); assertEqual(rp1, "BOTTOMLEFT")
     assertEqual(p2, "TOPRIGHT"); assertEqual(rel2, m.PremadeGroupsFilterDialog); assertEqual(rp2, "BOTTOMRIGHT")
     assertEqual(x1, 0)
-    -- red under: SHELL_GAP sign flipped (the panel overlapping the dialog)
-    assertEqual(y1, -1); assertEqual(y2, -1)
+    -- Owner request: flush, as the metal look is. red under: SHELL_GAP 1 (the old 1px gap)
+    assertEqual(y1, 0); assertEqual(y2, 0)
 end)
 
 test("euiskin: the min/max buttons get the minus (collapse) and the plus (expand)", function()
@@ -288,7 +288,7 @@ local function ringOf(cb) return cb.__children[#cb.__children] end
 -- red under: repaintLooks a no-op (the block and ring keep the old accent)
 test("euiskin: a live looks change recolors the accent block and ring", function()
     local _, m, f = painted()
-    local cb = f.checks.minScoreEnabled
+    local cb = f.checks.experiencedLeader
     m.eui.accent = { 1, 0, 0 }
     m.eui.looks[1]()
     assertEqual(table.concat(cb:GetCheckedTexture().__color, ","), "1,0,0,1")
@@ -300,7 +300,7 @@ end)
 -- red under: OnEUISkinScale skipping layoutAccentMark
 test("euiskin: a scale change re-lays out the accent block in whole pixels", function()
     local _, m, f = painted()
-    local mark = f.checks.minScoreEnabled:GetCheckedTexture()
+    local mark = f.checks.experiencedLeader:GetCheckedTexture()
     assertEqual(mark.__width, 10)
     m.PixelUtil.GetPixelToUIUnitFactor = function() return 0.7 end
     m.fireEvent("UI_SCALE_CHANGED")
@@ -311,7 +311,7 @@ end)
 -- red under: the STAND_UP entry only calling TryApply (which refuses once applied)
 test("euiskin: theme and scale changes while stood down catch up at the stand-up", function()
     local NS, m, f = painted()
-    local mark = f.checks.minScoreEnabled:GetCheckedTexture()
+    local mark = f.checks.experiencedLeader:GetCheckedTexture()
     NS.addon:OnSlashCommand("disable")
     m.eui.accent = { 1, 0, 0 }
     m.eui.looks[1]()

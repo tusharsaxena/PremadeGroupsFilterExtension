@@ -32,10 +32,10 @@ test("filters: clause opts honor enable flags and portal order", function()
     assertEqual(NS.Filters.ToClauseOpts("US").maxAge, 30)
     f.regionsEnabled = false
     assertNil(NS.Filters.ToClauseOpts("US").regions)
-    f.minScoreEnabled = false; f.minScore = 2400
+    -- The min leader score filter was removed (PGF's own M+ Rating row covers it): a stale stored
+    -- value from an older version or preset is ignored.
+    f.minScoreEnabled = true; f.minScore = 2400
     assertNil(NS.Filters.ToClauseOpts("US").minScore)
-    f.minScoreEnabled = true
-    assertEqual(NS.Filters.ToClauseOpts("US").minScore, 2400)
 end)
 
 -- Owner requirement: regions on with none selected behaves as all selected, not as a refusal.
@@ -72,11 +72,7 @@ test("filters: validation", function()
     f.maxAge = 2.5; ok, e = NS.Filters.Validate(); assertFalse(ok); assertEqual(e, "badAge")
     f.maxAge = 241; ok, e = NS.Filters.Validate(); assertFalse(ok); assertEqual(e, "badAge")
     f.maxAge = 15; assertTrue((NS.Filters.Validate()))
-    f.minScoreEnabled = true; f.minScore = 0
-    ok, e = NS.Filters.Validate(); assertFalse(ok); assertEqual(e, "badScore")
-    f.minScore = 5001; ok, e = NS.Filters.Validate(); assertFalse(ok); assertEqual(e, "badScore")
-    f.minScore = 2000; assertTrue((NS.Filters.Validate()))
-    f.minScoreEnabled = false; f.minScore = 0; assertTrue((NS.Filters.Validate()))
+    f.minScoreEnabled = true; f.minScore = 0; assertTrue((NS.Filters.Validate()), "a stale score never refuses")
 end)
 
 test("filters: set and region toggle write the live table", function()

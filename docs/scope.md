@@ -16,7 +16,6 @@ Mythic+ conveniences on top of Premade Groups Filter (PGF), applied through PGF'
 - **Composition** — exclude groups that already have the player's spec, and/or the player's class in
   the player's role, picked from one dropdown (Any = no exclusion; both ticked = both exclusions).
 - **Experienced leader** — the leader has timed this dungeon at N or above.
-- **Min leader M+ score** — the leader's overall Mythic+ rating is at least S.
 - **Max group age** — drop listings older than M minutes.
 - **Presets** — named snapshots of the options (Smart included), shared by every character; the
   live options are per character.

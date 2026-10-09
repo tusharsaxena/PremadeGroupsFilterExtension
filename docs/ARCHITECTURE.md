@@ -8,7 +8,7 @@ to its topic doc; the full register is [Documentation map](#documentation-map).
 A companion addon to **Premade Groups Filter** (PGF) that adds Mythic+ conveniences PGF does not
 have: target every dungeon the player has not timed at a chosen key level (or let Smart pick the
 level), filter by the leader's server region and the listing's playstyle, exclude groups that already
-hold the player's spec or class-and-role, ask for an experienced leader or a minimum leader M+ score,
+hold the player's spec or class-and-role, ask for an experienced leader,
 cap the listing age, and keep named presets; a Toggle PGF Extension Filters switch takes it all out
 of PGF again. It also replaces PremadeRegions: the leader's server region is tagged on every Group
 Finder row and applicant. It does **not** filter on its own: it writes PGF's dungeon checkboxes and
@@ -277,7 +277,7 @@ API call. With PremadeRegions loaded, PGF's own plugin fills the region variable
 `modules/Expression.lua` owns one marked block in the dungeon state's `expression`. Clauses, each
 only when its option is on, in this order: regions `( oce or chi )`, playstyles
 `( relaxed or carry )`, `pgfe_samespec == 0`, `pgfe_sameclassrole == 0`,
-`( mpmapintime and mpmapmaxkey >= N )`, `mprating >= S`, `age <= M`.
+`( mpmapintime and mpmapmaxkey >= N )`, `age <= M`.
 
 With user text `U` that has real (non-comment) content:
 
@@ -308,8 +308,8 @@ edit-box limit) refuses.
   listing's title and comment reach PGF as protected strings, the search-result API has no key-level
   field, and PGF's `findnumber()` scans only the activity name (`Dungeon (Mythic Keystone)`).
 - The leader's item level is not filterable: the search-result API exposes only the listing's
-  required item level (PGF `ilvl`). The leader's M+ rating is (`mprating`, the *Min leader M+ score*
-  row).
+  required item level (PGF `ilvl`). The leader's M+ rating is (`mprating`), through PGF's own *M+ Rating*
+  row; this addon's former *Min leader M+ score* row duplicated it and was removed.
 - Server regions exist for the US and EU portals only; KR, TW and CN have none.
 - Apply (button or `/pgfe apply`) needs PGF's dialog to be on the Dungeons category (the category
   it last showed) and maximized; on any other category, or minimized, it refuses rather than write

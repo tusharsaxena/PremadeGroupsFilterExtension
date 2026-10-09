@@ -416,27 +416,11 @@ test("panel: a blank preset name is refused", function()
     assertEqual(#NS.Presets.List(), 0)
 end)
 
-test("panel: the score box commits a whole rating and re-syncs a rejected one", function()
-    local NS = T.enableAddon{}
-    NS.Panel.Create(); NS.Panel.Refresh()
-    local box = NS.Panel.frame.scoreBox
-    assertEqual(box:GetText(), "2000")
-    typeInto(box, "2750")
-    assertEqual(NS.Filters.Get().minScore, 2000, "nothing stored mid-typing")
-    box:__fire("OnEnterPressed")
-    assertEqual(NS.Filters.Get().minScore, 2750)
-    typeInto(box, "9999"); box:__fire("OnEditFocusLost")
-    assertEqual(NS.Filters.Get().minScore, 2750); assertEqual(box:GetText(), "2750")
-    local cb = NS.Panel.frame.checks.minScoreEnabled
-    cb:SetChecked(true); cb:__fire("OnClick")
-    assertTrue(NS.Filters.Get().minScoreEnabled)
-end)
-
 -- Owner report (screenshot): the level box sat at a fixed x and covered the end of its label.
 test("panel: each number box is anchored to the right of its own label", function()
     local NS = T.enableAddon{}
     local f = NS.Panel.Create()
-    for _, box in ipairs({ f.levelBox, f.scoreBox, f.ageBox }) do
+    for _, box in ipairs({ f.levelBox, f.ageBox }) do
         local point, rel, relPoint, x = box:GetPoint(1)
         -- red under: a fixed TOPLEFT x offset in Panel's numberBox
         assertEqual(point, "LEFT"); assertEqual(relPoint, "RIGHT"); assertTrue(x > 0)
@@ -450,7 +434,7 @@ test("panel: the expanded height fits every row", function()
     -- One 26px pitch for every row: 26 + 8 toggle, 52 key + readout, 26 regions, 26 playstyle,
     -- 26 composition, 26 leader, 26 score, 26 age, 26 presets, 8 + 26 actions, plus the 28 title
     -- offset and the 12 bottom margin.
-    assertEqual(f.__height, 350)
+    assertEqual(f.__height, 318)
 end)
 
 -- Owner report (screenshots): the arrow showed maximize while expanded. PGF's convention
@@ -660,7 +644,7 @@ test("panel: the readout is one row high, so the rows below keep the same pitch"
     -- red under: the old 23px rows under 26px dropdown rows
     assertEqual(f.readout.__height, 26)
     local _, _, _, _, y = f.regionSelect:GetPoint(1)
-    assertEqual(y, -(26 + 8 + 26 + 26), "the toggle and its gap, the level row and the readout")
+    assertEqual(y, -(26 + 8 + 26 + 26 - 6), "the toggle and its gap, the level row and the readout (pulled up 6)")
 end)
 
 -- Review: one line with no wrap, so a season of long names must close up rather than be cut off.
@@ -694,7 +678,7 @@ test("panel: every checkbox has a tooltip, and its label hovers and clicks as th
         -- red under: drop stretchHitRect from Panel's checkRow
         assertTrue(cb.__hitRect ~= nil and cb.__hitRect[2] < 0, key .. ": stretched over the label")
     end
-    assertEqual(n, 8)
+    assertEqual(n, 7)
     -- The label starts LABEL_X - 32 = 3px past the box; the rect reaches the label's far end.
     assertEqual(f.checks.compositionEnabled.__hitRect[2], -(3 + #NS.L.COMPOSITION * 6))
 end)
@@ -702,7 +686,7 @@ end)
 test("panel: every number box, button and the copy box and its label have a tooltip", function()
     local NS, _, m = T.enableAddon{}
     local f = NS.Panel.Create()
-    local widgets = { f.levelBox, f.scoreBox, f.ageBox, f.saveButton, f.saveAsButton, f.deleteButton,
+    local widgets = { f.levelBox, f.ageBox, f.saveButton, f.saveAsButton, f.deleteButton,
         f.applyButton, f.clearButton, f.rangeBox, f.copyLabelHover }
     for i, w in ipairs(widgets) do
         local lines = hoverLines(m, w)
@@ -896,13 +880,13 @@ test("panel: a fresh character sees the owner's default panel", function()
     assertTrue(f.activeCheck:GetChecked())
     local want = { keyTargeting = true, smartKeyLevel = true, regionsEnabled = true,
         playstyleEnabled = true, compositionEnabled = true, experiencedLeader = false,
-        minScoreEnabled = false, maxAgeEnabled = false }
+        maxAgeEnabled = false }
     for key, on in pairs(want) do
         -- red under: change that key's default in defaults/Profile.lua
         assertEqual(f.checks[key]:GetChecked(), on, key)
     end
     assertFalse(f.levelBox:IsEnabled(), "Smart locks the level box")
-    assertEqual(f.scoreBox:GetText(), "2000"); assertEqual(f.ageBox:GetText(), "15")
+    assertEqual(f.ageBox:GetText(), "15")
     for _, dd in ipairs({ f.regionSelect, f.playstyleSelect, f.compositionSelect }) do
         assertEqual(dd:GetText(), NS.L.SELECT_ANY)
     end
@@ -918,7 +902,7 @@ test("panel: the presets row has the same extra space above as below, buttons as
     local _, _, _, _, applyY = f.applyButton:GetPoint(1)
     -- composition, leader, score, age: four 26px rows, then the gap.
     -- red under: drop the ACTION_GAP step in Panel's buildPresetRow
-    assertEqual(compY - 4 * 26 - presetY, 8)
+    assertEqual(compY - 3 * 26 - presetY, 8)
     assertEqual(presetY - 26 - applyY, 8, "the same gap below")
     for _, b in ipairs({ f.saveButton, f.saveAsButton, f.deleteButton }) do
         -- red under: the old 22px buttons
@@ -1040,4 +1024,14 @@ test("panel: the panel's frame level is above PGF's dialog and its border", func
     m.CreateFrame = create
     -- red under: leave the panel at the child default (dialog + 1, PGF's NineSlice's level)
     assertEqual(level, 25)
+end)
+
+-- Owner requests: the full addon name as the title, and the N-N centered in the copy box.
+test("panel: the title is the full addon name, and the copy box centers its range", function()
+    local NS = T.enableAddon{}
+    local f = NS.Panel.Create(); NS.Panel.Refresh()
+    -- red under: the old "Ka0s PGF Extension" title
+    assertEqual(f.__title, "Ka0s Premade Groups Filter Extension")
+    -- red under: drop SetJustifyH("CENTER") from Panel's buildCopyBox
+    assertEqual(f.rangeBox.__justifyH, "CENTER")
 end)

@@ -18,7 +18,7 @@ takes the next free number in its theme and a retired number is never reused.
 | COMBAT-1..2 | Combat | Apply refusal, settings panel in combat |
 | DIAG-1..2 | Diagnostics | Debug console, the diagnostics report |
 | DEGRADED-1 | Degraded install | LibKa0s absent |
-| APPLY-1..24 | Attached panel and Apply | The panel under PGF, targeting, regions, playstyle, composition, leader, leader score, age, presets, Clear, PGF minimized, collapse, layout, tooltips, Smart key level, filters toggle, row spacing, region tags |
+| APPLY-1..24 | Attached panel and Apply | The panel under PGF, targeting, regions, playstyle, composition, leader, age, presets, Clear, PGF minimized, collapse, layout, tooltips, Smart key level, filters toggle, row spacing, region tags |
 | LOC-1..2 | Non-English client | Realm-name and dungeon-name seams on a deDE/frFR client |
 | SKIN-1..10 | EllesmereUI skin | The gate's four conditions, the PGF skin's install states and link, the settings tab, the painted panel, live on, reload off |
 
@@ -131,7 +131,7 @@ substitute its numbers.
 - **APPLY-8. Copy into search box.** The field sits at the right end of the Apply row, labeled
   *Copy into search box*; hovering the label or the field explains why the addon cannot fill the
   search box itself. The `N-N` field selects all on click and cannot be typed over;
-  Ctrl+C, click the Group Finder search box, Ctrl+V → it pastes `14-14`. Apply → keyboard focus stays where it was (you can move and type
+  The `N-N` is centered in the field. Ctrl+C, click the Group Finder search box, Ctrl+V → it pastes `14-14`. Apply → keyboard focus stays where it was (you can move and type
   in chat at once). Keyboard chain: click the copy field → `14-14` selected; Ctrl+C, Enter → the cursor is in the Group
   Finder search box (if it stays in the copy field, the client refused the focus change: record
   it); Ctrl+V, Enter → the search runs with `14-14`, no Lua error and no "action blocked"
@@ -166,8 +166,8 @@ substitute its numbers.
   one width, their text not clipped, and the dropdown filling the rest of the row. Apply and Clear are equally wide, with a little more space above
   them than between the rows above; the *Copy into search box* label does not touch Clear, and the
   Apply row sits inside the frame. Result:
-- **APPLY-16. Min leader score.** *Min leader M+ score* on at 2500, Apply → the block holds
-  `mprating >= 2500`; hover a few listed leaders → each rating is 2500 or more. Result:
+- **APPLY-16. (Removed.)** The Min leader M+ score row is gone: PGF's own *M+ Rating* row covers the
+  leader's rating. The panel has no such row, and Apply writes no `mprating` clause. Result:
 - **APPLY-17. Multi-select dropdowns.** Open the Server regions dropdown → *Any* (ticked) heads
   the list above a divider, then this portal's regions as checkboxes; tick two → the menu stays
   open, *Any* unticks, the button reads e.g. `OCE, CHI`; click *Any* → the menu stays open and every
@@ -178,15 +178,15 @@ substitute its numbers.
   hover a few listings → each is listed as Relaxed. Result:
 - **APPLY-19. Tooltips.** Hover each checkbox row, on the box and on its label → a tooltip names
   the option and says what it does (Untimed dungeons, Smart, Server regions, Playstyle,
-  Composition, Experienced leader, Min leader M+ score, Max group age); clicking the label
+  Composition, Experienced leader, Max group age); clicking the label
   toggles the box. Hover the three number boxes, the three dropdown buttons, every entry in the
   Server regions and Playstyle menus (e.g. OCE → Oceanic realms, Sydney data center), Save, Save
   as…, Delete, Apply, Clear and the copy field → each has a tooltip. The dropdowns' hover art still
   works and no tooltip sticks after the pointer leaves. Result:
 - **APPLY-20. Smart key level.** On a character that never used the addon, *Smart* is ticked and
   the panel matches the owner's defaults: Toggle, Untimed dungeons, Smart, Server regions, Playstyle and
-  Composition ticked (all three dropdowns read Any); Experienced leader, Min leader M+ score (2000)
-  and Max group age (15) unticked. Note your best timed levels on the Mythic+ tab. Tick *Smart* →
+  Composition ticked (all three dropdowns read Any); Experienced leader and Max group age (15)
+  unticked. Note your best timed levels on the Mythic+ tab. Tick *Smart* →
   the level box grays out and cannot be focused or typed in (hovering it still shows its tooltip), and shows the lowest best timed level
   + 1 (best timed 12, 13, 13, 14 → 13; all four at 13 → 14); the readout and the copy field follow.
   Apply → that level is targeted. Time a key that raises your lowest best → after the key completes
@@ -201,9 +201,10 @@ substitute its numbers.
   ticks and the block is written back (no search runs). Result:
 - **APPLY-23. Row spacing.** Every row, from Untimed dungeons to Presets (the dungeon readout
   included), is the same distance from the next as the Server regions and Playstyle rows are; only
-  the gaps under the toggle row, around the Presets row and above Apply are wider. Result:
-- **APPLY-22. Title centered, 1px gap.** A 1px gap separates PGF's dialog from the panel: the two
-  metal borders neither touch nor overlap (tune `ATTACH_RAISE` in `modules/Panel.lua`), and PGF's
+  the gaps under the toggle row, around the Presets row and above Apply are wider, and the dungeon
+  readout sits a little closer under the key-level row. Result:
+- **APPLY-22. Title, flush.** The title reads *Ka0s Premade Groups Filter Extension*, centered. The
+  panel sits flush under PGF's dialog: the two metal borders meet with no gap (tune `ATTACH_RAISE` in `modules/Panel.lua`), and PGF's
   border never draws over the panel's title strip, expanded or
   collapsed. The panel's title is centered on the whole header strip, expanded
   and collapsed, and does not touch the arrow button. Result:
@@ -222,13 +223,13 @@ Blizzard Window Skins > Third-Party Addons*; check the wording there matches the
 settings tab and record any difference.
 
 - **SKIN-1. EllesmereUI absent.** Disable EllesmereUI, `/reload` → no Lua error; the panel looks
-  exactly as without this feature (metal border, 1px gap under PGF's dialog). Settings → General →
+  exactly as without this feature (metal border, flush under PGF's dialog). Settings → General →
   *EllesmereUI skin*: four red lines (each with its hint), "a condition above is not met", the box
   checked but disabled; hovering it lists what is missing. `/pgfe set euiSkin false` works;
   `/pgfe set euiSkin true` is then refused with the reasons. Result:
 - **SKIN-2. Everything on.** All four conditions on, *Use the EllesmereUI skin* ticked, `/reload`,
-  open PGF on Dungeons → the panel wears the same flat shell as PGF's dialog, with a 1px gap between
-  them and neither drawn over the other; title white and centered in the 25px top bar; 16px
+  open PGF on Dungeons → the panel wears the same flat shell as PGF's dialog, flush against it
+  and neither drawn over the other; title white and centered in the 25px top bar; 16px
   checkboxes with the accent block and ring when ticked; flat number boxes (Smart's grayed level and
   the dimmed copy box keep their gray); flat dropdowns with EllesmereUI's arrow, opening
   EllesmereUI-styled menus; flat buttons (gray when disabled); the readout's gold/gray colors kept.

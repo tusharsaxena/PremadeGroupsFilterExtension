@@ -50,6 +50,7 @@ local INPUT_GAP     = 10
 local SMART_GAP     = 16          -- the level box to the Smart box: room so the first row is not crowded
 local BUTTON_GAP    = 4
 local BUTTON_PAD    = 20          -- a button's width past its text
+local READOUT_PULL  = 6           -- the dungeon readout sits this much closer under the key-level row
 local ACTION_GAP    = 8           -- the extra space under the Toggle row, around the Presets row and above Apply
 local DROPDOWN_H    = 26          -- WowStyle1DropdownTemplate's height when the client does not say
 local ACTION_W      = 88          -- Apply and Clear, at least
@@ -285,14 +286,14 @@ local function buildKeyRow(f, body, y)
     buildSmart(f, body, f.levelBox)
     -- The readout is one row like the others: one line, centered on it.
     local readout = body:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-    readout:SetPoint("TOPLEFT", LABEL_X, y - ROW_H)
-    readout:SetPoint("TOPRIGHT", 0, y - ROW_H)
+    readout:SetPoint("TOPLEFT", LABEL_X, y - ROW_H + READOUT_PULL)
+    readout:SetPoint("TOPRIGHT", 0, y - ROW_H + READOUT_PULL)
     readout:SetHeight(ROW_H)
     readout:SetJustifyH("LEFT")
     readout:SetJustifyV("MIDDLE")
     readout:SetWordWrap(false)
     f.readout = readout
-    return y - 2 * ROW_H
+    return y - 2 * ROW_H + READOUT_PULL
 end
 
 -- ── multi-select dropdowns (server regions, playstyle) ──────────────────────────────────────────
@@ -430,16 +431,6 @@ local function buildLeaderRow(f, body, y)
     return y - ROW_H
 end
 
-local function buildScoreRow(f, body, y)
-    local _, text = checkRow(f, body, "minScoreEnabled", L.MIN_SCORE, y, L.SCORE_TOOLTIP)
-    f.scoreBox = numberBox(body, text, 4, "minScore", function(n)
-        if not NS.Filters.IsWholeInRange(n, NS.Filters.MAX_SCORE) then return false end
-        NS.Filters.Set("minScore", n)
-        return true
-    end, L.SCORE_BOX_TOOLTIP)
-    return y - ROW_H
-end
-
 local function buildAgeRow(f, body, y)
     local _, text = checkRow(f, body, "maxAgeEnabled", L.MAX_AGE, y, L.MAX_AGE_TOOLTIP)
     f.ageBox = numberBox(body, text, 3, "maxAge", function(n)
@@ -563,6 +554,7 @@ end
 local function buildCopyBox(f, body, y)
     local box = CreateFrame("EditBox", nil, body, "InputBoxTemplate")
     box:SetSize(56, 20)
+    box:SetJustifyH("CENTER")
     box:SetPoint("TOPRIGHT", 0, y - 1)
     box:SetAutoFocus(false)
     box:SetScript("OnEditFocusGained", function(self) self:HighlightText() end)
@@ -731,7 +723,7 @@ local function buildMinMax(f)
     f.MaximizeMinimizeFrame = mm -- which arrow shows is set by applyLayout
 end
 
-local BUILDERS = { buildActiveRow, buildKeyRow, buildRegionRow, buildPlaystyleRow, buildCompositionRow, buildLeaderRow, buildScoreRow,
+local BUILDERS = { buildActiveRow, buildKeyRow, buildRegionRow, buildPlaystyleRow, buildCompositionRow, buildLeaderRow,
     buildAgeRow, buildPresetRow, buildActionRow }
 
 -- PortraitFrameBaseTemplate starts its TitleContainer 58px in from the left (room for the portrait,
@@ -803,7 +795,6 @@ function Panel.Refresh()
     f.activeCheck:SetChecked(NS.Filters.IsActive())
     f.levelBox:SetText(tostring(filters.keyLevel or ""))
     setLocked(f.levelBox, filters.smartKeyLevel == true)
-    f.scoreBox:SetText(tostring(filters.minScore or ""))
     f.ageBox:SetText(tostring(filters.maxAge or ""))
     f.regionSelect.RefreshSummary()
     f.playstyleSelect.RefreshSummary()

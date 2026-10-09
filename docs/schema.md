@@ -29,8 +29,6 @@ assembled by `Settings.BuildDefaults` in `settings/Schema.lua`.
 | `filters.noSameSpec` | `false` | Composition dropdown entry |
 | `filters.noSameClassRole` | `false` | Composition dropdown entry |
 | `filters.experiencedLeader` | `false` | |
-| `filters.minScoreEnabled` | `false` | |
-| `filters.minScore` | `2000` | Leader's overall M+ rating (PGF `mprating`), integer 1–5000 |
 | `filters.maxAgeEnabled` | `false` | |
 | `filters.maxAge` | `15` | Minutes, integer 1–240 |
 
