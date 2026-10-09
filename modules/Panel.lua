@@ -437,5 +437,8 @@ end
 NS.STAND_UP[#NS.STAND_UP + 1] = Panel.UpdateVisibility
 
 -- Installed at FILE LOAD (hooks at load; never AceHook). The callback returns at once while stood
--- down: UpdateVisibility's first test is the stand-down accessor, and it only hides.
-NS.Bridge.HookDialog(function() Panel.UpdateVisibility() end)
+-- down (the stand-down already hid the panel; the stand-up re-runs UpdateVisibility).
+NS.Bridge.HookDialog(function()
+    if stoodDown() then return end
+    Panel.UpdateVisibility()
+end)

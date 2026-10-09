@@ -171,7 +171,7 @@ Total.
 - apply: PGF minimized → refuses Apply and Clear, nothing written or searched
 - apply: the message counts the rows ticked, and says so when targeting is off
 
-### test_panel.lua (29)
+### test_panel.lua (30)
 
 - panel: the module publishes its namespace table
 - panel: anchored under PGF dialog, both edges
@@ -181,6 +181,7 @@ Total.
 - panel: created lazily, on the first UpdateVisibility that wants it
 - panel: the dialog's SwitchToPanel is hooked at load
 - panel: hidden when stood down, and the dialog hook is a no-op
+- panel: the dialog hook body returns at once while stood down
 - panel: region chips follow portal
 - panel: a chip click toggles the region and its highlight
 - panel: unsupported portal shows the note and no chips
@@ -289,7 +290,7 @@ Total.
 | test_envinject.lua | 9 |
 | test_bridge.lua | 13 |
 | test_apply.lua | 13 |
-| test_panel.lua | 29 |
+| test_panel.lua | 30 |
 | test_vendor_sync.lua | 3 |
 | test_eol.lua | 2 |
 | test_prose.lua | 15 |
@@ -297,4 +298,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **199** |
+| **Total** | **200** |

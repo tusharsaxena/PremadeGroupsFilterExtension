@@ -86,6 +86,20 @@ test("panel: hidden when stood down, and the dialog hook is a no-op", function()
     assertTrue(NS.Panel.frame:IsShown())
 end)
 
+-- Global Constraint (spec-adversary #8): every hook body returns at once when stood down.
+test("panel: the dialog hook body returns at once while stood down", function()
+    local NS, _, m = T.enableAddon{}
+    NS.Panel.Create()
+    local calls, real = 0, NS.Panel.UpdateVisibility
+    NS.Panel.UpdateVisibility = function() calls = calls + 1; return real() end
+    m.pgf.dialog:SwitchToPanel(); assertEqual(calls, 1)
+    NS.addon:OnSlashCommand("disable")
+    m.pgf.dialog:SwitchToPanel()
+    -- red under: drop the stand-down return in the HookDialog callback
+    assertEqual(calls, 1)
+    NS.Panel.UpdateVisibility = real
+end)
+
 test("panel: region chips follow portal", function()
     local NS, _, m = T.enableAddon{}
     m.currentRegion = 3
