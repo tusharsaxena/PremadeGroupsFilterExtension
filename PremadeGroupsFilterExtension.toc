@@ -1,0 +1,97 @@
+## Interface: 120100
+## Title: Ka0s Premade Groups Filter Extension
+## Notes: Mythic+ conveniences for Premade Groups Filter: untimed-dungeon targeting, server regions, composition and leader filters, presets
+## Author: add1kted2ka0s
+## Version: 0.1.0
+## IconTexture: Interface\AddOns\PremadeGroupsFilterExtension\media\logos\pgfe.logo.128.tga
+## SavedVariables: PremadeGroupsFilterExtensionDB, PremadeGroupsFilterExtensionPerfDB
+## Dependencies: PremadeGroupsFilter
+## OptionalDeps: PremadeRegions, Ace3, LibStub, CallbackHandler-1.0, LibSharedMedia-3.0, LibDataBroker-1.1, LibDBIcon-1.0
+## DefaultState: enabled
+## Category-enUS: Group
+## X-License: MIT
+## X-Standard: https://github.com/tusharsaxena/WowAddonStandards
+# X-Curse-Project-ID: not published on CurseForge yet
+
+# Libraries (must load first) -- vendored in libs/, .xml where the lib ships one, else .lua
+libs\LibStub\LibStub.lua
+libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+libs\AceAddon-3.0\AceAddon-3.0.lua
+libs\AceEvent-3.0\AceEvent-3.0.lua
+libs\AceConsole-3.0\AceConsole-3.0.lua
+libs\AceTimer-3.0\AceTimer-3.0.lua
+libs\AceDB-3.0\AceDB-3.0.lua
+libs\AceGUI-3.0\AceGUI-3.0.xml
+# LOAD-BEARING: AceConfigDialog-3.0.lua resolves AceGUI-3.0 with a non-silent LibStub at file load,
+# so AceConfig-3.0.xml must sit below AceGUI-3.0.xml. AceDBOptions resolves nothing at load.
+libs\AceConfig-3.0\AceConfig-3.0.xml
+libs\AceDBOptions-3.0\AceDBOptions-3.0.lua
+libs\LibSharedMedia-3.0\lib.xml
+# Conventional: LibKa0s-Launcher-1.0 resolves both at Register time; LibDBIcon needs the two above it.
+libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+# ONE line: the .xml is itself the file list (library-stack-§7). After Ace3.
+libs\LibKa0s\LibKa0s.xml
+
+# Locales
+# LOAD-BEARING: publishes NS.L, which core\CoreSetup.lua and every later file read at load.
+locales\enUS.lua
+
+# Core -- dependency-correct order (layout-§1)
+# LOAD-BEARING: publishes NS.Util.print / NS.Print and NS.LIBKA0S_MISSING, read at load below.
+core\CoreSetup.lua
+# LOAD-BEARING: publishes NS.MediaFont, which core\PGFE.lua resolves NS.FONT_MONO from at load.
+core\MediaSetup.lua
+# Conventional: NS.Compat is read inside functions only.
+core\Compat.lua
+# Conventional: NS.Meta / NS.Version are read inside functions only.
+core\EnvSetup.lua
+# LOAD-BEARING: promotes NS to the AceAddon object (NS.addon), publishes NS.PREFIX, NS.State and
+# NS.FONT_MONO; every file below reads NS.addon at load.
+core\PGFE.lua
+# Conventional: NS:RunMigrations is called from OnInitialize.
+core\Database.lua
+# LOAD-BEARING: after core\PGFE.lua (NS.FONT_MONO, NS.State), before any NS.Debug call site.
+core\DebugLogSetup.lua
+# Conventional: the launcher is built here and registered from OnEnable.
+core\LauncherSetup.lua
+# LOAD-BEARING: publishes NS.Lifecycle, which core\PerfSetup.lua hands the Perf descriptor at load.
+core\LifecycleSetup.lua
+# LOAD-BEARING: publishes NS.Perf before any module takes it as a load-time upvalue.
+core\PerfSetup.lua
+# Conventional: the PGF bridge; every PGF read happens at call time.
+core\PGFBridge.lua
+
+# Defaults
+# LOAD-BEARING: publishes NS.C, which settings\Schema.lua takes as a file-scope upvalue.
+defaults\Profile.lua
+# Conventional: data only, read by modules\Regions.lua at call time.
+defaults\Realms.lua
+
+# Modules (conventional: each publishes its own NS table and reads others at call time)
+modules\Regions.lua
+modules\Season.lua
+modules\Targeting.lua
+modules\Expression.lua
+modules\Filters.lua
+modules\Presets.lua
+modules\EnvInject.lua
+modules\RegionTags.lua
+modules\Apply.lua
+modules\Panel.lua
+# Conventional: core\DebugLogSetup.lua's descriptor reads NS.Diagnostics at RUN time.
+modules\Diagnostics.lua
+
+# Settings (last -- depend on everything else being initialized)
+# LOAD-BEARING: publishes Settings.SchemaLib, which settings\Schema.lua calls :New on at file scope.
+settings\SchemaSetup.lua
+# LOAD-BEARING: publishes Settings.Schema and NS.SchemaRuntime, read by the three files below at load.
+settings\Schema.lua
+# LOAD-BEARING: publishes the LibKa0s-Options instance as Settings.Helpers; settings\Panel.lua calls
+# Helpers.MasterControls at file scope.
+settings\OptionsSetup.lua
+settings\Panel.lua
+# Conventional: NS.COMMANDS and the slash descriptor; handlers resolve everything at call time.
+settings\Slash.lua
+# LAST, so its RegisterOptionsPage call queues behind General's (options-ui-§3).
+settings\Profiles.lua
