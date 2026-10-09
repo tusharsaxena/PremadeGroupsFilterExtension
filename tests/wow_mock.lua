@@ -327,7 +327,8 @@ local function build()
     -- (nil = on), handing it a facade S. The facade RECORDS every primitive call rather than
     -- no-opping it, so a case can ask what was painted.
     --   spec.child = false    EllesmereUIBlizzardSkin not loaded
-    --   spec.pgfSkin = false  PremadeGroupsFilter_EllesmereUI not loaded
+    --   spec.pgfSkin = false  PremadeGroupsFilter_EllesmereUI installed but not loaded (disabled);
+    --                         "missing" = not installed at all (C_AddOns.DoesAddOnExist false)
     --   spec.masterOff        EllesmereUIDB.thirdPartySkinsOff = true
     --   spec.entries          EllesmereUIDB.thirdPartySkinAddons (e.g. { PremadeGroupsFilter = false })
     -- Installs C_AddOns too (the base deliberately leaves it out), answering from `m.loadedAddons`,
@@ -341,7 +342,7 @@ local function build()
         M.loadedAddons = {
             PremadeGroupsFilterExtension = true, PremadeGroupsFilter = true, EllesmereUI = true,
             EllesmereUIBlizzardSkin = spec.child ~= false,
-            PremadeGroupsFilter_EllesmereUI = spec.pgfSkin ~= false,
+            PremadeGroupsFilter_EllesmereUI = spec.pgfSkin ~= false and spec.pgfSkin ~= "missing",
         }
         M.C_AddOns = {
             IsAddOnLoaded = function(name)
@@ -349,6 +350,10 @@ local function build()
                 return on, on
             end,
             GetAddOnMetadata = function() return nil end,
+            DoesAddOnExist = function(name)
+                if name == "PremadeGroupsFilter_EllesmereUI" then return spec.pgfSkin ~= "missing" end
+                return M.loadedAddons[name] ~= nil
+            end,
         }
         M.EllesmereUIDB = {
             thirdPartySkinsOff = spec.masterOff and true or nil,

@@ -20,7 +20,7 @@ takes the next free number in its theme and a retired number is never reused.
 | DEGRADED-1 | Degraded install | LibKa0s absent |
 | APPLY-1..24 | Attached panel and Apply | The panel under PGF, targeting, regions, playstyle, composition, leader, leader score, age, presets, Clear, PGF minimized, collapse, layout, tooltips, Smart key level, filters toggle, row spacing, region tags |
 | LOC-1..2 | Non-English client | Realm-name and dungeon-name seams on a deDE/frFR client |
-| SKIN-1..9 | EllesmereUI skin | The gate's four conditions, the settings tab, the painted panel, live on, reload off |
+| SKIN-1..10 | EllesmereUI skin | The gate's four conditions, the PGF skin's install states and link, the settings tab, the painted panel, live on, reload off |
 
 ## Before you start
 
@@ -245,6 +245,12 @@ settings tab and record any difference.
 - **SKIN-6. PGF's skin off.** Untick *PremadeGroupsFilter* there (or disable Premade Groups Filter -
   EllesmereUI Skin), `/reload` → both windows stock; our pgf line red, box disabled. Re-tick it
   without a reload, then reopen PGF on Dungeons → our panel is painted on that show. Result:
+- **SKIN-10. PGF's skin missing or disabled.** Remove the Premade Groups Filter - EllesmereUI Skin
+  folder, restart → the pgf line reads *not installed* and a box below the lines holds
+  `https://www.curseforge.com/wow/addons/premade-groups-filter-ellesmereui`; click it → the link is
+  selected, Ctrl+C copies it, typing puts it back. Reinstall it but disable it in the AddOns list →
+  the line reads *installed but disabled*, no link box. Enable it and untick *PremadeGroupsFilter*
+  in EllesmereUI → *turned off in EllesmereUI*. Result:
 - **SKIN-7. Our switch.** Everything on, untick *Use the EllesmereUI skin*, `/reload` → stock panel,
   "The skin is off." Tick it → the panel is painted at once, no reload. Untick it again → a popup
   asks to reload; *Later* leaves the panel painted, *Reload* reloads into the stock panel. Result:
@@ -283,4 +289,4 @@ or wrong. These are the addon's locale seams.
 |---|---|---|
 | INSTALL-1..3, SLASH-1..3, PANEL-1..3, PROFILE-1..2, STATE-1..2, COMBAT-2, DIAG-1..2, DEGRADED-1 | Scaffold, 2026-10-09 | No client pass recorded yet |
 | COMBAT-1, APPLY-1..24, LOC-1..2 | M+ v0.1 (0.1.0) | Built and covered headlessly; no client pass recorded yet |
-| SKIN-1..9 | EllesmereUI skin (2026-10-09) | Built and covered headlessly against an EllesmereUI fake; the look needs the client |
+| SKIN-1..10 | EllesmereUI skin (2026-10-09) | Built and covered headlessly against an EllesmereUI fake; the look needs the client |

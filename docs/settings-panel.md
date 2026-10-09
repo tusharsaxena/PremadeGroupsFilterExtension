@@ -40,7 +40,10 @@ Untabbed by rule (options-ui-§13): the host's `buildMain` in `settings/Panel.lu
     2. EllesmereUI third-party skinning is on (*Blizz UI Enhanced > Blizzard Window Skins >
        Third-Party Addons > Skin Third-Party Addons*);
     3. PremadeGroupsFilterExtension is on in EllesmereUI's Third-Party Addons list;
-    4. Premade Groups Filter's own EllesmereUI skin is on.
+    4. Premade Groups Filter's own EllesmereUI skin is on. When it is not, the line says which: not
+       installed (and a read-only box holds its CurseForge link to copy), installed but disabled in
+       the AddOns list, or turned off in EllesmereUI's Third-Party Addons list
+       (`EUIBridge.PGFSkinState`).
   - A state line: applied; applied until a reload; not applied (stood down / a condition not met);
     off; applied after a reload; applied when the panel next shows.
   - *Use the EllesmereUI skin* → `euiSkin` (profile, default on). Disabled while any condition fails

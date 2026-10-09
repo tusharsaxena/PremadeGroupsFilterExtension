@@ -162,3 +162,22 @@ test("euibridge: nothing is ever written to EllesmereUI's saved variables", func
     end
     assertEqual(n, 1, "no key added to the entry list")
 end)
+
+-- Owner request: the PGF skin's line says whether it is not installed, installed but disabled, or
+-- turned off in EllesmereUI.
+test("euibridge: the PGF skin's state is missing / disabled / off / on, and its line says which", function()
+    local cases = {
+        { spec = { pgfSkin = "missing" }, state = "missing", text = "is not installed" },
+        { spec = { pgfSkin = false }, state = "disabled", text = "installed but disabled" },
+        { spec = { entries = { PremadeGroupsFilter = false } }, state = "off", text = "turned off in EllesmereUI" },
+        { spec = {}, state = "on", text = "own EllesmereUI skin is on" },
+    }
+    for _, c in ipairs(cases) do
+        local NS = T.enableAddon{ mock = function(m) m.installEUI(c.spec) end }
+        -- red under: IsPGFSkinOn's old two-way loaded/entry answer with one label
+        assertEqual(NS.EUIBridge.PGFSkinState(), c.state, c.state)
+        local pgf = NS.EUIBridge.Conditions()[4]
+        assertEqual(pgf.key, "pgf"); assertEqual(pgf.ok, c.state == "on", c.state)
+        assertTrue(pgf.label:find(c.text, 1, true) ~= nil, pgf.label)
+    end
+end)

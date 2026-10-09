@@ -118,7 +118,7 @@ test("euisettings: the switch's tooltip says why it is disabled, live", function
     box:__fire("OnEnter")
     local text = table.concat(lines, "\n")
     assertTrue(text:find("Disabled until every condition is met", 1, true) ~= nil, text)
-    assertTrue(text:find("Premade Groups Filter - EllesmereUI Skin", 1, true) ~= nil, text)
+    assertTrue(text:find("turn on PremadeGroupsFilter", 1, true) ~= nil, text)
     lines = {}
     m.EllesmereUIDB.thirdPartySkinAddons.PremadeGroupsFilter = nil
     box:__fire("OnEnter")
@@ -190,4 +190,19 @@ test("euisettings: LibKa0s absent with EllesmereUI present loads, registers and 
     local NS = T.newAddon{ skip = T.loadAddon.libFiles, mock = function(m) m.installEUI() end }
     assertTrue(NS.EUISkin.registered)
     assertTrue(NS.SchemaRuntime.FindRow("euiSkin") ~= nil)
+end)
+
+-- Owner request: with the PGF skin not installed, offer it: a box holding its CurseForge link.
+test("euisettings: a missing PGF skin gets a box with its CurseForge link; installed, no box", function()
+    local NS, _, m = setup{ pgfSkin = "missing" }
+    openTab(NS, m)
+    local box = NS.addon.Settings.PGFSkinLinkBox
+    -- red under: drop addPGFSkinLink from renderEuiTab
+    assertTrue(box ~= nil, "the link box")
+    assertEqual(box:GetText(), "https://www.curseforge.com/wow/addons/premade-groups-filter-ellesmereui")
+    box.text = "junk"; box:__fire("OnTextChanged")
+    assertEqual(box:GetText(), NS.EUIBridge.PGF_SKIN_URL, "typing puts the link back")
+    local NS2, _, m2 = setup{ pgfSkin = false }
+    openTab(NS2, m2)
+    assertEqual(NS2.addon.Settings.PGFSkinLinkBox, nil, "installed but disabled: no link")
 end)

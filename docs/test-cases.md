@@ -177,7 +177,7 @@ Total.
 - bridge: env hook refuses when the seam is missing
 - bridge: HookDialog wires SwitchToPanel and both scripts
 
-### test_euibridge.lua (16)
+### test_euibridge.lua (17)
 
 - euibridge: the module publishes its namespace table and the skin name
 - euibridge: four conditions, in display order, each with a label and a hint
@@ -195,6 +195,7 @@ Total.
 - euibridge: the reads are live, at call time
 - euibridge: a raising or absent C_AddOns reads as not loaded
 - euibridge: nothing is ever written to EllesmereUI's saved variables
+- euibridge: the PGF skin's state is missing / disabled / off / on, and its line says which
 
 ### test_apply.lua (16)
 
@@ -319,7 +320,7 @@ Total.
 - euiskin: theme and scale changes while stood down catch up at the stand-up
 - euiskin: the diagnostics dependencies section reports the gate and the skin
 
-### test_euisettings.lua (12)
+### test_euisettings.lua (13)
 
 - euisettings: euiSkin is a schema row, default on, in its own group on the General page
 - euisettings: the General page's tabs are Master controls, then EllesmereUI skin
@@ -333,6 +334,7 @@ Total.
 - euisettings: the state line names what is waiting
 - euisettings: a gate opened in EllesmereUI's options paints on the panel's next show
 - euisettings: LibKa0s absent with EllesmereUI present loads, registers and keeps the row
+- euisettings: a missing PGF skin gets a box with its CurseForge link; installed, no box
 
 ### test_vendor_sync.lua (3)
 
@@ -420,11 +422,11 @@ Total.
 | test_envinject.lua | 10 |
 | test_regiontags.lua | 8 |
 | test_bridge.lua | 13 |
-| test_euibridge.lua | 16 |
+| test_euibridge.lua | 17 |
 | test_apply.lua | 16 |
 | test_panel.lua | 72 |
 | test_euiskin.lua | 26 |
-| test_euisettings.lua | 12 |
+| test_euisettings.lua | 13 |
 | test_vendor_sync.lua | 3 |
 | test_eol.lua | 2 |
 | test_prose.lua | 15 |
@@ -432,4 +434,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **318** |
+| **Total** | **320** |

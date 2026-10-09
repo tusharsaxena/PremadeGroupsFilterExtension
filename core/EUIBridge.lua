@@ -14,7 +14,8 @@ local _, NS = ...
 --   own     this addon's entry in its Third-Party Addons list
 --           (EllesmereUIDB.thirdPartySkinAddons["PremadeGroupsFilterExtension"] not false);
 --   pgf     Premade Groups Filter's own EllesmereUI skin: PremadeGroupsFilter_EllesmereUI loaded
---           and its entry (thirdPartySkinAddons["PremadeGroupsFilter"]) not false.
+--           and its entry (thirdPartySkinAddons["PremadeGroupsFilter"]) not false. Its status line
+--           says which of not installed / installed but disabled / turned off it is (PGFSkinState).
 -- The two switch reads mirror the dispatcher's own MasterOn/AddonOn (SkinAPI.lua:32-41): nil = on.
 
 local Bridge = NS.EUIBridge or {}
@@ -64,16 +65,61 @@ function Bridge.IsEntryOn(name)
     return not (type(t) == "table" and t[name] == false)
 end
 
+--- Where to get Premade Groups Filter's own EllesmereUI skin (owner request: offer it when missing).
+Bridge.PGF_SKIN_URL = "https://www.curseforge.com/wow/addons/premade-groups-filter-ellesmereui"
+
+-- Is the addon installed at all? C_AddOns.DoesAddOnExist, else GetAddOnInfo's reason ("MISSING"
+-- when it is not in the AddOns folder). Guarded: no reader reads as installed, so a client without
+-- either never claims a present addon is missing.
+local function installed(name)
+    local api = C_AddOns
+    if type(api) ~= "table" then return true end
+    if type(api.DoesAddOnExist) == "function" then
+        local ok, exists = pcall(api.DoesAddOnExist, name)
+        if ok then return exists == true end
+    end
+    if type(api.GetAddOnInfo) == "function" then
+        local ok, _, _, _, _, reason = pcall(api.GetAddOnInfo, name)
+        if ok then return reason ~= "MISSING" end
+    end
+    return true
+end
+
+--- Premade Groups Filter's own EllesmereUI skin, as one of:
+---   "missing"   not installed;
+---   "disabled"  installed but not loaded (disabled in the AddOns list);
+---   "off"       loaded, but its entry in EllesmereUI's Third-Party Addons list is off;
+---   "on"        loaded and on.
+--- @return string
+function Bridge.PGFSkinState()
+    if loaded(PGF_SKIN_ADDON) then
+        return Bridge.IsEntryOn(PGF_SKIN_NAME) and "on" or "off"
+    end
+    return installed(PGF_SKIN_ADDON) and "disabled" or "missing"
+end
+
 --- Premade Groups Filter's own EllesmereUI skin: its addon loaded and its entry on.
 function Bridge.IsPGFSkinOn()
-    return loaded(PGF_SKIN_ADDON) and Bridge.IsEntryOn(PGF_SKIN_NAME)
+    return Bridge.PGFSkinState() == "on"
 end
+
+-- The pgf status line's label and hint, by state (owner request: say which of the three it is).
+local PGF_TEXT = {
+    on       = { L["Premade Groups Filter's own EllesmereUI skin is on"], "" },
+    missing  = { L["Premade Groups Filter - EllesmereUI Skin is not installed"],
+                 L["Install it from CurseForge (copy the link below), then restart the game."] },
+    disabled = { L["Premade Groups Filter - EllesmereUI Skin is installed but disabled"],
+                 L["Enable it in the AddOns list, then reload."] },
+    off      = { L["Premade Groups Filter - EllesmereUI Skin is turned off in EllesmereUI"],
+                 L["In EllesmereUI's Third-Party Addons list, turn on PremadeGroupsFilter."] },
+}
 
 --- The four conditions in display order: { key, ok, label, hint }. A switch read means nothing
 --- without the suite, so every condition after the first also needs the suite ready.
 --- @return table
 function Bridge.Conditions()
     local suite = Bridge.IsSuiteReady() and true or false
+    local pgfState = Bridge.PGFSkinState()
     return {
         { key = "eui", ok = suite,
           label = L["EllesmereUI and its Blizzard Skin module are loaded"],
@@ -84,9 +130,10 @@ function Bridge.Conditions()
         { key = "own", ok = suite and Bridge.IsEntryOn(Bridge.SKIN_NAME),
           label = L["PremadeGroupsFilterExtension is on in EllesmereUI's Third-Party Addons list"],
           hint  = L["In EllesmereUI's Third-Party Addons list, turn on PremadeGroupsFilterExtension."] },
-        { key = "pgf", ok = suite and Bridge.IsPGFSkinOn(),
-          label = L["Premade Groups Filter's own EllesmereUI skin is on"],
-          hint  = L["Install and enable Premade Groups Filter - EllesmereUI Skin, and turn on PremadeGroupsFilter in EllesmereUI's Third-Party Addons list."] },
+        { key = "pgf", ok = suite and pgfState == "on", state = pgfState,
+          label = PGF_TEXT[pgfState][1],
+          hint  = pgfState == "on" and L["Install and enable EllesmereUI, including EllesmereUI Blizzard Skin."]
+              or PGF_TEXT[pgfState][2] },
     }
 end
 

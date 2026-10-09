@@ -189,6 +189,26 @@ local function euiTooltip(cb, row)
     end
 end
 
+-- The PGF skin's CurseForge link in a read-only edit box: anything typed puts the link back, and
+-- focus selects it, ready for Ctrl+C.
+local function addPGFSkinLink(scroll)
+    local AceGUI = Helpers.AceGUI
+    if not AceGUI then return end
+    local url = NS.EUIBridge.PGF_SKIN_URL
+    local box = AceGUI:Create("EditBox")
+    box:SetLabel(L["Get Premade Groups Filter - EllesmereUI Skin (select, then Ctrl+C):"])
+    box:SetText(url)
+    box:SetFullWidth(true)
+    box:DisableButton(true)
+    box:SetCallback("OnTextChanged", function(widget) widget:SetText(url) end)
+    box:SetCallback("OnEnterPressed", function(widget) widget:SetText(url) end)
+    if box.editbox and box.editbox.HookScript then
+        box.editbox:HookScript("OnEditFocusGained", function(self) self:HighlightText() end)
+    end
+    scroll:AddChild(box)
+    Settings.PGFSkinLinkBox = box
+end
+
 -- A status line: a TextRow re-read by its own refresher (options-ui-§11), so it follows changes
 -- made in EllesmereUI's options, which never pass through our write seam.
 local function statusRow(ctx, textFn)
@@ -204,6 +224,9 @@ local function renderEuiTab(ctx, rows)
     end
     statusRow(ctx, Settings.EUISkinStateText)
     local scroll = Helpers.EnsureScroll(ctx)
+    -- Not installed: a box holding the CurseForge link to copy (the game cannot open a browser).
+    -- Decided at render time: installing an addon needs a game restart, so it cannot change live.
+    if scroll and B.PGFSkinState() == "missing" then addPGFSkinLink(scroll) end
     if scroll then Helpers.AddSpacer(scroll, Helpers.ROW_VSPACER or 8) end
     local row = rows and rows[1]
     if not row then return end
