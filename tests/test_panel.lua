@@ -549,7 +549,8 @@ test("panel: the header copies sit at the panel's own level, under the arrow", f
     end
 end)
 
-test("panel: a successful Apply focuses the range box; Enter there focuses the search box", function()
+-- Owner request: Apply no longer takes keyboard focus into the copy box (it held movement and chat).
+test("panel: Apply leaves focus alone; Enter in the copy box focuses the search box", function()
     local NS, _, m = T.enableAddon{}
     seasonFromScreenshot(m)
     NS.Filters.Get().smartKeyLevel = false -- a manually set level
@@ -563,13 +564,11 @@ test("panel: a successful Apply focuses the range box; Enter there focuses the s
     local rangeFocused = 0
     f.rangeBox.SetFocus = function() rangeFocused = rangeFocused + 1 end
     f.applyButton:__fire("OnClick")
-    assertEqual(rangeFocused, 1)
+    assertEqual(m.pgf.calls.refresh, 1, "the Apply ran")
+    -- red under: restore the rangeBox:SetFocus() in Panel's Apply OnClick
+    assertEqual(rangeFocused, 0)
     f.rangeBox:__fire("OnEnterPressed")
     assertEqual(searchFocused, 1)
-    -- A refused Apply leaves focus alone.
-    NS.Filters.Get().keyLevel = 1
-    f.applyButton:__fire("OnClick")
-    assertEqual(rangeFocused, 1)
     -- Stood down, Enter does not reach for Blizzard's box.
     NS.addon:OnSlashCommand("disable")
     f.rangeBox:__fire("OnEnterPressed")
@@ -1018,10 +1017,6 @@ test("panel: the copy box and its label dim and disable while key targeting is o
     -- red under: drop setCopyEnabled from Panel.Refresh
     assertFalse(f.rangeBox:IsEnabled())
     assertEqual(f.copyLabel.__textColor[1], 0.5)
-    local focused = 0
-    f.rangeBox.SetFocus = function() focused = focused + 1 end
-    f.applyButton:__fire("OnClick")
-    assertEqual(focused, 0, "a successful Apply does not focus a disabled box")
     cb:SetChecked(true); cb:__fire("OnClick")
     assertTrue(f.rangeBox:IsEnabled())
     assertEqual(f.copyLabel.__textColor[1], 1)

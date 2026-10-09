@@ -597,14 +597,14 @@ local function setCopyEnabled(f, on)
     if on then f.copyLabel:SetTextColor(1, 1, 1) else f.copyLabel:SetTextColor(0.5, 0.5, 0.5) end
 end
 
--- After a successful Apply the copy box takes focus with its text selected (OnEditFocusGained), so
--- the keyboard chain is Ctrl+C, Enter (focus jumps to the search box), Ctrl+V, Enter.
+-- Apply leaves keyboard focus alone: taking it into the copy box held the keyboard (movement, chat)
+-- until the player clicked away (owner request). Clicking the copy box selects its text; then
+-- Ctrl+C, Enter (focus jumps to the search box), Ctrl+V, Enter.
 local function buildActionRow(f, body, y)
     y = y - ACTION_GAP
     f.applyButton = button(body, L.APPLY, L.APPLY_TOOLTIP, function()
-        local ok = reportResult(NS.Apply.Run{ search = true })
+        reportResult(NS.Apply.Run{ search = true })
         Panel.Refresh()
-        if ok and NS.Filters.Get().keyTargeting then f.rangeBox:SetFocus() end
     end)
     f.clearButton = button(body, L.CLEAR, L.CLEAR_TOOLTIP, function()
         NS.Apply.Report(NS.Apply.Clear())

@@ -159,8 +159,8 @@ the dialog hook (`SwitchToPanel`, plus `OnShow`/`OnHide` script hooks), which ca
   (events-frames-taint-§8). Skipped while stood down, with `showRegionTags` off, or while
   PremadeRegions is loaded.
 - `LFGListFrame.SearchPanel.SearchBox` has `securityDisableSetText`: no code path writes it. The key
-  range is shown in a read-only field (*Copy into search box*, whose tooltip says why) for the player to copy. A successful Apply focuses that field
-  (text selected); Enter in it moves keyboard focus to the search box (`SetFocus`, pcall-guarded,
+  range is shown in a read-only field (*Copy into search box*, whose tooltip says why) for the player to copy. Clicking that field
+  selects its text (Apply leaves keyboard focus alone); Enter in it moves keyboard focus to the search box (`SetFocus`, pcall-guarded,
   only while the box is visible and the addon is not stood down), so the player's own Ctrl+V and
   Enter fill it and search. Only focus is moved; no text is written.
 - `C_LFGList.Search` is hardware-event protected: the search runs only through
@@ -247,7 +247,7 @@ edit-box limit) refuses.
 ## Known Limitations
 
 - The Group Finder's search box cannot be written by an addon, so key-level title searches stay a
-  copy and paste (Apply, Ctrl+C, Enter, Ctrl+V, Enter). Nothing else can stand in for it: a
+  copy and paste (click the copy field, Ctrl+C, Enter, Ctrl+V, Enter). Nothing else can stand in for it: a
   listing's title and comment reach PGF as protected strings, the search-result API has no key-level
   field, and PGF's `findnumber()` scans only the activity name (`Dungeon (Mythic Keystone)`).
 - The leader's item level is not filterable: the search-result API exposes only the listing's
