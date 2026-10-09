@@ -156,6 +156,67 @@ local function build()
     -- any of this addon's files load.
     M.pgf = pgfFake(M)
 
+    -- PANEL FRAMES. The kit's frame answers every unmodeled getter with the frame itself, so "the
+    -- panel is anchored under the dialog" and "the range field reads 14-14" could not fail. Frames
+    -- built under PGF's dialog (the attached panel, modules/Panel.lua, and everything inside it)
+    -- are decorated with the state the panel reads back. Scoped to that subtree so the library's
+    -- own frames keep the kit's behavior every other suite was written against.
+    local function decorate(f)
+        f.__panelFrame, f.__points, f.__children = true, {}, {}
+        f.SetPoint = function(self, point, a, b, c, d)
+            local pt = (type(a) == "number" or a == nil)
+                and { point, nil, point, a or 0, b or 0 } or { point, a, b or point, c or 0, d or 0 }
+            self.__points[#self.__points + 1] = pt
+            return self
+        end
+        f.ClearAllPoints = function(self) self.__points = {}; return self end
+        f.GetPoint = function(self, i)
+            local pt = self.__points[i or 1]
+            if pt then return pt[1], pt[2], pt[3], pt[4], pt[5] end
+        end
+        f.SetHeight = function(self, h) self.__height = h; return self end
+        -- An EditBox's SetText fires OnTextChanged with userInput false, as in the client.
+        f.SetText = function(self, t)
+            self.__text = t
+            local h = self.__scripts.OnTextChanged
+            if h then h(self, false) end
+            return self
+        end
+        f.GetText = function(self) return self.__text end
+        f.SetChecked = function(self, v) self.__checked = v and true or false; return self end
+        f.GetChecked = function(self) return self.__checked == true end
+        f.LockHighlight = function(self) self.__highlightLocked = true; return self end
+        f.UnlockHighlight = function(self) self.__highlightLocked = false; return self end
+        f.Click = function(self, ...) return self:__fire("OnClick", ...) end
+        f.SetupMenu = function(self, gen) self.__menuGen = gen; return self end
+        f.SetOnMaximizedCallback = function(self, fn) self.__onMaximized = fn; return self end
+        f.SetOnMinimizedCallback = function(self, fn) self.__onMinimized = fn; return self end
+        f.CreateFontString = function(self)
+            local fs = decorate(M.__stubFrame())
+            self.__children[#self.__children + 1] = fs
+            return fs
+        end
+        return f
+    end
+    -- StaticPopup_Hide(which), recorded: the preset popups close themselves through it.
+    M.popupsHidden = {}
+    M.StaticPopup_Hide = function(which) M.popupsHidden[#M.popupsHidden + 1] = which end
+
+    local baseCreateFrame = M.CreateFrame
+    M.CreateFrame = function(frameType, name, parent, template)
+        local f = baseCreateFrame(frameType, name, parent, template)
+        if parent ~= nil and (parent == M.PremadeGroupsFilterDialog or parent.__panelFrame) then
+            decorate(f)
+            parent.__children = parent.__children or {}
+            parent.__children[#parent.__children + 1] = f
+            -- PortraitFrameTemplate's own close button (a parentKey in the template's XML).
+            if template and template:find("PortraitFrameTemplate", 1, true) then
+                f.CloseButton = decorate(M.__stubFrame())
+            end
+        end
+        return f
+    end
+
     return M
 end
 
