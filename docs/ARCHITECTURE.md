@@ -243,14 +243,13 @@ The facade `S` (apiVersion 3) is kept from the callback; the paint uses `Shell`,
 `GetAccentColor`, `GetFont` and `OnLooksChanged`. EllesmereUI skins the Blizzard menus the dropdowns
 open and the preset StaticPopups globally, under its own *popups and menus* switch.
 
-**Standards note (owner decision pending).** Reading `EllesmereUIDB` conflicts with
-library-stack-§6 / anti-pattern #29 ("MUST NOT read a suite's ... SavedVariables"). EllesmereUI has
-no public query that works before it dispatches (`S.IsEnabled()` exists only after the callback,
-and covers only the master switch and our own entry, never PGF's), and the owner's gate
-(plan, owner decision 1) needs all three switch reads. The reads are read-only, call-time,
-nil-guarded and confined to `core/EUIBridge.lua`. Not yet ratified: it is not in
-[Documented deviations](#documented-deviations) until the owner records it there or the standard
-changes upstream.
+**Standards note (ratified deviation).** Reading `EllesmereUIDB` departs from library-stack-§6 /
+anti-pattern #29 ("MUST NOT read a suite's ... SavedVariables"). EllesmereUI has no public query
+that works before it dispatches (`S.IsEnabled()` exists only after the callback, and covers only the
+master switch and our own entry, never PGF's), and the owner's gate (plan, owner decision 1) needs
+all three switch reads. The reads are read-only, call-time, nil-guarded and confined to
+`core/EUIBridge.lua`. Ratified by the owner on 2026-10-09: see
+[Documented deviations](#documented-deviations).
 
 ## Injected variables
 
@@ -386,6 +385,7 @@ deviation not in this table is not ratified.
 
 | Rule | What differs | Why | Decided | Re-check trigger |
 |---|---|---|---|---|
+| library-stack-§6, anti-patterns #29 | `core/EUIBridge.lua` reads EllesmereUI's SavedVariables: `EllesmereUIDB.thirdPartySkinsOff` and `EllesmereUIDB.thirdPartySkinAddons[...]` (our entry and PGF's skin's). Read-only, at call time, nil-guarded, in that one file; never written | The optional EllesmereUI skin's gate and its settings status lines must show the master Third-Party switch, our own entry and PGF's skin's entry separately (owner decision 1 and the "turned off in EllesmereUI" state). EllesmereUI exposes no API for them before it dispatches: `S.IsEnabled()` arrives only with the skin callback, merges the master switch with our entry, and cannot see PGF's entry | 2026-10-09 | EllesmereUI ships a public query for its third-party switches, or the standard gains a carve-out for an optional integration reading the suite's own on/off switches |
 | library-stack-§6, toc-file-§1 | Hard `## Dependencies: PremadeGroupsFilter`; the addon reads/writes PGF state and hooks PGF's env builder | It is an extension of PGF and has no function without it (owner requirement, 2026-10-09) | 2026-10-09 | PGF ships a public API, or the standard gains an extension-addon rule |
 
 ### Files over the 1500-line cap
