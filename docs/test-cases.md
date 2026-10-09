@@ -240,7 +240,7 @@ Total.
 - panel: a saved collapsed state shows the header strip on the first Refresh
 - panel: without NineSliceUtil the collapse still folds, with no header copies
 - panel: the header copies sit at the panel's own level, under the arrow
-- panel: a successful Apply focuses the range box; Enter there focuses the search box
+- panel: Apply leaves focus alone; Enter in the copy box focuses the search box
 - panel: the arrow art is swapped between the min/max buttons
 - panel: the regions and playstyle dropdowns are 225 wide, right-aligned in one column
 - panel: each menu opens with Any and a divider; Any is ticked with nothing ticked and clears
