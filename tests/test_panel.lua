@@ -266,6 +266,17 @@ test("panel: collapse folds to the title bar and is remembered in the profile", 
     assertTrue(f.__height > 24)
 end)
 
+-- Review F-010: a profile switch carries its own panelCollapsed; the attached panel follows it.
+test("panel: a profile switch refreshes the attached panel's layout", function()
+    local NS = T.enableAddon{}
+    local f = NS.Panel.Create(); NS.Panel.Refresh()
+    assertTrue(f.body:IsShown())
+    NS.addon.db.profile.panelCollapsed = true
+    NS.addon:OnProfileChanged(nil, nil, "Other")
+    -- red under: drop the Panel.Refresh call in PGFE's reloadProfile
+    assertFalse(f.body:IsShown()); assertEqual(f.__height, 24)
+end)
+
 test("panel: preset Save as stores a named preset; Load refills the widgets", function()
     local NS, _, m = T.enableAddon{}
     NS.Panel.Create(); NS.Panel.Refresh()

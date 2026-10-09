@@ -171,7 +171,7 @@ Total.
 - apply: PGF minimized → refuses Apply and Clear, nothing written or searched
 - apply: the message counts the rows ticked, and says so when targeting is off
 
-### test_panel.lua (28)
+### test_panel.lua (29)
 
 - panel: the module publishes its namespace table
 - panel: anchored under PGF dialog, both edges
@@ -197,6 +197,7 @@ Total.
 - panel: Apply does nothing while stood down
 - panel: a missing PGF seam shows one line and disables Apply
 - panel: collapse folds to the title bar and is remembered in the profile
+- panel: a profile switch refreshes the attached panel's layout
 - panel: preset Save as stores a named preset; Load refills the widgets
 - panel: preset Delete removes the selected preset after confirming
 - panel: Enter in the Save as box saves and closes the popup
@@ -288,7 +289,7 @@ Total.
 | test_envinject.lua | 9 |
 | test_bridge.lua | 13 |
 | test_apply.lua | 13 |
-| test_panel.lua | 28 |
+| test_panel.lua | 29 |
 | test_vendor_sync.lua | 3 |
 | test_eol.lua | 2 |
 | test_prose.lua | 15 |
@@ -296,4 +297,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **198** |
+| **Total** | **199** |

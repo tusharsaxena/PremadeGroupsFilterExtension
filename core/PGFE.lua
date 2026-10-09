@@ -56,6 +56,8 @@ local function reloadProfile(self)
     local H = S and S.Helpers
     if H and H.RefreshAll then H.RefreshAll() end
     if S and S.RefreshProfilesPage then S.RefreshProfilesPage() end
+    -- The attached panel's collapsed state is in the profile. A stand-down below hides it anyway.
+    if NS.Panel and NS.Panel.frame then NS.Panel.Refresh() end
     if NS.Lifecycle then
         NS.Lifecycle:Set(NS.HOLD_DISABLED, not (self.db and self.db.profile and self.db.profile.enabled))
         NS.Lifecycle:Reevaluate()
