@@ -12,7 +12,7 @@ ignore:
   # - .superpowers   # ONLY once the repo HAS a .superpowers/; it has none today
   - docs             # holds docs/audits/, docs/reviews/, docs/revendor/ and docs/superpowers/ too
   - tests
-  # - tools          # ONLY once the repo HAS a tools/ (layout-§1)
+  - tools          # dev-only: tools/realm_map_diff.py, the realm-map maintenance diff (layout-§1)
   - CLAUDE.md        # contributor documentation; README.md and LICENSE ship
   - DEPENDENCIES.md
   - media/logos/*.png   # the editable logo source (layout-§4): committed, never loadable, never shipped
