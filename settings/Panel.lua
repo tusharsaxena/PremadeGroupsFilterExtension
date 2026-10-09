@@ -2,8 +2,9 @@ local addonName, NS = ...
 -- settings/Panel.lua — the landing page body and the General page (Master controls).
 --
 -- The landing page is the host's own buildMain (logo, notes, slash command list) and draws no tab
--- strip (options-ui-§5/§13). The General page renders through the tabbed renderer; its first and
--- only tab is `Master controls`, composed from one declaration (options-ui-§15). The addon draws no
+-- strip (options-ui-§5/§13). The General page renders through the tabbed renderer; its first tab is
+-- `Master controls`, composed from one declaration (options-ui-§15), its second `EllesmereUI skin`
+-- (the optional skin's status and switch, below). The addon draws no
 -- positionable frame of its own -- the filter panel is anchored to PGF's dialog -- so the block is
 -- frameless (no scale, alpha, lock or reset position) and carries no visibility row: when the panel
 -- shows is decided by PGF's dialog and category, not by a setting. It has no test mode.
@@ -117,6 +118,101 @@ end
 Settings.StampClosureRows(MASTER_ROWS)
 NS.SchemaRuntime.AddRows(MASTER_ROWS, 1)
 
+-- ── EllesmereUI skin (the General page's second tab) ────────────────────────────────────────────
+--
+-- Its own group, so its own tab (options-ui-§13): a feature switch with live status lines is not a
+-- Master controls row (options-ui-§15). The tab is a host tab keyed by the group: a status line per
+-- gate condition (core/EUIBridge.lua), a line saying what the skin is doing, then the one schema
+-- row. The switch is drawn disabled while any condition fails and can never turn the skin on by
+-- itself: modules/EUISkin.lua paints only when every condition AND the switch hold. The CLI keeps
+-- parity with the disabled box: `/pgfe set euiSkin true` is refused, with the reason, while a
+-- condition fails (slash-commands-§6); off is always accepted, and a bulk reset never refused.
+
+local L = NS.L
+local EUI_GROUP = L["EllesmereUI skin"]
+
+local function euiGateOpen() return NS.EUIBridge ~= nil and (NS.EUIBridge.GateOpen()) end
+
+local EUI_ROWS = {
+    { path = "euiSkin", type = "bool", default = C.PROFILE.euiSkin,
+      page = "general", section = "general", group = EUI_GROUP,
+      label = L["Use the EllesmereUI skin"],
+      tooltip = L["Paint the attached filter panel in your EllesmereUI theme, matching Premade Groups Filter's own EllesmereUI skin. Needs every condition listed above. Turning it off takes effect after a reload."],
+      disabledIf = function() return not euiGateOpen() end,
+      validate = function(v)
+          local S = NS.SchemaRuntime
+          if v ~= true or euiGateOpen() or S.InBulk() or S.Get("euiSkin") == true then return true end
+          local why = NS.EUIBridge and NS.EUIBridge.WhyClosed() or ""
+          return false, L["The EllesmereUI skin cannot be turned on until every condition is met:"] .. "\n" .. why
+      end,
+      onChange = function(v) if NS.EUISkin then NS.EUISkin.OnSwitch(v == true) end end,
+    },
+}
+NS.SchemaRuntime.AddRows(EUI_ROWS)
+
+local ICON_OK  = "|TInterface\\RaidFrame\\ReadyCheck-Ready:14|t"
+local ICON_BAD = "|TInterface\\RaidFrame\\ReadyCheck-NotReady:14|t"
+
+local function conditionText(c)
+    if c.ok then return ICON_OK .. " " .. c.label end
+    return ICON_BAD .. " " .. c.label .. "\n      |cff999999" .. c.hint .. "|r"
+end
+
+--- What the skin is doing this session, in words: the line under the conditions.
+function Settings.EUISkinStateText()
+    local K = NS.EUISkin
+    if not K then return "" end
+    local on = NS.addon.db and NS.addon.db.profile and NS.addon.db.profile.euiSkin == true
+    if K.IsApplied() then
+        if on then return "|cff33ff33" .. L["The skin is applied."] .. "|r" end
+        return L["The skin is applied until you reload the UI."]
+    end
+    if NS.IsStoodDown() then return L["The skin is not applied while the addon is disabled."] end
+    if not euiGateOpen() then return L["The skin is not applied: a condition above is not met."] end
+    if not on then return L["The skin is off."] end
+    if not K.HasFacade() then return L["The skin is applied after a reload."] end
+    return L["The skin is applied when the panel next shows."]
+end
+
+-- The checkbox's tooltip, live: the row's own text, then why it is disabled when it is.
+local function euiTooltip(cb, row)
+    return function()
+        if not GameTooltip then return end
+        GameTooltip:SetOwner(cb.frame, "ANCHOR_RIGHT")
+        GameTooltip:SetText(row.label, 1, 1, 1)
+        GameTooltip:AddLine(row.tooltip, nil, nil, nil, true)
+        local why = NS.EUIBridge and NS.EUIBridge.WhyClosed()
+        if why then
+            GameTooltip:AddLine(L["Disabled until every condition is met:"] .. "\n" .. why, 1, 0.25, 0.25, true)
+        end
+        GameTooltip:Show()
+    end
+end
+
+-- A status line: a TextRow re-read by its own refresher (options-ui-§11), so it follows changes
+-- made in EllesmereUI's options, which never pass through our write seam.
+local function statusRow(ctx, textFn)
+    local w = Helpers.TextRow(ctx, textFn(), { fontObject = "GameFontHighlight" })
+    if not w then return end
+    ctx.refreshers[#ctx.refreshers + 1] = function() w:SetText(textFn()) end
+end
+
+local function renderEuiTab(ctx, rows)
+    local B = NS.EUIBridge
+    for i = 1, #B.Conditions() do
+        statusRow(ctx, function() return conditionText(B.Conditions()[i]) end)
+    end
+    statusRow(ctx, Settings.EUISkinStateText)
+    local scroll = Helpers.EnsureScroll(ctx)
+    if scroll then Helpers.AddSpacer(scroll, Helpers.ROW_VSPACER or 8) end
+    local row = rows and rows[1]
+    if not row then return end
+    local cb = Helpers.RenderField(ctx, row)      -- binds the refresher and the disabledIf
+    if cb and cb.SetCallback then cb:SetCallback("OnEnter", euiTooltip(cb, row)) end
+end
+
+local GENERAL_OPTS = { tabs = { { key = EUI_GROUP, render = renderEuiTab } } }
+
 local AFTER_GROUP = {}
 if Helpers.MASTER_GROUP then AFTER_GROUP[Helpers.MASTER_GROUP] = MASTER_TAIL end
 
@@ -130,8 +226,12 @@ local function buildGeneralPage(parentCategory)
     ctx.panel.defaultsOnClick = showResetPopup
     Helpers.SetRenderer(ctx, function(c)
         Helpers.ClearScroll(c)
-        Helpers.RenderTabbedSchema(c, "general", AFTER_GROUP)
+        Helpers.RenderTabbedSchema(c, "general", AFTER_GROUP, nil, GENERAL_OPTS)
     end)
+    -- AFTER SetRenderer, whose SetScript would drop an earlier hook: a re-show re-reads the
+    -- EllesmereUI status lines and the switch's disabled state (the renderer only draws on the
+    -- first show).
+    ctx.panel:HookScript("OnShow", function() Helpers.RefreshPanel(ctx, false) end)
     return _G.Settings.RegisterCanvasLayoutSubcategory(parentCategory, ctx.panel, "General")
 end
 

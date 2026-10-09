@@ -826,6 +826,8 @@ function Panel.UpdateVisibility()
     if want and not Panel.frame then Panel.Create() end
     local f = Panel.frame
     if not f then return end
+    -- A gate condition EllesmereUI's options turned on since the last show paints now.
+    if want and NS.EUISkin then NS.EUISkin.TryApply() end
     f:SetShown(want and true or false)
     if want then Panel.Refresh() end
 end

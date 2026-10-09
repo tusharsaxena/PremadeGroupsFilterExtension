@@ -314,6 +314,21 @@ Total.
 - euiskin: live looks and scale changes repaint without raising
 - euiskin: the diagnostics dependencies section reports the gate and the skin
 
+### test_euisettings.lua (12)
+
+- euisettings: euiSkin is a schema row, default on, in its own group on the General page
+- euisettings: the General page's tabs are Master controls, then EllesmereUI skin
+- euisettings: the tab draws a line per condition, a state line, then the switch
+- euisettings: each failing condition disables the switch and is named on its line
+- euisettings: a re-show re-reads the lines and the switch after EllesmereUI changed
+- euisettings: the switch's tooltip says why it is disabled, live
+- euisettings: /pgfe set euiSkin true is refused, with the reason, while a condition fails
+- euisettings: a bulk reset is never refused
+- euisettings: the switch on paints live through the write seam; off asks for a reload
+- euisettings: the state line names what is waiting
+- euisettings: a gate opened in EllesmereUI's options paints on the panel's next show
+- euisettings: LibKa0s absent with EllesmereUI present loads, registers and keeps the row
+
 ### test_vendor_sync.lua (3)
 
 - libs/LibKa0s is the LibKa0s release CLAUDE.md says this addon bundles
@@ -404,6 +419,7 @@ Total.
 | test_apply.lua | 16 |
 | test_panel.lua | 72 |
 | test_euiskin.lua | 22 |
+| test_euisettings.lua | 12 |
 | test_vendor_sync.lua | 3 |
 | test_eol.lua | 2 |
 | test_prose.lua | 15 |
@@ -411,4 +427,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **301** |
+| **Total** | **313** |

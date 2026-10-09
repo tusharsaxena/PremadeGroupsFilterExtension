@@ -42,6 +42,7 @@ EUISkin.POPUP_RELOAD   = POPUP_RELOAD
 
 local S             -- the facade, once EllesmereUI has called back
 local applied = false
+local lastSkip      -- the last skip reason logged: a panel re-show repeats it, the log does not
 local checkBoxes, textBoxes = {}, {}
 local accentBorders = setmetatable({}, { __mode = "k" })
 
@@ -311,13 +312,16 @@ local function blocked()
     return nil
 end
 
---- Paint the panel when every condition holds. Idempotent; one-way.
+--- Paint the panel when every condition holds. Idempotent; one-way. Called from the EllesmereUI
+--- callback, Panel.Create, every panel show (Panel.UpdateVisibility), the switch, a profile switch
+--- and the stand-up; cheap when it refuses.
 --- @return boolean painted  true only on the call that painted
 function EUISkin.TryApply()
     if applied then return false end
     local why = blocked()
     if why then
-        NS.Debug(TAG, "skipped: %s", why)
+        if why ~= lastSkip then NS.Debug(TAG, "skipped: %s", why) end
+        lastSkip = why
         return false
     end
     applied = true

@@ -173,3 +173,21 @@ L["The EllesmereUI skin comes off after a reload. Reload the UI now?"] =
     "The EllesmereUI skin comes off after a reload. Reload the UI now?"
 L["Reload"] = "Reload"
 L["Later"]  = "Later"
+
+-- EllesmereUI skin: the settings tab (settings/Panel.lua)
+L["EllesmereUI skin"] = "EllesmereUI skin"
+L["Use the EllesmereUI skin"] = "Use the EllesmereUI skin"
+L["Paint the attached filter panel in your EllesmereUI theme, matching Premade Groups Filter's own EllesmereUI skin. Needs every condition listed above. Turning it off takes effect after a reload."] =
+    "Paint the attached filter panel in your EllesmereUI theme, matching Premade Groups Filter's own EllesmereUI skin. Needs every condition listed above. Turning it off takes effect after a reload."
+L["The EllesmereUI skin cannot be turned on until every condition is met:"] =
+    "The EllesmereUI skin cannot be turned on until every condition is met:"
+L["Disabled until every condition is met:"] = "Disabled until every condition is met:"
+L["The skin is applied."] = "The skin is applied."
+L["The skin is applied until you reload the UI."] = "The skin is applied until you reload the UI."
+L["The skin is not applied while the addon is disabled."] =
+    "The skin is not applied while the addon is disabled."
+L["The skin is not applied: a condition above is not met."] =
+    "The skin is not applied: a condition above is not met."
+L["The skin is off."] = "The skin is off."
+L["The skin is applied after a reload."] = "The skin is applied after a reload."
+L["The skin is applied when the panel next shows."] = "The skin is applied when the panel next shows."
