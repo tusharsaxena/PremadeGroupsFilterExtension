@@ -3,7 +3,7 @@
 ![WoW](https://img.shields.io/badge/WoW-Midnight_12.1.0-purple)
 ![License](https://img.shields.io/badge/License-MIT-orange)
 ![Standard](https://img.shields.io/badge/Ka0s-WoW_Addon_Standard-yellow)
-![Tests](https://img.shields.io/badge/Tests-313%2F313_passing-green)
+![Tests](https://img.shields.io/badge/Tests-318%2F318_passing-green)
 
 A small companion to [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter) for Mythic+. You type the key level you want to push (or let Smart pick it), and it ticks every dungeon you haven't timed at that level yet. It can also narrow the list to leaders from the server regions you pick and to the playstyles you want, hide groups that already have your spec or your class in your role, ask for a leader who has timed the dungeon or has a minimum M+ score, and drop old listings. One Apply button sets all of it in Premade Groups Filter and runs the search. It also shows each listing's server region in the Group Finder, so you no longer need PremadeRegions.
 
@@ -76,7 +76,7 @@ Please file bugs and ideas as [GitHub issues](https://github.com/tusharsaxena/Pr
 
 | Version | Date | Highlights |
 |---|---|---|
-| 0.1.0 | in development | - First release: untimed-dungeon targeting by key level (with Smart), server regions, playstyle, composition, experienced-leader and min leader M+ score filters, group age, presets, the filters toggle, and server-region tags on Group Finder rows (replaces PremadeRegions) |
+| 0.1.0 | in development | - First release: untimed-dungeon targeting by key level (with Smart), server regions, playstyle, composition, experienced-leader and min leader M+ score filters, group age, presets, the filters toggle, and server-region tags on Group Finder rows (replaces PremadeRegions), and an optional EllesmereUI skin for the attached panel (gated on EllesmereUI's third-party skinning and Premade Groups Filter's own EllesmereUI skin) |
 
 ## Credits
 

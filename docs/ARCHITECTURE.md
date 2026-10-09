@@ -103,7 +103,8 @@ Three AceDB scopes on `PremadeGroupsFilterExtensionDB`; full shape and defaults 
   row on the General page's *EllesmereUI skin* tab (`settings/Panel.lua`). `disabledIf` while any
   gate condition fails; its `validate` refuses `true` while one fails (off always passes, a bulk
   reset never refused); `onChange` is `NS.EUISkin.OnSwitch` (on paints live, off after a paint asks
-  for a reload).
+  for a reload). A profile switch, copy or reset runs the same `OnSwitch` with the incoming value,
+  after the `enabled` latch re-read, so a disabled incoming profile is never painted.
 - **Named non-setting state** (architecture-§5), each written outside the seam by one owner:
   - `char.filters` — the filter options, **per character**. Owner `modules/Filters.lua`
     (`Filters.Set`, `Filters.ToggleRegion` / `TogglePlaystyle`, `Filters.ClearRegions` /
@@ -233,7 +234,7 @@ Read against EllesmereUI **9.4** (`EllesmereUI_SharedHelpers.lua`,
 | Condition (status line) | Read | Notes |
 |---|---|---|
 | EllesmereUI and its Blizzard Skin module are loaded | `EllesmereUI.RegisterSkin` is a function and `C_AddOns.IsAddOnLoaded("EllesmereUIBlizzardSkin")` | The child holds the dispatcher; without it `RegisterSkin` only queues. Every condition below also needs this one |
-| EllesmereUI third-party skinning is on | `EllesmereUIDB.thirdPartySkinsOff` not true | Mirrors the dispatcher's `MasterOn` (SkinAPI.lua:32-35); nil = on |
+| EllesmereUI third-party skinning is on | `EllesmereUIDB.thirdPartySkinsOff` not truthy | Mirrors the dispatcher's `MasterOn` (SkinAPI.lua:32-35) exactly: nil = on, any truthy value (a `1` from an import too) = off |
 | This addon's Third-Party Addons entry is on | `EllesmereUIDB.thirdPartySkinAddons["PremadeGroupsFilterExtension"]` not false | Mirrors `AddonOn` (SkinAPI.lua:37-41); the entry is listed because we register under the folder name |
 | PGF's own EllesmereUI skin is on | `C_AddOns.IsAddOnLoaded("PremadeGroupsFilter_EllesmereUI")` and `thirdPartySkinAddons["PremadeGroupsFilter"]` not false | `Skin.lua` registers as `PremadeGroupsFilter`; keeps PGF's window and this panel matched |
 
@@ -323,7 +324,7 @@ edit-box limit) refuses.
   missing seam is reported as "PGF version not supported" rather than raising.
 - The EllesmereUI skin is one-way per session: EllesmereUI dispatches each skin once, and painted
   art cannot be taken off live. Turning *Use the EllesmereUI skin* off after a paint asks for a
-  `/reload`; a condition turned off in EllesmereUI's options (including PGF's own skin) leaves the
+  `/reload`, and so does a profile switch, copy or reset onto a profile with it off; a condition turned off in EllesmereUI's options (including PGF's own skin) leaves the
   panel painted until a reload, while the status lines already show it off.
 - A condition turned on in EllesmereUI's options while the panel is built paints on the panel's next
   show (EllesmereUI does not tell this addon when PGF's entry changes).

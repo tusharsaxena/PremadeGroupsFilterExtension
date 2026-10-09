@@ -352,16 +352,25 @@ local function repaintLooks()
     end
 end
 
+local function relayout()
+    for _, cb in ipairs(checkBoxes) do layoutAccentMark(cb) end
+end
+
 -- The accent ring and block are sized in whole pixels: re-laid out after a scale change.
 function NS.addon.OnEUISkinScale()
     if stoodDown() then return end
-    for _, cb in ipairs(checkBoxes) do layoutAccentMark(cb) end
+    relayout()
 end
 
 NS.FEATURE_EVENTS[#NS.FEATURE_EVENTS + 1] = { "UI_SCALE_CHANGED", "OnEUISkinScale" }
 NS.FEATURE_EVENTS[#NS.FEATURE_EVENTS + 1] = { "DISPLAY_SIZE_CHANGED", "OnEUISkinScale" }
--- A paint that waited out a stand-down happens on the way back up.
-NS.STAND_UP[#NS.STAND_UP + 1] = function() EUISkin.TryApply() end
+-- On the way back up: a paint that waited out a stand-down happens now, and an existing paint
+-- catches up on any theme or scale change its guarded handlers ignored while it was down.
+NS.STAND_UP[#NS.STAND_UP + 1] = function()
+    if EUISkin.TryApply() or not applied then return end
+    repaintLooks()
+    relayout()
+end
 
 StaticPopupDialogs[POPUP_RELOAD] = {
     text = L["The EllesmereUI skin comes off after a reload. Reload the UI now?"],

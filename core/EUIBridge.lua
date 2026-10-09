@@ -10,7 +10,7 @@ local _, NS = ...
 -- owner decision 1), in display order:
 --   eui     the EllesmereUI global with RegisterSkin, and its window-skin child loaded (the child
 --           holds the dispatcher; without it RegisterSkin only queues);
---   master  EllesmereUI's master third-party switch (EllesmereUIDB.thirdPartySkinsOff not true);
+--   master  EllesmereUI's master third-party switch (EllesmereUIDB.thirdPartySkinsOff not truthy);
 --   own     this addon's entry in its Third-Party Addons list
 --           (EllesmereUIDB.thirdPartySkinAddons["PremadeGroupsFilterExtension"] not false);
 --   pgf     Premade Groups Filter's own EllesmereUI skin: PremadeGroupsFilter_EllesmereUI loaded
@@ -50,10 +50,11 @@ function Bridge.IsSuiteReady()
     return type(eui) == "table" and type(eui.RegisterSkin) == "function" and loaded(SKIN_CHILD)
 end
 
---- EllesmereUI's master third-party switch (nil = on).
+--- EllesmereUI's master third-party switch (nil = on). Any truthy value is off, exactly as the
+--- dispatcher's MasterOn reads it: a 1 from an import must not show as on here and off there.
 function Bridge.IsMasterOn()
     local d = db()
-    return not (d and d.thirdPartySkinsOff == true)
+    return not (d and d.thirdPartySkinsOff)
 end
 
 --- One entry of EllesmereUI's Third-Party Addons list (nil = on; only an explicit false is off).

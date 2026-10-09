@@ -331,11 +331,12 @@ local function build()
     --   spec.masterOff        EllesmereUIDB.thirdPartySkinsOff = true
     --   spec.entries          EllesmereUIDB.thirdPartySkinAddons (e.g. { PremadeGroupsFilter = false })
     -- Installs C_AddOns too (the base deliberately leaves it out), answering from `m.loadedAddons`,
-    -- with this addon's own folder loaded. Handle: m.eui = { registry, order, fired, calls, looks,
+    -- with this addon's own folder loaded. Handle: m.eui = { registry, order, fired, calls, looks, accent,
     -- dispatch(name), dispatchAll(), callsFor(fn, target), count(fn) }.
     M.installEUI = function(spec)
         spec = spec or {}
-        local eui = { registry = {}, order = {}, fired = {}, calls = {}, looks = {} }
+        local eui = { registry = {}, order = {}, fired = {}, calls = {}, looks = {},
+                      accent = { 0.05, 0.8, 0.6 } }
         M.eui = eui
         M.loadedAddons = {
             PremadeGroupsFilterExtension = true, PremadeGroupsFilter = true, EllesmereUI = true,
@@ -371,7 +372,8 @@ local function build()
                     eui.calls[#eui.calls + 1] = { fn = fname, target = target, opts = opts, skin = name }
                 end
             end
-            S.GetAccentColor = function() return 0.05, 0.8, 0.6 end
+            -- The theme's accent: tests change eui.accent to drive a live looks change.
+            S.GetAccentColor = function() local a = eui.accent; return a[1], a[2], a[3] end
             S.GetFont = function() return "Fonts\\EUI.ttf", "" end
             S.GetStyle = function() return "eui" end
             S.OnLooksChanged = function(fn) eui.looks[#eui.looks + 1] = fn end

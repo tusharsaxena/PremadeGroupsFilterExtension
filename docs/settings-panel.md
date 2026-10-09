@@ -44,7 +44,8 @@ Untabbed by rule (options-ui-§13): the host's `buildMain` in `settings/Panel.lu
   - A state line: applied; applied until a reload; not applied (stood down / a condition not met);
     off; applied after a reload; applied when the panel next shows.
   - *Use the EllesmereUI skin* → `euiSkin` (profile, default on). Disabled while any condition fails
-    (never forced on); its tooltip adds what is missing, live. Off after a paint asks for a reload.
+    (never forced on); its tooltip adds what is missing, live. Off after a paint asks for a reload, whether
+    from the switch or from a profile switch, copy or reset.
   - Every line and the box are re-read each time the page is shown (an `OnShow` hook running the
     page's refreshers), since EllesmereUI's options change them outside this addon's write seam.
 

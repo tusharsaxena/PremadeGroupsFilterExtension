@@ -171,6 +171,30 @@ test("euiskin: a profile switch to one with the switch on paints", function()
     assertTrue(NS.EUISkin.IsApplied())
 end)
 
+-- red under: reloadProfile calling TryApply instead of the switch handler OnSwitch
+test("euiskin: a profile switch to one with the switch off, after a paint, asks for a reload", function()
+    local NS, m = painted()
+    NS.addon.db.profile.euiSkin = false
+    NS.addon:OnProfileChanged(nil, nil, "Other")
+    assertEqual(#m.popupsShown, 1)
+    assertEqual(m.popupsShown[1][1], NS.EUISkin.POPUP_RELOAD)
+    assertTrue(NS.EUISkin.IsApplied(), "a skin cannot come off live")
+end)
+
+-- red under: reloadProfile painting before the Lifecycle re-read of `enabled`
+test("euiskin: a profile switch to a disabled profile with the switch on paints nothing", function()
+    local NS, _, m = setup()
+    NS.addon.db.profile.euiSkin = false
+    NS.Panel.Create()
+    m.eui.dispatch(NAME)
+    NS.addon.db.profile.euiSkin = true
+    NS.addon.db.profile.enabled = false
+    NS.addon:OnProfileChanged(nil, nil, "Other")
+    assertTrue(NS.IsStoodDown())
+    assertFalse(NS.EUISkin.IsApplied())
+    assertEqual(m.eui.count("Shell"), 0)
+end)
+
 -- ── geometry ────────────────────────────────────────────────────────────────────────────────────
 
 test("euiskin: skinned, the collapsed panel is the shell's 25px bar and the metal copies are hidden", function()
@@ -258,12 +282,46 @@ test("euiskin: only the title is whitened; readout, copy label and number boxes 
     assertEqual(#m.eui.callsFor("Font", f.levelBox), 1)
 end)
 
-test("euiskin: live looks and scale changes repaint without raising", function()
+-- The accent ring of a painted box: the frame skinCheckBox created last on it.
+local function ringOf(cb) return cb.__children[#cb.__children] end
+
+-- red under: repaintLooks a no-op (the block and ring keep the old accent)
+test("euiskin: a live looks change recolors the accent block and ring", function()
     local _, m, f = painted()
+    local cb = f.checks.minScoreEnabled
+    m.eui.accent = { 1, 0, 0 }
     m.eui.looks[1]()
+    assertEqual(table.concat(cb:GetCheckedTexture().__color, ","), "1,0,0,1")
+    assertEqual(table.concat(ringOf(cb).edges[1].__color, ","), "1,0,0,1")
+end)
+
+-- At a 0.7 pixel factor the 16px box is 23px and the 10px block rounds to 14, then to 13 for
+-- the box's parity: 13 * 0.7 units.
+-- red under: OnEUISkinScale skipping layoutAccentMark
+test("euiskin: a scale change re-lays out the accent block in whole pixels", function()
+    local _, m, f = painted()
+    local mark = f.checks.minScoreEnabled:GetCheckedTexture()
+    assertEqual(mark.__width, 10)
+    m.PixelUtil.GetPixelToUIUnitFactor = function() return 0.7 end
     m.fireEvent("UI_SCALE_CHANGED")
+    assertTrue(math.abs(mark.__width - 9.1) < 1e-9, tostring(mark.__width))
     m.fireEvent("DISPLAY_SIZE_CHANGED")
-    assertEqual(table.concat(f.checks.minScoreEnabled:GetCheckedTexture().__color, ","), "0.05,0.8,0.6,1")
+end)
+
+-- red under: the STAND_UP entry only calling TryApply (which refuses once applied)
+test("euiskin: theme and scale changes while stood down catch up at the stand-up", function()
+    local NS, m, f = painted()
+    local mark = f.checks.minScoreEnabled:GetCheckedTexture()
+    NS.addon:OnSlashCommand("disable")
+    m.eui.accent = { 1, 0, 0 }
+    m.eui.looks[1]()
+    m.PixelUtil.GetPixelToUIUnitFactor = function() return 0.7 end
+    NS.addon.OnEUISkinScale()
+    assertEqual(table.concat(mark.__color, ","), "0.05,0.8,0.6,1", "nothing while stood down")
+    assertEqual(mark.__width, 10)
+    NS.addon:OnSlashCommand("enable")
+    assertEqual(table.concat(mark.__color, ","), "1,0,0,1")
+    assertTrue(math.abs(mark.__width - 9.1) < 1e-9, tostring(mark.__width))
 end)
 
 test("euiskin: the diagnostics dependencies section reports the gate and the skin", function()

@@ -177,7 +177,7 @@ Total.
 - bridge: env hook refuses when the seam is missing
 - bridge: HookDialog wires SwitchToPanel and both scripts
 
-### test_euibridge.lua (15)
+### test_euibridge.lua (16)
 
 - euibridge: the module publishes its namespace table and the skin name
 - euibridge: four conditions, in display order, each with a label and a hint
@@ -185,6 +185,7 @@ Total.
 - euibridge: EllesmereUI absent closes every condition, without raising
 - euibridge: the window-skin child not loaded closes the gate at eui
 - euibridge: an EllesmereUI without RegisterSkin is not ready
+- euibridge: a truthy non-boolean master value reads as off, as the dispatcher reads it
 - euibridge: the master switch off closes the gate at master, and only master
 - euibridge: our own entry off closes the gate at own
 - euibridge: PGF's skin entry off closes the gate at pgf
@@ -289,7 +290,7 @@ Total.
 - panel: the copy box and its label dim and disable while key targeting is off
 - panel: the panel's frame level is above PGF's dialog and its border
 
-### test_euiskin.lua (22)
+### test_euiskin.lua (26)
 
 - euiskin: the module publishes its namespace table
 - euiskin: registers once, at file load, under the folder name
@@ -305,13 +306,17 @@ Total.
 - euiskin: master off at login, turned on in EllesmereUI later, paints live
 - euiskin: stood down, the callback paints nothing; the stand-up paints
 - euiskin: a profile switch to one with the switch on paints
+- euiskin: a profile switch to one with the switch off, after a paint, asks for a reload
+- euiskin: a profile switch to a disabled profile with the switch on paints nothing
 - euiskin: skinned, the collapsed panel is the shell's 25px bar and the metal copies are hidden
 - euiskin: skinned, the panel hangs 2px below PGF's dialog, both edges
 - euiskin: the min/max buttons get the minus (collapse) and the plus (expand)
 - euiskin: checkboxes shrink to 24, row boxes stay on their row, hit rects follow the label
 - euiskin: the accent ring follows the check, and not while stood down
 - euiskin: only the title is whitened; readout, copy label and number boxes keep their color
-- euiskin: live looks and scale changes repaint without raising
+- euiskin: a live looks change recolors the accent block and ring
+- euiskin: a scale change re-lays out the accent block in whole pixels
+- euiskin: theme and scale changes while stood down catch up at the stand-up
 - euiskin: the diagnostics dependencies section reports the gate and the skin
 
 ### test_euisettings.lua (12)
@@ -415,10 +420,10 @@ Total.
 | test_envinject.lua | 10 |
 | test_regiontags.lua | 8 |
 | test_bridge.lua | 13 |
-| test_euibridge.lua | 15 |
+| test_euibridge.lua | 16 |
 | test_apply.lua | 16 |
 | test_panel.lua | 72 |
-| test_euiskin.lua | 22 |
+| test_euiskin.lua | 26 |
 | test_euisettings.lua | 12 |
 | test_vendor_sync.lua | 3 |
 | test_eol.lua | 2 |
@@ -427,4 +432,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **313** |
+| **Total** | **318** |

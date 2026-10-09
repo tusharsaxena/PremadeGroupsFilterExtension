@@ -58,11 +58,16 @@ local function reloadProfile(self)
     if S and S.RefreshProfilesPage then S.RefreshProfilesPage() end
     -- The attached panel's collapsed state is in the profile. A stand-down below hides it anyway.
     if NS.Panel and NS.Panel.frame then NS.Panel.Refresh() end
-    -- An incoming profile may turn the EllesmereUI skin switch on (turning it off needs a reload).
-    if NS.EUISkin then NS.EUISkin.TryApply() end
     if NS.Lifecycle then
         NS.Lifecycle:Set(NS.HOLD_DISABLED, not (self.db and self.db.profile and self.db.profile.enabled))
         NS.Lifecycle:Reevaluate()
+    end
+    -- The incoming profile's EllesmereUI skin switch, through the switch's own handler: on paints
+    -- (refused while stood down, so a disabled profile never gets the one-way paint), off after a
+    -- paint asks for the reload. After the latch re-read, so the paint sees the final state.
+    if NS.EUISkin then
+        local p = self.db and self.db.profile
+        NS.EUISkin.OnSwitch(p ~= nil and p.euiSkin == true)
     end
 end
 

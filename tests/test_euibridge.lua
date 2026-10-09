@@ -70,6 +70,15 @@ test("euibridge: an EllesmereUI without RegisterSkin is not ready", function()
     assertFalse(NS.EUIBridge.IsSuiteReady())
 end)
 
+-- EllesmereUI's dispatcher reads any truthy thirdPartySkinsOff as off (SkinAPI.lua MasterOn).
+-- red under: IsMasterOn comparing thirdPartySkinsOff == true
+test("euibridge: a truthy non-boolean master value reads as off, as the dispatcher reads it", function()
+    local NS = withEUI(nil, function(m) m.EllesmereUIDB.thirdPartySkinsOff = 1 end)
+    assertFalse(NS.EUIBridge.IsMasterOn())
+    local open, failing = NS.EUIBridge.GateOpen()
+    assertFalse(open); assertEqual(failing, "master")
+end)
+
 -- red under: IsMasterOn ignoring thirdPartySkinsOff
 test("euibridge: the master switch off closes the gate at master, and only master", function()
     local NS = withEUI{ masterOff = true }
