@@ -21,8 +21,8 @@ two things it is:
 2. **A change to the standard itself** — the standard's definition should evolve; the update
    belongs upstream in the WowAddonStandards repo, after which this addon conforms to the new rule.
 
-No frozen compliance snapshot yet: the first audit lands in `docs/audits/` with plan Task 11. The
-newest automated-test record is the 0.1.0 release run `docs/automated-tests/20261009-082905/`.
+The newest compliance snapshot is `docs/audits/2026-10-09/` (standard v2.77.0; its findings and the
+review bundle `docs/reviews/2026-10-09/` were fixed or filed as issues #4-#19). The newest automated-test record is the 0.1.0 release run `docs/automated-tests/20261009-082905/`.
 
 When in doubt, treat standard conformance as a hard requirement and ask.
 
