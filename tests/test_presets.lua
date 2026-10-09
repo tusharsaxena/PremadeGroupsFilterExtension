@@ -37,3 +37,17 @@ test("presets: names are trimmed and saving overwrites", function()
     assertTrue(NS.Presets.Load(" mine "))
     assertEqual(f.keyLevel, 18)
 end)
+
+-- Review F-007: a preset saved before a filter key existed must not drop that key on Load.
+test("presets: a preset missing keys loads over the current defaults", function()
+    local NS = T.bootAddon()
+    local f = NS.Filters.Get()
+    NS.addon.db.global.presets.old = { keyLevel = 12, noSameSpec = true }
+    assertTrue(NS.Presets.Load("old"))
+    assertTrue(NS.Filters.Get() == f, "same live table")
+    assertEqual(f.keyLevel, 12); assertTrue(f.noSameSpec)
+    -- red under: wipe the live table and copy only the preset's keys in Presets.Load
+    assertEqual(type(f.regions), "table"); assertEqual(next(f.regions), nil)
+    assertEqual(f.maxAge, NS.C.CHAR_DEFAULTS.filters.maxAge)
+    assertTrue(NS.addon.db.global.presets.old.regions == nil, "the stored preset is not modified")
+end)

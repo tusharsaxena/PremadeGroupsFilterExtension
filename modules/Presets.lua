@@ -2,7 +2,9 @@ local _, NS = ...
 -- modules/Presets.lua — named, account-wide snapshots of the filter options (global.presets).
 --
 -- Save stores a deep copy of char.filters; Load deep-copies back into the live table in place, so
--- every holder of Filters.Get() sees the loaded values and the stored preset is never aliased.
+-- every holder of Filters.Get() sees the loaded values and the stored preset is never aliased. Load
+-- lays the preset over a copy of the current filter defaults, so a preset saved before a filter key
+-- existed still loads a complete option set.
 
 local Presets = NS.Presets or {}
 NS.Presets = Presets
@@ -38,9 +40,11 @@ end
 function Presets.Load(name)
     local src = store()[cleanName(name)]
     if not src then return false, "missing" end
+    local fresh = copy(NS.C.CHAR_DEFAULTS.filters)
+    for k, v in pairs(copy(src)) do fresh[k] = v end
     local live = NS.Filters.Get()
     for k in pairs(live) do live[k] = nil end
-    for k, v in pairs(copy(src)) do live[k] = v end
+    for k, v in pairs(fresh) do live[k] = v end
     return true
 end
 

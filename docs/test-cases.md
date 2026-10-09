@@ -119,11 +119,12 @@ Total.
 - filters: set and region toggle write the live table
 - filters: per-character defaults
 
-### test_presets.lua (3)
+### test_presets.lua (4)
 
 - presets: save/load round-trip is a deep copy into the same table
 - presets: list sorted, delete, bad names, missing
 - presets: names are trimmed and saving overwrites
+- presets: a preset missing keys loads over the current defaults
 
 ### test_envinject.lua (9)
 
@@ -280,7 +281,7 @@ Total.
 | test_season.lua | 6 |
 | test_expression.lua | 11 |
 | test_filters.lua | 4 |
-| test_presets.lua | 3 |
+| test_presets.lua | 4 |
 | test_envinject.lua | 9 |
 | test_bridge.lua | 13 |
 | test_apply.lua | 12 |
@@ -292,4 +293,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **194** |
+| **Total** | **195** |
