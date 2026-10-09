@@ -80,7 +80,7 @@ Total.
 - regions: data integrity — no realm in two buckets, only known keys
 - regions: every bucket is populated
 
-### test_targeting.lua (7)
+### test_targeting.lua (9)
 
 - targeting: the module publishes its namespace table
 - targeting: N=14 targets the four dungeons timed below 14
@@ -89,6 +89,8 @@ Total.
 - targeting: never-timed counts as 0
 - targeting: ToSet keys the targets by cmID
 - targeting: level validation and range text
+- targeting: SmartLevel is the lowest best timed level + 1
+- targeting: SmartLevel counts never-timed as 0, clamps to 2..40, nil without rows
 
 ### test_season.lua (6)
 
@@ -113,21 +115,29 @@ Total.
 - expression: the block passes everything when the env hook did not run
 - expression: without the hook, the user's own text still decides
 
-### test_filters.lua (4)
+### test_filters.lua (11)
 
 - filters: clause opts honor enable flags and portal order
+- filters: regions on with none selected for this portal filters on no region
+- filters: playstyles on with some ticked filter on those, in the game's order
 - filters: validation
 - filters: set and region toggle write the live table
 - filters: per-character defaults
+- filters: ticking the last unticked option clears the set to Any
+- filters: a stored all-ticked set is Any: no clause, and a tick selects that option alone
+- filters: clearing empties this portal's regions and the playstyles
+- filters: ApplySmartLevel sets the level from the season only when Smart is on
+- filters: composition applies only while its box is on
 
-### test_presets.lua (4)
+### test_presets.lua (5)
 
 - presets: save/load round-trip is a deep copy into the same table
 - presets: list sorted, delete, bad names, missing
 - presets: names are trimmed and saving overwrites
 - presets: a preset missing keys loads over the current defaults
+- presets: Smart travels with a preset; an older preset loads the default (on)
 
-### test_envinject.lua (9)
+### test_envinject.lua (10)
 
 - envinject: the module publishes its namespace table
 - envinject: keywords follow PGF's formula
@@ -138,6 +148,18 @@ Total.
 - envinject: PLAYER_SPECIALIZATION_CHANGED refreshes for the player only
 - envinject: regions injected only without PremadeRegions
 - envinject: stood down → hook is a no-op
+- envinject: the block's guard is off while Toggle PGF Extension Filters is off
+
+### test_regiontags.lua (8)
+
+- regiontags: a search row gets the leader's colored region in front of its activity
+- regiontags: a leader on the player's own realm, an unknown realm, an unsupported portal
+- regiontags: EU realms are tagged by language
+- regiontags: an applicant gets their region in front of their name
+- regiontags: no tag while stood down, with the setting off, or with PremadeRegions loaded
+- regiontags: the setting is a schema row, on by default
+- regiontags: a name that is not a plain string gets no tag and raises nothing
+- regiontags: every region bucket has a color
 
 ### test_bridge.lua (13)
 
@@ -155,7 +177,7 @@ Total.
 - bridge: env hook refuses when the seam is missing
 - bridge: HookDialog wires SwitchToPanel and both scripts
 
-### test_apply.lua (13)
+### test_apply.lua (16)
 
 - apply: the module publishes its namespace table
 - apply: N=14 ticks AOF/RLP/BV/KR, writes block, triggers, searches
@@ -170,8 +192,11 @@ Total.
 - apply: after Apply then /pgfe disable, PGF's evaluation passes groups again
 - apply: PGF minimized → refuses Apply and Clear, nothing written or searched
 - apply: the message counts the rows ticked, and says so when targeting is off
+- apply: with Smart on, Run sets the key level from the season bests first
+- apply: refuses while Toggle PGF Extension Filters is off, writing nothing
+- apply: the filtersActive setting is a schema row, and its writes remove / rewrite the block
 
-### test_panel.lua (30)
+### test_panel.lua (72)
 
 - panel: the module publishes its namespace table
 - panel: anchored under PGF dialog, both edges
@@ -182,9 +207,12 @@ Total.
 - panel: the dialog's SwitchToPanel is hooked at load
 - panel: hidden when stood down, and the dialog hook is a no-op
 - panel: the dialog hook body returns at once while stood down
-- panel: region chips follow portal
-- panel: a chip click toggles the region and its highlight
-- panel: unsupported portal shows the note and no chips
+- panel: the region dropdown lists this portal's regions
+- panel: ticking a region writes it and keeps the menu open; the button sums up
+- panel: a long selection is summed up as a count
+- panel: unsupported portal shows the note instead of the region dropdown
+- panel: the playstyle dropdown uses the game's names and writes the playstyles
+- panel: a tick while stood down writes nothing
 - panel: range field shows N-N for the current level
 - panel: typing into the range field puts the range back
 - panel: a level commits on Enter / focus loss, never per keystroke
@@ -203,6 +231,45 @@ Total.
 - panel: preset Delete removes the selected preset after confirming
 - panel: Enter in the Save as box saves and closes the popup
 - panel: a blank preset name is refused
+- panel: the score box commits a whole rating and re-syncs a rejected one
+- panel: each number box is anchored to the right of its own label
+- panel: the expanded height fits every row
+- panel: the min/max arrow follows the stored collapsed state
+- panel: collapsed shows only the header strip, drawn by two clipped border copies
+- panel: expanded keeps the template's own border; the header copies hide
+- panel: a saved collapsed state shows the header strip on the first Refresh
+- panel: without NineSliceUtil the collapse still folds, with no header copies
+- panel: the header copies sit at the panel's own level, under the arrow
+- panel: a successful Apply focuses the range box; Enter there focuses the search box
+- panel: the arrow art is swapped between the min/max buttons
+- panel: the regions and playstyle dropdowns are 225 wide, right-aligned in one column
+- panel: each menu opens with Any and a divider; Any is ticked with nothing ticked and clears
+- panel: ticking every option stores Any and the button reads Any
+- panel: a stored all-ticked set reads Any; a tick then selects that option alone
+- panel: the readout is one row high, so the rows below keep the same pitch
+- panel: a readout too wide for its row closes the gaps to one space
+- panel: every checkbox has a tooltip, and its label hovers and clicks as the box
+- panel: every number box, button and the copy box and its label have a tooltip
+- panel: each dropdown and every menu entry has a tooltip
+- panel: tooltips stay quiet while stood down
+- panel: presets: one row, the dropdown up to three equal buttons right-aligned
+- panel: Apply and Clear share one width, with extra space above their row
+- panel: the copy box is right-aligned on the action row, its label before it, clear of Clear
+- panel: Smart sits right of the level box; ticked, it locks the box and sets the level
+- panel: the level box locked by Smart still shows its tooltip
+- panel: Smart keeps the stored level until season data arrives, then follows it
+- panel: with Smart off, season data leaves the level box alone
+- panel: Smart writes nothing while stood down
+- panel: the level row fits the body: label, box, Smart and its label
+- panel: a fresh character sees the owner's default panel
+- panel: the presets row has the same extra space above as below, buttons as tall as the dropdown
+- panel: Composition is one dropdown; Any clears, both ticked stays both (not Any)
+- panel: Toggle PGF Extension Filters is the first row, on by default
+- panel: unticking Toggle PGF Extension Filters removes the block; ticking writes it back
+- panel: presets never switch the extension on or off
+- panel: the title is centered on the whole header
+- panel: the copy box and its label dim and disable while key targeting is off
+- panel: the panel's frame level is above PGF's dialog and its border
 
 ### test_vendor_sync.lua (3)
 
@@ -282,15 +349,16 @@ Total.
 | test_slash.lua | 6 |
 | test_disabled.lua | 5 |
 | test_regions.lua | 11 |
-| test_targeting.lua | 7 |
+| test_targeting.lua | 9 |
 | test_season.lua | 6 |
 | test_expression.lua | 11 |
-| test_filters.lua | 4 |
-| test_presets.lua | 4 |
-| test_envinject.lua | 9 |
+| test_filters.lua | 11 |
+| test_presets.lua | 5 |
+| test_envinject.lua | 10 |
+| test_regiontags.lua | 8 |
 | test_bridge.lua | 13 |
-| test_apply.lua | 13 |
-| test_panel.lua | 30 |
+| test_apply.lua | 16 |
+| test_panel.lua | 72 |
 | test_vendor_sync.lua | 3 |
 | test_eol.lua | 2 |
 | test_prose.lua | 15 |
@@ -298,4 +366,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **200** |
+| **Total** | **264** |

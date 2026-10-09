@@ -90,6 +90,16 @@ local MASTER_ROWS, MASTER_TAIL = Helpers.MasterControls{
     minimapPath      = "global.minimap.shown",
     defaults         = { enabled = C.PROFILE.enabled, debugConsole = false },
     onResetAll       = showResetPopup,
+    -- A legitimate extra (options-ui-§16), after the mandated rows: the attached panel's first box.
+    -- Separate from Enable: this one leaves the panel up and only takes the filters out of PGF.
+    extra            = {
+        { path = "filtersActive", type = "bool", default = C.PROFILE.filtersActive,
+          label = NS.L.FILTERS_ACTIVE, tooltip = NS.L.FILTERS_ACTIVE_TOOLTIP },
+        -- The region tag on Group Finder rows and applicants (modules/RegionTags.lua); read on every
+        -- row paint, so it needs no onChange: the next search or list refresh shows the change.
+        { path = "showRegionTags", type = "bool", default = C.PROFILE.showRegionTags,
+          label = NS.L.SHOW_REGION_TAGS, tooltip = NS.L.SHOW_REGION_TAGS_TOOLTIP },
+    },
 }
 
 -- The Enable row drives the latch: the same Set the CLI, the launcher and a profile switch make.
@@ -97,6 +107,7 @@ local MASTER_HOOKS = {
     enabled = function(v)
         if NS.Lifecycle then NS.Lifecycle:Set(NS.HOLD_DISABLED, not v) end
     end,
+    filtersActive = function(v) NS.Apply.OnFiltersToggled(v and true or false) end,
 }
 
 for _, row in ipairs(MASTER_ROWS) do

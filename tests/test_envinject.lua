@@ -92,3 +92,13 @@ test("envinject: stood down → hook is a no-op", function()
     assertNil(env.pgfe_samespec); assertNil(env.pgfe_sameclassrole)
     assertNil(env.region); assertFalse(env.oce)
 end)
+
+test("envinject: the block's guard is off while Toggle PGF Extension Filters is off", function()
+    local NS, _, m = T.enableAddon{}
+    local env = runHook(m, {}, "Leader-Barthilas")
+    assertTrue(env.pgfe_on)
+    NS.Filters.SetActive(false)
+    env = runHook(m, {}, "Leader-Barthilas")
+    -- red under: env.pgfe_on = true unconditionally in EnvInject.Apply
+    assertFalse(env.pgfe_on)
+end)

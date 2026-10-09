@@ -76,6 +76,7 @@ modules\Expression.lua
 modules\Filters.lua
 modules\Presets.lua
 modules\EnvInject.lua
+modules\RegionTags.lua
 modules\Apply.lua
 modules\Panel.lua
 # Conventional: core\DebugLogSetup.lua's descriptor reads NS.Diagnostics at RUN time.

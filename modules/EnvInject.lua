@@ -7,7 +7,7 @@ local _, NS = ...
 -- module post-hooks that call and adds:
 --   pgfe_samespec       members sharing the player's spec (env[<player spec keyword>])
 --   pgfe_sameclassrole  members sharing the player's class in the player's role
---   pgfe_on             true; the managed block is `not pgfe_on or (...)`, so it is neutral
+--   pgfe_on             true unless switched off in the panel; the managed block is `not pgfe_on or (...)`, so it is neutral
 --                       whenever this hook did not run (stood down, disabled, uninstalled)
 --   region + the twelve region keys, only when PremadeRegions is not loaded (PGF's own plugin
 --   fills them from PremadeRegions when it is: Plugins/PremadeRegions.lua:25-46).
@@ -59,7 +59,9 @@ end
 --- The hook body. Returns at once while stood down (hooksecurefunc has no un-hook).
 function EnvInject.Apply(env, leaderName)
     if NS.IsStoodDown() then return end
-    env.pgfe_on = true -- the managed block's guard (modules/Expression.lua Merge)
+    -- The managed block's guard (modules/Expression.lua Merge). False while "Toggle PGF Extension
+    -- Filters" (`filtersActive`) is off, so a block that Clear could not remove (combat) passes every group.
+    env.pgfe_on = NS.Filters.IsActive()
     if not PremadeRegions then injectRegions(env, leaderName) end
     env.pgfe_samespec = player.spec and tonumber(env[player.spec]) or 0
     env.pgfe_sameclassrole = player.classRole and tonumber(env[player.classRole]) or 0

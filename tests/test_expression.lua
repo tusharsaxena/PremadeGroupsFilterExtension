@@ -7,10 +7,12 @@ local test, assertEqual, assertNil, assertTrue, assertFalse =
 local function E() return T.newAddon().Expression end
 
 test("expression: clauses in fixed order", function()
-    local c = E().BuildClauses{ regions = { "oce", "chi" }, noSameSpec = true, noSameClassRole = true,
-        experiencedLeader = true, keyLevel = 14, maxAge = 15 }
+    local c = E().BuildClauses{ regions = { "oce", "chi" }, playstyles = { "relaxed", "carry" },
+        noSameSpec = true, noSameClassRole = true,
+        experiencedLeader = true, keyLevel = 14, minScore = 2500, maxAge = 15 }
     assertEqual(table.concat(c, " | "),
-        "( oce or chi ) | pgfe_samespec == 0 | pgfe_sameclassrole == 0 | ( mpmapintime and mpmapmaxkey >= 14 ) | age <= 15")
+        "( oce or chi ) | ( relaxed or carry ) | pgfe_samespec == 0 | pgfe_sameclassrole == 0 | ( mpmapintime and mpmapmaxkey >= 14 )"
+        .. " | mprating >= 2500 | age <= 15")
 end)
 
 test("expression: empty user text → bare block", function()

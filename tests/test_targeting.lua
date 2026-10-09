@@ -46,3 +46,28 @@ test("targeting: level validation and range text", function()
     assertFalse(NS.Targeting.IsValidLevel(nil))
     assertEqual(NS.Targeting.RangeText(14), "14-14")
 end)
+
+-- Owner request: Smart picks the lowest level at which at least one dungeon is still untimed.
+test("targeting: SmartLevel is the lowest best timed level + 1", function()
+    local NS = T.newAddon()
+    local function rows(...)
+        local out = {}
+        for i, lvl in ipairs({ ... }) do out[i] = { cmID = i, bestTimed = lvl } end
+        return out
+    end
+    -- The owner's examples: KR 12, MR 13, TOS 13, DON 14 -> 13; all four at 13 -> 14.
+    assertEqual(NS.Targeting.SmartLevel(rows(12, 13, 13, 14)), 13)
+    assertEqual(NS.Targeting.SmartLevel(rows(13, 13, 13, 13)), 14)
+    assertEqual(NS.Targeting.SmartLevel(sample()), 14)
+    -- The level it picks always leaves something to target.
+    assertTrue(#NS.Targeting.Compute(sample(), NS.Targeting.SmartLevel(sample())) > 0)
+end)
+
+test("targeting: SmartLevel counts never-timed as 0, clamps to 2..40, nil without rows", function()
+    local NS = T.newAddon()
+    assertEqual(NS.Targeting.SmartLevel({ { cmID = 1, bestTimed = 0 }, { cmID = 2, bestTimed = 9 } }), 2)
+    assertEqual(NS.Targeting.SmartLevel({ { cmID = 1 } }), 2)
+    assertEqual(NS.Targeting.SmartLevel({ { cmID = 1, bestTimed = 45 } }), 40)
+    assertEqual(NS.Targeting.SmartLevel({}), nil)
+    assertEqual(NS.Targeting.SmartLevel(nil), nil)
+end)

@@ -3,7 +3,8 @@ local _, NS = ...
 --
 -- Three scopes, each one AceDB defaults table (settings/Schema.lua's Settings.BuildDefaults
 -- assembles them):
---   profile  master settings (options-ui-§15) and the attached panel's collapsed state;
+--   profile  master settings (options-ui-§15), their two extra rows and the attached panel's
+--            collapsed state;
 --   char     the filter options, PER CHARACTER by the owner's requirement;
 --   global   the schema stamp, the named presets (shared by every character) and LibDBIcon's table.
 --
@@ -14,15 +15,21 @@ local _, NS = ...
 NS.C = {
     PROFILE = {
         enabled        = true,    -- master switch (the `disabled` hold reads it)
+        filtersActive  = true,    -- Toggle PGF Extension Filters (a Master controls extra row)
+        showRegionTags = true,    -- the region tag on Group Finder rows (a Master controls extra row)
         panelCollapsed = false,   -- the attached panel folded to its title bar (modules/Panel.lua)
     },
 
     CHAR_DEFAULTS = {
         filters = {
             keyTargeting = true,  keyLevel = 10,
-            regionsEnabled = false, regions = {},          -- set: { oce = true, chi = true }
+            smartKeyLevel = true,                          -- the addon sets keyLevel (Targeting.SmartLevel)
+            regionsEnabled = true,  regions = {},          -- set: { oce = true, chi = true }
+            playstyleEnabled = true,  playstyles = {},     -- set: { relaxed = true }
+            compositionEnabled = true,                     -- the Composition row's own box
             noSameSpec = false,   noSameClassRole = false,
             experiencedLeader = false,
+            minScoreEnabled = false, minScore = 2000,
             maxAgeEnabled = false, maxAge = 15,
         },
     },

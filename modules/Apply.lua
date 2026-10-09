@@ -5,7 +5,9 @@ local _, NS = ...
 -- on the dungeon category, the dialog minimized (PGF then filters with its mini panel, so the
 -- dungeon state would not take effect), invalid options, season data still loading, nothing untimed, and an expression
 -- the merge refuses. Each return is `ok, msgKey, ...` where `...` are the format arguments of
--- NS.L[msgKey]. Search() is called only when the caller is inside a hardware event (opts.search).
+-- NS.L[msgKey]. With Smart on, Run recomputes the key level once the prechecks pass
+-- (Filters.ApplySmartLevel), so `/pgfe apply` and the button target the same level. Search() is
+-- called only when the caller is inside a hardware event (opts.search).
 
 local Apply = NS.Apply or {}
 NS.Apply = Apply
@@ -13,7 +15,7 @@ NS.Apply = Apply
 --- "N-N" of the last successful Apply, or nil.
 Apply.LastRange = nil
 
-local VALIDATION_MSG = { badLevel = "MSG_BAD_LEVEL", badAge = "MSG_BAD_AGE", noRegions = "MSG_NO_REGIONS" }
+local VALIDATION_MSG = { badLevel = "MSG_BAD_LEVEL", badScore = "MSG_BAD_SCORE", badAge = "MSG_BAD_AGE" }
 local EXPR_MSG = { damaged = "MSG_DAMAGED", toolong = "MSG_TOOLONG" }
 
 local function precheck()
@@ -41,8 +43,10 @@ end
 function Apply.Run(opts)
     local err, arg = precheck()
     if err then return false, err, arg end
+    if not NS.Filters.IsActive() then return false, "MSG_INACTIVE" end
+    NS.Filters.ApplySmartLevel()
     local portal = NS.Regions.GetPortal()
-    local valid, why = NS.Filters.Validate(portal)
+    local valid, why = NS.Filters.Validate()
     if not valid then return false, VALIDATION_MSG[why] end
     local f = NS.Filters.Get()
     local targets, tErr = dungeonTargets(f)
@@ -71,6 +75,19 @@ function Apply.Clear()
     NS.Bridge.SetExpression(text)
     NS.Bridge.Commit()
     return true, "MSG_CLEARED"
+end
+
+--- The `filtersActive` row's onChange (settings/Panel.lua): every write of "Toggle PGF Extension
+--- Filters" lands here, from the panel, the settings page or `/pgfe set`. Off removes the managed block;
+--- on writes it back without a search. Only while PGF's dungeon panel is up: otherwise (PGF closed,
+--- a profile reset from the settings page) nothing is written or printed, and the block's guard
+--- (`pgfe_on`, modules/EnvInject.lua) keeps a block left in PGF's state neutral while it is off.
+function Apply.OnFiltersToggled(on)
+    if NS.IsStoodDown() then return end
+    if NS.Bridge.IsDungeonPanelActive() then
+        if on then Apply.Report(Apply.Run{}) else Apply.Report(Apply.Clear()) end
+    end
+    if NS.Panel and NS.Panel.Refresh then NS.Panel.Refresh() end
 end
 
 --- Print a Run/Clear result through NS.Print.

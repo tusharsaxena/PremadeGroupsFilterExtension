@@ -22,8 +22,11 @@ test("setup: per-character filter defaults (char.filters)", function()
     local NS = T.bootAddon()
     local f = NS.addon.db.char.filters
     assertTrue(f.keyTargeting); assertEqual(f.keyLevel, 10)
-    assertFalse(f.regionsEnabled); assertEqual(next(f.regions), nil)
+    assertTrue(f.regionsEnabled); assertEqual(next(f.regions), nil)
+    assertTrue(f.playstyleEnabled); assertEqual(next(f.playstyles), nil)
+    assertTrue(f.compositionEnabled)
     assertFalse(f.noSameSpec); assertFalse(f.noSameClassRole); assertFalse(f.experiencedLeader)
+    assertFalse(f.minScoreEnabled); assertEqual(f.minScore, 2000)
     assertFalse(f.maxAgeEnabled); assertEqual(f.maxAge, 15)
 end)
 

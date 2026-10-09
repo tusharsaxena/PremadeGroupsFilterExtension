@@ -41,6 +41,7 @@ end)
 test("apply: everything timed → refuses, nothing written", function()
     local NS, _, m = T.enableAddon{}
     seasonFromScreenshot(m)
+    NS.Filters.Get().smartKeyLevel = false -- a manually set level
     NS.Filters.Get().keyLevel = 2
     local ok, key = NS.Apply.Run{ search = true }
     assertFalse(ok); assertEqual(key, "MSG_ALL_TIMED"); assertEqual(m.pgf.calls.trigger, 0)
@@ -67,6 +68,7 @@ test("apply: invalid options refuse before anything is written", function()
     local NS, _, m = T.enableAddon{}
     seasonFromScreenshot(m)
     local f = NS.Filters.Get()
+    f.smartKeyLevel = false -- a manually set level
     f.keyLevel = 99
     assertEqual(select(2, NS.Apply.Run{}), "MSG_BAD_LEVEL"); f.keyLevel = 14
     f.maxAgeEnabled = true; f.maxAge = 0
@@ -88,7 +90,7 @@ test("apply: keeps user text; clear restores it", function()
     seasonFromScreenshot(m)
     m.pgf.panel.state.expression = "voice or myrealm"
     -- keyLevel 14: at the default 10 every screenshot dungeon is timed and Run refuses.
-    local f = NS.Filters.Get(); f.keyLevel = 14; f.noSameSpec = true
+    local f = NS.Filters.Get(); f.keyLevel = 14; f.compositionEnabled = true; f.noSameSpec = true
     NS.Apply.Run{}
     assertEqual(NS.Expression.Normalize(m.pgf.panel.state.expression),
         "( not pgfe_on or ( pgfe_samespec == 0 ) ) and ( voice or myrealm )")
@@ -121,6 +123,7 @@ end)
 test("apply: /pgfe apply prints the refusal with its argument", function()
     local NS, _, m = T.enableAddon{}
     seasonFromScreenshot(m)
+    NS.Filters.Get().smartKeyLevel = false -- a manually set level
     NS.Filters.Get().keyLevel = 2
     m.prints = {}
     NS.addon:OnSlashCommand("apply")
@@ -131,7 +134,8 @@ end)
 test("apply: after Apply then /pgfe disable, PGF's evaluation passes groups again", function()
     local NS, _, m = T.enableAddon{}
     seasonFromScreenshot(m)
-    local f = NS.Filters.Get(); f.keyLevel = 14; f.noSameSpec = true; f.noSameClassRole = true
+    local f = NS.Filters.Get(); f.keyLevel = 14; f.compositionEnabled = true
+    f.noSameSpec = true; f.noSameClassRole = true
     assertTrue((NS.Apply.Run{}))
     local function pgfAccepts()
         local env = {}
@@ -176,4 +180,47 @@ test("apply: the message counts the rows ticked, and says so when targeting is o
     NS.Filters.Get().keyTargeting = false
     local ok2, key2, range = NS.Apply.Run{}
     assertTrue(ok2); assertEqual(key2, "MSG_APPLIED_NO_TARGETING"); assertEqual(range, "14-14")
+end)
+
+-- Owner request: with Smart on, `/pgfe apply` uses the computed level too.
+test("apply: with Smart on, Run sets the key level from the season bests first", function()
+    local NS, _, m = T.enableAddon{}
+    seasonFromScreenshot(m)
+    local f = NS.Filters.Get(); f.keyLevel = 5; f.smartKeyLevel = true
+    local ok, key, ticked, range = NS.Apply.Run{}
+    -- red under: drop ApplySmartLevel from Apply.Run
+    assertTrue(ok); assertEqual(key, "MSG_APPLIED"); assertEqual(ticked, 4); assertEqual(range, "14-14")
+    assertEqual(f.keyLevel, 14)
+end)
+
+test("apply: refuses while Toggle PGF Extension Filters is off, writing nothing", function()
+    local NS, _, m = T.enableAddon{}
+    seasonFromScreenshot(m)
+    NS.Filters.SetActive(false) -- its own Clear commits once
+    local trigger = m.pgf.calls.trigger
+    local ok, key = NS.Apply.Run{ search = true }
+    -- red under: drop the IsActive check in Apply.Run
+    assertFalse(ok); assertEqual(key, "MSG_INACTIVE")
+    assertEqual(m.pgf.calls.trigger, trigger); assertEqual(m.pgf.calls.refresh, 0)
+end)
+
+-- Owner request: the toggle is a setting too, on the settings page, separate from Enable.
+test("apply: the filtersActive setting is a schema row, and its writes remove / rewrite the block", function()
+    local NS, _, m = T.enableAddon{}
+    seasonFromScreenshot(m)
+    local H = NS.addon.Settings.Helpers
+    local row = H.FindSchema("filtersActive")
+    -- red under: drop the `extra` row from settings/Panel.lua's MasterControls
+    assertTrue(row ~= nil); assertEqual(row.default, true); assertEqual(row.label, NS.L.FILTERS_ACTIVE)
+    assertTrue(H.FindSchema("enabled") ~= row, "separate from the master Enable")
+    local f = NS.Filters.Get(); f.smartKeyLevel = false; f.keyLevel = 14
+    f.maxAgeEnabled = true; f.maxAge = 20
+    m.pgf.panel.state.expression = "voice"
+    assertTrue((NS.Apply.Run{}))
+    H.Set("filtersActive", false)
+    assertEqual(m.pgf.panel.state.expression, "voice")
+    assertTrue(NS.addon.db.profile.filtersActive == false)
+    H.Set("filtersActive", true)
+    assertTrue(m.pgf.panel.state.expression:find("age <= 20", 1, true) ~= nil)
+    assertEqual(m.pgf.calls.refresh, 0, "no search")
 end)

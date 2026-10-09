@@ -96,6 +96,17 @@ local function build()
         M.hooks[#M.hooks + 1] = { target = target, name = name, fn = fn }
     end
 
+    -- Blizzard's Group Finder row painters and the two C_LFGList reads modules/RegionTags.lua makes:
+    -- present at load (the hooks install then), answering from searchResults / applicants.
+    M.searchResults = {}   -- [resultID] = { leaderName = ... }
+    M.applicants    = {}   -- [appID] = { [memberIdx] = name }
+    M.LFGListSearchEntry_Update = function() end
+    M.LFGListApplicationViewer_UpdateApplicantMember = function() end
+    M.C_LFGList = {
+        GetSearchResultInfo = function(id) return M.searchResults[id] end,
+        GetApplicantMemberInfo = function(appID, idx) return (M.applicants[appID] or {})[idx] end,
+    }
+
     -- The chat sink core/CoreSetup.lua hands the printer: captured, so a suite can read it back.
     M.print = function(...)
         local parts = {}
@@ -183,6 +194,18 @@ local function build()
             if pt then return pt[1], pt[2], pt[3], pt[4], pt[5] end
         end
         f.SetHeight = function(self, h) self.__height = h; return self end
+        f.SetTextColor = function(self, r, g, b, a) self.__textColor = { r, g, b, a }; return self end
+        f.SetWidth = function(self, w) self.__width = w; return self end
+        f.SetSize = function(self, w, h) self.__width, self.__height = w, h; return self end
+        -- Text measures 6px a byte, so a width built from a label or a button's text is checkable.
+        f.GetStringWidth = function(self) return #(self.__text or "") * 6 end
+        f.GetTextWidth = function(self) return #(self.__text or "") * 6 end
+        f.SetHitRectInsets = function(self, l, r, t, b) self.__hitRect = { l, r, t, b }; return self end
+        -- Blizzard_Menu's SetTooltip on a dropdown button: the fill function, kept for a case to call.
+        f.SetTooltip = function(self, fn) self.__tooltip = fn; return self end
+        f.SetNormalAtlas = function(self, a) self.__normalAtlas = a; return self end
+        f.SetPushedAtlas = function(self, a) self.__pushedAtlas = a; return self end
+        f.SetDisabledAtlas = function(self, a) self.__disabledAtlas = a; return self end
         -- An EditBox's SetText fires OnTextChanged with userInput false, as in the client.
         f.SetText = function(self, t)
             self.__text = t
@@ -197,6 +220,7 @@ local function build()
         f.UnlockHighlight = function(self) self.__highlightLocked = false; return self end
         f.Click = function(self, ...) return self:__fire("OnClick", ...) end
         f.SetupMenu = function(self, gen) self.__menuGen = gen; return self end
+        f.OverrideText = function(self, t) self.__text = t; return self end
         f.SetOnMaximizedCallback = function(self, fn) self.__onMaximized = fn; return self end
         f.SetOnMinimizedCallback = function(self, fn) self.__onMinimized = fn; return self end
         f.CreateFontString = function(self)
@@ -220,6 +244,13 @@ local function build()
             -- PortraitFrameTemplate's own close button (a parentKey in the template's XML).
             if template and template:find("PortraitFrameTemplate", 1, true) then
                 f.CloseButton = decorate(M.__stubFrame())
+                f.NineSlice = decorate(M.__stubFrame())   -- the border art's container
+                f.TitleContainer = decorate(M.__stubFrame()) -- the title text's container
+            end
+            -- MaximizeMinimizeButtonFrameTemplate's two arrow buttons (parentKeys in its XML).
+            if template == "MaximizeMinimizeButtonFrameTemplate" then
+                f.MinimizeButton = decorate(M.__stubFrame())
+                f.MaximizeButton = decorate(M.__stubFrame())
             end
         end
         return f

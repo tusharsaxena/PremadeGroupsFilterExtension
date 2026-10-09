@@ -48,6 +48,18 @@ test("presets: a preset missing keys loads over the current defaults", function(
     assertEqual(f.keyLevel, 12); assertTrue(f.noSameSpec)
     -- red under: wipe the live table and copy only the preset's keys in Presets.Load
     assertEqual(type(f.regions), "table"); assertEqual(next(f.regions), nil)
-    assertEqual(f.maxAge, NS.C.CHAR_DEFAULTS.filters.maxAge)
+    assertEqual(f.maxAgeEnabled, false)
     assertTrue(NS.addon.db.global.presets.old.regions == nil, "the stored preset is not modified")
+end)
+
+test("presets: Smart travels with a preset; an older preset loads the default (on)", function()
+    local NS = T.bootAddon()
+    local f = NS.Filters.Get()
+    f.smartKeyLevel = false
+    NS.Presets.Save("manual")
+    f.smartKeyLevel = true
+    NS.Presets.Load("manual"); assertEqual(f.smartKeyLevel, false)
+    NS.addon.db.global.presets.old = { keyLevel = 12 }
+    assertEqual(NS.C.CHAR_DEFAULTS.filters.smartKeyLevel, true)
+    NS.Presets.Load("old"); assertEqual(f.smartKeyLevel, true)
 end)

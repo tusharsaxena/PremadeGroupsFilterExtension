@@ -16,9 +16,11 @@ such rather than listed as a requirement.
   Advanced Filter Expression and hooks PGF's per-result filter environment, so it has no function
   without PGF. A hard dependency is a documented deviation from `library-stack-§6` / `toc-file-§1`
   (`docs/ARCHITECTURE.md` -> `## Documented deviations`). Verified against PGF 7.6.2.
-- **PremadeRegions — optional.** Listed first in `## OptionalDeps:`. When it is loaded, PGF's
-  `region` variables come from it and this addon leaves them alone; when it is not, this addon fills
-  the same variables from its own realm map.
+- **PremadeRegions — not needed.** This addon replaces it: its own realm map fills PGF's `region`
+  variables, and `modules/RegionTags.lua` puts the region tag on Group Finder rows and applicants.
+  It stays first in `## OptionalDeps:` only so that, if a player still has it loaded, this addon
+  sees it at load and steps aside (PGF's variables come from it, and this addon paints no second
+  tag).
 - **Nothing else.** Every library is vendored under `libs/` and committed (library-stack), so the
   player installs no separate library addon. The rest of `## OptionalDeps:` names the vendored libs
   for load ordering, not as things to download.

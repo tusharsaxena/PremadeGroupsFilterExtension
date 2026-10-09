@@ -34,3 +34,13 @@ end
 function Targeting.RangeText(level)
     return ("%d-%d"):format(level, level)
 end
+
+-- Smart key level: the lowest level at which at least one of `dungeons` is still untimed, that is
+-- the lowest best timed level + 1 (never timed counts as 0), clamped to 2..40. nil without rows.
+-- KR 12, MR 13, TOS 13, DON 14 -> 13; all four at 13 -> 14.
+function Targeting.SmartLevel(dungeons)
+    if type(dungeons) ~= "table" or #dungeons == 0 then return nil end
+    local low = math.huge
+    for _, d in ipairs(dungeons) do low = math.min(low, d.bestTimed or 0) end
+    return math.max(MIN_LEVEL, math.min(MAX_LEVEL, low + 1))
+end

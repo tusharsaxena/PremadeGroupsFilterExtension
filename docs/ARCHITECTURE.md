@@ -6,12 +6,15 @@ to its topic doc; the full register is [Documentation map](#documentation-map).
 ## Overview
 
 A companion addon to **Premade Groups Filter** (PGF) that adds Mythic+ conveniences PGF does not
-have: target every dungeon the player has not timed at a chosen key level, filter by the leader's
-server region, exclude groups that already hold the player's spec or class-and-role, ask for an
-experienced leader, cap the listing age, and keep named presets. It does **not** filter on its own:
-it writes PGF's dungeon checkboxes and PGF's Advanced Filter Expression, and injects two variables
-into PGF's per-result filter environment through one `hooksecurefunc`. Apply then clicks PGF's
-search button inside the hardware event.
+have: target every dungeon the player has not timed at a chosen key level (or let Smart pick the
+level), filter by the leader's server region and the listing's playstyle, exclude groups that already
+hold the player's spec or class-and-role, ask for an experienced leader or a minimum leader M+ score,
+cap the listing age, and keep named presets; a Toggle PGF Extension Filters switch takes it all out
+of PGF again. It also replaces PremadeRegions: the leader's server region is tagged on every Group
+Finder row and applicant. It does **not** filter on its own: it writes PGF's dungeon checkboxes and
+PGF's Advanced Filter Expression, and injects its `pgfe_*` variables (and, without PremadeRegions,
+the region variables) into PGF's per-result filter environment through one `hooksecurefunc`. Apply
+then clicks PGF's search button inside the hardware event.
 
 Built to the Ka0s WoW Addon Standard: Ace3, vendored `LibKa0s` v1.71.0 (one setup file per adopted
 major), schema-driven master settings, the launcher, one stand-down latch, headless tests and
@@ -23,7 +26,8 @@ and the build plan
 **State at v0.1.0.** Every module the plan names is built and covered by the headless suite: the
 realm map and region lookup, season data and targeting, the expression compiler, the per-character
 filter options and presets, the PGF bridge and env hook, Apply/Clear with the `apply` and `clear`
-verbs, and the attached panel. What the suite cannot see (real frames, PGF's real dialog, the
+verbs, the attached panel, and the region tags on Group Finder rows (`modules/RegionTags.lua`). What
+the suite cannot see (real frames, PGF's real dialog, the
 Group Finder) is the in-game list in [`smoke-tests.md`](smoke-tests.md).
 
 ## Contracts later tasks build on
@@ -67,12 +71,13 @@ The feature modules, one purpose each:
 | Realm data | `defaults/Realms.lua` | `NS.RealmLists`: realm display names per portal and region bucket ([`realm-map-maintenance.md`](realm-map-maintenance.md)) |
 | Regions | `modules/Regions.lua` | Portal detection, realm normalization, leader name → region key |
 | Season | `modules/Season.lua` | Current-season dungeons: cmID, name, short keyword, best timed level |
-| Targeting | `modules/Targeting.lua` | Pure: dungeons whose best timed level is below N; the `N-N` range text |
+| Targeting | `modules/Targeting.lua` | Pure: dungeons whose best timed level is below N; the Smart level (lowest best timed + 1); the `N-N` range text |
 | Expression | `modules/Expression.lua` | Pure: options → clauses → the marked block; merge and strip |
-| Filters | `modules/Filters.lua` | The live `char.filters` table, validation, the clause options |
+| Filters | `modules/Filters.lua` | The live `char.filters` table, the multi-select toggles (all ticked = Any), validation, the clause options, the Smart level write |
 | Presets | `modules/Presets.lua` | Named snapshots in `global.presets` |
 | Env injector | `modules/EnvInject.lua` | The env post-hook body: `pgfe_*` and, without PremadeRegions, the region variables |
 | Apply | `modules/Apply.lua` | Apply and Clear: refusals first, then the bridge writes, then the search |
+| Region tags | `modules/RegionTags.lua` | The leader's / applicant's colored server region on Group Finder rows (replaces PremadeRegions' display) |
 | Panel | `modules/Panel.lua` | The frame attached under PGF's dialog |
 
 ## Settings Schema
@@ -81,16 +86,17 @@ Three AceDB scopes on `PremadeGroupsFilterExtensionDB`; full shape and defaults 
 [`schema.md`](schema.md).
 
 - **Schema rows (the write seam).** The Master controls block (`enabled`, `state.debugConsole`,
-  `global.minimap.shown`), composed by `LibKa0s-Options-1.0` in `settings/Panel.lua` and written only
+  `global.minimap.shown`, plus the two extra rows `filtersActive` and `showRegionTags`), composed by `LibKa0s-Options-1.0` in `settings/Panel.lua` and written only
   through `NS.SchemaRuntime.Set` (panel, CLI, resets and launcher alike).
 - **Named non-setting state** (architecture-§5), each written outside the seam by one owner:
   - `char.filters` — the filter options, **per character**. Owner `modules/Filters.lua`
-    (`Filters.Set`, `Filters.ToggleRegion`); `modules/Presets.lua`'s `Presets.Load` also writes it,
+    (`Filters.Set`, `Filters.ToggleRegion` / `TogglePlaystyle`, `Filters.ClearRegions` /
+    `ClearPlaystyles`, `Filters.ApplySmartLevel`); `modules/Presets.lua`'s `Presets.Load` also writes it,
     in place. Edited from the attached panel, which is not a settings page.
   - `global.presets` — a **structural registry** of named filter snapshots shared by every
     character. One registry writer, `modules/Presets.lua` (`Presets.Save`, `Presets.Delete`); no
     load pass.
-  - `profile.panelCollapsed` — the attached panel folded to its title bar. Owner `modules/Panel.lua`.
+  - `profile.panelCollapsed` — the attached panel folded to its title strip. Owner `modules/Panel.lua`.
   - `global.minimap` — LibDBIcon's own table (`hide`, position), handed to the launcher.
 - **`PremadeGroupsFilterExtensionPerfDB`** — the perf capture ring, written by `LibKa0s-Perf-1.0`.
 
@@ -130,13 +136,14 @@ are setup and stay up while disabled.
 |---|---|---|---|
 | `ACTIVE_PLAYER_SPECIALIZATION_CHANGED` | `OnActiveSpecChanged` | `modules/EnvInject.lua` | Re-reads the player's spec and class-role keywords |
 | `PLAYER_SPECIALIZATION_CHANGED` | `OnPlayerSpecChanged` | `modules/EnvInject.lua` | Same, for `unit == "player"` |
-| `CHALLENGE_MODE_MAPS_UPDATE` | `OnPanelSeasonData` | `modules/Panel.lua` | Rebuilds the best-timed readout once season data arrives |
+| `CHALLENGE_MODE_MAPS_UPDATE` | `OnPanelSeasonData` | `modules/Panel.lua` | Recomputes the Smart key level (when on) and rebuilds the best-timed readout once season data arrives |
 | `CHALLENGE_MODE_COMPLETED` | `OnPanelSeasonData` | `modules/Panel.lua` | Same, after a key finishes |
 | `PLAYER_ENTERING_WORLD` | `OnPanelEnteringWorld` | `modules/Panel.lua` | `Panel.UpdateVisibility()` |
 
-Besides events, two `hooksecurefunc` hooks run (see [Taint Notes](#taint-notes)): the env post-hook
-and the dialog hook (`SwitchToPanel`, plus `OnShow`/`OnHide` script hooks), which calls
-`Panel.UpdateVisibility()`. Stand-up re-runs `EnvInject.RefreshPlayer` and
+Besides events, four `hooksecurefunc` hooks run (see [Taint Notes](#taint-notes)): the env post-hook;
+the dialog hook (`SwitchToPanel`, plus `OnShow`/`OnHide` script hooks), which calls
+`Panel.UpdateVisibility()`; and the two Group Finder row hooks of `modules/RegionTags.lua`
+(`LFGListSearchEntry_Update`, `LFGListApplicationViewer_UpdateApplicantMember`). Stand-up re-runs `EnvInject.RefreshPlayer` and
 `Panel.UpdateVisibility`; stand-down hides the panel.
 
 ## Taint Notes
@@ -144,8 +151,18 @@ and the dialog hook (`SwitchToPanel`, plus `OnShow`/`OnHide` script hooks), whic
 - Hooks into PGF are `hooksecurefunc` post-hooks installed **at file load**, never AceHook, and each
   hook body returns at once when `NS.IsStoodDown()` (a post-hook has no un-hook; slash-commands-§7's
   sanctioned exception).
+- `modules/RegionTags.lua` post-hooks Blizzard's `LFGListSearchEntry_Update` and
+  `LFGListApplicationViewer_UpdateApplicantMember` the same way, and writes the region tag onto the
+  row's own font string (`ActivityName`, `Name`) with `SetText(tag .. " " .. text)`, as PremadeRegions
+  did. Display only: no Blizzard table field is written. `..` and SetText pass a protected ("secret")
+  string through; a leader or applicant name that is not concat-safe gets no tag
+  (events-frames-taint-§8). Skipped while stood down, with `showRegionTags` off, or while
+  PremadeRegions is loaded.
 - `LFGListFrame.SearchPanel.SearchBox` has `securityDisableSetText`: no code path writes it. The key
-  range is shown in a read-only field for the player to copy.
+  range is shown in a read-only field (*Copy into search box*, whose tooltip says why) for the player to copy. A successful Apply focuses that field
+  (text selected); Enter in it moves keyboard focus to the search box (`SetFocus`, pcall-guarded,
+  only while the box is visible and the addon is not stood down), so the player's own Ctrl+V and
+  Enter fill it and search. Only focus is moved; no text is written.
 - `C_LFGList.Search` is hardware-event protected: the search runs only through
   `PremadeGroupsFilterDialog.RefreshButton:Click()` inside the Apply button's `OnClick` or a typed
   `/pgfe apply`.
@@ -185,7 +202,7 @@ The env post-hook (`modules/EnvInject.lua`, installed at file load through
 
 | Variable | Value | When |
 |---|---|---|
-| `pgfe_on` | `true` — the managed block's guard (`not pgfe_on or ( … )`) | Always (while not stood down) |
+| `pgfe_on` | `true` — the managed block's guard (`not pgfe_on or ( … )`); `false` while *Toggle PGF Extension Filters* (`filtersActive`) is off | Always (while not stood down) |
 | `pgfe_samespec` | `env[<player spec keyword>]` or 0 — members with the player's spec | Always (while not stood down) |
 | `pgfe_sameclassrole` | `env[<role prefix>_<class>s]` or 0 — members of the player's class in the player's role | Always (while not stood down) |
 | `region` | The leader's region key, or nil | Only when `PremadeRegions` is not loaded |
@@ -201,8 +218,9 @@ API call. With PremadeRegions loaded, PGF's own plugin fills the region variable
 ## Expression block format
 
 `modules/Expression.lua` owns one marked block in the dungeon state's `expression`. Clauses, each
-only when its option is on, in this order: regions `( oce or chi )`, `pgfe_samespec == 0`,
-`pgfe_sameclassrole == 0`, `( mpmapintime and mpmapmaxkey >= N )`, `age <= M`.
+only when its option is on, in this order: regions `( oce or chi )`, playstyles
+`( relaxed or carry )`, `pgfe_samespec == 0`, `pgfe_sameclassrole == 0`,
+`( mpmapintime and mpmapmaxkey >= N )`, `mprating >= S`, `age <= M`.
 
 With user text `U` that has real (non-comment) content:
 
@@ -229,7 +247,12 @@ edit-box limit) refuses.
 ## Known Limitations
 
 - The Group Finder's search box cannot be written by an addon, so key-level title searches stay a
-  copy and paste.
+  copy and paste (Apply, Ctrl+C, Enter, Ctrl+V, Enter). Nothing else can stand in for it: a
+  listing's title and comment reach PGF as protected strings, the search-result API has no key-level
+  field, and PGF's `findnumber()` scans only the activity name (`Dungeon (Mythic Keystone)`).
+- The leader's item level is not filterable: the search-result API exposes only the listing's
+  required item level (PGF `ilvl`). The leader's M+ rating is (`mprating`, the *Min leader M+ score*
+  row).
 - Server regions exist for the US and EU portals only; KR, TW and CN have none.
 - Apply (button or `/pgfe apply`) needs PGF's dialog to be on the Dungeons category (the category
   it last showed) and maximized; on any other category, or minimized, it refuses rather than write

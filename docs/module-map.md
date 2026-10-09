@@ -43,12 +43,13 @@ conventional. The constraints that fix the order:
 | `defaults/Realms.lua` | `NS.RealmLists`: realm display names per portal and region bucket |
 | `modules/Regions.lua` | Portal detection, realm normalization, leader name → region key |
 | `modules/Season.lua` | Season dungeons, their short keywords and the player's best timed levels |
-| `modules/Targeting.lua` | Pure: untimed dungeons at a level, level validation, the `N-N` range text |
+| `modules/Targeting.lua` | Pure: untimed dungeons at a level, the Smart level, level validation, the `N-N` range text |
 | `modules/Expression.lua` | Pure: options → PGF expression block, merge and strip |
-| `modules/Filters.lua` | The per-character filter options: get/set, region toggles, validation, clause options |
+| `modules/Filters.lua` | The per-character filter options: get/set, region and playstyle toggles (all ticked = Any), validation, clause options, the Smart level write |
 | `modules/Presets.lua` | Named presets, account-wide: list, save, load in place, delete |
 | `modules/EnvInject.lua` | The PGF env post-hook body and the player's cached spec keywords; installs the hook at load |
 | `modules/Apply.lua` | Apply / Clear orchestration: prechecks, validation, targeting, expression merge, bridge writes, search |
+| `modules/RegionTags.lua` | The region tag on Group Finder rows and applicants; installs its two Blizzard hooks at load |
 | `modules/Panel.lua` | The panel attached under PGF's dialog; installs the dialog hook at load |
 | `modules/Diagnostics.lua` | The sections of `/pgfe diagnostics` |
 | `settings/SchemaSetup.lua` | `LibKa0s-Schema-1.0` or its host stub |

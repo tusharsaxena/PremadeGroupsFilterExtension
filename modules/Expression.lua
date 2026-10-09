@@ -43,17 +43,22 @@ function Expression.Normalize(text)
     return table.concat(parts, " ")
 end
 
--- Clause order is fixed: regions, samespec, sameclassrole, experienced leader, age.
+-- Clause order is fixed: regions, playstyles, samespec, sameclassrole, experienced leader, leader score, age.
 function Expression.BuildClauses(opts)
     local c = {}
     if opts.regions and #opts.regions > 0 then
         c[#c + 1] = "( " .. table.concat(opts.regions, " or ") .. " )"
+    end
+    if opts.playstyles and #opts.playstyles > 0 then
+        c[#c + 1] = "( " .. table.concat(opts.playstyles, " or ") .. " )"
     end
     if opts.noSameSpec then c[#c + 1] = "pgfe_samespec == 0" end
     if opts.noSameClassRole then c[#c + 1] = "pgfe_sameclassrole == 0" end
     if opts.experiencedLeader and opts.keyLevel then
         c[#c + 1] = ("( mpmapintime and mpmapmaxkey >= %d )"):format(opts.keyLevel)
     end
+    -- mprating is the leader's overall Mythic+ rating (PGF Main.lua: leaderOverallDungeonScore).
+    if opts.minScore then c[#c + 1] = ("mprating >= %d"):format(opts.minScore) end
     if opts.maxAge then c[#c + 1] = ("age <= %d"):format(opts.maxAge) end
     return c
 end

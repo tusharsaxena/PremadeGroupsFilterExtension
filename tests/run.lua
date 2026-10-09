@@ -97,6 +97,7 @@ Kit.run{
         "test_filters",
         "test_presets",
         "test_envinject",
+        "test_regiontags",
         "test_bridge",
         "test_apply",
         "test_panel",

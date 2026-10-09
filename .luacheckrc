@@ -22,9 +22,9 @@ globals = {
 read_globals = {
   "_G", "LibStub", "hooksecurefunc",
   "C_AddOns", "C_Timer", "C_ChallengeMode", "C_MythicPlus",
-  "CreateFrame", "UIParent", "GameTooltip",
+  "CreateFrame", "UIParent", "GameTooltip", "NineSliceUtil",
   "InCombatLockdown", "GetCurrentRegion", "GetRealmName", "UnitClass",
-  "Settings", "StaticPopup_Show", "StaticPopup_Hide", "YES", "NO",
+  "Settings", "LFGListFrame", "MenuResponse", "C_LFGList", "StaticPopup_Show", "StaticPopup_Hide", "YES", "NO",
   "debugprofilestop",                     -- the perf bracket's clock (performance-§2)
   -- Premade Groups Filter (## Dependencies) and PremadeRegions (## OptionalDeps). Read only by
   -- core/PGFBridge.lua, modules/EnvInject.lua and modules/Diagnostics.lua.
