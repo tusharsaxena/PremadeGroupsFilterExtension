@@ -4,6 +4,7 @@ local _, NS = ...
 -- The addon owns one marked block inside PGF's Advanced Filter Expression. Merge rewrites it,
 -- Strip removes it, and the user's own text around it is kept byte for byte. When the user has
 -- real (non-comment) text, it is wrapped as `( ours ) and (` … `)` so an `or` in it cannot leak.
+-- `ours` is `( not pgfe_on or ( clauses ) )`: neutral whenever the env hook did not run.
 
 local Expression = NS.Expression or {}
 NS.Expression = Expression
@@ -86,7 +87,10 @@ function Expression.Merge(text, clauses)
     local user, ok = Expression.Strip(text)
     if not ok then return nil, "damaged" end
     if #clauses == 0 then return user end
-    local body = "( " .. table.concat(clauses, " and ") .. " )"
+    -- `not pgfe_on or`: the block lives in PGF's state, which outlives this addon's runtime (a
+    -- stand-down, an AddOns-list disable, an uninstall). Only the env hook sets pgfe_on, so when it
+    -- did not run the block passes every group instead of comparing nil pgfe_* values.
+    local body = "( not pgfe_on or ( " .. table.concat(clauses, " and ") .. " ) )"
     local out
     if Expression.Normalize(user) == "" then
         -- Comment-only (or empty) user text: wrapping it would hand PGF `( … ) and ( )`.

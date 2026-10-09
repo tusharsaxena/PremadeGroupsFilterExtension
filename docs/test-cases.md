@@ -98,7 +98,7 @@ Total.
 - season: dungeon never run (GetSeasonBestForMap → nil) → best timed 0
 - season: unknown mapID falls back to initials
 
-### test_expression.lua (9)
+### test_expression.lua (11)
 
 - expression: clauses in fixed order
 - expression: empty user text → bare block
@@ -109,6 +109,8 @@ Total.
 - expression: comment-only user text treated as empty (no `and ( )`)
 - expression: damaged block (begin without end) → error, text untouched
 - expression: over 2000 chars → toolong
+- expression: the block passes everything when the env hook did not run
+- expression: without the hook, the user's own text still decides
 
 ### test_filters.lua (4)
 
@@ -149,7 +151,7 @@ Total.
 - bridge: env hook refuses when the seam is missing
 - bridge: HookDialog wires SwitchToPanel and both scripts
 
-### test_apply.lua (10)
+### test_apply.lua (11)
 
 - apply: the module publishes its namespace table
 - apply: N=14 ticks AOF/RLP/BV/KR, writes block, triggers, searches
@@ -161,6 +163,7 @@ Total.
 - apply: a damaged managed block refuses Apply and Clear
 - apply: /pgfe apply searches and prints; /pgfe clear prints
 - apply: /pgfe apply prints the refusal with its argument
+- apply: after Apply then /pgfe disable, PGF's evaluation passes groups again
 
 ### test_panel.lua (25)
 
@@ -270,12 +273,12 @@ Total.
 | test_regions.lua | 10 |
 | test_targeting.lua | 7 |
 | test_season.lua | 6 |
-| test_expression.lua | 9 |
+| test_expression.lua | 11 |
 | test_filters.lua | 4 |
 | test_presets.lua | 3 |
 | test_envinject.lua | 8 |
 | test_bridge.lua | 12 |
-| test_apply.lua | 10 |
+| test_apply.lua | 11 |
 | test_panel.lua | 25 |
 | test_vendor_sync.lua | 3 |
 | test_eol.lua | 2 |
@@ -284,4 +287,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **186** |
+| **Total** | **189** |

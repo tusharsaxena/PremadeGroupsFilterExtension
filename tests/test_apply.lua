@@ -33,7 +33,7 @@ test("apply: N=14 ticks AOF/RLP/BV/KR, writes block, triggers, searches", functi
     local s = m.pgf.panel.state
     assertTrue(s.dungeon5 and s.dungeon6 and s.dungeon7 and s.dungeon8)
     assertFalse(s.dungeon1 or s.dungeon2 or s.dungeon3 or s.dungeon4)
-    assertEqual(NS.Expression.Normalize(s.expression), "( age <= 15 )")
+    assertEqual(NS.Expression.Normalize(s.expression), "( not pgfe_on or ( age <= 15 ) )")
     assertEqual(m.pgf.calls.trigger, 1); assertEqual(m.pgf.calls.refresh, 1)
     assertEqual(NS.Apply.LastRange, "14-14")
 end)
@@ -91,7 +91,7 @@ test("apply: keeps user text; clear restores it", function()
     local f = NS.Filters.Get(); f.keyLevel = 14; f.noSameSpec = true
     NS.Apply.Run{}
     assertEqual(NS.Expression.Normalize(m.pgf.panel.state.expression),
-        "( pgfe_samespec == 0 ) and ( voice or myrealm )")
+        "( not pgfe_on or ( pgfe_samespec == 0 ) ) and ( voice or myrealm )")
     NS.Apply.Clear()
     assertEqual(m.pgf.panel.state.expression, "voice or myrealm")
 end)
@@ -125,4 +125,23 @@ test("apply: /pgfe apply prints the refusal with its argument", function()
     m.prints = {}
     NS.addon:OnSlashCommand("apply")
     assertTrue(printed(m, NS.L.MSG_ALL_TIMED:format(2)))
+end)
+
+-- Review F-001: after an Apply, a stand-down must not leave PGF hiding every listing.
+test("apply: after Apply then /pgfe disable, PGF's evaluation passes groups again", function()
+    local NS, _, m = T.enableAddon{}
+    seasonFromScreenshot(m)
+    local f = NS.Filters.Get(); f.keyLevel = 14; f.noSameSpec = true; f.noSameClassRole = true
+    assertTrue((NS.Apply.Run{}))
+    local function pgfAccepts()
+        local env = {}
+        m.pgf.PGF.PutPremadeRegionInfo(env, "Bob-Frostmourne")
+        local fn = assert(loadstring("return " .. NS.Expression.Normalize(m.pgf.panel.state.expression)))
+        setfenv(fn, env)
+        return fn() and true or false
+    end
+    assertTrue(pgfAccepts())
+    NS.addon:OnSlashCommand("disable")
+    -- red under: drop the `not pgfe_on or` guard in Expression.Merge
+    assertTrue(pgfAccepts())
 end)

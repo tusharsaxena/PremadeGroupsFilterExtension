@@ -54,7 +54,9 @@ PGF builds one `env` per result, counts the members into it (`<spec>_<class>s`,
    from the `-Realm` suffix or `GetRealmName()` when there is none, `Regions.Normalize` (lowercase,
    whitespace and ASCII punctuation dropped), lookup in the per-portal table built once from
    `NS.RealmLists`. Sets `env.region` and `env[region] = true`.
-3. `env.pgfe_samespec` and `env.pgfe_sameclassrole` from the two cached player keywords.
+3. `env.pgfe_on = true` (the managed block's guard: `not pgfe_on or ( … )` is neutral when the
+   hook did not run), then `env.pgfe_samespec` and `env.pgfe_sameclassrole` from the two cached
+   player keywords.
 
 PGF then evaluates the expression, including the addon's block, against that env.
 

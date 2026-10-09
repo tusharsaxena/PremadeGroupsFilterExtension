@@ -183,6 +183,7 @@ The env post-hook (`modules/EnvInject.lua`, installed at file load through
 
 | Variable | Value | When |
 |---|---|---|
+| `pgfe_on` | `true` — the managed block's guard (`not pgfe_on or ( … )`) | Always (while not stood down) |
 | `pgfe_samespec` | `env[<player spec keyword>]` or 0 — members with the player's spec | Always (while not stood down) |
 | `pgfe_sameclassrole` | `env[<role prefix>_<class>s]` or 0 — members of the player's class in the player's role | Always (while not stood down) |
 | `region` | The leader's region key, or nil | Only when `PremadeRegions` is not loaded |
@@ -205,7 +206,7 @@ With user text `U` that has real (non-comment) content:
 
 ```
 -- [pgfe] begin: managed by Ka0s PGF Extension (Apply rewrites, Clear removes)
-( <clauses joined by " and "> ) and (
+( not pgfe_on or ( <clauses joined by " and "> ) ) and (
 -- [pgfe] end
 U
 -- [pgfe] close
@@ -213,9 +214,12 @@ U
 ```
 
 With `U` empty or comment-only (wrapping it would hand PGF `( … ) and ( )`, a parse error), the
-block is just the begin marker, `( <clauses> )` and the end marker, followed by `U` unchanged.
+block is just the begin marker, `( not pgfe_on or ( <clauses> ) )` and the end marker, followed by `U` unchanged.
 PGF's normalization drops `--` lines and joins the rest, so the result is `( clauses ) and ( U )`
-and an `or` in `U` cannot change precedence. Strip removes `begin..end`, and a `close` marker with
+and an `or` in `U` cannot change precedence. The `not pgfe_on or` guard makes the block neutral
+whenever the env hook did not run: the block lives in PGF's state, which outlives this addon's
+runtime (a stand-down, an AddOns-list disable, an uninstall), and without the guard `pgfe_samespec
+== 0` would compare nil and hide every group. Strip removes `begin..end`, and a `close` marker with
 the `)` line after it. A begin without an end, or a close not followed by `)`, is **damage**: Apply
 and Clear refuse and leave the text alone. No clauses means no block. Over 2000 characters (PGF's
 edit-box limit) refuses.
@@ -229,8 +233,9 @@ edit-box limit) refuses.
   it last showed); on any other it refuses rather than write another category's state.
 - The realm map is static data; a realm Blizzard adds, moves or renames resolves to no region until
   the map is updated ([`realm-map-maintenance.md`](realm-map-maintenance.md)).
-- Expressions that reference `pgfe_*` evaluate to nil while the addon is disabled (the env hook is a
-  no-op); Clear before disabling.
+- While the addon is disabled (or not loaded) the managed block is neutral (`not pgfe_on or …`),
+  so its filters stop applying until it is re-enabled; a user's own expression that references
+  `pgfe_*` directly compares nil and should be cleared first.
 - PGF internals are not a public API: every touch is in `core/PGFBridge.lua`, nil-guarded, and a
   missing seam is reported as "PGF version not supported" rather than raising.
 
