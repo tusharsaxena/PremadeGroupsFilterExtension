@@ -32,7 +32,7 @@ Total.
 - parity: the Perf stub carries every member the addon calls
 - parity: the Compat arm carries every library member the addon wires
 
-### test_setup.lua (14)
+### test_setup.lua (15)
 
 - setup: NS is the AceAddon object, with the cyan [PGFE] tag
 - setup: NS.Print is reclaimed from AceConsole and is NS.Util.print
@@ -48,6 +48,7 @@ Total.
 - setup: the Compat spec readers route through LibKa0s-Compat-1.0
 - setup: the media seam names this addon's folder
 - setup: the landing page lists every NS.COMMANDS row
+- setup: the landing page is drawn by the library's BuildLandingPage, logo and commands
 
 ### test_slash.lua (6)
 
@@ -345,7 +346,7 @@ Total.
 |-------|------:|
 | test_harness.lua | 8 |
 | test_surface_parity.lua | 10 |
-| test_setup.lua | 14 |
+| test_setup.lua | 15 |
 | test_slash.lua | 6 |
 | test_disabled.lua | 5 |
 | test_regions.lua | 11 |
@@ -366,4 +367,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **264** |
+| **Total** | **265** |

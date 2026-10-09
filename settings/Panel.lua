@@ -14,65 +14,28 @@ local Helpers  = Settings.Helpers
 local C        = NS.C
 
 -- The landing page's logo: a larger render of the launcher logo, in the same folder.
-local MAIN_LOGO_TEXTURE   = ("Interface\\AddOns\\%s\\media\\logos\\pgfe.logo.tga"):format(addonName)
-local MAIN_LOGO_SIZE      = 256
-local MAIN_GAP_AFTER_LOGO = 8
-local MAIN_GAP_AFTER_DESC = 12
-local MAIN_GAP_BELOW_HEAD = 6
+local MAIN_LOGO_TEXTURE = ("Interface\\AddOns\\%s\\media\\logos\\pgfe.logo.tga"):format(addonName)
+local MAIN_LOGO_SIZE    = 256
 
-local function justifyLeft(widget)
-    local fs = widget.label
-    if fs and fs.SetJustifyH then fs:SetJustifyH("LEFT") end
-end
-
-local function addLogo(AceGUI, scroll)
-    local logoGroup = AceGUI:Create("SimpleGroup")
-    logoGroup:SetLayout(nil)
-    logoGroup:SetFullWidth(true)
-    logoGroup:SetHeight(MAIN_LOGO_SIZE)
-    local logoTex = logoGroup.frame:CreateTexture(nil, "ARTWORK")
-    logoTex:SetTexture(MAIN_LOGO_TEXTURE)
-    logoTex:SetSize(MAIN_LOGO_SIZE, MAIN_LOGO_SIZE)
-    logoTex:SetPoint("TOPLEFT", logoGroup.frame, "TOPLEFT", 0, 0)
-    scroll:AddChild(logoGroup)
-    Helpers.AddSpacer(scroll, MAIN_GAP_AFTER_LOGO)
-end
-
-local function addNotesLine(AceGUI, scroll)
-    local desc = AceGUI:Create("Label")
-    desc:SetFullWidth(true)
-    desc:SetText(NS.Meta("Notes") or "")
-    if desc.label and desc.label.SetFontObject and _G.GameFontHighlight then
-        desc.label:SetFontObject(_G.GameFontHighlight)
-    end
-    justifyLeft(desc)
-    scroll:AddChild(desc)
-    Helpers.AddSpacer(scroll, MAIN_GAP_AFTER_DESC)
-end
-
--- One Label per NS.COMMANDS row, rendered by the slash library so the two lists cannot drift.
-local function addCommandRows(AceGUI, scroll)
-    local Sl = NS.SlashCommands
-    for _, line in ipairs(Sl and Sl:LandingRows() or {}) do
-        local row = AceGUI:Create("Label")
-        row:SetFullWidth(true)
-        row:SetText(line)
-        justifyLeft(row)
-        scroll:AddChild(row)
-    end
-end
-
+-- The landing page body, through the library's builder (options-ui-§5): logo, the TOC notes line,
+-- then the Slash Commands heading and one row per NS.COMMANDS entry. It replaced a private copy
+-- that drew the logo as a texture straight on a pooled AceGUI SimpleGroup frame and never took it
+-- off: after a re-render the frame came back as another SimpleGroup (the spacer under the heading)
+-- still carrying the logo, so the page showed it twice. The builder keeps one texture per frame
+-- and hides it in the group's OnRelease.
 function Helpers.BuildMainContent(ctx)
-    local AceGUI = Helpers.AceGUI
-    local scroll = Helpers.EnsureScroll(ctx)
-    if not (AceGUI and scroll) then return end
-    Helpers.ClearScroll(ctx)
-    scroll = Helpers.EnsureScroll(ctx)
-    addLogo(AceGUI, scroll)
-    addNotesLine(AceGUI, scroll)
-    Helpers.Section(ctx, NS.L["Slash Commands"])
-    Helpers.AddSpacer(scroll, MAIN_GAP_BELOW_HEAD)
-    addCommandRows(AceGUI, scroll)
+    Helpers.BuildLandingPage(ctx, {
+        logo     = MAIN_LOGO_TEXTURE,
+        logoSize = MAIN_LOGO_SIZE,
+        notes    = function() return NS.Meta("Notes") or "" end,
+        sections = { {
+            heading = NS.L["Slash Commands"],
+            rows    = function()
+                local Sl = NS.SlashCommands
+                return Sl and Sl:LandingRows() or {}
+            end,
+        } },
+    })
 end
 
 local function showResetPopup()
