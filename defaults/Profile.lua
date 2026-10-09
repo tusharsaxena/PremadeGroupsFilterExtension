@@ -30,7 +30,6 @@ NS.C = {
             compositionEnabled = true,                     -- the Composition row's own box
             noSameSpec = false,   noSameClassRole = false,
             experiencedLeader = false,
-            minScoreEnabled = false, minScore = 2000,
             maxAgeEnabled = false, maxAge = 15,
         },
     },

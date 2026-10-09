@@ -15,7 +15,7 @@ NS.Apply = Apply
 --- "N-N" of the last successful Apply, or nil.
 Apply.LastRange = nil
 
-local VALIDATION_MSG = { badLevel = "MSG_BAD_LEVEL", badScore = "MSG_BAD_SCORE", badAge = "MSG_BAD_AGE" }
+local VALIDATION_MSG = { badLevel = "MSG_BAD_LEVEL", badAge = "MSG_BAD_AGE" }
 local EXPR_MSG = { damaged = "MSG_DAMAGED", toolong = "MSG_TOOLONG" }
 
 local function precheck()

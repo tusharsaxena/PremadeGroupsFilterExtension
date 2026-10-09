@@ -196,6 +196,8 @@ local function build()
         end
         f.SetHeight = function(self, h) self.__height = h; return self end
         f.SetTextColor = function(self, r, g, b, a) self.__textColor = { r, g, b, a }; return self end
+        f.SetJustifyH = function(self, j) self.__justifyH = j; return self end
+        f.SetTitle = function(self, t) self.__title = t; return self end
         f.SetWidth = function(self, w) self.__width = w; return self end
         f.SetSize = function(self, w, h) self.__width, self.__height = w, h; return self end
         -- Text measures 6px a byte, so a width built from a label or a button's text is checkable.

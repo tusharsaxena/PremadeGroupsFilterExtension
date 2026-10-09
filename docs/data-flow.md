@@ -23,8 +23,8 @@ return is `ok, msgKey, ...` and `Apply.Report` prints `NS.L[msgKey]:format(...)`
    No season data yet: the stored level stands (and step 5 refuses with `MSG_LOADING` when key
    targeting is on). Smart off: nothing changes. This is the one write before the refusals below,
    and it lands in `char.filters` only, never in PGF's state.
-4. **Validation.** `Filters.Validate()`: key level an integer 2–40 (`MSG_BAD_LEVEL`), min leader
-   score an integer 1–5000 when on (`MSG_BAD_SCORE`), max age an integer 1–240 when on
+4. **Validation.** `Filters.Validate()`: key level an integer 2–40 (`MSG_BAD_LEVEL`), max age an
+   integer 1–240 when on
    (`MSG_BAD_AGE`). Regions are never refused: on an unsupported portal, or on with Any
    selected for this portal (none, or every one), they add no clause; playstyles likewise.
 5. **Targets** (only when key targeting is on). `Season.GetDungeons()` gives

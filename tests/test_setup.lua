@@ -26,7 +26,7 @@ test("setup: per-character filter defaults (char.filters)", function()
     assertTrue(f.playstyleEnabled); assertEqual(next(f.playstyles), nil)
     assertTrue(f.compositionEnabled)
     assertFalse(f.noSameSpec); assertFalse(f.noSameClassRole); assertFalse(f.experiencedLeader)
-    assertFalse(f.minScoreEnabled); assertEqual(f.minScore, 2000)
+    assertEqual(f.minScoreEnabled, nil); assertEqual(f.minScore, nil) -- removed: PGF's M+ Rating row
     assertFalse(f.maxAgeEnabled); assertEqual(f.maxAge, 15)
 end)
 

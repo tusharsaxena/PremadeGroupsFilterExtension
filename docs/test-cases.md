@@ -217,7 +217,7 @@ Total.
 - apply: refuses while Toggle PGF Extension Filters is off, writing nothing
 - apply: the filtersActive setting is a schema row, and its writes remove / rewrite the block
 
-### test_panel.lua (72)
+### test_panel.lua (73)
 
 - panel: the module publishes its namespace table
 - panel: anchored under PGF dialog, both edges
@@ -252,7 +252,6 @@ Total.
 - panel: preset Delete removes the selected preset after confirming
 - panel: Enter in the Save as box saves and closes the popup
 - panel: a blank preset name is refused
-- panel: the score box commits a whole rating and re-syncs a rejected one
 - panel: each number box is anchored to the right of its own label
 - panel: the expanded height fits every row
 - panel: the min/max arrow follows the stored collapsed state
@@ -291,6 +290,8 @@ Total.
 - panel: the title is centered on the whole header
 - panel: the copy box and its label dim and disable while key targeting is off
 - panel: the panel's frame level is above PGF's dialog and its border
+- panel: the title is the full addon name, and the copy box centers its range
+- panel: a click on the header strip collapses and expands, like the arrow
 
 ### test_euiskin.lua (26)
 
@@ -311,7 +312,7 @@ Total.
 - euiskin: a profile switch to one with the switch off, after a paint, asks for a reload
 - euiskin: a profile switch to a disabled profile with the switch on paints nothing
 - euiskin: skinned, the collapsed panel is the shell's 25px bar and the metal copies are hidden
-- euiskin: skinned, the panel hangs 2px below PGF's dialog, both edges
+- euiskin: skinned, the panel sits flush under PGF's dialog, both edges
 - euiskin: the min/max buttons get the minus (collapse) and the plus (expand)
 - euiskin: checkboxes shrink to 24, row boxes stay on their row, hit rects follow the label
 - euiskin: the accent ring follows the check, and not while stood down
@@ -428,7 +429,7 @@ Total.
 | test_bridge.lua | 13 |
 | test_euibridge.lua | 17 |
 | test_apply.lua | 16 |
-| test_panel.lua | 72 |
+| test_panel.lua | 73 |
 | test_euiskin.lua | 26 |
 | test_euisettings.lua | 16 |
 | test_vendor_sync.lua | 3 |
@@ -438,4 +439,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **324** |
+| **Total** | **325** |
