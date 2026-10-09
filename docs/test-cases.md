@@ -168,7 +168,7 @@ Total.
 - apply: after Apply then /pgfe disable, PGF's evaluation passes groups again
 - apply: PGF minimized → refuses Apply and Clear, nothing written or searched
 
-### test_panel.lua (26)
+### test_panel.lua (27)
 
 - panel: the module publishes its namespace table
 - panel: anchored under PGF dialog, both edges
@@ -183,7 +183,8 @@ Total.
 - panel: unsupported portal shows the note and no chips
 - panel: range field shows N-N for the current level
 - panel: typing into the range field puts the range back
-- panel: typing a level writes keyLevel and updates the range; junk is ignored
+- panel: a level commits on Enter / focus loss, never per keystroke
+- panel: the age box commits whole values and re-syncs a rejected one
 - panel: readout highlights targeted dungeons, grays the rest
 - panel: readout says loading until the season data arrives
 - panel: checkboxes write their filter option
@@ -283,7 +284,7 @@ Total.
 | test_envinject.lua | 9 |
 | test_bridge.lua | 13 |
 | test_apply.lua | 12 |
-| test_panel.lua | 26 |
+| test_panel.lua | 27 |
 | test_vendor_sync.lua | 3 |
 | test_eol.lua | 2 |
 | test_prose.lua | 15 |
@@ -291,4 +292,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **193** |
+| **Total** | **194** |

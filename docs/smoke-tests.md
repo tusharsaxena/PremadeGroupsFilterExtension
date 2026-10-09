@@ -104,7 +104,9 @@ substitute its numbers.
   directly under it, edge to edge. Switch PGF to Raids → the panel hides; back to Dungeons → it
   returns at the same width; close PGF → it hides. Resize the Group Finder (or change UI scale) →
   the panel still matches PGF's width. Result:
-- **APPLY-2. Targeting at N=14.** Key level 14, key targeting on, Apply → exactly AOF, RLP, BV and KR
+- **APPLY-2. Targeting at N=14.** Type `14` in the level box and press Enter (the value is kept
+  only on Enter or when the box loses focus; `45` snaps back to the stored level), key targeting on,
+  Apply → exactly AOF, RLP, BV and KR
   are ticked in PGF's dungeon list **and** in the game's own Filter → Dungeons menu; the readout shows
   those four in gold and the rest gray; the search runs; chat says 4 dungeons, range `14-14`.
   Result:

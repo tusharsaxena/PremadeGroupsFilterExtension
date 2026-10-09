@@ -133,17 +133,43 @@ test("panel: typing into the range field puts the range back", function()
     assertEqual(box:GetText(), "12-12")
 end)
 
-test("panel: typing a level writes keyLevel and updates the range; junk is ignored", function()
+-- Keystroke by keystroke, as the client fires OnTextChanged(userInput = true) per character.
+local function typeInto(box, text)
+    for i = 1, #text do box.__text = text:sub(1, i); box:__fire("OnTextChanged", true) end
+end
+
+-- Review F-003: a box that saved on every keystroke stored `4` while the player typed `45`.
+test("panel: a level commits on Enter / focus loss, never per keystroke", function()
     local NS = T.enableAddon{}
     NS.Panel.Create(); NS.Panel.Refresh()
     local box = NS.Panel.frame.levelBox
-    box.__text = "15"; box:__fire("OnTextChanged", true)
+    typeInto(box, "15")
+    -- red under: commit from OnTextChanged in Panel's numberBox
+    assertEqual(NS.Filters.Get().keyLevel, 10, "nothing stored mid-typing")
+    box:__fire("OnEnterPressed")
     assertEqual(NS.Filters.Get().keyLevel, 15)
     assertEqual(NS.Panel.frame.rangeBox:GetText(), "15-15")
-    box.__text = ""; box:__fire("OnTextChanged", true)
-    assertEqual(NS.Filters.Get().keyLevel, 15)
-    box.__text = "99"; box:__fire("OnTextChanged", true)
-    assertEqual(NS.Filters.Get().keyLevel, 15)
+    typeInto(box, "45")
+    box:__fire("OnEditFocusLost")
+    assertEqual(NS.Filters.Get().keyLevel, 15, "45 is out of range")
+    -- red under: drop the re-sync on a rejected value
+    assertEqual(box:GetText(), "15", "the box never shows a value that is not stored")
+    box.__text = ""; box:__fire("OnEditFocusLost")
+    assertEqual(NS.Filters.Get().keyLevel, 15); assertEqual(box:GetText(), "15")
+    typeInto(box, "9"); box:__fire("OnEscapePressed")
+    assertEqual(NS.Filters.Get().keyLevel, 15); assertEqual(box:GetText(), "15")
+end)
+
+test("panel: the age box commits whole values and re-syncs a rejected one", function()
+    local NS = T.enableAddon{}
+    NS.Panel.Create(); NS.Panel.Refresh()
+    local box = NS.Panel.frame.ageBox
+    typeInto(box, "30")
+    assertEqual(NS.Filters.Get().maxAge, 15, "nothing stored mid-typing")
+    box:__fire("OnEditFocusLost")
+    assertEqual(NS.Filters.Get().maxAge, 30)
+    typeInto(box, "999"); box:__fire("OnEnterPressed")
+    assertEqual(NS.Filters.Get().maxAge, 30); assertEqual(box:GetText(), "30")
 end)
 
 test("panel: readout highlights targeted dungeons, grays the rest", function()

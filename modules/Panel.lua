@@ -102,32 +102,37 @@ local function checkRow(f, parent, key, text, y)
     return cb
 end
 
--- A 3-digit numeric box. `accept(n)` decides whether a typed number is stored; nothing is written
--- for programmatic SetText (userInput false) or while stood down.
-local function numberBox(parent, x, y, accept)
+-- A 3-digit numeric box over filter option `key`. A value is committed only whole: on Enter or when
+-- the box loses focus, never per keystroke (typing `45` would otherwise store `4` first). `accept(n)`
+-- stores a valid number and returns true; anything rejected puts the stored value back, so the box
+-- never shows a value that is not stored. Escape reverts. Nothing is written while stood down.
+local function numberBox(parent, x, y, key, accept)
     local box = CreateFrame("EditBox", nil, parent, "InputBoxTemplate")
     box:SetSize(32, 20)
     box:SetPoint("TOPLEFT", x, y - 1)
     box:SetAutoFocus(false)
     box:SetNumeric(true)
     box:SetMaxLetters(3)
-    box:SetScript("OnTextChanged", function(self, userInput)
-        if not userInput or stoodDown() then return end
+    local function resync(self) self:SetText(tostring(NS.Filters.Get()[key] or "")) end
+    local function commit(self)
+        if stoodDown() then return end
         local n = tonumber(self:GetText())
-        if n then accept(n) end
-    end)
-    box:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
-    box:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
+        if not (n and accept(n)) then resync(self) end
+    end
+    box:SetScript("OnEnterPressed", function(self) commit(self); self:ClearFocus() end)
+    box:SetScript("OnEditFocusLost", commit)
+    box:SetScript("OnEscapePressed", function(self) resync(self); self:ClearFocus() end)
     return box
 end
 
 local function buildKeyRow(f, body, y)
     checkRow(f, body, "keyTargeting", L.KEY_TARGETING, y)
-    f.levelBox = numberBox(body, 190, y, function(n)
-        if not NS.Targeting.IsValidLevel(n) then return end
+    f.levelBox = numberBox(body, 190, y, "keyLevel", function(n)
+        if not NS.Targeting.IsValidLevel(n) then return false end
         NS.Filters.Set("keyLevel", n)
         updateReadout(f)
         updateRange(f)
+        return true
     end)
     local readout = body:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
     readout:SetPoint("TOPLEFT", LABEL_X, y - ROW_H)
@@ -183,8 +188,10 @@ end
 
 local function buildAgeRow(f, body, y)
     checkRow(f, body, "maxAgeEnabled", L.MAX_AGE, y)
-    f.ageBox = numberBox(body, 190, y, function(n)
-        if n >= 1 and n <= 240 then NS.Filters.Set("maxAge", n) end
+    f.ageBox = numberBox(body, 190, y, "maxAge", function(n)
+        if n < 1 or n > 240 then return false end
+        NS.Filters.Set("maxAge", n)
+        return true
     end)
     label(body, L.MINUTES, 228, y)
     return y - ROW_H - 3
