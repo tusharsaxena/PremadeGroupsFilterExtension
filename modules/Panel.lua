@@ -723,6 +723,25 @@ local function buildMinMax(f)
     f.MaximizeMinimizeFrame = mm -- which arrow shows is set by applyLayout
 end
 
+-- The header strip toggles too (owner request): a click anywhere on the title band does what the
+-- arrow does. It spans the band from the left edge to just short of the arrow, so the arrow keeps
+-- its own click; the title text above it takes no mouse, so clicks reach this button.
+local HEADER_CLICK_RT = 30   -- room left at the right for the arrow button
+
+local function buildHeaderClick(f)
+    local b = CreateFrame("Button", nil, f)
+    b:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
+    b:SetPoint("TOPRIGHT", f, "TOPRIGHT", -HEADER_CLICK_RT, 0)
+    b:SetHeight(HEADER_SEAM)   -- the title band (the skinned bar is 25)
+    b:RegisterForClicks("LeftButtonUp")
+    b:SetScript("OnClick", function()
+        if stoodDown() then return end
+        setCollapsed(NS.addon.db.profile.panelCollapsed ~= true)
+        if PlaySound and SOUNDKIT then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end
+    end)
+    f.headerClick = b
+end
+
 local BUILDERS = { buildActiveRow, buildKeyRow, buildRegionRow, buildPlaystyleRow, buildCompositionRow, buildLeaderRow,
     buildAgeRow, buildPresetRow, buildActionRow }
 
@@ -763,6 +782,7 @@ local function buildFrame(dialog)
     f.expandedHeight = -BODY_TOP - y + BODY_BOTTOM
     f.unsupported = label(f, "", 14, BODY_TOP, "GameFontDisable")
     buildMinMax(f)
+    buildHeaderClick(f)
     return f
 end
 

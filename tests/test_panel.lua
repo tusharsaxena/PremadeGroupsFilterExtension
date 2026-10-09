@@ -1035,3 +1035,23 @@ test("panel: the title is the full addon name, and the copy box centers its rang
     -- red under: drop SetJustifyH("CENTER") from Panel's buildCopyBox
     assertEqual(f.rangeBox.__justifyH, "CENTER")
 end)
+
+-- Owner request: clicking the header does what the collapse / expand arrow does.
+test("panel: a click on the header strip collapses and expands, like the arrow", function()
+    local NS = T.enableAddon{}
+    local f = NS.Panel.Create(); NS.Panel.Refresh()
+    local h = f.headerClick
+    -- red under: drop buildHeaderClick from Panel's buildFrame
+    assertTrue(h ~= nil, "the header click area")
+    local _, _, _, _, y = h:GetPoint(1)
+    local p2, _, _, x2 = h:GetPoint(2)
+    assertEqual(y, 0); assertEqual(p2, "TOPRIGHT"); assertTrue(x2 < 0, "short of the arrow")
+    h:__fire("OnClick")
+    assertTrue(NS.addon.db.profile.panelCollapsed); assertFalse(f.body:IsShown())
+    assertTrue(f.MaximizeMinimizeFrame.isMinimized, "the arrow follows")
+    h:__fire("OnClick")
+    assertFalse(NS.addon.db.profile.panelCollapsed); assertTrue(f.body:IsShown())
+    NS.addon:OnSlashCommand("disable")
+    h:__fire("OnClick")
+    assertFalse(NS.addon.db.profile.panelCollapsed, "nothing while stood down")
+end)

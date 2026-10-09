@@ -149,7 +149,9 @@ substitute its numbers.
   runs, no Lua error; maximize PGF → the panel returns. Result:
 - **APPLY-13. Not on Dungeons.** With PGF on Raids, `/pgfe apply` → `Open Premade Groups Filter on
   the Dungeons category first; nothing was applied.` Result:
-- **APPLY-14. Collapse.** Expanded, the corner button shows the up-right arrow. Press it → the
+- **APPLY-14. Collapse.** Clicking anywhere on the header strip (the title band, not the arrow)
+  folds and unfolds the panel exactly like the arrow does. Expanded, the corner button shows the
+  up-right arrow. Press it → the
   panel folds to its header strip only (title, arrow and the closing metal bar, about 50px tall,
   no empty body under it), and the button shows the down-left arrow. Check the strip's metal art:
   the left and right rails meet the bottom bar with no step or gap, no corner art shows past the

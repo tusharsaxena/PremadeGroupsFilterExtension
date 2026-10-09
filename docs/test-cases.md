@@ -217,7 +217,7 @@ Total.
 - apply: refuses while Toggle PGF Extension Filters is off, writing nothing
 - apply: the filtersActive setting is a schema row, and its writes remove / rewrite the block
 
-### test_panel.lua (72)
+### test_panel.lua (73)
 
 - panel: the module publishes its namespace table
 - panel: anchored under PGF dialog, both edges
@@ -291,6 +291,7 @@ Total.
 - panel: the copy box and its label dim and disable while key targeting is off
 - panel: the panel's frame level is above PGF's dialog and its border
 - panel: the title is the full addon name, and the copy box centers its range
+- panel: a click on the header strip collapses and expands, like the arrow
 
 ### test_euiskin.lua (26)
 
@@ -428,7 +429,7 @@ Total.
 | test_bridge.lua | 13 |
 | test_euibridge.lua | 17 |
 | test_apply.lua | 16 |
-| test_panel.lua | 72 |
+| test_panel.lua | 73 |
 | test_euiskin.lua | 26 |
 | test_euisettings.lua | 16 |
 | test_vendor_sync.lua | 3 |
@@ -438,4 +439,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **324** |
+| **Total** | **325** |
