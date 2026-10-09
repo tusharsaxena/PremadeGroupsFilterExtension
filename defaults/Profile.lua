@@ -18,6 +18,7 @@ NS.C = {
         filtersActive  = true,    -- Toggle PGF Extension Filters (a Master controls extra row)
         showRegionTags = true,    -- the region tag on Group Finder rows (a Master controls extra row)
         panelCollapsed = false,   -- the attached panel folded to its title bar (modules/Panel.lua)
+        euiSkin        = true,    -- the EllesmereUI skin switch (modules/EUISkin.lua); gated, never forced
     },
 
     CHAR_DEFAULTS = {

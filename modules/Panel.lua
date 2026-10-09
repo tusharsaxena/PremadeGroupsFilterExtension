@@ -701,7 +701,8 @@ end
 local function applyLayout(f)
     local collapsed = NS.addon.db.profile.panelCollapsed == true
     local ok, missing = NS.Bridge.Check()
-    f:SetHeight(collapsed and HEADER_H or f.expandedHeight)
+    -- headerHeight: set by modules/EUISkin.lua when the EllesmereUI shell replaces the metal one.
+    f:SetHeight(collapsed and (f.headerHeight or HEADER_H) or f.expandedHeight)
     setHeaderOnly(f, collapsed)
     syncMinMax(f, collapsed)
     f.body:SetShown(ok and not collapsed)
@@ -785,6 +786,9 @@ function Panel.Create()
     Panel.frame = buildFrame(dialog)
     Panel.frame:Hide()
     Panel.Refresh()
+    -- The optional EllesmereUI skin paints once the panel exists (it refuses unless every
+    -- condition holds).
+    if NS.EUISkin then NS.EUISkin.TryApply() end
     return Panel.frame
 end
 

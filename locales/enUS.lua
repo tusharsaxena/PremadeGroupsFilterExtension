@@ -169,3 +169,7 @@ L["In EllesmereUI's Third-Party Addons list, turn on PremadeGroupsFilterExtensio
 L["Premade Groups Filter's own EllesmereUI skin is on"] = "Premade Groups Filter's own EllesmereUI skin is on"
 L["Install and enable Premade Groups Filter - EllesmereUI Skin, and turn on PremadeGroupsFilter in EllesmereUI's Third-Party Addons list."] =
     "Install and enable Premade Groups Filter - EllesmereUI Skin, and turn on PremadeGroupsFilter in EllesmereUI's Third-Party Addons list."
+L["The EllesmereUI skin comes off after a reload. Reload the UI now?"] =
+    "The EllesmereUI skin comes off after a reload. Reload the UI now?"
+L["Reload"] = "Reload"
+L["Later"]  = "Later"

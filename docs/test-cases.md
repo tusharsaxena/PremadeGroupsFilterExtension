@@ -289,6 +289,31 @@ Total.
 - panel: the copy box and its label dim and disable while key targeting is off
 - panel: the panel's frame level is above PGF's dialog and its border
 
+### test_euiskin.lua (22)
+
+- euiskin: the module publishes its namespace table
+- euiskin: registers once, at file load, under the folder name
+- euiskin: EllesmereUI absent registers nothing and leaves the panel stock
+- euiskin: every condition on, the login dispatch paints the built panel
+- euiskin: a dispatch before the panel exists keeps S, and Panel.Create paints
+- euiskin: TryApply is idempotent
+- euiskin: any one failing condition keeps the panel stock
+- euiskin: a condition turned off mid-session refuses a later paint
+- euiskin: our switch off keeps S and paints nothing; turning it on paints live
+- euiskin: turning the switch off after a paint asks for a reload and does not unpaint
+- euiskin: turning the switch off before any paint asks for nothing
+- euiskin: master off at login, turned on in EllesmereUI later, paints live
+- euiskin: stood down, the callback paints nothing; the stand-up paints
+- euiskin: a profile switch to one with the switch on paints
+- euiskin: skinned, the collapsed panel is the shell's 25px bar and the metal copies are hidden
+- euiskin: skinned, the panel hangs 2px below PGF's dialog, both edges
+- euiskin: the min/max buttons get the minus (collapse) and the plus (expand)
+- euiskin: checkboxes shrink to 24, row boxes stay on their row, hit rects follow the label
+- euiskin: the accent ring follows the check, and not while stood down
+- euiskin: only the title is whitened; readout, copy label and number boxes keep their color
+- euiskin: live looks and scale changes repaint without raising
+- euiskin: the diagnostics dependencies section reports the gate and the skin
+
 ### test_vendor_sync.lua (3)
 
 - libs/LibKa0s is the LibKa0s release CLAUDE.md says this addon bundles
@@ -378,6 +403,7 @@ Total.
 | test_euibridge.lua | 15 |
 | test_apply.lua | 16 |
 | test_panel.lua | 72 |
+| test_euiskin.lua | 22 |
 | test_vendor_sync.lua | 3 |
 | test_eol.lua | 2 |
 | test_prose.lua | 15 |
@@ -385,4 +411,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **279** |
+| **Total** | **301** |
