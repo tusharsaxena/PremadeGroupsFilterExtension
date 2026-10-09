@@ -23,6 +23,8 @@ The game doesn't let addons type into the Group Finder's search box, so the pane
 
 The first option, **Toggle PGF Extension Filters** (also under Settings → AddOns), switches the filtering off without turning the addon off: unticking it takes the extension's part out of the advanced filter (your own text and the dungeon ticks stay), and ticking it writes it back. Filter choices are saved per character. Presets let you store a setup under a name and load it on any character. **Clear** takes the extension's part back out of the advanced filter and leaves anything you typed there yourself. If the panel is in your way, the arrow in its top corner folds it down to just its title strip; the same arrow opens it again.
 
+If you use EllesmereUI with Premade Groups Filter's EllesmereUI skin, the panel gets the same EllesmereUI look as Premade Groups Filter's dialog. That needs EllesmereUI's third-party skinning turned on (Blizz UI Enhanced → Blizzard Window Skins → Third-Party Addons), with both PremadeGroupsFilter and PremadeGroupsFilterExtension ticked there. Settings → AddOns → Ka0s Premade Groups Filter Extension → General → EllesmereUI skin shows which of these are on, and has a switch to keep the panel's Blizzard look anyway. The switch can't turn the skin on while something is missing, and turning it off takes effect after a reload.
+
 `/pgfe apply` does what the Apply button does, so it works in a macro. Like the button, it only runs while Premade Groups Filter is on the dungeon category.
 
 Everything else is under **Settings → AddOns → Ka0s Premade Groups Filter Extension**, and `/pgfe help` (or `/premadegroupsfilterextension help`) prints the command list.

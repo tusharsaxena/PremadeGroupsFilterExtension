@@ -7,7 +7,7 @@ LibStub, CallbackHandler, LibSharedMedia, LibDataBroker, LibDBIcon, LibKa0s v1.7
 ## Load order and why
 
 Libraries load first (the `# Libraries` block, LibKa0s last after Ace3). Then `locales/enUS.lua`
-(publishes `NS.L`), the `core/` setup files, `core/PGFBridge.lua`, `defaults/`, `modules/`, and
+(publishes `NS.L`), the `core/` setup files, `core/PGFBridge.lua`, `core/EUIBridge.lua`, `defaults/`, `modules/`, and
 `settings/` last. Inside each block the TOC annotates every load-bearing position; the others are
 conventional. The constraints that fix the order:
 
@@ -20,6 +20,8 @@ conventional. The constraints that fix the order:
 - `defaults/Profile.lua` before `settings/Schema.lua` (`NS.C` is a file-scope upvalue there).
 - `settings/SchemaSetup.lua` → `settings/Schema.lua` → `settings/OptionsSetup.lua` →
   `settings/Panel.lua`: each consumes what the previous publishes at file scope.
+- `core/EUIBridge.lua` before `modules/EUISkin.lua`, which registers with EllesmereUI at file load
+  under `NS.EUIBridge.SKIN_NAME`; `## OptionalDeps: EllesmereUI` loads EllesmereUI first when present.
 - `settings/Profiles.lua` last, so the Profiles page is the last subcategory.
 
 ## Files
@@ -39,6 +41,7 @@ conventional. The constraints that fix the order:
 | `core/LifecycleSetup.lua` | `LibKa0s-Lifecycle-1.0`: the stand-down latch, `NS.IsStoodDown()` |
 | `core/PerfSetup.lua` | `LibKa0s-Perf-1.0`: the perf harness |
 | `core/PGFBridge.lua` | The only file that touches PGF internals: seam check, dungeon state and expression read/write, commit, search, the env and dialog hooks |
+| `core/EUIBridge.lua` | The only file that reads EllesmereUI state: the skin's four gate conditions (`Conditions`, `GateOpen`, `WhyClosed`) |
 | `defaults/Profile.lua` | `NS.C`: profile, char and global default values |
 | `defaults/Realms.lua` | `NS.RealmLists`: realm display names per portal and region bucket |
 | `modules/Regions.lua` | Portal detection, realm normalization, leader name → region key |
@@ -51,16 +54,17 @@ conventional. The constraints that fix the order:
 | `modules/Apply.lua` | Apply / Clear orchestration: prechecks, validation, targeting, expression merge, bridge writes, search |
 | `modules/RegionTags.lua` | The region tag on Group Finder rows and applicants; installs its two Blizzard hooks at load |
 | `modules/Panel.lua` | The panel attached under PGF's dialog; installs the dialog hook at load |
+| `modules/EUISkin.lua` | The optional EllesmereUI skin of that panel: registers at load, keeps the facade, paints when every condition and the switch hold, the reload prompt |
 | `modules/Diagnostics.lua` | The sections of `/pgfe diagnostics` |
 | `settings/SchemaSetup.lua` | `LibKa0s-Schema-1.0` or its host stub |
 | `settings/Schema.lua` | Schema rows, the write seam, defaults assembly, the reset |
 | `settings/OptionsSetup.lua` | `LibKa0s-Options-1.0`: the settings panel descriptor |
-| `settings/Panel.lua` | Landing page body and the General page (Master controls) |
+| `settings/Panel.lua` | Landing page body and the General page (Master controls; the EllesmereUI skin tab and its `euiSkin` row) |
 | `settings/Slash.lua` | `NS.COMMANDS` and `LibKa0s-Slash-1.0` |
 | `settings/Profiles.lua` | The Profiles page |
 | `tests/run.lua` | Suite list, factories, surface source, diagnostics facts |
 | `tests/loader.lua` | Per-case isolated instance factory |
-| `tests/wow_mock.lua` | Mock extender (client APIs this addon reads, AceDB `char`, LDB fakes) |
+| `tests/wow_mock.lua` | Mock extender (client APIs this addon reads, AceDB `char`, LDB fakes, the opt-in EllesmereUI fake) |
 | `tests/pgf_fake.lua` | Premade Groups Filter stand-in |
 | `tests/prose_waivers.lua` | Per-file, per-word waivers for the kit's prose gate (realm names) |
 | `tests/test_*.lua` | One suite per module plus the standard's named suites |
