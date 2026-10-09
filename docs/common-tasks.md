@@ -14,6 +14,27 @@
    `Filters.ToClauseOpts`; add its widget in `modules/Panel.lua`.
 3. Update `docs/schema.md`.
 
+## Add an expression clause
+
+1. Emit it in `Expression.BuildClauses` (`modules/Expression.lua`) at its place in the fixed clause
+   order, using only variables PGF's env already has or ones `modules/EnvInject.lua` injects.
+2. A new injected variable is named `pgfe_<name>`, set in `EnvInject.Apply` from cached state (no API
+   call per result), and listed in `docs/ARCHITECTURE.md` -> Injected variables.
+3. Pin it in `tests/test_expression.lua` (and `tests/test_envinject.lua` for a new variable).
+
+## Update the realm map
+
+Follow [`realm-map-maintenance.md`](realm-map-maintenance.md): run `tools/realm_map_diff.py`
+against an installed PremadeRegions, verify each difference on warcraft.wiki.gg, edit
+`defaults/Realms.lua`, and log it under *Source reconciliation*.
+
+## A new Mythic+ season
+
+Nothing in the code names a dungeon: the list comes from `C_ChallengeMode.GetMapTable()`, the short
+names from PGF's `C.MAP_ID_TO_KEYWORDS` (initials as the fallback), and PGF's dungeon rows are
+matched by cmID. Run the APPLY smoke tests on the new season; if the readout shows initials instead
+of PGF's keywords, PGF has not shipped the season's keywords yet.
+
 ## Add a slash verb
 
 Append a positional triple `{ "verb", L["description"], function(rest) ... end }` to `NS.COMMANDS`

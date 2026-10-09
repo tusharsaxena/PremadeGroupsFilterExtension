@@ -16,8 +16,8 @@ record, schema per `LibKa0s-Perf-1.0`'s API document) and `ANALYSIS.md` (the wri
 
 ## Buckets
 
-None declared yet. The first, `envInject` (PGF's per-result env hook), is declared with its bracket
-in plan Task 6.
+None declared at v0.1.0. The first, `envInject` (PGF's per-result env hook), is declared together
+with its bracket in `modules/EnvInject.lua`; that change has not been made yet.
 
 ## Capture index
 

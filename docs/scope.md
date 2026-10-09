@@ -27,7 +27,7 @@ Mythic+ conveniences on top of Premade Groups Filter (PGF), applied through PGF'
   here would be overwritten.
 - **Work without PGF.** PGF is a hard dependency (`docs/ARCHITECTURE.md` -> Documented deviations).
 - **Raids, PvP, leader blocklists.** Tracked as GitHub issues, not in v0.1.
-- **KR, TW and CN regions.** No realm data; the regions row is hidden there.
+- **KR, TW and CN regions.** No realm data; the regions row shows a one-line note there instead of region buttons.
 - **Raider.IO data.** Targeting uses the client's own season-best data only.
 - **Classic flavors.** Retail only.
 - **Translations.** English only for now; strings go through `NS.L` so a locale can be added.

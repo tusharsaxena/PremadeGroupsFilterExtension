@@ -38,18 +38,18 @@ conventional. The constraints that fix the order:
 | `core/LauncherSetup.lua` | `LibKa0s-Launcher-1.0`: the LDB launcher and minimap button |
 | `core/LifecycleSetup.lua` | `LibKa0s-Lifecycle-1.0`: the stand-down latch, `NS.IsStoodDown()` |
 | `core/PerfSetup.lua` | `LibKa0s-Perf-1.0`: the perf harness |
-| `core/PGFBridge.lua` | The only file that touches PGF internals (stub until plan Task 6) |
+| `core/PGFBridge.lua` | The only file that touches PGF internals: seam check, dungeon state and expression read/write, commit, search, the env and dialog hooks |
 | `defaults/Profile.lua` | `NS.C`: profile, char and global default values |
-| `defaults/Realms.lua` | Realm → region data per portal (stub until Task 2) |
-| `modules/Regions.lua` | Leader realm → region lookup (stub until Task 2) |
-| `modules/Season.lua` | Season dungeons and best timed levels (stub until Task 3) |
-| `modules/Targeting.lua` | Pure: untimed dungeons at a level (stub until Task 3) |
-| `modules/Expression.lua` | Pure: options → PGF expression block, merge and strip (stub until Task 4) |
-| `modules/Filters.lua` | The per-character filter options (stub until Task 5) |
-| `modules/Presets.lua` | Named presets, account-wide (stub until Task 5) |
-| `modules/EnvInject.lua` | The PGF env post-hook body (stub until Task 6) |
+| `defaults/Realms.lua` | `NS.RealmLists`: realm display names per portal and region bucket |
+| `modules/Regions.lua` | Portal detection, realm normalization, leader name → region key |
+| `modules/Season.lua` | Season dungeons, their short keywords and the player's best timed levels |
+| `modules/Targeting.lua` | Pure: untimed dungeons at a level, level validation, the `N-N` range text |
+| `modules/Expression.lua` | Pure: options → PGF expression block, merge and strip |
+| `modules/Filters.lua` | The per-character filter options: get/set, region toggles, validation, clause options |
+| `modules/Presets.lua` | Named presets, account-wide: list, save, load in place, delete |
+| `modules/EnvInject.lua` | The PGF env post-hook body and the player's cached spec keywords; installs the hook at load |
 | `modules/Apply.lua` | Apply / Clear orchestration: prechecks, validation, targeting, expression merge, bridge writes, search |
-| `modules/Panel.lua` | The panel attached under PGF's dialog (stub until Task 8) |
+| `modules/Panel.lua` | The panel attached under PGF's dialog; installs the dialog hook at load |
 | `modules/Diagnostics.lua` | The sections of `/pgfe diagnostics` |
 | `settings/SchemaSetup.lua` | `LibKa0s-Schema-1.0` or its host stub |
 | `settings/Schema.lua` | Schema rows, the write seam, defaults assembly, the reset |
@@ -61,4 +61,6 @@ conventional. The constraints that fix the order:
 | `tests/loader.lua` | Per-case isolated instance factory |
 | `tests/wow_mock.lua` | Mock extender (client APIs this addon reads, AceDB `char`, LDB fakes) |
 | `tests/pgf_fake.lua` | Premade Groups Filter stand-in |
+| `tests/prose_waivers.lua` | Per-file, per-word waivers for the kit's prose gate (realm names) |
 | `tests/test_*.lua` | One suite per module plus the standard's named suites |
+| `tools/realm_map_diff.py` | Diffs `defaults/Realms.lua` against an installed PremadeRegions ([`realm-map-maintenance.md`](realm-map-maintenance.md)) |

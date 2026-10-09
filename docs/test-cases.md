@@ -162,9 +162,33 @@ Total.
 - apply: /pgfe apply searches and prints; /pgfe clear prints
 - apply: /pgfe apply prints the refusal with its argument
 
-### test_panel.lua (1)
+### test_panel.lua (25)
 
 - panel: the module publishes its namespace table
+- panel: anchored under PGF dialog, both edges
+- panel: Create is idempotent
+- panel: visible only for shown dialog on the dungeon category
+- panel: created lazily, on the first UpdateVisibility that wants it
+- panel: the dialog's SwitchToPanel is hooked at load
+- panel: hidden when stood down, and the dialog hook is a no-op
+- panel: region chips follow portal
+- panel: a chip click toggles the region and its highlight
+- panel: unsupported portal shows the note and no chips
+- panel: range field shows N-N for the current level
+- panel: typing into the range field puts the range back
+- panel: typing a level writes keyLevel and updates the range; junk is ignored
+- panel: readout highlights targeted dungeons, grays the rest
+- panel: readout says loading until the season data arrives
+- panel: checkboxes write their filter option
+- panel: Refresh re-reads the filters into the widgets
+- panel: Apply searches and prints; the range field follows
+- panel: Apply does nothing while stood down
+- panel: a missing PGF seam shows one line and disables Apply
+- panel: collapse folds to the title bar and is remembered in the profile
+- panel: preset Save as stores a named preset; Load refills the widgets
+- panel: preset Delete removes the selected preset after confirming
+- panel: Enter in the Save as box saves and closes the popup
+- panel: a blank preset name is refused
 
 ### test_vendor_sync.lua (3)
 
@@ -252,7 +276,7 @@ Total.
 | test_envinject.lua | 8 |
 | test_bridge.lua | 12 |
 | test_apply.lua | 10 |
-| test_panel.lua | 1 |
+| test_panel.lua | 25 |
 | test_vendor_sync.lua | 3 |
 | test_eol.lua | 2 |
 | test_prose.lua | 15 |
@@ -260,4 +284,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **162** |
+| **Total** | **186** |

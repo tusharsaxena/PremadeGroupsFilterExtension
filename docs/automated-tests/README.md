@@ -26,4 +26,4 @@ The runner is the kit's (`tests/_kit/`), recorded `100755` in the git index, and
   run's `manifest.json`.
 - A missing tool is a **skip** with its reason, never a pass; a skip is not a pass for the release
   gate either. Today `perf` skips with "no tests/perf.lua": the offline scenarios arrive with the
-  first hot path (the env hook, plan Task 6).
+  first hot path, the env hook, and are owed before the `v0.1.0` tag.

@@ -2,8 +2,8 @@
 
 Registered eagerly as **Settings → AddOns → Ka0s Premade Groups Filter Extension**; page bodies
 build on first show (`LibKa0s-Options-1.0`, options-ui-§1/§5). The filter options are **not** here:
-they live on the panel attached under PGF's dialog (plan Task 8), which is a feature surface, not a
-settings page.
+they live on the panel attached under PGF's dialog (`modules/Panel.lua`, described in
+[`data-flow.md`](data-flow.md#the-attached-panel)), which is a feature surface, not a settings page.
 
 | Page | Covers |
 |---|---|

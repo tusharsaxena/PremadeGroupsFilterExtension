@@ -9,7 +9,7 @@ assembled by `Settings.BuildDefaults` in `settings/Schema.lua`.
 | Key | Default | Written by |
 |---|---|---|
 | `enabled` | `true` | The write seam: the *Enable* row, `/pgfe enable|disable`, the launcher menu |
-| `panelCollapsed` | `false` | `modules/Panel.lua` (the collapse button), plan Task 8 |
+| `panelCollapsed` | `false` | `modules/Panel.lua` (the panel's minimize/maximize button) |
 
 ## `char` (per character)
 

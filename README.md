@@ -3,25 +3,29 @@
 ![WoW](https://img.shields.io/badge/WoW-Midnight_12.1.0-purple)
 ![License](https://img.shields.io/badge/License-MIT-orange)
 ![Standard](https://img.shields.io/badge/Ka0s-WoW_Addon_Standard-yellow)
-![Tests](https://img.shields.io/badge/Tests-102%2F102_passing-green)
+![Tests](https://img.shields.io/badge/Tests-186%2F186_passing-green)
 
 A small companion to [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter) for Mythic+. You type the key level you want to push, and it ticks every dungeon you haven't timed at that level yet. It can also narrow the list to leaders from the server regions you pick, hide groups that already have your spec, ask for a leader who has timed the dungeon, and drop old listings. One Apply button sets all of it in Premade Groups Filter and runs the search.
 
 It doesn't replace Premade Groups Filter's filtering. It sets the same checkboxes and the same advanced filter you could set by hand, so you can always see and edit what it did. Premade Groups Filter has to be installed; without it this addon doesn't load.
 
-This is version 0.1.0 and still being built. The filter panel described below lands with the 0.1.0 release.
+## Screenshots
+
+I'll add screenshots of the panel under Premade Groups Filter's dialog here with the first CurseForge release.
 
 ## Usage
 
 Open the Group Finder, start a Mythic+ search and open Premade Groups Filter's dialog on the dungeon category. The extension's panel sits right under that dialog and is exactly as wide. Switch Premade Groups Filter to another category, or close it, and the panel goes away with it.
 
-Type a key level and the panel shows your best timed level for each dungeon this season, with the ones you still need picked out. Turn on any of the other filters you want (regions, composition, experienced leader, group age) and press **Apply**. The dungeon checkboxes and the advanced filter in Premade Groups Filter update, and the search runs.
+Type a key level and the panel lists your best timed level in each dungeon this season. The ones you still need at that level show in gold, the rest in gray. Turn on whatever else you want (regions, composition, experienced leader, group age) and press **Apply**. Premade Groups Filter's dungeon checkboxes and advanced filter update, and the search runs.
 
 The game doesn't let addons type into the Group Finder's search box, so the panel shows the key range as text, for example `14-14`. Click it, press Ctrl+C, click the search box and press Ctrl+V if you also want to search listings by title.
 
-Filter choices are saved per character. Presets let you store a setup under a name and load it on any character. **Clear** takes the extension's part back out of the advanced filter and leaves anything you typed there yourself.
+Filter choices are saved per character. Presets let you store a setup under a name and load it on any character. **Clear** takes the extension's part back out of the advanced filter and leaves anything you typed there yourself. If the panel is in your way, the button in its top corner folds it down to the title bar.
 
-You can also run `/pgfe apply` from a macro. Everything else lives under the game's **Settings → AddOns → Ka0s Premade Groups Filter Extension**, and `/pgfe help` (or `/premadegroupsfilterextension help`) prints the command list.
+`/pgfe apply` does what the Apply button does, so it works in a macro. Like the button, it only runs while Premade Groups Filter is on the dungeon category.
+
+Everything else is under **Settings → AddOns → Ka0s Premade Groups Filter Extension**, and `/pgfe help` (or `/premadegroupsfilterextension help`) prints the command list.
 
 ## How the filtering works
 
@@ -48,6 +52,9 @@ You can also run `/pgfe apply` from a macro. Everything else lives under the gam
 | The addon doesn't load | Premade Groups Filter must be installed and enabled. |
 | The panel shows "PGF version not supported" | Premade Groups Filter changed in an update. Report it (see below) and include your Premade Groups Filter version. |
 | Apply says it can't run in combat | Wait until combat ends and press it again. |
+| Apply asks you to open Premade Groups Filter on the Dungeons category | Switch Premade Groups Filter's dialog to Dungeons, then press Apply again. |
+| The panel says season data is loading | The game sends it a few seconds after login. Wait, then look again. |
+| Apply says the [pgfe] block is damaged | The lines between the `-- [pgfe]` markers in the advanced filter were changed by hand. Delete the block, markers included, and press Apply again. |
 | Something looks wrong and I want to report it | Follow [Reporting a bug](#reporting-a-bug) below. |
 
 ## Reporting a bug
