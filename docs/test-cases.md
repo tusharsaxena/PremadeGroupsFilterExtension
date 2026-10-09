@@ -125,12 +125,13 @@ Total.
 - presets: list sorted, delete, bad names, missing
 - presets: names are trimmed and saving overwrites
 
-### test_envinject.lua (8)
+### test_envinject.lua (9)
 
 - envinject: the module publishes its namespace table
 - envinject: keywords follow PGF's formula
 - envinject: unknown spec / role / missing table → nil keywords, no error
 - envinject: samespec / sameclassrole from env counts
+- envinject: the spec is read through Compat when the deprecated globals are gone
 - envinject: spec change is picked up without re-apply
 - envinject: PLAYER_SPECIALIZATION_CHANGED refreshes for the player only
 - envinject: regions injected only without PremadeRegions
@@ -276,7 +277,7 @@ Total.
 | test_expression.lua | 11 |
 | test_filters.lua | 4 |
 | test_presets.lua | 3 |
-| test_envinject.lua | 8 |
+| test_envinject.lua | 9 |
 | test_bridge.lua | 12 |
 | test_apply.lua | 11 |
 | test_panel.lua | 25 |
@@ -287,4 +288,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **189** |
+| **Total** | **190** |

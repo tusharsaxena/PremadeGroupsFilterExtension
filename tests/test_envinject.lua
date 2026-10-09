@@ -38,6 +38,17 @@ test("envinject: samespec / sameclassrole from env counts", function()
     assertEqual(env.pgfe_samespec, 0); assertEqual(env.pgfe_sameclassrole, 0)
 end)
 
+-- Review F-002 / audit PGE-01: the spec read goes through NS.Compat, so a client without the
+-- deprecated globals still answers through C_SpecializationInfo.
+test("envinject: the spec is read through Compat when the deprecated globals are gone", function()
+    local _, _, m = T.enableAddon{ specID = 253, role = "DAMAGER", classFile = "HUNTER" }
+    m.GetSpecialization = nil; m.GetSpecializationInfo = nil
+    m.fireEvent("ACTIVE_PLAYER_SPECIALIZATION_CHANGED")
+    -- red under: read GetSpecialization/GetSpecializationInfo directly in EnvInject.RefreshPlayer
+    local env = runHook(m, { beastmastery_hunters = 1, dps_hunters = 2 }, "Bob")
+    assertEqual(env.pgfe_samespec, 1); assertEqual(env.pgfe_sameclassrole, 2)
+end)
+
 test("envinject: spec change is picked up without re-apply", function()
     local _, _, m = T.enableAddon{ specID = 253, role = "DAMAGER", classFile = "HUNTER" }
     m.specID = 262; m.role = "DAMAGER"; m.classFile = "SHAMAN"

@@ -39,9 +39,10 @@ function EnvInject.PlayerKeywords(specID, role, classFile, specTable)
 end
 
 function EnvInject.RefreshPlayer()
-    local idx = GetSpecialization and GetSpecialization()
+    -- Through core/Compat.lua (compat): C_SpecializationInfo first, the deprecated globals after.
+    local idx = NS.Compat.GetSpecialization()
     local specID, role, _
-    if idx then specID, _, _, _, role = GetSpecializationInfo(idx) end
+    if idx then specID, _, _, _, role = NS.Compat.GetSpecializationInfo(idx) end
     local _, classFile = UnitClass("player")
     local pgf = PremadeGroupsFilter and PremadeGroupsFilter.Debug
     player.spec, player.classRole = EnvInject.PlayerKeywords(specID, role, classFile,

@@ -17,7 +17,8 @@
 --   mapTable       C_ChallengeMode.GetMapTable()'s answer (nil = not loaded yet)
 --   mapUIInfo      [cmID] = { name = ..., mapID = ... } for C_ChallengeMode.GetMapUIInfo
 --   seasonBest     [cmID] = { intime = {level=n}|nil, overtime = {level=n}|nil }
---   specID, role   GetSpecializationInfo(index)'s specID and role token
+--   specID, role   GetSpecializationInfo(index)'s specID and role token (the deprecated globals
+--                  and C_SpecializationInfo answer the same; a suite nils either rung)
 --   classFile      UnitClass("player")'s class token
 --   inCombat       InCombatLockdown()'s answer
 --   fireEvent      fireEvent(name, ...) dispatches a game event to AceEvent handlers
@@ -52,6 +53,13 @@ local function build()
         if index ~= 1 then return nil end
         return M.specID, "x", "", 0, M.role
     end
+    M.C_SpecializationInfo = {
+        GetSpecialization     = function() return 1 end,
+        GetSpecializationInfo = function(index)
+            if index ~= 1 then return nil end
+            return M.specID, "x", "", 0, M.role
+        end,
+    }
     M.UnitClass = function() return "X", M.classFile end
 
     M.C_ChallengeMode = {
