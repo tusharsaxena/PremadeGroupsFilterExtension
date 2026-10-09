@@ -152,10 +152,17 @@ NS.SchemaRuntime.AddRows(EUI_ROWS)
 
 local ICON_OK  = "|TInterface\\RaidFrame\\ReadyCheck-Ready:14|t"
 local ICON_BAD = "|TInterface\\RaidFrame\\ReadyCheck-NotReady:14|t"
+-- An empty icon slot, the same 14x14 as the two above, so a line that carries no icon still starts
+-- its text exactly under theirs (owner request: pixel-perfect, no space padding). It draws one
+-- texel of the ready-check texture's fully transparent corner (texcoords 0..1 of 64), stretched
+-- to the slot: nothing visible, the icon's exact footprint.
+local ICON_BLANK = "|TInterface\\RaidFrame\\ReadyCheck-Ready:14:14:0:0:64:64:0:1:0:1|t"
+local STATUS_GAP = 8   -- the space above the line saying what the skin is doing
+local SWITCH_GAP = 12  -- the space between the switch (first) and the status lines below it
 
 local function conditionText(c)
     if c.ok then return ICON_OK .. " " .. c.label end
-    return ICON_BAD .. " " .. c.label .. "\n      |cff999999" .. c.hint .. "|r"
+    return ICON_BAD .. " " .. c.label .. "\n" .. ICON_BLANK .. " |cff999999" .. c.hint .. "|r"
 end
 
 --- What the skin is doing this session, in words: the line under the conditions.
@@ -211,27 +218,63 @@ end
 
 -- A status line: a TextRow re-read by its own refresher (options-ui-§11), so it follows changes
 -- made in EllesmereUI's options, which never pass through our write seam.
-local function statusRow(ctx, textFn)
-    local w = Helpers.TextRow(ctx, textFn(), { fontObject = "GameFontHighlight" })
-    if not w then return end
+-- An InteractiveLabel rather than the toolkit's TextRow (a plain Label takes no mouse): it carries
+-- OnEnter/OnLeave as AceGUI callbacks, which AceGUI clears when the widget is released, so a pooled
+-- frame never keeps a stale tooltip. `tipFn` answers title, body at hover time.
+local function statusRow(ctx, textFn, tipFn)
+    local AceGUI, scroll = Helpers.AceGUI, Helpers.EnsureScroll(ctx)
+    if not (AceGUI and scroll) then return end
+    local w = AceGUI:Create("InteractiveLabel")
+    w:SetFullWidth(true)
+    if w.SetFontObject and _G.GameFontHighlight then w:SetFontObject(_G.GameFontHighlight) end
+    w:SetText(textFn())
+    if tipFn then
+        w:SetCallback("OnEnter", function(widget)
+            if not GameTooltip then return end
+            local title, body = tipFn()
+            GameTooltip:SetOwner(widget.frame, "ANCHOR_TOPLEFT")
+            GameTooltip:SetText(title, 1, 1, 1, 1, true)
+            GameTooltip:AddLine(body, nil, nil, nil, true)
+            GameTooltip:Show()
+        end)
+        w:SetCallback("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
+    end
+    scroll:AddChild(w)
     ctx.refreshers[#ctx.refreshers + 1] = function() w:SetText(textFn()) end
+    return w
 end
 
+-- What / why / how for each condition line (owner request), and for the state line.
+local CONDITION_TIPS = {
+    eui = L["EllesmereUI paints windows through its Blizzard Skin module (EllesmereUIBlizzardSkin), which holds its skinning engine. Without both there is nothing to paint this panel with.\n\nHow: install EllesmereUI and keep EllesmereUI Blizzard Skin enabled in the AddOns list."],
+    master = L["EllesmereUI's master switch for skinning other addons' windows. While it is off, EllesmereUI skins no third-party addon, this one included.\n\nHow: EllesmereUI options > Blizz UI Enhanced > Blizzard Window Skins > Third-Party Addons > Skin Third-Party Addons."],
+    own = L["EllesmereUI lists every addon that registers a skin with it, each with its own switch. This is this addon's entry.\n\nHow: in the same Third-Party Addons list, tick PremadeGroupsFilterExtension. EllesmereUI applies a skin it turns on at once; one it turns off goes after a reload."],
+    pgf = L["This panel sits under Premade Groups Filter's window, so the skin is only used while that window is skinned too: the two always match. That is Premade Groups Filter - EllesmereUI Skin, a separate addon.\n\nHow: install it from CurseForge (the link appears below when it is missing), enable it in the AddOns list, and tick PremadeGroupsFilter in EllesmereUI's Third-Party Addons list."],
+}
+local STATE_TIP = L["What the skin is doing this session. EllesmereUI applies a skin once per session: turning the skin on paints the panel at once, turning it off takes effect after a reload. It is never applied while a condition above is not met, whatever the switch says."]
+
+-- The switch first (owner request), a gap, then the four condition lines, a gap, and the state line.
 local function renderEuiTab(ctx, rows)
     local B = NS.EUIBridge
-    for i = 1, #B.Conditions() do
-        statusRow(ctx, function() return conditionText(B.Conditions()[i]) end)
-    end
-    statusRow(ctx, Settings.EUISkinStateText)
     local scroll = Helpers.EnsureScroll(ctx)
+    local row = rows and rows[1]
+    if row then
+        local cb = Helpers.RenderField(ctx, row)      -- binds the refresher and the disabledIf
+        if cb and cb.SetCallback then cb:SetCallback("OnEnter", euiTooltip(cb, row)) end
+        if scroll then Helpers.AddSpacer(scroll, SWITCH_GAP) end
+    end
+    for i = 1, #B.Conditions() do
+        statusRow(ctx, function() return conditionText(B.Conditions()[i]) end, function()
+            local c = B.Conditions()[i]
+            return c.label, CONDITION_TIPS[c.key] or ""
+        end)
+    end
+    if scroll then Helpers.AddSpacer(scroll, STATUS_GAP) end
+    statusRow(ctx, function() return ICON_BLANK .. " " .. Settings.EUISkinStateText() end,
+        function() return Settings.EUISkinStateText(), STATE_TIP end)
     -- Not installed: a box holding the CurseForge link to copy (the game cannot open a browser).
     -- Decided at render time: installing an addon needs a game restart, so it cannot change live.
     if scroll and B.PGFSkinState() == "missing" then addPGFSkinLink(scroll) end
-    if scroll then Helpers.AddSpacer(scroll, Helpers.ROW_VSPACER or 8) end
-    local row = rows and rows[1]
-    if not row then return end
-    local cb = Helpers.RenderField(ctx, row)      -- binds the refresher and the disabledIf
-    if cb and cb.SetCallback then cb:SetCallback("OnEnter", euiTooltip(cb, row)) end
 end
 
 local GENERAL_OPTS = { tabs = { { key = EUI_GROUP, render = renderEuiTab } } }

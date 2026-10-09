@@ -34,8 +34,14 @@ Untabbed by rule (options-ui-§13): the host's `buildMain` in `settings/Panel.lu
   - *Reset all settings* (button) → confirmation popup → profile reset.
 
 - **EllesmereUI skin** (the second tab; its own group, drawn by a host tab in `settings/Panel.lua`):
+  - *Use the EllesmereUI skin* → `euiSkin` (profile, default on), first, with a 12px gap below.
+    Disabled while any condition fails (never forced on); its tooltip adds what is missing, live.
+    Off after a paint asks for a reload, whether from the switch or from a profile switch, copy or
+    reset.
   - Four status lines, one per gate condition (`core/EUIBridge.lua`): a green ready mark or a red
-    not-ready mark, the condition, and under a failing one what to do about it:
+    not-ready mark, the condition, and under a failing one what to do about it (indented by an empty
+    icon slot the size of the marks). Hovering a line shows what the condition is, why it matters
+    and how to turn it on:
     1. EllesmereUI and its Blizzard Skin module are loaded;
     2. EllesmereUI third-party skinning is on (*Blizz UI Enhanced > Blizzard Window Skins >
        Third-Party Addons > Skin Third-Party Addons*);
@@ -44,11 +50,9 @@ Untabbed by rule (options-ui-§13): the host's `buildMain` in `settings/Panel.lu
        installed (and a read-only box holds its CurseForge link to copy), installed but disabled in
        the AddOns list, or turned off in EllesmereUI's Third-Party Addons list
        (`EUIBridge.PGFSkinState`).
-  - A state line: applied; applied until a reload; not applied (stood down / a condition not met);
+  - After an 8px gap, a state line in the same empty icon slot (so its text lines up under the
+    conditions'), with its own tooltip: applied; applied until a reload; not applied (stood down / a condition not met);
     off; applied after a reload; applied when the panel next shows.
-  - *Use the EllesmereUI skin* → `euiSkin` (profile, default on). Disabled while any condition fails
-    (never forced on); its tooltip adds what is missing, live. Off after a paint asks for a reload, whether
-    from the switch or from a profile switch, copy or reset.
   - Every line and the box are re-read each time the page is shown (an `OnShow` hook running the
     page's refreshers), since EllesmereUI's options change them outside this addon's write seam.
 

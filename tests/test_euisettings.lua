@@ -29,7 +29,7 @@ local function openTab(NS, m)
     H.SelectTab("general", GROUP)
     local labels, box = {}, nil
     for _, w in ipairs(ctx.scroll.children) do
-        if w.type == "Label" and type(w.text) == "string" and w.text ~= "" then labels[#labels + 1] = w end
+        if w.type == "InteractiveLabel" and type(w.text) == "string" and w.text ~= "" then labels[#labels + 1] = w end
         if w.type == "CheckBox" then box = w end
     end
     return ctx, labels, box
@@ -64,7 +64,7 @@ test("euisettings: the General page's tabs are Master controls, then EllesmereUI
     assertEqual(table.concat(order, " | "), H.MASTER_GROUP .. " | " .. GROUP)
 end)
 
-test("euisettings: the tab draws a line per condition, a state line, then the switch", function()
+test("euisettings: the tab draws the switch, a line per condition, then a state line", function()
     local NS, _, m = setup()
     m.eui.dispatch(NAME)
     NS.Panel.Create()
@@ -205,4 +205,61 @@ test("euisettings: a missing PGF skin gets a box with its CurseForge link; insta
     local NS2, _, m2 = setup{ pgfSkin = false }
     openTab(NS2, m2)
     assertEqual(NS2.addon.Settings.PGFSkinLinkBox, nil, "installed but disabled: no link")
+end)
+
+-- Owner request: a gap above the state line, and the state line (and a failing condition's hint)
+-- starting in an empty icon slot the size of the status icons, so its text sits under theirs.
+test("euisettings: the state line sits below a gap, in an empty icon slot like the hints", function()
+    local NS, _, m = setup{ entries = { PremadeGroupsFilter = false } }
+    m.eui.dispatch(NAME)
+    NS.Panel.Create()
+    local ctx = openTab(NS, m)
+    local kids, stateAt = ctx.scroll.children, nil
+    local BLANK = "|TInterface\\RaidFrame\\ReadyCheck-Ready:14:14:0:0:64:64:0:1:0:1|t "
+    for i, w in ipairs(kids) do
+        if w.type == "InteractiveLabel" and type(w.text) == "string" and w.text:find("The skin is", 1, true) then stateAt = i end
+    end
+    assertTrue(stateAt ~= nil, "the state line")
+    -- red under: drop the STATUS_GAP spacer in renderEuiTab
+    local gapAt = stateAt - 1
+    assertEqual(kids[gapAt].type, "SimpleGroup"); assertEqual(kids[gapAt].height, 8)
+    -- red under: the state line without ICON_BLANK in front
+    assertEqual(kids[stateAt].text:sub(1, #BLANK), BLANK)
+    -- The failing pgf condition's hint line uses the same slot, not spaces.
+    local pgfLine = kids[gapAt - 1].text
+    assertTrue(pgfLine:find("\n" .. BLANK, 1, true) ~= nil, pgfLine)
+end)
+
+-- Owner request: the switch first, with a gap before the status lines.
+test("euisettings: the switch comes first, then a gap, then the condition lines", function()
+    local NS, _, m = setup()
+    local ctx = openTab(NS, m)
+    local kids = ctx.scroll.children
+    local boxAt
+    for i, w in ipairs(kids) do if w.type == "CheckBox" then boxAt = boxAt or i end end
+    -- red under: render the switch after the status lines
+    assertEqual(boxAt, 1, "the switch is the tab's first widget")
+    assertEqual(kids[2].type, "SimpleGroup"); assertEqual(kids[2].height, 12)
+    assertEqual(kids[3].type, "InteractiveLabel")
+end)
+
+-- Owner request: every status line explains itself on hover: what, why, how.
+test("euisettings: each condition line and the state line have a what / why / how tooltip", function()
+    local NS, _, m = setup{ masterOff = true }
+    local _, labels = openTab(NS, m)
+    assertEqual(#labels, 5)
+    for i, w in ipairs(labels) do
+        local title, body
+        m.GameTooltip.SetText = function(_, t) title = t end
+        m.GameTooltip.AddLine = function(_, t) body = t end
+        -- red under: statusRow without the OnEnter callback
+        assertTrue(type(w.callbacks.OnEnter) == "function", "line " .. i)
+        w:__fire("OnEnter")
+        assertTrue(type(title) == "string" and title ~= "", "line " .. i .. " title")
+        assertTrue(type(body) == "string" and #body > 60, "line " .. i .. " body: " .. tostring(body))
+    end
+    local body2
+    m.GameTooltip.AddLine = function(_, t) body2 = t end
+    labels[2]:__fire("OnEnter")
+    assertTrue(body2:find("Skin Third-Party Addons", 1, true) ~= nil, "the master line says how")
 end)
