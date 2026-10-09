@@ -203,7 +203,7 @@ substitute its numbers.
 - **APPLY-23. Row spacing.** Every row, from Untimed dungeons to Presets (the dungeon readout
   included), is the same distance from the next as the Server regions and Playstyle rows are; only
   the gaps under the toggle row, around the Presets row and above Apply are wider. Result:
-- **APPLY-22. Title centered, 2px gap.** A 2px gap separates PGF's dialog from the panel: the two
+- **APPLY-22. Title centered, 1px gap.** A 1px gap separates PGF's dialog from the panel: the two
   metal borders neither touch nor overlap (tune `ATTACH_RAISE` in `modules/Panel.lua`), and PGF's
   border never draws over the panel's title strip, expanded or
   collapsed. The panel's title is centered on the whole header strip, expanded
@@ -223,12 +223,12 @@ Blizzard Window Skins > Third-Party Addons*; check the wording there matches the
 settings tab and record any difference.
 
 - **SKIN-1. EllesmereUI absent.** Disable EllesmereUI, `/reload` → no Lua error; the panel looks
-  exactly as without this feature (metal border, 2px gap under PGF's dialog). Settings → General →
+  exactly as without this feature (metal border, 1px gap under PGF's dialog). Settings → General →
   *EllesmereUI skin*: four red lines (each with its hint), "a condition above is not met", the box
   checked but disabled; hovering it lists what is missing. `/pgfe set euiSkin false` works;
   `/pgfe set euiSkin true` is then refused with the reasons. Result:
 - **SKIN-2. Everything on.** All four conditions on, *Use the EllesmereUI skin* ticked, `/reload`,
-  open PGF on Dungeons → the panel wears the same flat shell as PGF's dialog, with a 2px gap between
+  open PGF on Dungeons → the panel wears the same flat shell as PGF's dialog, with a 1px gap between
   them and neither drawn over the other; title white and centered in the 25px top bar; 16px
   checkboxes with the accent block and ring when ticked; flat number boxes (Smart's grayed level and
   the dimmed copy box keep their gray); flat dropdowns with EllesmereUI's arrow, opening

@@ -35,9 +35,9 @@ local SELECT_ROW_H  = ROW_H       -- a row holding a dropdown
 local BUTTON_ROW_H  = ROW_H
 local BODY_TOP      = -28
 -- How far the panel sits up into PGF's dialog's bottom edge. At 0 the two metal borders left ~4 UI
--- units of world between them (owner screenshot, 5px at that UI scale); 5 made them meet. The owner
--- wants a 2px gap, so the panel is raised by the difference.
-local ATTACH_RAISE  = 2
+-- units of world between them (owner screenshot, 5px at that UI scale); 5 made them meet. Raised 2
+-- the owner asked for 1px less of a gap, so the panel is raised by 3.
+local ATTACH_RAISE  = 3
 -- Frame levels above the dialog. A child frame defaults to its parent's level + 1, which is also
 -- where PGF's own border (its NineSlice) sits, in the same FULLSCREEN strata: with the two borders
 -- overlapping by ATTACH_RAISE, the client drew PGF's bottom border over this panel's title strip in

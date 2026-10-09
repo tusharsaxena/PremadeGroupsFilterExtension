@@ -48,7 +48,7 @@ test("euiskin: EllesmereUI absent registers nothing and leaves the panel stock",
     assertFalse(NS.EUISkin.TryApply())
     assertNil(f.headerHeight)
     local _, rel, _, _, y = f:GetPoint(1)
-    assertEqual(rel, m.PremadeGroupsFilterDialog); assertEqual(y, 2, "the metal border's raise stays")
+    assertEqual(rel, m.PremadeGroupsFilterDialog); assertEqual(y, 3, "the metal border's raise stays")
 end)
 
 test("euiskin: every condition on, the login dispatch paints the built panel", function()
@@ -218,7 +218,7 @@ test("euiskin: skinned, the panel hangs 2px below PGF's dialog, both edges", fun
     assertEqual(p2, "TOPRIGHT"); assertEqual(rel2, m.PremadeGroupsFilterDialog); assertEqual(rp2, "BOTTOMRIGHT")
     assertEqual(x1, 0)
     -- red under: SHELL_GAP sign flipped (the panel overlapping the dialog)
-    assertEqual(y1, -2); assertEqual(y2, -2)
+    assertEqual(y1, -1); assertEqual(y2, -1)
 end)
 
 test("euiskin: the min/max buttons get the minus (collapse) and the plus (expand)", function()

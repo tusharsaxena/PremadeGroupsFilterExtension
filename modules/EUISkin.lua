@@ -25,7 +25,7 @@ local L   = NS.L
 local TAG = "Skin"
 
 local SHELL_HEADER_H = 25   -- WSkin.Shell's top bar: collapsed, the panel is that bar alone
-local SHELL_GAP      = 2    -- flat shells sit exactly on their frame rects: -2 leaves a 2px gap
+local SHELL_GAP      = 1    -- flat shells sit exactly on their frame rects: -1 leaves a 1px gap
 local CHECKBOX_SIZE, CHECKBOX_BORDER_INSET = 24, 4
 local ACCENT_BORDER_SIZE, ACCENT_MARK_GAP, ACCENT_BORDER_LEVEL = 1, 2, 3
 local ACCENT_BOX_SIZE  = CHECKBOX_SIZE - 2 * CHECKBOX_BORDER_INSET
@@ -271,7 +271,7 @@ local function paintShell(f)
     end
     f.headerHeight = SHELL_HEADER_H                 -- read by Panel's applyLayout
     -- The metal border overhung the frame, so the panel sat raised into PGF's dialog. Both flat
-    -- shells sit on their frame rects: a 2px gap is -2.
+    -- shells sit on their frame rects: a 1px gap is -1 (owner: 1px less than the first 2).
     local dialog = f:GetParent()
     if dialog then
         f:ClearAllPoints()
