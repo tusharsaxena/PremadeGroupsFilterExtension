@@ -1,7 +1,76 @@
 local _, NS = ...
 -- modules/Apply.lua — Apply and Clear orchestration over the bridge.
 --
--- Stub: publishes its namespace table so the TOC load order and the suite list are wired before
--- the module is written (docs/superpowers/plans/2026-10-09-m-plus-v0.1.md, Task 7).
+-- Every refusal is decided BEFORE anything is written: combat, a missing PGF seam, the dialog not
+-- on the dungeon category (minimized counts: Bridge.IsDungeonCategory answers which category the
+-- dialog is ON), invalid options, season data still loading, nothing untimed, and an expression
+-- the merge refuses. Each return is `ok, msgKey, ...` where `...` are the format arguments of
+-- NS.L[msgKey]. Search() is called only when the caller is inside a hardware event (opts.search).
 
-NS.Apply = NS.Apply or {}
+local Apply = NS.Apply or {}
+NS.Apply = Apply
+
+--- "N-N" of the last successful Apply, or nil.
+Apply.LastRange = nil
+
+local VALIDATION_MSG = { badLevel = "MSG_BAD_LEVEL", badAge = "MSG_BAD_AGE", noRegions = "MSG_NO_REGIONS" }
+local EXPR_MSG = { damaged = "MSG_DAMAGED", toolong = "MSG_TOOLONG" }
+
+local function precheck()
+    if InCombatLockdown() then return "MSG_COMBAT" end
+    local ok, missing = NS.Bridge.Check()
+    if not ok then return "MSG_NO_PGF", missing end
+    if not NS.Bridge.IsDungeonCategory() then return "MSG_NOT_DUNGEONS" end
+end
+
+-- nil when key targeting is off (checkboxes left alone); nil, errKey when it cannot proceed.
+local function dungeonTargets(f)
+    if not f.keyTargeting then return nil end
+    local dungeons = NS.Season.GetDungeons()
+    if not dungeons then return nil, "MSG_LOADING" end
+    local targets = NS.Targeting.Compute(dungeons, f.keyLevel)
+    if #targets == 0 then return nil, "MSG_ALL_TIMED" end
+    return targets
+end
+
+--- Write the options into PGF's dungeon state and expression, then optionally search.
+--- @param opts table|nil  { search = bool }
+--- @return boolean ok
+--- @return string msgKey
+function Apply.Run(opts)
+    local err, arg = precheck()
+    if err then return false, err, arg end
+    local portal = NS.Regions.GetPortal()
+    local valid, why = NS.Filters.Validate(portal)
+    if not valid then return false, VALIDATION_MSG[why] end
+    local f = NS.Filters.Get()
+    local targets, tErr = dungeonTargets(f)
+    if tErr then return false, tErr, f.keyLevel end
+    local text, xErr = NS.Expression.Merge(NS.Bridge.GetExpression(),
+        NS.Expression.BuildClauses(NS.Filters.ToClauseOpts(portal)))
+    if not text then return false, EXPR_MSG[xErr] end
+    if targets then NS.Bridge.SetDungeons(NS.Targeting.ToSet(targets)) end
+    NS.Bridge.SetExpression(text)
+    NS.Bridge.Commit()
+    Apply.LastRange = NS.Targeting.RangeText(f.keyLevel)
+    if opts and opts.search then NS.Bridge.Search() end
+    return true, "MSG_APPLIED", targets and #targets or 0, Apply.LastRange
+end
+
+--- Remove the managed block, restoring the user's own expression text.
+--- @return boolean ok
+--- @return string msgKey
+function Apply.Clear()
+    local err, arg = precheck()
+    if err then return false, err, arg end
+    local text, xErr = NS.Expression.Merge(NS.Bridge.GetExpression(), {})
+    if not text then return false, EXPR_MSG[xErr] end
+    NS.Bridge.SetExpression(text)
+    NS.Bridge.Commit()
+    return true, "MSG_CLEARED"
+end
+
+--- Print a Run/Clear result through NS.Print.
+function Apply.Report(_, key, ...)
+    if key then NS.Print(NS.L[key]:format(...)) end
+end

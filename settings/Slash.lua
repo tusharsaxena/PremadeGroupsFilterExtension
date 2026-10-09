@@ -3,8 +3,9 @@ local _, NS = ...
 --
 -- The dispatcher, help renderer, formatters and value parser are the library's (slash-commands-§1).
 -- What stays here is the ordered verb table (positional triples {name, desc, fn}) and the host verbs
--- that reach into this addon's own state. Feature verbs are appended to NS.COMMANDS by the module
--- that owns them; `apply` and `clear` arrive with modules/Apply.lua's slash wiring.
+-- that reach into this addon's own state. The feature verbs `apply` and `clear` delegate to
+-- modules/Apply.lua; a typed slash command is a hardware event, so `apply` may search (a macro
+-- button works the same way).
 
 local PGFE = NS.addon
 local L    = NS.L
@@ -15,7 +16,7 @@ local function trim(s) return (s or ""):gsub("^%s+", ""):gsub("%s+$", "") end
 local ENABLED_PATH = "enabled"
 
 local Sl   -- forward-declared: the handlers below reach it at call time
-local runConfig, runDebug, runReset, runResetAll, runEnabled, runPerf
+local runConfig, runDebug, runReset, runResetAll, runEnabled, runPerf, runApply, runClear
 
 local COMMANDS = {
     {"help",     L["List available commands"],
@@ -46,6 +47,10 @@ local COMMANDS = {
         function() NS.DebugLog:RunDiagnostics() end},
     {"perf",     L["Measure performance — try `/pgfe perf` for the workflow"],
         function(rest) runPerf(rest) end},
+    {"apply",    L["Apply the filter options to Premade Groups Filter and search"],
+        function() runApply() end},
+    {"clear",    L["Remove this addon's block from the Advanced Filter Expression"],
+        function() runClear() end},
 }
 NS.COMMANDS = COMMANDS
 PGFE.COMMANDS = COMMANDS
@@ -188,6 +193,10 @@ end
 function runPerf(rest)
     for _, line in ipairs(NS.Perf.OnCommand(rest) or {}) do NS.Print(line) end
 end
+
+-- `apply` / `clear`: modules/Apply.lua decides; this only prints its message.
+function runApply() NS.Apply.Report(NS.Apply.Run{ search = true }) end
+function runClear() NS.Apply.Report(NS.Apply.Clear()) end
 
 function PGFE:SlashEnabled(on) runEnabled(on and true or false) end
 

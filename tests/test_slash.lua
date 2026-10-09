@@ -22,7 +22,7 @@ end
 test("slash: NS.COMMANDS is ordered positional triples with every reserved verb", function()
     local NS = T.newAddon()
     assertEqual(table.concat(verbs(NS), ","),
-        "help,config,enable,disable,version,list,get,set,reset,resetall,profile,debug,diagnostics,perf")
+        "help,config,enable,disable,version,list,get,set,reset,resetall,profile,debug,diagnostics,perf,apply,clear")
     assertTrue(NS.addon.COMMANDS == NS.COMMANDS)
 end)
 

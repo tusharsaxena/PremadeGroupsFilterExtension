@@ -48,7 +48,7 @@ conventional. The constraints that fix the order:
 | `modules/Filters.lua` | The per-character filter options (stub until Task 5) |
 | `modules/Presets.lua` | Named presets, account-wide (stub until Task 5) |
 | `modules/EnvInject.lua` | The PGF env post-hook body (stub until Task 6) |
-| `modules/Apply.lua` | Apply / Clear orchestration (stub until Task 7) |
+| `modules/Apply.lua` | Apply / Clear orchestration: prechecks, validation, targeting, expression merge, bridge writes, search |
 | `modules/Panel.lua` | The panel attached under PGF's dialog (stub until Task 8) |
 | `modules/Diagnostics.lua` | The sections of `/pgfe diagnostics` |
 | `settings/SchemaSetup.lua` | `LibKa0s-Schema-1.0` or its host stub |

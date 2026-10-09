@@ -66,41 +66,101 @@ Total.
 - disabled: a profile stored disabled stands down at the next enable
 - disabled: every verb keeps answering while disabled
 
-### test_regions.lua (1)
+### test_regions.lua (10)
 
 - regions: the module publishes its namespace table
+- regions: normalize strips spaces, punctuation, case
+- regions: suffixed leader resolves on US portal
+- regions: leader without suffix uses the player's realm
+- regions: EU realm with accent
+- regions: unknown realm, nil/empty name, unsupported portal → nil
+- regions: the same realm name resolves per portal
+- regions: key and label tables cover all twelve buckets
+- regions: data integrity — no realm in two buckets, only known keys
+- regions: every bucket is populated
 
-### test_targeting.lua (1)
+### test_targeting.lua (7)
 
 - targeting: the module publishes its namespace table
+- targeting: N=14 targets the four dungeons timed below 14
+- targeting: N=15 targets all eight
+- targeting: N=2 targets none
+- targeting: never-timed counts as 0
+- targeting: ToSet keys the targets by cmID
+- targeting: level validation and range text
 
-### test_season.lua (1)
+### test_season.lua (6)
 
 - season: the module publishes its namespace table
+- season: nil map table → nil (loading)
+- season: empty map table → nil (loading)
+- season: best timed from intimeInfo, untimed → 0, short from PGF keyword
+- season: dungeon never run (GetSeasonBestForMap → nil) → best timed 0
+- season: unknown mapID falls back to initials
 
-### test_expression.lua (1)
+### test_expression.lua (9)
 
-- expression: the module publishes its namespace table
+- expression: clauses in fixed order
+- expression: empty user text → bare block
+- expression: user text is parenthesized so its OR cannot leak
+- expression: re-apply is idempotent and replaces the block
+- expression: strip restores the user text exactly
+- expression: no clauses → user text only (block removed)
+- expression: comment-only user text treated as empty (no `and ( )`)
+- expression: damaged block (begin without end) → error, text untouched
+- expression: over 2000 chars → toolong
 
-### test_filters.lua (1)
+### test_filters.lua (4)
 
-- filters: the module publishes its namespace table
+- filters: clause opts honor enable flags and portal order
+- filters: validation
+- filters: set and region toggle write the live table
+- filters: per-character defaults
 
-### test_presets.lua (1)
+### test_presets.lua (3)
 
-- presets: the module publishes its namespace table
+- presets: save/load round-trip is a deep copy into the same table
+- presets: list sorted, delete, bad names, missing
+- presets: names are trimmed and saving overwrites
 
-### test_envinject.lua (1)
+### test_envinject.lua (8)
 
 - envinject: the module publishes its namespace table
+- envinject: keywords follow PGF's formula
+- envinject: unknown spec / role / missing table → nil keywords, no error
+- envinject: samespec / sameclassrole from env counts
+- envinject: spec change is picked up without re-apply
+- envinject: PLAYER_SPECIALIZATION_CHANGED refreshes for the player only
+- envinject: regions injected only without PremadeRegions
+- envinject: stood down → hook is a no-op
 
-### test_bridge.lua (1)
+### test_bridge.lua (12)
 
 - bridge: the module publishes its namespace table
+- bridge: seams present
+- bridge: missing seam is named, no error
+- bridge: SetDungeons maps cmID → positional key, shuffled order
+- bridge: non-dungeon category → no state
+- bridge: missing dungeon state table is created on the active category
+- bridge: expression read clears focus first; commit inits + triggers; search clicks
+- bridge: commit with minimized dialog writes state only
+- bridge: dialog shown and accessor
+- bridge: env hook installs once, as a post-hook on PGF's own function
+- bridge: env hook refuses when the seam is missing
+- bridge: HookDialog wires SwitchToPanel and both scripts
 
-### test_apply.lua (1)
+### test_apply.lua (10)
 
 - apply: the module publishes its namespace table
+- apply: N=14 ticks AOF/RLP/BV/KR, writes block, triggers, searches
+- apply: everything timed → refuses, nothing written
+- apply: combat, wrong category, missing PGF seam, loading
+- apply: invalid options refuse before anything is written
+- apply: key targeting off leaves checkboxes alone; no search when not requested
+- apply: keeps user text; clear restores it
+- apply: a damaged managed block refuses Apply and Clear
+- apply: /pgfe apply searches and prints; /pgfe clear prints
+- apply: /pgfe apply prints the refusal with its argument
 
 ### test_panel.lua (1)
 
@@ -183,15 +243,15 @@ Total.
 | test_setup.lua | 14 |
 | test_slash.lua | 6 |
 | test_disabled.lua | 5 |
-| test_regions.lua | 1 |
-| test_targeting.lua | 1 |
-| test_season.lua | 1 |
-| test_expression.lua | 1 |
-| test_filters.lua | 1 |
-| test_presets.lua | 1 |
-| test_envinject.lua | 1 |
-| test_bridge.lua | 1 |
-| test_apply.lua | 1 |
+| test_regions.lua | 10 |
+| test_targeting.lua | 7 |
+| test_season.lua | 6 |
+| test_expression.lua | 9 |
+| test_filters.lua | 4 |
+| test_presets.lua | 3 |
+| test_envinject.lua | 8 |
+| test_bridge.lua | 12 |
+| test_apply.lua | 10 |
 | test_panel.lua | 1 |
 | test_vendor_sync.lua | 3 |
 | test_eol.lua | 2 |
@@ -200,4 +260,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **102** |
+| **Total** | **162** |

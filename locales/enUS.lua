@@ -41,6 +41,24 @@ L["Write the diagnostics report to the debug console"] =
     "Write the diagnostics report to the debug console"
 L["Measure performance — try `/pgfe perf` for the workflow"] =
     "Measure performance — try `/pgfe perf` for the workflow"
+L["Apply the filter options to Premade Groups Filter and search"] =
+    "Apply the filter options to Premade Groups Filter and search"
+L["Remove this addon's block from the Advanced Filter Expression"] =
+    "Remove this addon's block from the Advanced Filter Expression"
+
+-- Apply / Clear messages (modules/Apply.lua; the key is a message id, the value its format)
+L.MSG_COMBAT       = "Cannot apply in combat."
+L.MSG_NO_PGF       = "Premade Groups Filter is missing or changed (%s not found); nothing was applied."
+L.MSG_NOT_DUNGEONS = "Open Premade Groups Filter on the Dungeons category first; nothing was applied."
+L.MSG_LOADING      = "Mythic+ season data is still loading; try again in a moment."
+L.MSG_ALL_TIMED    = "Every dungeon is already timed at +%d; nothing to target."
+L.MSG_BAD_LEVEL    = "Key level must be a whole number from 2 to 40."
+L.MSG_BAD_AGE      = "Max age must be a whole number of minutes from 1 to 240."
+L.MSG_NO_REGIONS   = "Server regions are on but none is selected for your region."
+L.MSG_DAMAGED      = "The [pgfe] block in the Advanced Filter Expression is damaged; fix or delete it by hand."
+L.MSG_TOOLONG      = "The Advanced Filter Expression would exceed 2000 characters; nothing was applied."
+L.MSG_APPLIED      = "Applied: %d dungeon(s) targeted, key range %s."
+L.MSG_CLEARED      = "Removed this addon's block from the Advanced Filter Expression."
 
 -- Library-absent and diagnostics lines
 L["%s is unavailable: the LibKa0s library did not load."] =
