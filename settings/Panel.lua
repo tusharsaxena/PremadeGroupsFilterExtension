@@ -15,9 +15,9 @@ local C        = NS.C
 
 -- The landing page's logo: a larger render of the launcher logo, in the same folder.
 local MAIN_LOGO_TEXTURE = ("Interface\\AddOns\\%s\\media\\logos\\pgfe.logo.tga"):format(addonName)
-local MAIN_LOGO_SIZE    = 256
 
--- The landing page body, through the library's builder (options-ui-§5): logo, the TOC notes line,
+-- The landing page body, through the library's builder (options-ui-§5): logo (at the library's
+-- 300x300 default, so no logoSize), the TOC notes line,
 -- then the Slash Commands heading and one row per NS.COMMANDS entry. It replaced a private copy
 -- that drew the logo as a texture straight on a pooled AceGUI SimpleGroup frame and never took it
 -- off: after a re-render the frame came back as another SimpleGroup (the spacer under the heading)
@@ -26,7 +26,6 @@ local MAIN_LOGO_SIZE    = 256
 function Helpers.BuildMainContent(ctx)
     Helpers.BuildLandingPage(ctx, {
         logo     = MAIN_LOGO_TEXTURE,
-        logoSize = MAIN_LOGO_SIZE,
         notes    = function() return NS.Meta("Notes") or "" end,
         sections = { {
             heading = NS.L["Slash Commands"],
