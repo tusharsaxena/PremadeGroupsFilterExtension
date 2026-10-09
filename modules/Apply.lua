@@ -2,8 +2,8 @@ local _, NS = ...
 -- modules/Apply.lua — Apply and Clear orchestration over the bridge.
 --
 -- Every refusal is decided BEFORE anything is written: combat, a missing PGF seam, the dialog not
--- on the dungeon category (minimized counts: Bridge.IsDungeonCategory answers which category the
--- dialog is ON), invalid options, season data still loading, nothing untimed, and an expression
+-- on the dungeon category, the dialog minimized (PGF then filters with its mini panel, so the
+-- dungeon state would not take effect), invalid options, season data still loading, nothing untimed, and an expression
 -- the merge refuses. Each return is `ok, msgKey, ...` where `...` are the format arguments of
 -- NS.L[msgKey]. Search() is called only when the caller is inside a hardware event (opts.search).
 
@@ -21,6 +21,7 @@ local function precheck()
     local ok, missing = NS.Bridge.Check()
     if not ok then return "MSG_NO_PGF", missing end
     if not NS.Bridge.IsDungeonCategory() then return "MSG_NOT_DUNGEONS" end
+    if not NS.Bridge.IsDungeonPanelActive() then return "MSG_MINIMIZED" end
 end
 
 -- nil when key targeting is off (checkboxes left alone); nil, errKey when it cannot proceed.

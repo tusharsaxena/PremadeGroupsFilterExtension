@@ -50,6 +50,7 @@ L["Remove this addon's block from the Advanced Filter Expression"] =
 L.MSG_COMBAT       = "Cannot apply in combat."
 L.MSG_NO_PGF       = "Premade Groups Filter is missing or changed (%s not found); nothing was applied."
 L.MSG_NOT_DUNGEONS = "Open Premade Groups Filter on the Dungeons category first; nothing was applied."
+L.MSG_MINIMIZED    = "Maximize the Premade Groups Filter dialog first; nothing was applied."
 L.MSG_LOADING      = "Mythic+ season data is still loading; try again in a moment."
 L.MSG_ALL_TIMED    = "Every dungeon is already timed at +%d; nothing to target."
 L.MSG_BAD_LEVEL    = "Key level must be a whole number from 2 to 40."

@@ -63,6 +63,14 @@ test("bridge: commit with minimized dialog writes state only", function()
     NS.Bridge.Commit(); assertEqual(m.pgf.calls.trigger, 0); assertEqual(m.pgf.calls.init, 0)
 end)
 
+test("bridge: the dungeon panel is active only while maximized on Dungeons", function()
+    local NS, _, m = T.bootAddon()
+    assertTrue(NS.Bridge.IsDungeonPanelActive())
+    m.pgf.dialog.activePanel = { name = "mini" }
+    assertFalse(NS.Bridge.IsDungeonPanelActive())
+    assertTrue(NS.Bridge.IsDungeonCategory(), "minimized still answers the category")
+end)
+
 test("bridge: dialog shown and accessor", function()
     local NS, _, m = T.bootAddon()
     assertTrue(NS.Bridge.IsDialogShown())

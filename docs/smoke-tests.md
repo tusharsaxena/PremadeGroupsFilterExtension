@@ -132,8 +132,9 @@ substitute its numbers.
   that dungeon at 14 or higher. Result:
 - **APPLY-11. Max group age.** *Max group age* on, 5 minutes, Apply → no listing older than five
   minutes appears (PGF's age column or the listing tooltip). Result:
-- **APPLY-12. PGF minimized.** Minimize PGF's dialog while on Dungeons, then `/pgfe apply` → no Lua
-  error; maximize PGF → the ticks and the block are there. Result:
+- **APPLY-12. PGF minimized.** Minimize PGF's dialog while on Dungeons → the attached panel hides;
+  `/pgfe apply` → `Maximize the Premade Groups Filter dialog first; nothing was applied.`, no search
+  runs, no Lua error; maximize PGF → the panel returns. Result:
 - **APPLY-13. Not on Dungeons.** With PGF on Raids, `/pgfe apply` → `Open Premade Groups Filter on
   the Dungeons category first; nothing was applied.` Result:
 - **APPLY-14. Collapse.** Press the panel's minimize button → it folds to its title bar; `/reload` →

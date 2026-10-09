@@ -46,6 +46,19 @@ test("panel: visible only for shown dialog on the dungeon category", function()
     assertFalse(NS.Panel.frame:IsShown())
 end)
 
+-- Spec §5 / spec-adversary #2: PGF minimized swaps in its mini panel (UI/Dialog.lua:178-182) while
+-- activeId stays on Dungeons; the attached panel follows the ACTIVE panel, not the category.
+test("panel: hidden while PGF's dialog is minimized", function()
+    local NS, _, m = T.enableAddon{}
+    NS.Panel.Create()
+    NS.Panel.UpdateVisibility(); assertTrue(NS.Panel.frame:IsShown())
+    m.pgf.dialog.activePanel = { name = "mini" }
+    -- red under: test only IsDungeonCategory in Panel.UpdateVisibility
+    NS.Panel.UpdateVisibility(); assertFalse(NS.Panel.frame:IsShown())
+    m.pgf.dialog.activePanel = m.pgf.panel
+    NS.Panel.UpdateVisibility(); assertTrue(NS.Panel.frame:IsShown())
+end)
+
 test("panel: created lazily, on the first UpdateVisibility that wants it", function()
     local NS, _, m = T.enableAddon{}
     m.pgf.dialog.shown = false; NS.Panel.UpdateVisibility()

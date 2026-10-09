@@ -387,10 +387,12 @@ function Panel.Refresh()
     applyLayout(f)
 end
 
---- Shown iff the dialog is shown on the Dungeons category and the addon is not stood down. The
+--- Shown iff the dialog is shown, maximized, on the Dungeons category (its active panel is the
+--- dungeon panel) and the addon is not stood down. The
 --- Bridge.HookDialog callback; also runs on PLAYER_ENTERING_WORLD.
 function Panel.UpdateVisibility()
     local want = not stoodDown() and NS.Bridge.IsDialogShown() and NS.Bridge.IsDungeonCategory()
+        and NS.Bridge.IsDungeonPanelActive()
     if want and not Panel.frame then Panel.Create() end
     local f = Panel.frame
     if not f then return end

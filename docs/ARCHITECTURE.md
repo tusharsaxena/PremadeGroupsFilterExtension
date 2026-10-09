@@ -171,9 +171,11 @@ in order and names the first missing one; the panel and Apply then show "PGF ver
 | `panel.Advanced.Expression.EditBox` | `UI/Common.lua:144-156` (commit on `OnEditFocusLost`, `:153-156`) | Clear focus before reading, so typed text is committed | no |
 | `Dialog:SwitchToPanel` | `UI/Dialog.lua:116-128`, `:178-199` | Hooked: category switch, minimize, maximize | no (hook skipped if absent) |
 
-When the dialog is minimized the dungeon panel is not the active panel: Apply writes the stored
-state and skips `Init` / `TriggerFilterExpressionChange`; PGF re-reads that state on the next
-`SwitchToPanel` (`UI/Dialog.lua:190-199`).
+When the dialog is minimized the dungeon panel is not the active panel (`SwitchToPanel` makes
+`panels.mini` active, `UI/Dialog.lua:178-182`) and PGF filters with the mini panel's expression
+(`UI/Dialog.lua:244-247`). `Bridge.IsDungeonPanelActive()` answers this; Apply and Clear refuse with
+`MSG_MINIMIZED` and the attached panel is hidden. `Bridge.Commit` still skips `Init` /
+`TriggerFilterExpressionChange` when the panel is not active, as a second guard.
 
 ## Injected variables
 
@@ -230,7 +232,8 @@ edit-box limit) refuses.
   copy and paste.
 - Server regions exist for the US and EU portals only; KR, TW and CN have none.
 - Apply (button or `/pgfe apply`) needs PGF's dialog to be on the Dungeons category (the category
-  it last showed); on any other it refuses rather than write another category's state.
+  it last showed) and maximized; on any other category, or minimized, it refuses rather than write
+  state PGF would not filter with.
 - The realm map is static data; a realm Blizzard adds, moves or renames resolves to no region until
   the map is updated ([`realm-map-maintenance.md`](realm-map-maintenance.md)).
 - While the addon is disabled (or not loaded) the managed block is neutral (`not pgfe_on or …`),

@@ -145,3 +145,20 @@ test("apply: after Apply then /pgfe disable, PGF's evaluation passes groups agai
     -- red under: drop the `not pgfe_on or` guard in Expression.Merge
     assertTrue(pgfAccepts())
 end)
+
+-- Review F-004 / Review Focus 3 / spec-adversary #1: minimized, PGF filters with its mini panel
+-- (UI/Dialog.lua:244-247), so writing the dungeon state and searching would apply nothing.
+test("apply: PGF minimized → refuses Apply and Clear, nothing written or searched", function()
+    local NS, _, m = T.enableAddon{}
+    seasonFromScreenshot(m)
+    local f = NS.Filters.Get(); f.keyLevel = 14; f.noSameSpec = true
+    m.pgf.dialog.activePanel = { name = "mini" }
+    -- red under: drop the IsDungeonPanelActive check in Apply's precheck
+    assertEqual(select(2, NS.Apply.Run{ search = true }), "MSG_MINIMIZED")
+    assertEqual(select(2, NS.Apply.Clear()), "MSG_MINIMIZED")
+    assertEqual(m.pgf.calls.refresh, 0); assertEqual(m.pgf.calls.trigger, 0)
+    assertEqual(m.pgf.panel.state.dungeon5, nil); assertEqual(m.pgf.panel.state.expression, nil)
+    m.prints = {}
+    NS.addon:OnSlashCommand("apply")
+    assertTrue(printed(m, NS.L.MSG_MINIMIZED)); assertEqual(m.pgf.calls.refresh, 0)
+end)

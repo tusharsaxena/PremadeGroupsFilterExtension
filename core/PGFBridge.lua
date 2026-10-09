@@ -57,6 +57,14 @@ function Bridge.IsDungeonCategory()
     return d ~= nil and p ~= nil and d.panels ~= nil and d.activeId ~= nil and d.panels[d.activeId] == p
 end
 
+--- Is the dungeon panel the dialog's ACTIVE panel? False while minimized: SwitchToPanel then makes
+--- `panels.mini` active (UI/Dialog.lua:178-182, 194) and PGF filters with the mini panel's
+--- expression (UI/Dialog.lua:244-247), so nothing written to the dungeon state would take effect.
+function Bridge.IsDungeonPanelActive()
+    local d, p = Bridge.GetDialog(), panel()
+    return d ~= nil and p ~= nil and d.activePanel == p
+end
+
 -- The dungeon panel's state lives at activeState[panel.name] = activeState.dungeon
 -- (UI/Dialog.lua:196); activeState is PremadeGroupsFilterState[activeId] (UI/Dialog.lua:183,
 -- 216-224). Created here exactly as SwitchToPanel would, so a write before the panel was ever shown

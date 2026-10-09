@@ -137,7 +137,7 @@ Total.
 - envinject: regions injected only without PremadeRegions
 - envinject: stood down → hook is a no-op
 
-### test_bridge.lua (12)
+### test_bridge.lua (13)
 
 - bridge: the module publishes its namespace table
 - bridge: seams present
@@ -147,12 +147,13 @@ Total.
 - bridge: missing dungeon state table is created on the active category
 - bridge: expression read clears focus first; commit inits + triggers; search clicks
 - bridge: commit with minimized dialog writes state only
+- bridge: the dungeon panel is active only while maximized on Dungeons
 - bridge: dialog shown and accessor
 - bridge: env hook installs once, as a post-hook on PGF's own function
 - bridge: env hook refuses when the seam is missing
 - bridge: HookDialog wires SwitchToPanel and both scripts
 
-### test_apply.lua (11)
+### test_apply.lua (12)
 
 - apply: the module publishes its namespace table
 - apply: N=14 ticks AOF/RLP/BV/KR, writes block, triggers, searches
@@ -165,13 +166,15 @@ Total.
 - apply: /pgfe apply searches and prints; /pgfe clear prints
 - apply: /pgfe apply prints the refusal with its argument
 - apply: after Apply then /pgfe disable, PGF's evaluation passes groups again
+- apply: PGF minimized → refuses Apply and Clear, nothing written or searched
 
-### test_panel.lua (25)
+### test_panel.lua (26)
 
 - panel: the module publishes its namespace table
 - panel: anchored under PGF dialog, both edges
 - panel: Create is idempotent
 - panel: visible only for shown dialog on the dungeon category
+- panel: hidden while PGF's dialog is minimized
 - panel: created lazily, on the first UpdateVisibility that wants it
 - panel: the dialog's SwitchToPanel is hooked at load
 - panel: hidden when stood down, and the dialog hook is a no-op
@@ -278,9 +281,9 @@ Total.
 | test_filters.lua | 4 |
 | test_presets.lua | 3 |
 | test_envinject.lua | 9 |
-| test_bridge.lua | 12 |
-| test_apply.lua | 11 |
-| test_panel.lua | 25 |
+| test_bridge.lua | 13 |
+| test_apply.lua | 12 |
+| test_panel.lua | 26 |
 | test_vendor_sync.lua | 3 |
 | test_eol.lua | 2 |
 | test_prose.lua | 15 |
@@ -288,4 +291,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **190** |
+| **Total** | **193** |
