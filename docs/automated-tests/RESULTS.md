@@ -32,23 +32,24 @@ archaeology, for the same reason a skip is never a pass (`automated-tests-§4`).
 
 | Run | Commit | Tree | Version | Lint w/e | Files | Tests | Perf | NLOC | Funcs | Avg NLOC | Avg CCN | Max CCN | CCN warn | Verdict |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| [`20261010-122612`](20261010-122612/) | `ee090c7` | clean | 0.1.0 | 0/0 | 60 | 414/1/415 | pass | 8665 | 1281 | 5.8 | 2.0 | 14 | 0 | **green** |
 | [`20261009-082905`](20261009-082905/) | `2c78ddb` | clean | 0.1.0 → 0.1.0 | 0/0 | 51 | 186/1/187 | skip | 4144 | 653 | 4.8 | 2.0 | 13 | 0 | **green** |
 | [`20261009-075822`](20261009-075822/) | `5939cc7` | clean | 0.1.0 | 0/0 | 50 | 102/1/103 | skip | 2010 | 404 | 4.0 | 1.9 | 13 | 0 | **green** |
 
 ## Test suite
 
-**187 cases** — 186 passed, 0 failed, 1 skipped. The generated inventory
-[`20261009-082905/test-cases.md`](20261009-082905/test-cases.md) is the authority on which cases existed at this run;
+**415 cases** — 414 passed, 0 failed, 1 skipped. The generated inventory
+[`20261010-122612/test-cases.md`](20261010-122612/test-cases.md) is the authority on which cases existed at this run;
 `docs/test-cases.md` is that same list at HEAD.
 
-Moved **103 → 187** since the previous run.
+Moved **187 → 415** since the previous run.
 
 **1 case(s) reported a `skip`.** A skip is counted in the total and never in `passed`, and at
 the release gate it is NOT EVALUATED rather than passed (`automated-tests-§3`).
 
 ## Lint
 
-**0 warnings / 0 errors over 51 files** (`luacheck .`).
+**0 warnings / 0 errors over 60 files** (`luacheck .`).
 
 Read that figure with its scope attached: `.luacheckrc` excludes 6 path(s) from it — `libs/`, `docs/audits/`, `docs/reviews/`, `docs/revendor/`, `_dev/`, `tests/_kit/` —
 so nothing under them is in the count above. A `0/0` that never moves is partly a statement about
@@ -57,16 +58,25 @@ to whoever thinks to open `.luacheckrc`.
 
 ## Perf
 
-**This repo ships no `tests/perf.lua`, so `perf` is a permanent `skip`** — the first of
-`automated-tests-§3`'s two sanctioned reasons, *nothing to run*, rather than a ratified
-`performance-§12` no-combat-path exemption. The record is therefore **silent about runtime
-cost**: nothing in this file says this addon is fast or cheap, only that the question was
-never asked.
+**6 scenarios** from `tests/perf.lua`; the measurements are in
+[`20261010-122612/perf.json`](20261010-122612/perf.json).
+
+| `scenario` | `iters` | `ms/iter` | `api/iter` | `bytes/iter` |
+|---|---|---|---|---|
+| `envNoPR` | 1000 | 0.00236 | 1.20 | 80.1 |
+| `envWithPR` | 1000 | 0.00087 | 0.00 | 0.0 |
+| `envStoodDown` | 1000 | 0.00055 | 0.00 | 0.0 |
+| `searchRowPaint` | 1000 | 0.00249 | 5.20 | 160.4 |
+| `applicantRowPaint` | 1000 | 0.00242 | 5.20 | 160.4 |
+| `combatEvents` | 1000 | 0.13517 | 143.00 | 28161.1 |
+
+`perf` never fails a run and never blocks a commit — it is recorded, read and compared, not
+thresholded (`performance-§9`). It does gate the **tag** (`automated-tests-§3`).
 
 ## Complexity watch list
 
-Current as of [`20261009-082905`](20261009-082905/) — **this run's measurement, not its diff.** Max CCN **13** across 653
-functions, **0** of them warned on; 0 file(s) in the 1000–1500 band and 0 over the 1500 cap
+Current as of [`20261010-122612`](20261010-122612/) — **this run's measurement, not its diff.** Max CCN **14** across 1281
+functions, **0** of them warned on; 1 file(s) in the 1000–1500 band and 0 over the 1500 cap
 (`layout-§1`).
 
 Every row below is generated from this run's own `lizard` output. **The `Disposition` column is
@@ -85,8 +95,7 @@ None.
 
 | Band | File | LOC | Disposition |
 |---|---|---|---|
-
-None.
+| 1000–1500 (on notice) | `tests/test_panel.lua` | 1197 | on notice: test-only file; split by area (rows / presets / collapse / copy box) before it reaches 1500 lines or at the next panel feature |
 
 `lizard` counts every `and`/`or` short-circuit as a decision, so in Lua a run of
 `t.k = rec.k or D.k` defaulting lines scores high with no visible branching at all: a large CCN
