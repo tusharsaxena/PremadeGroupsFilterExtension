@@ -55,8 +55,9 @@ extension's part back out of the advanced filter and leaves anything you typed t
 the panel is in your way, the arrow in its top corner (or a click anywhere on its title strip) folds
 it down to just that strip, and the same click opens it again.
 
-If you use EllesmereUI with Premade Groups Filter's EllesmereUI skin, the panel gets the same
-EllesmereUI look as Premade Groups Filter's dialog. That needs EllesmereUI's third-party skinning
+If you use EllesmereUI with Premade Groups Filter's EllesmereUI
+[skin](https://www.curseforge.com/wow/addons/premade-groups-filter-ellesmereui), the panel gets the
+same EllesmereUI look as Premade Groups Filter's dialog. That needs EllesmereUI's third-party skinning
 turned on (Blizz UI Enhanced → Blizzard Window Skins → Third-Party Addons), with both
 PremadeGroupsFilter and PremadeGroupsFilterExtension ticked there. Settings → AddOns → Ka0s Premade
 Groups Filter Extension → General → EllesmereUI skin shows which of these are on, and has a switch
