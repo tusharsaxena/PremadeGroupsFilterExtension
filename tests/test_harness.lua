@@ -81,3 +81,41 @@ test("harness: the explicit LibKa0s list matches LibKa0s.xml, in XML order (anti
     assertEqual(#got, #want, "LibKa0s file count")
     for i, path in ipairs(want) do assertEqual(got[i], path, "LibKa0s.xml entry " .. i) end
 end)
+
+-- The raw TOC, CR stripped. Loader.tocFiles drops comments and every libs\ line, so the TOC
+-- checks below read the file themselves.
+local function rawTocLines()
+    local fh = assert(io.open("PremadeGroupsFilterExtension.toc", "rb"))
+    local text = fh:read("*a")
+    fh:close()
+    local lines = {}
+    for line in (text:gsub("\r", "") .. "\n"):gmatch("([^\n]*)\n") do lines[#lines + 1] = line end
+    return lines
+end
+
+-- C-21 / PGE-06/07/08/28: every addon file's TOC line says what it needs at load. The annotation is
+-- the contiguous `#` block directly above the file line, minus a section heading (a comment line
+-- right after a blank line). Its FIRST line carries the marker, so a two-line annotation passes.
+-- red under: delete one per-line annotation (e.g. the `# Conventional:` above core\Database.lua)
+test("harness: every addon file in the TOC is annotated", function()
+    local lines = rawTocLines()
+    local MARKERS = { "^# LOAD%-BEARING:", "^# Conventional", "^# LAST" }
+    local checked = 0
+    for i, line in ipairs(lines) do
+        local isFile = line ~= "" and line:sub(1, 1) ~= "#"
+        if isFile and not line:find("^libs\\") and not line:find("^locales\\") then
+            local first = i
+            while first > 1 and lines[first - 1]:sub(1, 1) == "#" and lines[first - 1]:sub(1, 2) ~= "##" do
+                first = first - 1
+            end
+            -- A section heading opens its block right after a blank line; it is not an annotation.
+            while first < i and (first == 1 or lines[first - 1] == "") do first = first + 1 end
+            local head = first < i and lines[first] or ""
+            local ok = false
+            for _, m in ipairs(MARKERS) do if head:find(m) then ok = true end end
+            assertTrue(ok, "toc:" .. i .. " " .. line .. " has no annotation (got '" .. head .. "')")
+            checked = checked + 1
+        end
+    end
+    assertTrue(checked > 20, "the TOC walk saw the addon files (" .. checked .. ")")
+end)

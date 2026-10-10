@@ -61,7 +61,7 @@ Recorded here because the plan names them provisionally.
 
 Single modular layout (`core/ defaults/ locales/ modules/ settings/`). Load order is the TOC's:
 libraries → `locales/enUS.lua` → the `core/` setup files → `core/PGFBridge.lua` → `core/EUIBridge.lua` → `defaults/` →
-`modules/` → `settings/`, with every load-bearing position annotated at its TOC line. Full per-file
+`modules/` → `settings/`, with every addon file's TOC line annotated. Full per-file
 table and the load-order reasoning: [`module-map.md`](module-map.md).
 
 `LibKa0s` majors wired, one setup file each: Core (`core/CoreSetup.lua`), Media

@@ -8,7 +8,7 @@ Total.
 
 **Generated — do not hand-edit.** Regenerate with `lua tests/run.lua --list > docs/test-cases.md`.
 
-### test_harness.lua (8)
+### test_harness.lua (9)
 
 - harness: the load list is derived from the TOC, in TOC order
 - harness: every factory returns (NS, env, mock) with env and mock the same table
@@ -18,6 +18,7 @@ Total.
 - harness: hooksecurefunc is a real post-hook on a table member
 - harness: fireEvent dispatches to AceEvent handlers
 - harness: the explicit LibKa0s list matches LibKa0s.xml, in XML order (anti-pattern #48)
+- harness: every addon file in the TOC is annotated
 
 ### test_surface_parity.lua (11)
 
@@ -452,7 +453,7 @@ Total.
 
 | Suite | Cases |
 |-------|------:|
-| test_harness.lua | 8 |
+| test_harness.lua | 9 |
 | test_surface_parity.lua | 11 |
 | test_setup.lua | 16 |
 | test_slash.lua | 6 |
@@ -478,4 +479,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **364** |
+| **Total** | **365** |

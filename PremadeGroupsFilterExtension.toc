@@ -46,8 +46,9 @@ core\MediaSetup.lua
 core\Compat.lua
 # Conventional: NS.Meta / NS.Version are read inside functions only.
 core\EnvSetup.lua
-# LOAD-BEARING: promotes NS to the AceAddon object (NS.addon), publishes NS.PREFIX, NS.State and
-# NS.FONT_MONO; every file below reads NS.addon at load.
+# LOAD-BEARING: promotes NS to the AceAddon object (NS.addon) and publishes NS.PREFIX, NS.State,
+# NS.FONT_MONO, NS.FEATURE_EVENTS, NS.STAND_DOWN and NS.STAND_UP; modules\EnvInject.lua,
+# modules\Panel.lua, modules\EUISkin.lua and every settings\ file read NS.addon at load.
 core\PGFE.lua
 # Conventional: NS:RunMigrations is called from OnInitialize.
 core\Database.lua
@@ -70,19 +71,33 @@ defaults\Profile.lua
 # Conventional: data only, read by modules\Regions.lua at call time.
 defaults\Realms.lua
 
-# Modules (conventional: each publishes its own NS table and reads others at call time)
+# Modules
+# Conventional: publishes NS.Regions; reads NS.RealmLists (defaults\Realms.lua) at call time.
 modules\Regions.lua
+# Conventional: publishes NS.Season; reads the client's Mythic+ data at call time.
 modules\Season.lua
+# Conventional: publishes NS.Targeting; pure computation over the rows passed in at call time.
 modules\Targeting.lua
+# Conventional: publishes NS.Expression; pure string work at call time.
 modules\Expression.lua
+# Conventional: publishes NS.Filters; reads NS.addon.db and the other modules at call time.
 modules\Filters.lua
+# Conventional: publishes NS.Presets; reads NS.addon.db, NS.C and NS.Filters at call time.
 modules\Presets.lua
+# LOAD-BEARING: reads NS.addon, appends NS.FEATURE_EVENTS/NS.STAND_UP (core\PGFE.lua), calls
+# NS.Bridge.InstallEnvHook (core\PGFBridge.lua) at load.
 modules\EnvInject.lua
+# Conventional (vs. addon files): hooks Blizzard Group Finder globals at load; reads NS.* at call time.
 modules\RegionTags.lua
+# Conventional: publishes NS.Apply; reads the other modules and NS.Bridge at call time.
 modules\Apply.lua
+# LOAD-BEARING: reads NS.L (locales\enUS.lua) and NS.addon, appends
+# NS.FEATURE_EVENTS/NS.STAND_DOWN/NS.STAND_UP (core\PGFE.lua), calls NS.Bridge.HookDialog
+# (core\PGFBridge.lua) at load.
 modules\Panel.lua
 # LOAD-BEARING: registers with EllesmereUI at file load (EllesmereUI is an OptionalDep, so it is
-# loaded first when present) and reads NS.EUIBridge, published by core\EUIBridge.lua above.
+# loaded first when present) and reads NS.EUIBridge, published by core\EUIBridge.lua above. It also
+# reads NS.L and NS.addon, and appends NS.FEATURE_EVENTS/NS.STAND_DOWN/NS.STAND_UP (core\PGFE.lua).
 modules\EUISkin.lua
 # Conventional: core\DebugLogSetup.lua's descriptor reads NS.Diagnostics at RUN time.
 modules\Diagnostics.lua
@@ -90,13 +105,17 @@ modules\Diagnostics.lua
 # Settings (last -- depend on everything else being initialized)
 # LOAD-BEARING: publishes Settings.SchemaLib, which settings\Schema.lua calls :New on at file scope.
 settings\SchemaSetup.lua
-# LOAD-BEARING: publishes Settings.Schema and NS.SchemaRuntime, read by the three files below at load.
+# LOAD-BEARING: publishes Settings.Schema and NS.SchemaRuntime; settings\OptionsSetup.lua,
+# settings\Panel.lua and settings\Slash.lua read NS.SchemaRuntime at load.
 settings\Schema.lua
 # LOAD-BEARING: publishes the LibKa0s-Options instance as Settings.Helpers; settings\Panel.lua calls
 # Helpers.MasterControls at file scope.
 settings\OptionsSetup.lua
+# LOAD-BEARING: reads NS.addon, NS.C (defaults\Profile.lua), Settings.Helpers (settings\OptionsSetup.lua),
+# NS.SchemaRuntime.AddRows and Settings.StampClosureRows (settings\Schema.lua) at file scope.
 settings\Panel.lua
-# Conventional: NS.COMMANDS and the slash descriptor; handlers resolve everything at call time.
+# LOAD-BEARING: captures NS.SchemaRuntime.Get/Set/FindRow/ApplyDefault (settings\Schema.lua) and
+# NS.Version (core\EnvSetup.lua) at load.
 settings\Slash.lua
 # LAST, so its RegisterOptionsPage call queues behind General's (options-ui-§3).
 settings\Profiles.lua

@@ -8,18 +8,26 @@ LibStub, CallbackHandler, LibSharedMedia, LibDataBroker, LibDBIcon, LibKa0s v1.7
 
 Libraries load first (the `# Libraries` block, LibKa0s last after Ace3). Then `locales/enUS.lua`
 (publishes `NS.L`), the `core/` setup files, `core/PGFBridge.lua`, `core/EUIBridge.lua`, `defaults/`, `modules/`, and
-`settings/` last. Inside each block the TOC annotates every load-bearing position; the others are
-conventional. The constraints that fix the order:
+`settings/` last. Every addon file's TOC line is annotated: `# LOAD-BEARING:` names what the file
+needs at load, `# Conventional` says it reads its neighbors at call time only, and `# LAST` marks the
+Profiles page. The constraints that fix the order:
 
 - `core/CoreSetup.lua` first in core: every later file captures `NS.Print` / `NS.Util.print`.
 - `core/MediaSetup.lua` before `core/PGFE.lua`: `NS.FONT_MONO` is resolved from `NS.MediaFont` at load.
 - `core/PGFE.lua` before every other addon file below it: it promotes `NS` to the AceAddon object
-  and publishes `NS.PREFIX`, `NS.State`, `NS.FEATURE_EVENTS`.
+  and publishes `NS.PREFIX`, `NS.State`, `NS.FEATURE_EVENTS`, `NS.STAND_DOWN` and `NS.STAND_UP`.
+  `modules/EnvInject.lua`, `modules/Panel.lua`, `modules/EUISkin.lua` and every `settings/` file
+  read `NS.addon` at load.
+- `core/PGFE.lua` and `core/PGFBridge.lua` before `modules/EnvInject.lua` and `modules/Panel.lua`:
+  both append to `NS.FEATURE_EVENTS` / `NS.STAND_UP` (Panel also to `NS.STAND_DOWN`) and install
+  their hook through the bridge (`NS.Bridge.InstallEnvHook`, `NS.Bridge.HookDialog`) at file load.
 - `core/DebugLogSetup.lua` after `core/PGFE.lua` (font, flag) and before any `NS.Debug` call.
 - `core/LifecycleSetup.lua` before `core/PerfSetup.lua`: the Perf descriptor takes the latch.
 - `defaults/Profile.lua` before `settings/Schema.lua` (`NS.C` is a file-scope upvalue there).
 - `settings/SchemaSetup.lua` → `settings/Schema.lua` → `settings/OptionsSetup.lua` →
   `settings/Panel.lua`: each consumes what the previous publishes at file scope.
+- `settings/Schema.lua` before `settings/Slash.lua`: Slash captures `NS.SchemaRuntime.Get` / `Set`
+  / `FindRow` / `ApplyDefault` into its descriptor at load.
 - `core/EUIBridge.lua` before `modules/EUISkin.lua`, which registers with EllesmereUI at file load
   under `NS.EUIBridge.SKIN_NAME`; `## OptionalDeps: EllesmereUI` loads EllesmereUI first when present.
 - `settings/Profiles.lua` last, so the Profiles page is the last subcategory.
