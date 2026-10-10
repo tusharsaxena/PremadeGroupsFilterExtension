@@ -104,6 +104,7 @@ Kit.run{
         "test_panel",
         "test_euiskin",
         "test_euisettings",
+        "test_reset",
         "test_vendor_sync",
         { name = "test_eol",                  dir = "tests/_kit/" },   -- line-endings-§7
         { name = "test_prose",                dir = "tests/_kit/" },   -- localization-§5

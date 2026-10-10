@@ -385,6 +385,14 @@ Total.
 - euisettings: the switch comes first, then a gap, then the condition lines
 - euisettings: each condition line and the state line have a what / why / how tooltip
 
+### test_reset.lua (5)
+
+- reset: Reset all settings resets only the active profile
+- reset: Reset all settings sweeps the debug console off
+- reset: Reset all settings leaves the minimap button hidden
+- reset: the General page's Defaults leaves the minimap button hidden
+- reset: Reset all settings while disabled comes back enabled and running
+
 ### test_vendor_sync.lua (3)
 
 - libs/LibKa0s is the LibKa0s release CLAUDE.md says this addon bundles
@@ -476,6 +484,7 @@ Total.
 | test_panel.lua | 82 |
 | test_euiskin.lua | 32 |
 | test_euisettings.lua | 19 |
+| test_reset.lua | 5 |
 | test_vendor_sync.lua | 3 |
 | test_eol.lua | 2 |
 | test_prose.lua | 15 |
@@ -483,4 +492,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **369** |
+| **Total** | **374** |
