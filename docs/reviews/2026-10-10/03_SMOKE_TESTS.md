@@ -106,19 +106,19 @@ No perf bracket exists (`core/PerfSetup.lua` declares no bucket), so `/pgfe perf
 
 | ID | Tested? | Pass/Fail | Notes |
 |---|---|---|---|
-| C-01 | | | |
-| C-02 | | | off-season baseline: |
-| C-03 | | | |
-| C-04 | | | |
-| C-05 | | | |
-| C-06 | | | |
-| C-07 | | | |
-| C-08 | | | |
-| C-09 | | | |
-| C-10 | | | |
-| C-11 | | | |
-| C-12 | | | |
-| C-13 | | | headless |
-| U-1/U-2 | | | after re-vendor |
-| Regression | | | |
-| Cross-addon | | | |
+| C-01 | Yes | Pass | Owner, in client, 2026-10-10 (before the merge of PR #26) |
+| C-02 | Yes | Pass | Owner, in client, 2026-10-10 (before the merge of PR #26); off-season baseline: not recorded, so F-002's *unverified* tag stands |
+| C-03 | Yes | Pass | Owner, in client, 2026-10-10 (before the merge of PR #26) |
+| C-04 | Yes | Pass | Owner, in client, 2026-10-10 (before the merge of PR #26) |
+| C-05 | Yes | Pass | Owner, in client, 2026-10-10 (before the merge of PR #26) |
+| C-06 | Yes | Pass | Owner, in client, 2026-10-10 (before the merge of PR #26) |
+| C-07 | Yes | Pass | Owner, in client, 2026-10-10 (before the merge of PR #26) |
+| C-08 | Yes | Pass | Owner, in client, 2026-10-10 (before the merge of PR #26) |
+| C-09 | Yes | Pass | Owner, in client, 2026-10-10 (before the merge of PR #26) |
+| C-10 | Yes | Pass | Owner, in client, 2026-10-10 (before the merge of PR #26) |
+| C-11 | Yes | Pass | Owner, in client, 2026-10-10 (before the merge of PR #26) |
+| C-12 | Yes | Pass | Owner, in client, 2026-10-10 (before the merge of PR #26) |
+| C-13 | Yes (headless) | Pass | `lua tests/run.lua` 414/1/415; release run `docs/automated-tests/20261010-195814/` |
+| U-1/U-2 | No | — | Blocked: waits on the LibKa0s re-vendor (#25; upstream LibKa0s#46, #47 still open). The complexity suite passes today with 0 blind files |
+| Regression | Yes | Pass | Owner, in client, 2026-10-10 (before the merge of PR #26) |
+| Cross-addon | Yes | Pass | Owner, in client, 2026-10-10 (before the merge of PR #26) |

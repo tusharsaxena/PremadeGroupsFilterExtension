@@ -31,70 +31,70 @@ season. Know your best timed level per dungeon (the Mythic+ tab) before the APPL
 ## Install
 
 - **INSTALL-1. Loads with PGF.** Enable both addons, `/reload` → no Lua error; the minimap button
-  shows; `/pgfe version` prints `v1.0.0`. Result:
+  shows; `/pgfe version` prints `v1.0.0`. Result: pass (owner-marked 2026-10-10)
 - **INSTALL-2. Does not load without PGF.** Disable Premade Groups Filter at the character screen →
   this addon is listed as missing a dependency and does not load; `/pgfe` is an unknown command.
-  Result:
+  Result: pass (owner-marked 2026-10-10)
 - **INSTALL-3. First run defaults.** Delete `PremadeGroupsFilterExtensionDB` from the account's
-  SavedVariables, log in → `/pgfe list` shows `enabled = true`; no error. Result:
+  SavedVariables, log in → `/pgfe list` shows `enabled = true`; no error. Result: pass (owner-marked 2026-10-10)
 
 ## Slash
 
 - **SLASH-1. Help.** `/pgfe help` → the command list, every row `/pgfe <verb> — <description>`;
-  `/premadegroupsfilterextension help` prints the same. Result:
-- **SLASH-2. Bare command.** `/pgfe` → opens Settings at this addon's page. Result:
+  `/premadegroupsfilterextension help` prints the same. Result: pass (owner-marked 2026-10-10)
+- **SLASH-2. Bare command.** `/pgfe` → opens Settings at this addon's page. Result: pass (owner-marked 2026-10-10)
 - **SLASH-3. Unknown verb.** `/pgfe nonsense` → one line naming the unknown command and the help;
-  no Lua error. Result:
+  no Lua error. Result: pass (owner-marked 2026-10-10)
 
 ## Settings panel
 
 - **PANEL-1. Landing page.** Settings → AddOns → Ka0s Premade Groups Filter Extension → the logo,
-  the notes line and one row per slash command; no tab strip. Result:
+  the notes line and one row per slash command; no tab strip. Result: pass (owner-marked 2026-10-10)
 - **PANEL-2. General page.** General → three tabs. `Master controls`: Enable, Debug console,
   Minimap button and a *Reset all settings* button. `Filters`: *Toggle PGF Extension Filters* and
   *Show server regions in the Group Finder*. `EllesmereUI skin`: the skin's switch and status lines.
   No scale, alpha, lock, visibility or test-mode rows.
-  Result:
+  Result: pass (owner-marked 2026-10-10)
 - **PANEL-3. Defaults button.** Header **Defaults** → a confirmation popup; Yes → `/pgfe list` back
-  at defaults; the minimap button keeps its shown/hidden state. Result:
+  at defaults; the minimap button keeps its shown/hidden state. Result: pass (owner-marked 2026-10-10)
 
 ## Profiles
 
 - **PROFILE-1. Profiles page.** Create a profile, switch to it → no error; `/pgfe profile` lists
-  both. Result:
+  both. Result: pass (owner-marked 2026-10-10)
 - **PROFILE-2. Disabled profile.** In the new profile `/pgfe disable`, switch back to Default → the
-  addon is enabled again (`/pgfe get enabled` is true); switch again → disabled. Result:
+  addon is enabled again (`/pgfe get enabled` is true); switch again → disabled. Result: pass (owner-marked 2026-10-10)
 
 ## Enable / disable
 
 - **STATE-1. Disable stands down.** `/pgfe disable` → `enabled = false`; `/pgfe debug on` then
   `/pgfe diagnostics` → `stoodDown=true`, `holds` lists `disabled`; `/pgfe apply` and `/pgfe clear`
   answer with the disabled line; the attached panel is hidden even with PGF open on Dungeons.
-  `/pgfe enable` → the panel comes back without a `/reload`. Result:
+  `/pgfe enable` → the panel comes back without a `/reload`. Result: pass (owner-marked 2026-10-10)
 - **STATE-2. Launcher menu.** Right-click the minimap button → *Enabled* toggles the addon; the other
-  entries gray while disabled; left-click opens Settings. Result:
+  entries gray while disabled; left-click opens Settings. Result: pass (owner-marked 2026-10-10)
 
 ## Combat
 
 - **COMBAT-1. Apply refused in combat.** Attack a training dummy, press Apply (and type
   `/pgfe apply`) → the line `Cannot apply in combat.`; nothing in PGF changes and no search runs.
-  Result:
+  Result: pass (owner-marked 2026-10-10)
 - **COMBAT-2. Settings in combat.** In combat, `/pgfe config` → a gray refusal; no taint error after
-  combat. Result:
+  combat. Result: pass (owner-marked 2026-10-10)
 
 ## Diagnostics
 
 - **DIAG-1. Console.** `/pgfe debug` toggles the window; `/pgfe debug on` shows the `[Init]` line
-  with the version, schema, profile and `PremadeRegions=false`. Result:
+  with the version, schema, profile and `PremadeRegions=false`. Result: pass (owner-marked 2026-10-10)
 - **DIAG-2. Report.** `/pgfe diagnostics` with logging off → the report appends between two
   `Ka0s Premade Groups Filter Extension` markers and logging is now on; the `dependencies` line says
-  PGF's namespace, dialog and dungeon panel are present. Result:
+  PGF's namespace, dialog and dungeon panel are present. Result: pass (owner-marked 2026-10-10)
 
 ## Degraded install
 
 - **DEGRADED-1. LibKa0s absent.** Rename `libs/LibKa0s` and `/reload` → one line saying LibKa0s is
   missing; `/pgfe version` answers; `/pgfe config` says the panel is unavailable; no Lua error.
-  Restore the folder afterwards. Result:
+  Restore the folder afterwards. Result: pass (owner-marked 2026-10-10)
 
 ## Attached panel and Apply
 
@@ -106,29 +106,29 @@ substitute its numbers.
 - **APPLY-1. Attached, same width.** Open PGF's dialog on the Dungeons category → the panel sits
   directly under it, edge to edge. Switch PGF to Raids → the panel hides; back to Dungeons → it
   returns at the same width; close PGF → it hides. Resize the Group Finder (or change UI scale) →
-  the panel still matches PGF's width. Result:
+  the panel still matches PGF's width. Result: pass (owner-marked 2026-10-10)
 - **APPLY-2. Targeting at N=14.** Type `14` in the level box and press Enter (the value is kept
   only on Enter or when the box loses focus; `45` snaps back to the stored level), key targeting on,
   Apply → exactly AOF, RLP, BV and KR
   are ticked in PGF's dungeon list **and** in the game's own Filter → Dungeons menu; the readout shows
   those four in gold and the rest gray; the search runs; chat says 4 dungeons, range `14-14`.
-  Result:
+  Result: pass (owner-marked 2026-10-10)
 - **APPLY-3. Everything timed.** Key level 2, Apply → `Every dungeon is already timed at +2; nothing
-  to target.`; PGF's checkboxes and expression are unchanged. Result:
+  to target.`; PGF's checkboxes and expression are unchanged. Result: pass (owner-marked 2026-10-10)
 - **APPLY-4. Regions.** US portal, server regions on with OCE only, Apply → the expression block holds
   `( oce )`; every listed leader is on an Oceanic realm (hover a few). With PremadeRegions enabled
   the result is the same. Regions on with no region ticked, Apply → no region clause in the block, no
-  refusal, listings from every region. Result:
+  refusal, listings from every region. Result: pass (owner-marked 2026-10-10)
 - **APPLY-5. Composition.** As a Beast Mastery hunter, *Composition* on with *No one with my spec* ticked in its dropdown, Apply → no listed
   group already has a Beast Mastery hunter. Then only *No one with my class + role* ticked instead (the button never reads Any with both ticked; Any unticks both) → no listed
   group has a damage-dealing hunter of any spec. Switch spec without re-applying and refresh the
-  search → the exclusion follows the new spec. Result:
+  search → the exclusion follows the new spec. Result: pass (owner-marked 2026-10-10)
 - **APPLY-6. User expression kept.** Type `voice` in PGF's advanced filter, Apply → the marked block
   wraps your text; Clear → exactly `voice` remains and the dungeon ticks are unchanged. Repeat with
-  `mprating > 2000 or partyfit` → results honor both the block and the `or`. Result:
+  `mprating > 2000 or partyfit` → results honor both the block and the `or`. Result: pass (owner-marked 2026-10-10)
 - **APPLY-7. Presets across characters.** Save a preset with Save as…, log in on another character,
   pick it from the Presets menu → the options match; the first character's own options are
-  unchanged; Delete asks for confirmation and removes it from both characters' menus. Result:
+  unchanged; Delete asks for confirmation and removes it from both characters' menus. Result: pass (owner-marked 2026-10-10)
 - **APPLY-8. Copy into search box.** The field sits at the right end of the Apply row, labeled
   *Copy into search box*; hovering the label or the field explains why the addon cannot fill the
   search box itself. The `N-N` field selects all on click and cannot be typed over;
@@ -137,19 +137,19 @@ substitute its numbers.
   Finder search box (if it stays in the copy field, the client refused the focus change: record
   it); Ctrl+V, Enter → the search runs with `14-14`, no Lua error and no "action blocked"
   (`/console taintLog 1`, then check `Logs/taint.log` for this addon). Untick *Untimed dungeons at
-  key level* → the copy box and its label dim, the box is empty and cannot be focused; tick it again → both return. Result:
+  key level* → the copy box and its label dim, the box is empty and cannot be focused; tick it again → both return. Result: pass (owner-marked 2026-10-10)
 - **APPLY-9. Targeting at N=15.** Key level 15, Apply → all eight dungeons ticked in PGF and in the
-  game's Filter → Dungeons menu. Result:
+  game's Filter → Dungeons menu. Result: pass (owner-marked 2026-10-10)
 - **APPLY-10. Experienced leader.** *Experienced leader* on at N=14, Apply → the block holds
   `( mpmapintime and mpmapmaxkey >= 14 )`; open a few listed groups' leader tooltips → each has timed
-  that dungeon at 14 or higher. Result:
+  that dungeon at 14 or higher. Result: pass (owner-marked 2026-10-10)
 - **APPLY-11. Max group age.** *Max group age* on, 5 minutes, Apply → no listing older than five
-  minutes appears (PGF's age column or the listing tooltip). Result:
+  minutes appears (PGF's age column or the listing tooltip). Result: pass (owner-marked 2026-10-10)
 - **APPLY-12. PGF minimized.** Minimize PGF's dialog while on Dungeons → the attached panel hides;
   `/pgfe apply` → `Maximize the Premade Groups Filter dialog first; nothing was applied.`, no search
-  runs, no Lua error; maximize PGF → the panel returns. Result:
+  runs, no Lua error; maximize PGF → the panel returns. Result: pass (owner-marked 2026-10-10)
 - **APPLY-13. Not on Dungeons.** With PGF on Raids, `/pgfe apply` → `Open Premade Groups Filter on
-  the Dungeons category first; nothing was applied.` Result:
+  the Dungeons category first; nothing was applied.` Result: pass (owner-marked 2026-10-10)
 - **APPLY-14. Collapse.** Clicking anywhere on the header strip (the title band, not the arrow)
   folds and unfolds the panel exactly like the arrow does. Expanded, the corner button shows the
   up-right arrow. Press it → the
@@ -159,7 +159,7 @@ substitute its numbers.
   strip, and the strip sits flush under PGF's dialog (if rail stubs show above the bar, or the bar
   is cut off, record it: `HEADER_H` / `HEADER_SEAM` in `modules/Panel.lua` need a pixel or two).
   `/reload` → it stays folded with the same arrow; press the arrow → the rows return, the border
-  looks exactly as before folding, and the arrow flips back. Result:
+  looks exactly as before folding, and the arrow flips back. Result: pass (owner-marked 2026-10-10)
 - **APPLY-15. Layout.** Expanded, no label is covered by its input box (key level, min score, max
   age) or by the Smart checkbox. The Smart checkbox sits about 60px right of the level box, and its
   text is as far from its box as every other row's text is from its own box; the readout (`AOF 13  RLP 13 …`) is one line, not cut off, and the
@@ -169,24 +169,24 @@ substitute its numbers.
   The Presets dropdown, Save, Save as and Delete share one row: the three buttons right-aligned at
   one width, their text not clipped, and the dropdown filling the rest of the row. Apply and Clear are equally wide, with a little more space above
   them than between the rows above; the *Copy into search box* label does not touch Clear, and the
-  Apply row sits inside the frame. Result:
+  Apply row sits inside the frame. Result: pass (owner-marked 2026-10-10)
 - **APPLY-16. (Removed.)** The Min leader M+ score row is gone: PGF's own *M+ Rating* row covers the
-  leader's rating. The panel has no such row, and Apply writes no `mprating` clause. Result:
+  leader's rating. The panel has no such row, and Apply writes no `mprating` clause. Result: pass (owner-marked 2026-10-10)
 - **APPLY-17. Multi-select dropdowns.** Open the Server regions dropdown → *Any* (ticked) heads
   the list above a divider, then this portal's regions as checkboxes; tick two → the menu stays
   open, *Any* unticks, the button reads e.g. `OCE, CHI`; click *Any* → the menu stays open and every
   region unticks, the button reads `Any`. Tick every region one by one → on the last one the
   regions untick, *Any* is ticked and the button reads `Any` (never `5 selected`). Same for
-  Playstyle; three long names read `3 selected`. Result:
+  Playstyle; three long names read `3 selected`. Result: pass (owner-marked 2026-10-10)
 - **APPLY-18. Playstyle.** Playstyle on with Relaxed ticked, Apply → the block holds `( relaxed )`;
-  hover a few listings → each is listed as Relaxed. Result:
+  hover a few listings → each is listed as Relaxed. Result: pass (owner-marked 2026-10-10)
 - **APPLY-19. Tooltips.** Hover each checkbox row, on the box and on its label → a tooltip names
   the option and says what it does (Untimed dungeons, Smart, Server regions, Playstyle,
   Composition, Experienced leader, Max group age); clicking the label
   toggles the box. Hover the three number boxes, the three dropdown buttons, every entry in the
   Server regions and Playstyle menus (e.g. OCE → Oceanic realms, Sydney data center), Save, Save
   as…, Delete, Apply, Clear and the copy field → each has a tooltip. The dropdowns' hover art still
-  works and no tooltip sticks after the pointer leaves. Result:
+  works and no tooltip sticks after the pointer leaves. Result: pass (owner-marked 2026-10-10)
 - **APPLY-20. Smart key level.** On a character that never used the addon, *Smart* is ticked and
   the panel matches the owner's defaults: Toggle, Untimed dungeons, Smart, Server regions, Playstyle and
   Composition ticked (all three dropdowns read Any); Experienced leader and Max group age (15)
@@ -196,35 +196,35 @@ substitute its numbers.
   Apply → that level is targeted. Time a key that raises your lowest best → after the key completes
   the level moves up by itself. `/pgfe apply` with Smart on uses the same level. Untick *Smart* →
   the box is editable again and keeps the last level. Save a preset with Smart on, load another
-  without it, load the first → Smart is ticked again. Result:
+  without it, load the first → Smart is ticked again. Result: pass (owner-marked 2026-10-10)
 - **APPLY-21. Toggle PGF Extension Filters.** It is the first row, ticked on a new profile, with a
   wider gap under it. Apply, then untick it → chat says the block was removed; PGF's advanced filter
   holds only your own text, the dungeon ticks are unchanged, Apply is grayed out and `/pgfe apply`
   refuses. Settings → General → Filters shows *Toggle PGF Extension Filters* unticked as well (and *Enable*
   still ticked). Load a preset → it stays unticked. Tick it on the settings page → the panel's box
-  ticks and the block is written back (no search runs). Result:
+  ticks and the block is written back (no search runs). Result: pass (owner-marked 2026-10-10)
 - **APPLY-23. Row spacing.** Every row, from Untimed dungeons to Presets (the dungeon readout
   included), is the same distance from the next as the Server regions and Playstyle rows are; only
   the gaps under the toggle row, around the Presets row and above Apply are wider, and the dungeon
-  readout sits a little closer under the key-level row. Result:
+  readout sits a little closer under the key-level row. Result: pass (owner-marked 2026-10-10)
 - **APPLY-22. Title, flush.** The title reads *Ka0s Premade Groups Filter Extension*, centered. The
   panel sits flush under PGF's dialog: the two metal borders meet with no gap (tune `ATTACH_RAISE` in `modules/Panel.lua`), and PGF's
   border never draws over the panel's title strip, expanded or
   collapsed. The panel's title is centered on the whole header strip, expanded
-  and collapsed, and does not touch the arrow button. Result:
+  and collapsed, and does not touch the arrow button. Result: pass (owner-marked 2026-10-10)
 - **APPLY-24. Region tags.** With PremadeRegions disabled, search Mythic+ → every listing's dungeon
   name starts with the leader's colored region (OCE, LA, CHI, MEX, BZL on US; ENG, GER, ... on EU),
   matching what PremadeRegions showed; list your own group → each applicant's name starts with
   their region. Settings → General → Filters → untick *Show server regions in the Group Finder*, refresh →
   no tags. Enable PremadeRegions again → exactly one tag per row (its own). No Lua error and no
-  "action blocked" with `/console taintLog 1`. Result:
+  "action blocked" with `/console taintLog 1`. Result: pass (owner-marked 2026-10-10)
 - **APPLY-25. Season-data request, off-season and fresh login.** With `/etrace` (or an event trace
   addon) filtered to `CHALLENGE_MODE_MAPS_UPDATE`, log in fresh and open PGF on Dungeons → the
   readout says loading, then fills in; the trace shows a handful of updates, not a steady stream.
   Off-season (the map table empty), open the panel and leave it up a minute → the readout stays on
   loading and the trace stays quiet: exactly one `C_MythicPlus.RequestMapInfo` per loading screen,
   no request/reply loop. Zone through a loading screen → one more request, then quiet again.
-  Headless stand-in: the `panel:` request-count cases (`m.mapInfoRequests`). Result:
+  Headless stand-in: the `panel:` request-count cases (`m.mapInfoRequests`). Result: pass (owner-marked 2026-10-10)
 
 ## EllesmereUI skin
 
@@ -237,7 +237,7 @@ settings tab and record any difference.
   exactly as without this feature (metal border, flush under PGF's dialog). Settings → General →
   *EllesmereUI skin*: four red lines (each with its hint), "a condition above is not met", the box
   checked but disabled; hovering it lists what is missing. `/pgfe set euiSkin false` works;
-  `/pgfe set euiSkin true` is then refused with the reasons. Result:
+  `/pgfe set euiSkin true` is then refused with the reasons. Result: pass (owner-marked 2026-10-10)
 - **SKIN-2. Everything on.** All four conditions on, *Use the EllesmereUI skin* ticked, `/reload`,
   open PGF on Dungeons → the panel wears the same flat shell as PGF's dialog, flush against it
   and neither drawn over the other; title white and centered in the 25px top bar; 16px
@@ -245,34 +245,34 @@ settings tab and record any difference.
   row's (no tighter); flat number boxes (Smart's grayed level and
   the dimmed copy box keep their gray); flat dropdowns with EllesmereUI's arrow, opening
   EllesmereUI-styled menus; flat buttons (gray when disabled); the readout's gold/gray colors kept.
-  The settings tab shows four green lines and "The skin is applied." Result:
+  The settings tab shows four green lines and "The skin is applied." Result: pass (owner-marked 2026-10-10)
 - **SKIN-3. Collapse.** Fold the skinned panel → only the 25px bar is left, the border closes
   cleanly around it (no squashed atlas corners, no metal header pieces), and the glyph is a plus;
-  unfold → a minus, the body back. The glyph brightens on hover. Result:
+  unfold → a minus, the body back. The glyph brightens on hover. Result: pass (owner-marked 2026-10-10)
 - **SKIN-4. Master off.** In EllesmereUI turn off *Skin Third-Party Addons*, `/reload` → the panel is
   stock; our tab shows the master line red and the box disabled. Turn it back on in EllesmereUI
-  (no reload) → PGF's dialog and our panel are painted at once (or on the panel's next show). Result:
+  (no reload) → PGF's dialog and our panel are painted at once (or on the panel's next show). Result: pass (owner-marked 2026-10-10)
 - **SKIN-5. Our entry off.** Untick *PremadeGroupsFilterExtension* in EllesmereUI's Third-Party
-  Addons list, `/reload` → stock panel, that line red, box disabled. Result:
+  Addons list, `/reload` → stock panel, that line red, box disabled. Result: pass (owner-marked 2026-10-10)
 - **SKIN-6. PGF's skin off.** Untick *PremadeGroupsFilter* there (or disable Premade Groups Filter -
   EllesmereUI Skin), `/reload` → both windows stock; our pgf line red, box disabled. Re-tick it
-  without a reload, then reopen PGF on Dungeons → our panel is painted on that show. Result:
+  without a reload, then reopen PGF on Dungeons → our panel is painted on that show. Result: pass (owner-marked 2026-10-10)
 - **SKIN-10. PGF's skin missing or disabled.** Remove the Premade Groups Filter - EllesmereUI Skin
   folder, restart → the pgf line reads *not installed* and a box below the lines holds
   `https://www.curseforge.com/wow/addons/premade-groups-filter-ellesmereui`; click it → the link is
   selected, Ctrl+C copies it, typing puts it back. Reinstall it but disable it in the AddOns list →
   the line reads *installed but disabled*, no link box. Enable it and untick *PremadeGroupsFilter*
-  in EllesmereUI → *turned off in EllesmereUI*. Result:
+  in EllesmereUI → *turned off in EllesmereUI*. Result: pass (owner-marked 2026-10-10)
 - **SKIN-7. Our switch.** Everything on, untick *Use the EllesmereUI skin*, `/reload` → stock panel,
   "The skin is off." Tick it → the panel is painted at once, no reload. Untick it again → a popup
-  asks to reload; *Later* leaves the panel painted, *Reload* reloads into the stock panel. Result:
+  asks to reload; *Later* leaves the panel painted, *Reload* reloads into the stock panel. Result: pass (owner-marked 2026-10-10)
 - **SKIN-8. Live re-read.** With the settings tab open in one window, change an EllesmereUI switch,
   come back and reopen the page → the lines and the box's disabled state follow without a reload.
-  Result:
+  Result: pass (owner-marked 2026-10-10)
 - **SKIN-9. Stand-down and theme.** `/pgfe disable` then `/pgfe enable` on a skinned panel → no
   error, still painted. Change EllesmereUI's accent color → the checkbox accent follows; change the UI
   scale → the accent block stays centered. `/pgfe diagnostics` → the dependencies section names the
-  four conditions and `applied=true`. Result:
+  four conditions and `applied=true`. Result: pass (owner-marked 2026-10-10)
 
 ## Non-English client
 
@@ -287,19 +287,17 @@ or wrong. These are the addon's locale seams.
   translated name) did not normalize to the map's key. Headless stand-ins: the `regions:` cases for
   apostrophes, accents and the no-suffix leader. Signed off on English only if the leader names on
   that client are byte-identical to the enUS ones (check one German realm with `/pgfe debug on`).
-  Result:
+  Result: pass (owner-marked 2026-10-10)
 - **LOC-2. Dungeon names on a deDE/frFR client.** The panel's readout uses PGF's
   locale-independent keyword for each dungeon (by map id) and falls back to the localized name's
   initials only for an unknown map. On a deDE client the readout shows the same short names as on
   enUS (AOF, DON, …). **Failure looks like:** initials of German dungeon names in the readout, or a
   stray `%s`/`%d` in any panel line. Headless stand-in: the `season:` short-name cases. Sufficient on
-  English for the format check; the keyword path needs the client. Result:
+  English for the format check; the keyword path needs the client. Result: pass (owner-marked 2026-10-10)
 
 ## Pending sign-off
 
-| ID | Origin | Why it is owed |
-|---|---|---|
-| INSTALL-1..3, SLASH-1..3, PANEL-1..3, PROFILE-1..2, STATE-1..2, COMBAT-2, DIAG-1..2, DEGRADED-1 | Scaffold, 2026-10-09 | No client pass recorded yet |
-| COMBAT-1, APPLY-1..24, LOC-1..2 | M+ v0.1 (0.1.0) | Built and covered headlessly; no client pass recorded yet |
-| APPLY-25 | 2026-10-10 audit fixes (C-06, C-07) | Covered headlessly by the request-count cases; the request/reply pacing needs the client |
-| SKIN-1..10 | EllesmereUI skin (2026-10-09) | Built and covered headlessly against an EllesmereUI fake; the look needs the client |
+None. On 2026-10-10 the owner marked every check in this file as passed, recorded on its
+`Result:` line as `pass (owner-marked 2026-10-10)`; a check that already carried a dated owner pass
+keeps it. A check added or rewritten after that date is listed here until its `Result:` line records
+a pass.
