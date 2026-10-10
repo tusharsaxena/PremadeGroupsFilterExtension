@@ -149,3 +149,57 @@ test("setup: the landing page is drawn by the library's BuildLandingPage, logo a
     assertEqual(#seen.sections, 1)
     assertEqual(#seen.sections[1].rows(), #NS.COMMANDS)
 end)
+
+-- C-23 / PGE-13: the logo assets are named after the addon folder (layout-§4) and rendered at the
+-- sizes their consumers draw them: 128 for the TOC icon and the launcher, 512 for the landing page.
+local LOGO_DIR = "media/logos/"
+
+local function tgaHeader(path)
+    local fh = io.open(path, "rb")
+    if not fh then return nil end
+    local h = fh:read(18)
+    fh:close()
+    if not h or #h < 18 then return nil end
+    return {
+        type   = h:byte(3),
+        width  = h:byte(13) + 256 * h:byte(14),
+        height = h:byte(15) + 256 * h:byte(16),
+        bpp    = h:byte(17),
+    }
+end
+
+-- red under: point ## IconTexture or the launcher ICON at another file
+test("setup: the TOC icon is the launcher icon and the folder-named 128 TGA", function()
+    local fh = assert(io.open("PremadeGroupsFilterExtension.toc", "rb"))
+    local toc = fh:read("*a"):gsub("\r", "")
+    fh:close()
+    local icon = toc:match("\n## IconTexture: ([^\n]+)")
+    assertTrue(icon ~= nil, "the TOC declares ## IconTexture")
+    assertTrue(icon:find("premadegroupsfilterextension%.logo%.128%.tga$") ~= nil, icon)
+    local NS = T.enableAddon()
+    local obj = NS.Launcher:Object()
+    assertTrue(obj ~= nil, "the launcher object is registered")
+    assertEqual(obj.icon, icon)
+end)
+
+-- red under: skip the 512 render (the landing TGA left at 256x256)
+test("setup: logo TGAs are uncompressed 32-bit at their sizes", function()
+    for name, size in pairs({ ["premadegroupsfilterextension.logo.128.tga"] = 128,
+                              ["premadegroupsfilterextension.logo.tga"] = 512 }) do
+        local h = tgaHeader(LOGO_DIR .. name)
+        assertTrue(h ~= nil, name .. " is readable")
+        assertEqual(h.type, 2, name .. ": uncompressed true-color")
+        assertEqual(h.bpp, 32, name .. ": 32 bpp")
+        assertEqual(h.width, size, name .. ": width")
+        assertEqual(h.height, size, name .. ": height")
+    end
+end)
+
+-- red under: restore any media/logos/pgfe.logo.* file
+test("setup: no pgfe.logo file remains", function()
+    for _, ext in ipairs({ "128.tga", "tga", "png" }) do
+        local fh = io.open(LOGO_DIR .. "pgfe.logo." .. ext, "rb")
+        if fh then fh:close() end
+        assertTrue(fh == nil, "media/logos/pgfe.logo." .. ext .. " still exists")
+    end
+end)

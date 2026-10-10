@@ -35,7 +35,7 @@ Total.
 - parity: the Compat arm carries every library member the addon wires
 - parity: no module reads PGF outside the bridge
 
-### test_setup.lua (16)
+### test_setup.lua (19)
 
 - setup: NS is the AceAddon object, with the cyan [PGFE] tag
 - setup: NS.Print is reclaimed from AceConsole and is NS.Util.print
@@ -53,6 +53,9 @@ Total.
 - setup: the media seam names this addon's folder
 - setup: the landing page lists every NS.COMMANDS row
 - setup: the landing page is drawn by the library's BuildLandingPage, logo and commands
+- setup: the TOC icon is the launcher icon and the folder-named 128 TGA
+- setup: logo TGAs are uncompressed 32-bit at their sizes
+- setup: no pgfe.logo file remains
 
 ### test_slash.lua (6)
 
@@ -456,7 +459,7 @@ Total.
 |-------|------:|
 | test_harness.lua | 10 |
 | test_surface_parity.lua | 11 |
-| test_setup.lua | 16 |
+| test_setup.lua | 19 |
 | test_slash.lua | 6 |
 | test_disabled.lua | 5 |
 | test_regions.lua | 12 |
@@ -480,4 +483,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **366** |
+| **Total** | **369** |
