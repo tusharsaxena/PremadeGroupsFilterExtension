@@ -28,7 +28,9 @@ each taking an `opts` table and returning `(NS, env, mock)`:
 - `T.enableAddon(opts)` — plus `OnEnable`.
 
 Named suites the standard requires: `test_surface_parity` (testing-§8), `test_vendor_sync`
-(testing-§11, delegating to the kit), `test_disabled` (slash-commands-§7). Kit suites, declared by
+(testing-§11, delegating to the kit), `test_disabled` (slash-commands-§7: the ten steps, built from
+`T.enableAddon()` and the kit recorders, with the eight feature events pinned by name and the
+library's `perf` hold taken as a test-only second holder). Kit suites, declared by
 directory: `test_eol`, `test_prose`, `test_layout_cap`, `test_diagnostics_contract`,
 `test_lizard_sighted`.
 

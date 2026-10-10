@@ -69,15 +69,22 @@ Total.
 - slash: player-facing lines go through NS.L (LibKa0s absent, the stub paths)
 - slash: player-facing lines go through NS.L (LibKa0s present)
 
-### test_disabled.lua (7)
+### test_disabled.lua (14)
 
-- disabled: a feature event is registered at enable and UNREGISTERED at disable
-- disabled: enable rebuilds from current state
-- disabled: the perf hold stands the addon down through the same latch
+- disabled 1: enabled, the addon registers exactly the eight events it declares
+- disabled 2-5: through /pgfe disable, nothing is registered, scheduled or shown
+- disabled 2-5: through the write seam, nothing is registered, scheduled or shown
+- disabled 6: survivors reached anyway write, say and show nothing
+- disabled 6: the EllesmereUI callback and the skin's SetChecked hook paint nothing
+- disabled 7: every verb answers while disabled; apply and clear refuse with one line
+- disabled 7: bare /pgfe and /pgfe debug diagnostics answer while disabled
+- disabled 7: /pgfe perf answers as an unknown command, the same as when enabled
+- disabled 8: left-click opens settings; the menu keeps Enabled, which writes only enabled
+- disabled 8: while another hold stands the addon down, the launcher reports the stored setting
+- disabled 8: after /pgfe disable the launcher's Enabled line says No
+- disabled 9: a setting changed while disabled is what the enable rebuilds from
+- disabled 10: a perf hold then disable, and disable then a perf hold, share one latch
 - disabled: a profile stored disabled stands down at the next enable
-- disabled: every verb keeps answering while disabled
-- disabled: while another hold stands the addon down, the launcher reports the stored setting
-- disabled: after /pgfe disable the launcher's Enabled line says No
 
 ### test_regions.lua (12)
 
@@ -503,7 +510,7 @@ Total.
 | test_surface_parity.lua | 11 |
 | test_setup.lua | 20 |
 | test_slash.lua | 8 |
-| test_disabled.lua | 7 |
+| test_disabled.lua | 14 |
 | test_regions.lua | 12 |
 | test_targeting.lua | 9 |
 | test_season.lua | 8 |
@@ -527,4 +534,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **405** |
+| **Total** | **412** |
