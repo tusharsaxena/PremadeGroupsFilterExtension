@@ -302,7 +302,7 @@ Total.
 - panel: the title is the full addon name, and the copy box centers its range
 - panel: a click on the header strip collapses and expands, like the arrow
 
-### test_euiskin.lua (28)
+### test_euiskin.lua (32)
 
 - euiskin: the module publishes its namespace table
 - euiskin: registers once, at file load, under the folder name
@@ -322,14 +322,18 @@ Total.
 - euiskin: a profile switch to a disabled profile with the switch on paints nothing
 - euiskin: a facade missing a primitive is refused before any paint
 - euiskin: a primitive that raises fails closed, once
+- euiskin: a skip is logged again after a console Clear
+- euiskin: a skip with logging off is logged once logging turns on
 - euiskin: skinned, the collapsed panel is the shell's 25px bar and the metal copies are hidden
 - euiskin: skinned, the panel sits flush under PGF's dialog, both edges
 - euiskin: the min/max buttons get the minus (collapse) and the plus (expand)
+- euiskin: a stand-down restores the min/max glyph alpha
 - euiskin: checkboxes shrink to 24, row boxes stay on their row, hit rects follow the label
 - euiskin: the accent ring follows the check, and not while stood down
 - euiskin: only the title is whitened; readout, copy label and number boxes keep their color
 - euiskin: a live looks change recolors the accent block and ring
 - euiskin: a scale change re-lays out the accent block in whole pixels
+- euiskin: scale events before a paint are inert
 - euiskin: theme and scale changes while stood down catch up at the stand-up
 - euiskin: the diagnostics dependencies section reports the gate and the skin
 
@@ -444,7 +448,7 @@ Total.
 | test_euibridge.lua | 17 |
 | test_apply.lua | 16 |
 | test_panel.lua | 73 |
-| test_euiskin.lua | 28 |
+| test_euiskin.lua | 32 |
 | test_euisettings.lua | 19 |
 | test_vendor_sync.lua | 3 |
 | test_eol.lua | 2 |
@@ -453,4 +457,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **339** |
+| **Total** | **343** |

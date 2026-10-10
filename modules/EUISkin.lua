@@ -47,7 +47,6 @@ EUISkin.POPUP_RELOAD   = POPUP_RELOAD
 local S             -- the facade, once EllesmereUI has called back
 local applied = false
 local paintFailed   -- the error of a paint that raised: no retry, a reload drops the partial paint
-local lastSkip      -- the last skip reason logged: a panel re-show repeats it, the log does not
 local checkBoxes, textBoxes = {}, {}
 local accentBorders = setmetatable({}, { __mode = "k" })
 
@@ -329,8 +328,9 @@ function EUISkin.TryApply()
     if applied then return false end
     local why = blocked()
     if why then
-        if why ~= lastSkip then NS.Debug(TAG, "skipped: %s", why) end
-        lastSkip = why
+        -- A panel re-show repeats the skip; the console's change gate writes it once, re-armed by
+        -- a Clear and by logging turning on.
+        NS.DebugChanged("euiskin.skip", TAG, "skipped: %s", why)
         return false
     end
     local f = NS.Panel.frame
@@ -372,14 +372,25 @@ local function relayout()
     for _, cb in ipairs(checkBoxes) do layoutAccentMark(cb) end
 end
 
--- The accent ring and block are sized in whole pixels: re-laid out after a scale change.
+-- The accent ring and block are sized in whole pixels: re-laid out after a scale change. Before
+-- a paint there is nothing to lay out (the rows stay registered: a paint can come at any time).
 function NS.addon.OnEUISkinScale()
-    if stoodDown() then return end
+    if stoodDown() or not applied then return end
     relayout()
 end
 
 NS.FEATURE_EVENTS[#NS.FEATURE_EVENTS + 1] = { "UI_SCALE_CHANGED", "OnEUISkinScale" }
 NS.FEATURE_EVENTS[#NS.FEATURE_EVENTS + 1] = { "DISPLAY_SIZE_CHANGED", "OnEUISkinScale" }
+-- On the way down: a min/max glyph brightened by a hover would stay bright, because its OnLeave
+-- hook returns while stood down. Put both back to the resting alpha.
+NS.STAND_DOWN[#NS.STAND_DOWN + 1] = function()
+    local f = NS.Panel and NS.Panel.frame
+    local mm = f and f.MaximizeMinimizeFrame
+    if not isTable(mm) then return end
+    for _, b in ipairs({ mm.MinimizeButton, mm.MaximizeButton }) do
+        if isTable(b) and b.pgfeGlyph then b.pgfeGlyph:SetVertexColor(1, 1, 1, GLYPH_ALPHA) end
+    end
+end
 -- On the way back up: a paint that waited out a stand-down happens now, and an existing paint
 -- catches up on any theme or scale change its guarded handlers ignored while it was down.
 NS.STAND_UP[#NS.STAND_UP + 1] = function()

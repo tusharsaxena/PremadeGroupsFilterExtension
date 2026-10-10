@@ -230,6 +230,40 @@ test("euiskin: a primitive that raises fails closed, once", function()
     assertEqual(m.popupsShown[1][1], NS.EUISkin.POPUP_RELOAD)
 end)
 
+-- ── skip logging ────────────────────────────────────────────────────────────────────────────────
+
+-- How many console lines carry `needle`.
+local function linesWith(NS, needle)
+    local n = 0
+    for _, line in ipairs(NS.DebugLog.buffer) do
+        if line:find(needle, 1, true) then n = n + 1 end
+    end
+    return n
+end
+
+-- A panel re-show repeats a skip; the console writes it once, and again after a Clear.
+-- red under: the lastSkip memo (a file-local the console's Clear never re-arms)
+test("euiskin: a skip is logged again after a console Clear", function()
+    local NS, _, m = setup()
+    NS.DebugLog:SetEnabled(true)
+    m.eui.dispatch(NAME)                    -- no panel built: the callback's TryApply skips
+    NS.EUISkin.TryApply(); NS.EUISkin.TryApply()
+    assertEqual(linesWith(NS, "skipped: panel not built yet"), 1)
+    NS.DebugLog:Clear()
+    NS.EUISkin.TryApply()
+    assertEqual(linesWith(NS, "skipped: panel not built yet"), 1, "re-armed by the Clear")
+end)
+
+-- red under: the lastSkip memo (set while logging was off, so the line is never written)
+test("euiskin: a skip with logging off is logged once logging turns on", function()
+    local NS, _, m = setup()
+    m.eui.dispatch(NAME)
+    NS.EUISkin.TryApply()
+    NS.DebugLog:SetEnabled(true)
+    NS.EUISkin.TryApply()
+    assertEqual(linesWith(NS, "skipped: panel not built yet"), 1)
+end)
+
 -- ── geometry ────────────────────────────────────────────────────────────────────────────────────
 
 test("euiskin: skinned, the collapsed panel is the shell's 25px bar and the metal copies are hidden", function()
@@ -264,6 +298,21 @@ test("euiskin: the min/max buttons get the minus (collapse) and the plus (expand
     assertEqual(mm.MaximizeButton.pgfeGlyph.__atlas, "UI-QuestTrackerButton-Secondary-Expand")
     assertEqual(mm.MinimizeButton:GetNormalTexture().__alpha, 0)
     assertEqual(mm.MaximizeButton:GetPushedTexture().__alpha, 0)
+end)
+
+-- A stand-down while the pointer is on a min/max button: the OnLeave hook is gated off, so the
+-- stand-down puts the glyph back to its resting alpha itself. 0.75 is GLYPH_ALPHA, a file-local
+-- (modules/EUISkin.lua:35) the module does not export.
+-- red under: drop the glyph reset row
+test("euiskin: a stand-down restores the min/max glyph alpha", function()
+    local NS, _, f = painted()
+    local b = f.MaximizeMinimizeFrame.MinimizeButton
+    b:__fire("OnEnter")
+    assertEqual(b.pgfeGlyph.__vertexColor[4], 1, "hover brightens")
+    NS.addon:OnSlashCommand("disable")
+    b:__fire("OnLeave")                     -- gated: stood down
+    NS.addon:OnSlashCommand("enable")
+    assertEqual(b.pgfeGlyph.__vertexColor[4], 0.75)
 end)
 
 test("euiskin: checkboxes shrink to 24, row boxes stay on their row, hit rects follow the label", function()
@@ -341,6 +390,17 @@ test("euiskin: a scale change re-lays out the accent block in whole pixels", fun
     m.fireEvent("UI_SCALE_CHANGED")
     assertTrue(math.abs(mark.__width - 9.1) < 1e-9, tostring(mark.__width))
     m.fireEvent("DISPLAY_SIZE_CHANGED")
+end)
+
+-- Before any paint there is nothing to re-lay out. No red-first test is possible: the early return
+-- (`not applied`) and the empty checkBoxes loop it guards behave the same, and the kit cannot spy
+-- on the file-local layoutAccentMark. A smoke test only.
+test("euiskin: scale events before a paint are inert", function()
+    local NS, _, m = setup()
+    m.fireEvent("UI_SCALE_CHANGED")
+    m.fireEvent("DISPLAY_SIZE_CHANGED")
+    assertFalse(NS.EUISkin.HasFacade())
+    assertFalse(NS.EUISkin.IsApplied())
 end)
 
 -- red under: the STAND_UP entry only calling TryApply (which refuses once applied)
