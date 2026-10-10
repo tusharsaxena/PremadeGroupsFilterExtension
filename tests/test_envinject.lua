@@ -109,3 +109,14 @@ test("envinject: the env hook's install result is stored", function()
     -- red under: drop the store at the InstallEnvHook call in modules/EnvInject.lua
     assertTrue(NS.EnvInject.hooked == true)
 end)
+
+-- Review C-32: without PremadeRegions, a protected leader name leaves every region key false.
+test("envinject: a protected leader name injects no region", function()
+    local NS, _, m = T.enableAddon{}
+    m.currentRegion = 1; m.PremadeRegions = nil
+    NS.IsConcatSafe = function() return false end
+    local env = runHook(m, {}, "Bob-Frostmourne")
+    -- red under: drop the IsConcatSafe clause in Regions.GetRegion
+    assertNil(env.region)
+    for _, k in ipairs(NS.Regions.ALL_KEYS) do assertFalse(env[k], k) end
+end)

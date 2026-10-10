@@ -181,7 +181,9 @@ the dialog hook (`SwitchToPanel`, plus `OnShow`/`OnHide` script hooks), which ca
   did. Display only: no Blizzard table field is written. `..` and SetText pass a protected ("secret")
   string through; a leader or applicant name that is not concat-safe gets no tag
   (events-frames-taint-§8). Skipped while stood down, with `showRegionTags` off, or while
-  PremadeRegions is loaded.
+  PremadeRegions is loaded. The env hook's region lookup (`Regions.GetRegion`) probes the leader
+  name the same way before matching it, so a protected name leaves `region` nil and every region
+  key false.
 - `LFGListFrame.SearchPanel.SearchBox` has `securityDisableSetText`: no code path writes it. The key
   range is shown in a read-only field (*Copy into search box*, whose tooltip says why) for the player to copy. Clicking that field
   selects its text (Apply leaves keyboard focus alone); Enter in it moves keyboard focus to the search box (`SetFocus`, pcall-guarded,

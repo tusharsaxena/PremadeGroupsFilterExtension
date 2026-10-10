@@ -48,6 +48,15 @@ test("regions: a non-string leader name → nil, no error", function()
     T.assertNil(NS.Regions.GetRegion(42)); T.assertNil(NS.Regions.GetRegion({}))
 end)
 
+-- Review C-32: a protected ("secret") leader name must not reach :match inside PGF's loop.
+test("regions: a protected leader name is not matched", function()
+    local NS = T.bootAddon{ currentRegion = 1 }
+    assertEqual(NS.Regions.GetRegion("Bob-Frostmourne"), "oce")
+    NS.IsConcatSafe = function() return false end
+    -- red under: drop the IsConcatSafe clause in Regions.GetRegion
+    assertNil(NS.Regions.GetRegion("Bob-Frostmourne"))
+end)
+
 test("regions: the same realm name resolves per portal", function()
     local NS, _, m = T.newAddon(); m.currentRegion = 1
     assertEqual(NS.Regions.GetPortal(), "US")

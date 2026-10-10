@@ -68,7 +68,7 @@ Total.
 - disabled: a profile stored disabled stands down at the next enable
 - disabled: every verb keeps answering while disabled
 
-### test_regions.lua (11)
+### test_regions.lua (12)
 
 - regions: the module publishes its namespace table
 - regions: normalize strips spaces, punctuation, case
@@ -77,6 +77,7 @@ Total.
 - regions: EU realm with accent
 - regions: unknown realm, nil/empty name, unsupported portal → nil
 - regions: a non-string leader name → nil, no error
+- regions: a protected leader name is not matched
 - regions: the same realm name resolves per portal
 - regions: key and label tables cover all twelve buckets
 - regions: data integrity — no realm in two buckets, only known keys
@@ -146,7 +147,7 @@ Total.
 - presets: a preset missing keys loads over the current defaults
 - presets: Smart travels with a preset; an older preset loads the default (on)
 
-### test_envinject.lua (11)
+### test_envinject.lua (12)
 
 - envinject: the module publishes its namespace table
 - envinject: keywords follow PGF's formula
@@ -159,6 +160,7 @@ Total.
 - envinject: stood down → hook is a no-op
 - envinject: the block's guard is off while Toggle PGF Extension Filters is off
 - envinject: the env hook's install result is stored
+- envinject: a protected leader name injects no region
 
 ### test_regiontags.lua (9)
 
@@ -186,7 +188,7 @@ Total.
 - bridge: non-dungeon category → no state
 - bridge: missing dungeon state table is created on the active category
 - bridge: expression read clears focus first; commit inits + triggers; search clicks
-- bridge: commit with minimized dialog writes state only
+- bridge: commit with minimized dialog leaves PGF's live panel alone
 - bridge: the dungeon panel is active only while maximized on Dungeons
 - bridge: dialog shown and accessor
 - bridge: env hook installs once, as a post-hook on PGF's own function
@@ -442,13 +444,13 @@ Total.
 | test_setup.lua | 16 |
 | test_slash.lua | 6 |
 | test_disabled.lua | 5 |
-| test_regions.lua | 11 |
+| test_regions.lua | 12 |
 | test_targeting.lua | 9 |
 | test_season.lua | 6 |
 | test_expression.lua | 18 |
 | test_filters.lua | 11 |
 | test_presets.lua | 5 |
-| test_envinject.lua | 11 |
+| test_envinject.lua | 12 |
 | test_regiontags.lua | 9 |
 | test_bridge.lua | 18 |
 | test_euibridge.lua | 17 |
@@ -463,4 +465,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **349** |
+| **Total** | **351** |

@@ -103,10 +103,17 @@ test("bridge: expression read clears focus first; commit inits + triggers; searc
     NS.Bridge.Search(); assertEqual(m.pgf.calls.refresh, 1)
 end)
 
-test("bridge: commit with minimized dialog writes state only", function()
+-- Review C-31: minimized, the written state is kept for SwitchToPanel to Init from, and PGF's
+-- live panel is not touched.
+test("bridge: commit with minimized dialog leaves PGF's live panel alone", function()
     local NS, _, m = T.bootAddon()
     m.pgf.dialog.activePanel = { name = "mini" }
-    NS.Bridge.Commit(); assertEqual(m.pgf.calls.trigger, 0); assertEqual(m.pgf.calls.init, 0)
+    NS.Bridge.SetDungeons({ [588] = true }); NS.Bridge.SetExpression("voice")
+    NS.Bridge.Commit()
+    -- red under: drop the activePanel check in Bridge.Commit
+    assertEqual(m.pgf.calls.trigger, 0); assertEqual(m.pgf.calls.init, 0)
+    assertTrue(m.pgf.state.c2f4.dungeon.dungeon5, "cmID 588 is row 5 (tests/pgf_fake.lua:28)")
+    assertEqual(m.pgf.state.c2f4.dungeon.expression, "voice")
 end)
 
 test("bridge: the dungeon panel is active only while maximized on Dungeons", function()
