@@ -40,8 +40,8 @@ There is one registration site, and every hook runs on a player UI action.
 |---|---|---|---|
 | `core/PGFE.lua:42` | `registerFeatureEvents`, through `NS.SafeRegisterEvent` (`core/CoreSetup.lua:56-80`) | The only registration site. It registers the 8 `NS.FEATURE_EVENTS` rows below on enable and stand-up, and unregisters them on stand-down | — |
 | `modules/EnvInject.lua:85-86` | `ACTIVE_PLAYER_SPECIALIZATION_CHANGED`, `PLAYER_SPECIALIZATION_CHANGED` | `RefreshPlayer`: 3 calls (spec index, spec info, `UnitClass`) | Rare (a spec change) |
-| `modules/Panel.lua:885-887` | `CHALLENGE_MODE_MAPS_UPDATE`, `CHALLENGE_MODE_COMPLETED`, `MYTHIC_PLUS_CURRENT_AFFIX_UPDATE` | `OnPanelSeasonData`: Smart level, then the readout rebuilt over 8 dungeons. 34 calls, about 7 KB | Rare (a season-data reply, a completed key, an affix change) |
-| `modules/Panel.lua:888` | `PLAYER_ENTERING_WORLD` | Re-arms the season request, then `Panel.UpdateVisibility` (the readout as above). 35 calls | At a loading screen |
+| `modules/Panel.lua:886-888` | `CHALLENGE_MODE_MAPS_UPDATE`, `CHALLENGE_MODE_COMPLETED`, `MYTHIC_PLUS_CURRENT_AFFIX_UPDATE` | `OnPanelSeasonData`: Smart level, then the readout rebuilt over 8 dungeons. 34 calls, about 7 KB | Rare (a season-data reply, a completed key, an affix change) |
+| `modules/Panel.lua:889` | `PLAYER_ENTERING_WORLD` | Re-arms the season request, then `Panel.UpdateVisibility` (the readout as above). 35 calls | At a loading screen |
 | `modules/EUISkin.lua:382-383` | `UI_SCALE_CHANGED`, `DISPLAY_SIZE_CHANGED` | Re-lays out the skin's checkbox marks; returns before a paint. 0 calls | Rare (a scale change) |
 | `core/PGFE.lua:105-108` | AceDB `OnProfileChanged` / `Copied` / `Reset` | Migrations, panel refresh, the latch re-read | Player action |
 | `core/PGFBridge.lua:173` | `hooksecurefunc(PGF, "PutPremadeRegionInfo")` | `EnvInject.Apply`, above: 1.2 calls and 80 bytes per result, 0 while stood down | Only while PGF filters a search the player started |

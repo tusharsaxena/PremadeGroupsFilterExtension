@@ -438,7 +438,7 @@ end)
 
 -- ── step 10: one latch, both orders ─────────────────────────────────────────────────────────────
 
--- red under: replace the Lifecycle Set path in the `enabled` row's onChange (settings/Panel.lua:63) with a direct NS.StandUp()
+-- red under: replace the Lifecycle Set path in the `enabled` row's onChange (settings/Panel.lua:64) with a direct NS.StandUp()
 test("disabled 10: a perf hold then disable, and disable then a perf hold, share one latch", function()
     -- perf hold, then disable: releasing the perf hold leaves the disable standing.
     local NS, m, on = running()
