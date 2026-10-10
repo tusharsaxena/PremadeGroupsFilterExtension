@@ -62,10 +62,10 @@ A resumed run starts at the first row that is not `done`. Branch: `fix/2026-10-1
 | 4 | EllesmereUI skin hardening | C-05, C-20, C-30, C-29 (EUISkin half) | 1 | done | `40237ba` |
 | 5 | PGF bridge seams, region probe, bridge test | C-04 (bridge + EnvInject), C-32, C-31, C-10 (SEAMS + env store) | 1 | done | `fd73897` |
 | 6 | GitHub admin, upstream issues, local re-vendor issue | C-27, C-12, C-14, C-36, C-37 (+ #15 narrowing) | 1 | done | labels recolored (C-27); #15 narrowed; LibKa0s #46 (C-12), #47 (C-14); WowAddonStandards #8 (C-14), #9 (C-36), #10 (C-37); local re-vendor tracker #25. Re-severity of #4-#19 deferred to `/dev-copilot:issue-triage` (bulk relabel not run) |
-| 7 | Season request guard, affix event, panel tooltip, dialog store | C-06, C-07, C-04 (Season half), C-29 (Panel half), C-10 (Panel store) | 2 | pending | |
+| 7 | Season request guard, affix event, panel tooltip, dialog store | C-06, C-07, C-04 (Season half), C-29 (Panel half), C-10 (Panel store) | 2 | done | `2be37ba` |
 | 8 | performance-§12 exemption: remove the perf wiring, ship `tests/perf.lua` | C-09 | 2b (after wave 2) | pending | |
-| 9 | TOC annotations, AceTimer removal, logo rename + 512 render | C-21, C-35, C-23 | 2 | pending | |
-| 10 | Reset tests | C-22 | 2 | pending | |
+| 9 | TOC annotations, AceTimer removal, logo rename + 512 render | C-21, C-35, C-23 | 2 | done | `620a297` |
+| 10 | Reset tests | C-22 | 2 | done | `34db256` |
 | 11 | Diagnostics reports running state | C-10 | 3 | pending | |
 | 12 | Locale: missing keys, literals through `NS.L` | C-11, C-25 | 3 | pending | |
 | 13 | Debug lines on feature flows; targeting-off message | C-19, C-28 (+ C-03 Apply-level case) | 4 (first) | pending | |
