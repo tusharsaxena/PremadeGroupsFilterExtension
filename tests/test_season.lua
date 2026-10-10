@@ -36,3 +36,22 @@ test("season: unknown mapID falls back to initials", function()
     m.mapTable = { 9999 }; m.mapUIInfo[9999] = { name = "New Shiny Place", mapID = 1 }
     assertEqual(NS.Season.GetDungeons()[1].short, "NSP")
 end)
+
+-- C-06: the request lives in Season.GetDungeons, so a caller with no panel still asks the server.
+test("season: Apply with no panel still requests season data", function()
+    local NS, _, m = T.enableAddon{}
+    NS.Apply.Run{}
+    assertNil(NS.Panel.frame)
+    -- red under: move the RequestOnce from GetDungeons back to the panel's readout
+    assertEqual(m.mapInfoRequests, 1)
+end)
+
+-- C-04 (Season half): the keyword table is read through NS.Bridge.MapKeywords. A pinning case: the
+-- nil guard predates the accessor, so this passes before and after the switch.
+test("season: short names fall back to initials without PGF's keyword table", function()
+    local NS, _, m = T.newAddon()
+    m.pgf.PGF.C.MAP_ID_TO_KEYWORDS = nil
+    m.mapTable = { 588 }; m.mapUIInfo[588] = { name = "Altar of Fangs", mapID = 2993 }
+    -- red under: drop the nil guard in Bridge.MapKeywords
+    assertEqual(NS.Season.GetDungeons()[1].short, "AF")
+end)

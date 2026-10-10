@@ -36,11 +36,51 @@ local function settings(out)
         { always = { "enabled" } })
 end
 
+-- The character's filter options (char.filters). Scalars as one sorted `key=value` list; each set
+-- (regions, playstyles) as its sorted keys, and an empty set reads Any, as the panel shows it.
+-- table.insert rather than t[#t + 1] in the one-line ifs below: lizard 1.24 loses both functions
+-- on the latter and leaves them unmeasured.
+local function setKeys(set)
+    local keys = {}
+    for k, on in pairs(set) do
+        if on then table.insert(keys, tostring(k)) end
+    end
+    table.sort(keys)
+    if keys[1] == nil then keys[1] = "Any" end
+    return keys
+end
+
+local function filters(out)
+    local f = read(NS.Filters and NS.Filters.Get)
+    if type(f) ~= "table" then return out:add(TAG, "filters %s", f) end
+    local scalars, sets = {}, {}
+    for k, v in pairs(f) do
+        table.insert(type(v) == "table" and sets or scalars, k)
+    end
+    table.sort(scalars); table.sort(sets)
+    for i, k in ipairs(scalars) do scalars[i] = ("%s=%s"):format(tostring(k), tostring(f[k])) end
+    out:joined(TAG, "filters", scalars)
+    for _, k in ipairs(sets) do out:joined(TAG, k, setKeys(f[k])) end
+end
+
+-- Which of the addon's hooks actually went in: each module stores its install result at load.
+local function hooks(out)
+    local E, P, R = NS.EnvInject, NS.Panel, NS.RegionTags
+    local rows = R and R.hooked or {}
+    out:add(TAG, "hooks: env=%s dialog=%s searchRow=%s applicantRow=%s",
+        E and E.hooked == true or false, P and P.dialogHooked == true or false,
+        rows.LFGListSearchEntry_Update == true, rows.LFGListApplicationViewer_UpdateApplicantMember == true)
+end
+
 -- The two addons this one reads: PGF is a hard dependency, PremadeRegions optional.
 local function dependencies(out)
     out:add(TAG, "PremadeGroupsFilter namespace=%s dialog=%s dungeonPanel=%s",
         _G.PremadeGroupsFilter ~= nil, _G.PremadeGroupsFilterDialog ~= nil,
         _G.PremadeGroupsFilterDungeonPanel ~= nil)
+    -- Bridge.Check walks the seams this addon reads and calls no PGF function.
+    local ok, missing = NS.Bridge.Check()
+    out:add(TAG, "PGF seams ok=%s missing=%s", ok, missing or "none")
+    hooks(out)
     out:add(TAG, "PremadeRegions loaded=%s", _G.PremadeRegions ~= nil)
     -- The optional EllesmereUI skin: its four gate conditions, our switch, and what happened.
     local B, K = NS.EUIBridge, NS.EUISkin
@@ -57,7 +97,9 @@ end
 local function registration(out)
     local names = {}
     for i, row in ipairs(NS.FEATURE_EVENTS or {}) do names[i] = row[1] end
-    out:joined(TAG, "feature events", names)
+    out:joined(TAG, "feature events (declared)", names)
+    -- Stood down, the latch has unregistered them; the declared list is printed either way.
+    out:add(TAG, "feature events registered=%s", not stoodDown())
     out:list(TAG, "rejected events", NS.rejectedEvents or {})
 end
 
@@ -71,6 +113,7 @@ function NS.Diagnostics.Sections()
     return {
         { "identity",     identity },
         { "settings",     settings },
+        { "filters",      filters },
         { "dependencies", dependencies },
         { "registration", registration },
         { "launcher",     launcher },

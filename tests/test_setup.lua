@@ -60,6 +60,26 @@ test("setup: the Master controls rows are in the schema, frameless", function()
     end
 end)
 
+-- options-ui-§15: Master controls holds the mandated rows and nothing else; the two filter
+-- switches live on the General page's own Filters tab.
+-- red under: put either back in MasterControls extra
+test("setup: Master controls holds only the canonical rows", function()
+    local NS = T.newAddon()
+    local H = NS.addon.Settings.Helpers
+    local canonical = { enabled = true, ["state.debugConsole"] = true, ["global.minimap.shown"] = true }
+    for _, row in ipairs(NS.addon.Settings.Schema) do
+        if row.group == H.MASTER_GROUP then
+            assertTrue(canonical[row.path], tostring(row.path) .. " is not a Master controls row")
+        end
+    end
+    for _, path in ipairs({ "filtersActive", "showRegionTags" }) do
+        local row = H.FindSchema(path)
+        assertTrue(row ~= nil, path)
+        assertEqual(row.group, NS.L["Filters"], path .. " group")
+        assertEqual(row.page, "general", path .. " page")
+    end
+end)
+
 test("setup: the Minimap button row inverts onto LibDBIcon's hide", function()
     local NS = T.enableAddon()
     local H = NS.addon.Settings.Helpers
@@ -84,11 +104,26 @@ test("setup: the debug console is built with the addon's folder and brand", func
     assertEqual(type(NS.DebugAtEnable), "function")
 end)
 
-test("setup: the perf harness is wired to the lifecycle latch, with no bucket declared yet", function()
+-- C-09 / PGE-09: the addon holds the performance-§12 no-combat-path exemption, so no harness is
+-- wired: no NS.Perf, no `perf` hold, one SavedVariables global, no core\PerfSetup.lua line. The
+-- library stays vendored whole (anti-patterns #48), Perf.lua included.
+-- red under: restore the PerfDB SavedVariable, the PerfSetup TOC line or NS.HOLD_PERF
+test("setup: no perf harness is wired (performance-§12)", function()
     local NS = T.newAddon()
-    assertFalse(NS.Perf.on)
-    assertFalse(NS.Perf.suspended)
-    assertEqual(#NS.Perf.BUCKET_ORDER, 0)
+    assertEqual(NS.Perf, nil, "NS.Perf")
+    assertEqual(NS.HOLD_PERF, nil, "NS.HOLD_PERF")
+    local fh = assert(io.open("PremadeGroupsFilterExtension.toc", "rb"))
+    local toc = fh:read("*a"):gsub("\r", "")
+    fh:close()
+    assertEqual(toc:match("\n## SavedVariables: ([^\n]*)"), "PremadeGroupsFilterExtensionDB")
+    for line in toc:gmatch("[^\n]+") do
+        if line:sub(1, 1) ~= "#" then
+            assertTrue(line ~= "core\\PerfSetup.lua", "the TOC loads core\\PerfSetup.lua")
+        end
+    end
+    local lib = io.open("libs/LibKa0s/Perf.lua", "rb")
+    assertTrue(lib ~= nil, "libs/LibKa0s/Perf.lua stays vendored")
+    if lib then lib:close() end
 end)
 
 test("setup: the Compat spec readers route through LibKa0s-Compat-1.0", function()
@@ -124,8 +159,82 @@ test("setup: the landing page is drawn by the library's BuildLandingPage, logo a
     H.BuildLandingPage = real
     -- red under: the private addLogo / addCommandRows body in settings/Panel.lua
     assertTrue(seen ~= nil, "BuildMainContent delegates to the library")
-    assertTrue(seen.logo:find("media\\logos\\pgfe.logo.tga", 1, true) ~= nil, seen.logo)
+    assertTrue(seen.logo:find("media\\logos\\premadegroupsfilterextension.logo.tga", 1, true) ~= nil, seen.logo)
     assertEqual(seen.logoSize, nil, "the library's 300x300 default (options-ui-§5)")
     assertEqual(#seen.sections, 1)
     assertEqual(#seen.sections[1].rows(), #NS.COMMANDS)
+end)
+
+-- C-23 / PGE-13: the logo assets are named after the addon folder (layout-§4) and rendered at the
+-- sizes their consumers draw them: 128 for the TOC icon and the launcher, 512 for the landing page.
+local LOGO_DIR = "media/logos/"
+
+local function tgaHeader(path)
+    local fh = io.open(path, "rb")
+    if not fh then return nil end
+    local h = fh:read(18)
+    fh:close()
+    if not h or #h < 18 then return nil end
+    return {
+        type   = h:byte(3),
+        width  = h:byte(13) + 256 * h:byte(14),
+        height = h:byte(15) + 256 * h:byte(16),
+        bpp    = h:byte(17),
+    }
+end
+
+-- red under: point ## IconTexture or the launcher ICON at another file
+test("setup: the TOC icon is the launcher icon and the folder-named 128 TGA", function()
+    local fh = assert(io.open("PremadeGroupsFilterExtension.toc", "rb"))
+    local toc = fh:read("*a"):gsub("\r", "")
+    fh:close()
+    local icon = toc:match("\n## IconTexture: ([^\n]+)")
+    assertTrue(icon ~= nil, "the TOC declares ## IconTexture")
+    assertTrue(icon:find("premadegroupsfilterextension%.logo%.128%.tga$") ~= nil, icon)
+    local NS = T.enableAddon()
+    local obj = NS.Launcher:Object()
+    assertTrue(obj ~= nil, "the launcher object is registered")
+    assertEqual(obj.icon, icon)
+end)
+
+-- red under: skip the 512 render (the landing TGA left at 256x256)
+test("setup: logo TGAs are uncompressed 32-bit at their sizes", function()
+    for name, size in pairs({ ["premadegroupsfilterextension.logo.128.tga"] = 128,
+                              ["premadegroupsfilterextension.logo.tga"] = 512 }) do
+        local h = tgaHeader(LOGO_DIR .. name)
+        assertTrue(h ~= nil, name .. " is readable")
+        assertEqual(h.type, 2, name .. ": uncompressed true-color")
+        assertEqual(h.bpp, 32, name .. ": 32 bpp")
+        assertEqual(h.width, size, name .. ": width")
+        assertEqual(h.height, size, name .. ": height")
+    end
+end)
+
+-- red under: restore any media/logos/pgfe.logo.* file
+test("setup: no pgfe.logo file remains", function()
+    for _, ext in ipairs({ "128.tga", "tga", "png" }) do
+        local fh = io.open(LOGO_DIR .. "pgfe.logo." .. ext, "rb")
+        if fh then fh:close() end
+        assertTrue(fh == nil, "media/logos/pgfe.logo." .. ext .. " still exists")
+    end
+end)
+
+-- ── debug lines (C-19 / review PGE-04) ──────────────────────────────────────────────────────────
+
+-- How many console lines carry `needle` (plain find).
+local function logged(NS, needle)
+    local n = 0
+    for _, line in ipairs(NS.DebugLog.buffer) do
+        if line:find(needle, 1, true) then n = n + 1 end
+    end
+    return n
+end
+
+test("setup: the enable writes one [Init] PGF seams and hooks line", function()
+    local NS = T.bootAddon()
+    NS.State.debug = true
+    NS.addon:OnEnable()
+    -- red under: drop the DebugAtEnable line in PGFE:OnEnable
+    assertEqual(logged(NS, "[Init] PGF seams ok; PremadeRegions"), 1)
+    assertEqual(logged(NS, "hooks env=true dialog=true searchRow="), 1)
 end)

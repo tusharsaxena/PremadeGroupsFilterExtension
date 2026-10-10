@@ -14,6 +14,10 @@ NS.L = L
 -- Settings panel and landing page
 L["Slash Commands"] = "Slash Commands"
 L["Profiles"]       = "Profiles"
+L["Filters"]        = "Filters"        -- the General page's second tab (settings/Panel.lua)
+L["General"]        = "General"        -- the settings page's name (settings/Panel.lua)
+L["Reset every %s setting to its default. Asks for confirmation."] =
+    "Reset every %s setting to its default. Asks for confirmation."
 L["Reset this profile to the addon's defaults? Everything you have configured or added in it is discarded \226\128\148 your other profiles are not affected."] =
     "Reset this profile to the addon's defaults? Everything you have configured or added in it is discarded \226\128\148 your other profiles are not affected."
 L["all settings reset to defaults"] = "all settings reset to defaults"
@@ -39,8 +43,6 @@ L["Open/close the debug window — `/pgfe debug on|off` toggles logging"] =
     "Open/close the debug window — `/pgfe debug on|off` toggles logging"
 L["Write the diagnostics report to the debug console"] =
     "Write the diagnostics report to the debug console"
-L["Measure performance — try `/pgfe perf` for the workflow"] =
-    "Measure performance — try `/pgfe perf` for the workflow"
 L["Apply the filter options to Premade Groups Filter and search"] =
     "Apply the filter options to Premade Groups Filter and search"
 L["Remove this addon's block from the Advanced Filter Expression"] =
@@ -58,7 +60,7 @@ L.MSG_BAD_AGE      = "Max age must be a whole number of minutes from 1 to 240."
 L.MSG_DAMAGED      = "The [pgfe] block in the Advanced Filter Expression is damaged; fix or delete it by hand."
 L.MSG_TOOLONG      = "The Advanced Filter Expression would exceed 2000 characters; nothing was applied."
 L.MSG_APPLIED      = "Applied: %d dungeon(s) targeted, key range %s."
-L.MSG_APPLIED_NO_TARGETING = "Applied (dungeon checkboxes left as they were), key range %s."
+L.MSG_APPLIED_NO_TARGETING = "Applied (dungeon checkboxes left as they were)."
 L.MSG_CLEARED      = "Removed this addon's block from the Advanced Filter Expression."
 L.MSG_INACTIVE     = "PGF Extension filters are toggled off; tick Toggle PGF Extension Filters first."
 
@@ -149,6 +151,27 @@ L["%s is unavailable: the LibKa0s library did not load."] =
     "%s is unavailable: the LibKa0s library did not load."
 L["Diagnostic report written to the debug console: %d lines. Use Copy to share it."] =
     "Diagnostic report written to the debug console: %d lines. Use Copy to share it."
+-- The LibKa0s-absent cause clause (core/CoreSetup.lua; %s is the brand) and what each seam says it costs
+L["The LibKa0s library is missing from this installation of %s (expected in libs/LibKa0s)"] =
+    "The LibKa0s library is missing from this installation of %s (expected in libs/LibKa0s)"
+L["%s; running on reduced built-in fallbacks."] = "%s; running on reduced built-in fallbacks."
+L["%s, so the settings CLI is unavailable."] = "%s, so the settings CLI is unavailable."
+L["%s, so the debug console window is unavailable."] = "%s, so the debug console window is unavailable."
+L["%s, so there is no minimap button and no broker plugin."] =
+    "%s, so there is no minimap button and no broker plugin."
+L["%s, so the settings panel is unavailable."] = "%s, so the settings panel is unavailable."
+-- The library-absent debug console stub (core/DebugLogSetup.lua)
+L["debug logging |cff40ff40ON|r"] = "debug logging |cff40ff40ON|r"
+L["debug logging |cffff4040OFF|r"] = "debug logging |cffff4040OFF|r"
+L["Debug console"] = "Debug console"
+
+-- Slash host lines (settings/Slash.lua; the verb tokens are %s arguments)
+L["unknown command '%s'"] = "unknown command '%s'"
+L["v%s slash commands"] = "v%s slash commands"
+L["Settings panel is not available."] = "Settings panel is not available."
+L["Debug console not ready yet"] = "Debug console not ready yet"
+L["|cffFFFF00%s|r takes a setting path: |cffFFFF00%s|r (try |cffFFFF00%s|r). To reset everything: |cffFFFF00%s|r."] =
+    "|cffFFFF00%s|r takes a setting path: |cffFFFF00%s|r (try |cffFFFF00%s|r). To reset everything: |cffFFFF00%s|r."
 
 -- EllesmereUI skin: the gate's four conditions (core/EUIBridge.lua), each a status line and a hint
 L["EllesmereUI and its Blizzard Skin module are loaded"] =
@@ -163,8 +186,19 @@ L["PremadeGroupsFilterExtension is on in EllesmereUI's Third-Party Addons list"]
 L["In EllesmereUI's Third-Party Addons list, turn on PremadeGroupsFilterExtension."] =
     "In EllesmereUI's Third-Party Addons list, turn on PremadeGroupsFilterExtension."
 L["Premade Groups Filter's own EllesmereUI skin is on"] = "Premade Groups Filter's own EllesmereUI skin is on"
-L["Install and enable Premade Groups Filter - EllesmereUI Skin, and turn on PremadeGroupsFilter in EllesmereUI's Third-Party Addons list."] =
-    "Install and enable Premade Groups Filter - EllesmereUI Skin, and turn on PremadeGroupsFilter in EllesmereUI's Third-Party Addons list."
+-- The pgf line's other three states (core/EUIBridge.lua PGF_TEXT): label, then hint
+L["Premade Groups Filter - EllesmereUI Skin is not installed"] =
+    "Premade Groups Filter - EllesmereUI Skin is not installed"
+L["Install it from CurseForge (copy the link below), then restart the game."] =
+    "Install it from CurseForge (copy the link below), then restart the game."
+L["Premade Groups Filter - EllesmereUI Skin is installed but disabled"] =
+    "Premade Groups Filter - EllesmereUI Skin is installed but disabled"
+L["Enable it in the AddOns list, then reload."] =
+    "Enable it in the AddOns list, then reload."
+L["Premade Groups Filter - EllesmereUI Skin is turned off in EllesmereUI"] =
+    "Premade Groups Filter - EllesmereUI Skin is turned off in EllesmereUI"
+L["In EllesmereUI's Third-Party Addons list, turn on PremadeGroupsFilter."] =
+    "In EllesmereUI's Third-Party Addons list, turn on PremadeGroupsFilter."
 L["The EllesmereUI skin comes off after a reload. Reload the UI now?"] =
     "The EllesmereUI skin comes off after a reload. Reload the UI now?"
 L["Reload"] = "Reload"
@@ -187,3 +221,16 @@ L["The skin is not applied: a condition above is not met."] =
 L["The skin is off."] = "The skin is off."
 L["The skin is applied after a reload."] = "The skin is applied after a reload."
 L["The skin is applied when the panel next shows."] = "The skin is applied when the panel next shows."
+L["Get Premade Groups Filter - EllesmereUI Skin (select, then Ctrl+C):"] =
+    "Get Premade Groups Filter - EllesmereUI Skin (select, then Ctrl+C):"
+-- Each condition line's tooltip (CONDITION_TIPS eui/master/own/pgf), then the state line's (STATE_TIP)
+L["EllesmereUI paints windows through its Blizzard Skin module (EllesmereUIBlizzardSkin), which holds its skinning engine. Without both there is nothing to paint this panel with.\n\nHow: install EllesmereUI and keep EllesmereUI Blizzard Skin enabled in the AddOns list."] =
+    "EllesmereUI paints windows through its Blizzard Skin module (EllesmereUIBlizzardSkin), which holds its skinning engine. Without both there is nothing to paint this panel with.\n\nHow: install EllesmereUI and keep EllesmereUI Blizzard Skin enabled in the AddOns list."
+L["EllesmereUI's master switch for skinning other addons' windows. While it is off, EllesmereUI skins no third-party addon, this one included.\n\nHow: EllesmereUI options > Blizz UI Enhanced > Blizzard Window Skins > Third-Party Addons > Skin Third-Party Addons."] =
+    "EllesmereUI's master switch for skinning other addons' windows. While it is off, EllesmereUI skins no third-party addon, this one included.\n\nHow: EllesmereUI options > Blizz UI Enhanced > Blizzard Window Skins > Third-Party Addons > Skin Third-Party Addons."
+L["EllesmereUI lists every addon that registers a skin with it, each with its own switch. This is this addon's entry.\n\nHow: in the same Third-Party Addons list, tick PremadeGroupsFilterExtension. EllesmereUI applies a skin it turns on at once; one it turns off goes after a reload."] =
+    "EllesmereUI lists every addon that registers a skin with it, each with its own switch. This is this addon's entry.\n\nHow: in the same Third-Party Addons list, tick PremadeGroupsFilterExtension. EllesmereUI applies a skin it turns on at once; one it turns off goes after a reload."
+L["This panel sits under Premade Groups Filter's window, so the skin is only used while that window is skinned too: the two always match. That is Premade Groups Filter - EllesmereUI Skin, a separate addon.\n\nHow: install it from CurseForge (the link appears below when it is missing), enable it in the AddOns list, and tick PremadeGroupsFilter in EllesmereUI's Third-Party Addons list."] =
+    "This panel sits under Premade Groups Filter's window, so the skin is only used while that window is skinned too: the two always match. That is Premade Groups Filter - EllesmereUI Skin, a separate addon.\n\nHow: install it from CurseForge (the link appears below when it is missing), enable it in the AddOns list, and tick PremadeGroupsFilter in EllesmereUI's Third-Party Addons list."
+L["What the skin is doing this session. EllesmereUI applies a skin once per session: turning the skin on paints the panel at once, turning it off takes effect after a reload. It is never applied while a condition above is not met, whatever the switch says."] =
+    "What the skin is doing this session. EllesmereUI applies a skin once per session: turning the skin on paints the panel at once, turning it off takes effect after a reload. It is never applied while a condition above is not met, whatever the switch says."

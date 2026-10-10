@@ -8,7 +8,8 @@ local _, NS = ...
 -- Styled like PGF's own dialog (PGF UI/Dialog.xml: PortraitFrameTemplateMinimizable, the
 -- ButtonFrameTemplateNoPortraitMinimizable border, portrait hidden, strata FULLSCREEN) and its
 -- filter rows (PGF UI/Templates.xml PremadeGroupsFilterBasicTemplate: a UICheckButtonTemplate at
--- y+4 and a GameFontHighlight title at x+35, 23px rows). Anchored across the dialog's bottom edge,
+-- y+4 and a GameFontHighlight title at x+35, 23px rows) (ratified: docs/ARCHITECTURE.md ->
+-- Documented deviations). Anchored across the dialog's bottom edge,
 -- so its width follows PGF's. Shown only while the dialog is shown on the Dungeons category and the
 -- addon is not stood down; built lazily the first time it is wanted. Collapsed, only the title
 -- strip is left.
@@ -165,8 +166,7 @@ end
 local function updateReadout(f)
     local dungeons = NS.Season.GetDungeons()
     if not dungeons then
-        f.readout:SetText(L.READOUT_LOADING)
-        if C_MythicPlus.RequestMapInfo then C_MythicPlus.RequestMapInfo() end
+        f.readout:SetText(L.READOUT_LOADING) -- Season.GetDungeons already asked the server
         return
     end
     local level, parts = NS.Filters.Get().keyLevel, {}
@@ -844,6 +844,8 @@ function Panel.UpdateVisibility()
     -- A gate condition EllesmereUI's options turned on since the last show paints now.
     if want and NS.EUISkin then NS.EUISkin.TryApply() end
     f:SetShown(want and true or false)
+    -- Written on a change only: the dialog hook and PLAYER_ENTERING_WORLD re-run this often.
+    NS.DebugChanged("panel.vis", "Panel", want and "shown" or "hidden")
     if want then Panel.Refresh() end
 end
 
@@ -875,21 +877,39 @@ function addon.OnPanelSeasonData()
     updateReadout(f)
 end
 
+-- A loading screen re-arms the season-data request, so one lost on the way recovers here.
 function addon.OnPanelEnteringWorld()
+    NS.Season.ResetRequest()
     Panel.UpdateVisibility()
 end
 
 NS.FEATURE_EVENTS[#NS.FEATURE_EVENTS + 1] = { "CHALLENGE_MODE_MAPS_UPDATE", "OnPanelSeasonData" }
 NS.FEATURE_EVENTS[#NS.FEATURE_EVENTS + 1] = { "CHALLENGE_MODE_COMPLETED", "OnPanelSeasonData" }
+NS.FEATURE_EVENTS[#NS.FEATURE_EVENTS + 1] = { "MYTHIC_PLUS_CURRENT_AFFIX_UPDATE", "OnPanelSeasonData" }
 NS.FEATURE_EVENTS[#NS.FEATURE_EVENTS + 1] = { "PLAYER_ENTERING_WORLD", "OnPanelEnteringWorld" }
 NS.STAND_DOWN[#NS.STAND_DOWN + 1] = function()
+    -- The tooltip handlers gate on the stand-down, so OnLeave can no longer hide a tooltip the
+    -- panel showed: hide it here, when its owner is the panel or a frame inside it. The walk stops
+    -- at a frame whose GetParent answers itself.
+    if Panel.frame and GameTooltip and GameTooltip.GetOwner then
+        local o = GameTooltip:GetOwner()
+        while o and o ~= Panel.frame do
+            local p = o:GetParent()
+            if p == o then o = nil else o = p end
+        end
+        if o then GameTooltip:Hide() end
+    end
     if Panel.frame then Panel.frame:Hide() end
+    -- Re-arm the visibility line, so the stand-up's "shown" is written rather than held as a
+    -- repeat. DebugForget is on the instance only (core/DebugLogSetup.lua publishes no bare name).
+    NS.DebugLog.DebugForget("panel.vis")
 end
 NS.STAND_UP[#NS.STAND_UP + 1] = Panel.UpdateVisibility
 
 -- Installed at FILE LOAD (hooks at load; never AceHook). The callback returns at once while stood
--- down (the stand-down already hid the panel; the stand-up re-runs UpdateVisibility).
-NS.Bridge.HookDialog(function()
+-- down (the stand-down already hid the panel; the stand-up re-runs UpdateVisibility). Whether the
+-- hook went in is kept on Panel.dialogHooked, for Diagnostics.
+Panel.dialogHooked = NS.Bridge.HookDialog(function()
     if stoodDown() then return end
     Panel.UpdateVisibility()
 end)

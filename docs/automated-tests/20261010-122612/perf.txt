@@ -1,0 +1,23 @@
+Ka0s Premade Groups Filter Extension — offline perf  (v0.1.0, label 'offline')
+
+scenario                iters     ms/iter  api/iter  bytes/iter
+envNoPR                  1000     0.00236      1.20        80.1
+envWithPR                1000     0.00087      0.00         0.0
+envStoodDown             1000     0.00055      0.00         0.0
+searchRowPaint           1000     0.00249      5.20       160.4
+applicantRowPaint        1000     0.00242      5.20       160.4
+combatEvents             1000     0.13517    143.00     28161.1
+
+combatEvents, per event (InCombatLockdown true):
+  ACTIVE_PLAYER_SPECIALIZATION_CHANGED     handlers 1  api 3
+  PLAYER_SPECIALIZATION_CHANGED            handlers 1  api 3
+  CHALLENGE_MODE_MAPS_UPDATE               handlers 1  api 34
+  CHALLENGE_MODE_COMPLETED                 handlers 1  api 34
+  MYTHIC_PLUS_CURRENT_AFFIX_UPDATE         handlers 1  api 34
+  PLAYER_ENTERING_WORLD                    handlers 1  api 35
+  UI_SCALE_CHANGED                         handlers 1  api 0
+  DISPLAY_SIZE_CHANGED                     handlers 1  api 0
+  PLAYER_REGEN_DISABLED                    handlers 0  api 0
+
+timings are for orientation only — compare scenarios within a run, never across machines
+wrote docs/automated-tests/20261010-122612/perf.json

@@ -80,6 +80,9 @@ return function(root, mockBuilder)
     ---   opts.mock      = function(mock) end runs against the fresh mock before any source loads.
     ---   opts.addonName = "<folder>" changes the first vararg the addon's own files receive.
     ---   opts.<field>   for each MOCK_OPTS name, seeds that mock field.
+    ---   opts.afterFile = function(path, NS) end runs after each of the addon's own files (never a
+    ---                    library file), with its TOC-relative path: the sentinel-locale case swaps
+    ---                    NS.L in place right after locales/enUS.lua. Default nil.
     local function build(opts)
         opts = opts or {}
         local skipSet = {}
@@ -96,13 +99,17 @@ return function(root, mockBuilder)
         -- The kit's AceDB fake resolves a SavedVariables NAME against the real _G, so a previous
         -- instance's saved table would otherwise be adopted by this one.
         _G.PremadeGroupsFilterExtensionDB = nil
-        _G.PremadeGroupsFilterExtensionPerfDB = nil
 
         for _, src in ipairs(sources) do
             if not skipSet[src.path] then
                 local chunk = chunkFor(src.path)
                 setfenv(chunk, env)
-                if src.lib then chunk() else chunk(opts.addonName or "PremadeGroupsFilterExtension", NS) end
+                if src.lib then
+                    chunk()
+                else
+                    chunk(opts.addonName or "PremadeGroupsFilterExtension", NS)
+                    if opts.afterFile then opts.afterFile(src.path, NS) end
+                end
             end
         end
 

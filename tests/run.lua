@@ -18,8 +18,8 @@ local root      = "."
 local loadAddon = dofile("tests/loader.lua")(root, mock)
 
 -- THE THREE FACTORIES. Each returns (NS, env, mock) -- env and mock are the same table -- and each
--- takes the same `opts` table (tests/loader.lua: skip, mock, addonName, and the mock fields
--- currentRegion, realmName, mapTable, specID, role, classFile, inCombat). Fresh per call.
+-- takes the same `opts` table (tests/loader.lua: skip, mock, addonName, afterFile, and the mock
+-- fields currentRegion, realmName, mapTable, specID, role, classFile, inCombat). Fresh per call.
 
 -- Every file loaded; nothing run.
 local function newAddon(opts)
@@ -51,7 +51,6 @@ Kit.setSurfaceSource{
     ["LibKa0s-Options-1.0"]   = surfaceNS.addon.Settings.Helpers,
     ["LibKa0s-Launcher-1.0"]  = surfaceNS.Launcher,
     ["LibKa0s-Lifecycle-1.0"] = surfaceNS.Lifecycle,
-    ["LibKa0s-Perf-1.0"]      = surfaceNS.Perf,
     ["LibKa0s-Compat-1.0"]    = surfaceMock.LibStub("LibKa0s-Compat-1.0", true),
     ["LibKa0s-Schema-1.0"]    = surfaceMock.LibStub("LibKa0s-Schema-1.0", true),
 }
@@ -104,6 +103,8 @@ Kit.run{
         "test_panel",
         "test_euiskin",
         "test_euisettings",
+        "test_reset",
+        "test_diagnostics",
         "test_vendor_sync",
         { name = "test_eol",                  dir = "tests/_kit/" },   -- line-endings-§7
         { name = "test_prose",                dir = "tests/_kit/" },   -- localization-§5

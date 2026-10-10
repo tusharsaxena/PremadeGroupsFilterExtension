@@ -15,19 +15,19 @@ exclude_files = { "libs/", "docs/audits/", "docs/reviews/", "docs/revendor/", "_
 -- The SavedVariables write targets and the one Blizzard table the addon writes to.
 globals = {
   "PremadeGroupsFilterExtensionDB",       -- AceDB
-  "PremadeGroupsFilterExtensionPerfDB",   -- the perf capture ring (performance-§5)
   "StaticPopupDialogs",
 }
 
 read_globals = {
   "_G", "LibStub", "hooksecurefunc",
-  "C_AddOns", "C_Timer", "C_ChallengeMode", "C_MythicPlus",
+  "C_AddOns", "C_ChallengeMode", "C_MythicPlus",
   "CreateFrame", "UIParent", "GameTooltip", "NineSliceUtil",
   "InCombatLockdown", "GetCurrentRegion", "GetRealmName", "UnitClass",
   "Settings", "PlaySound", "SOUNDKIT", "LFGListFrame", "MenuResponse", "C_LFGList", "StaticPopup_Show", "StaticPopup_Hide", "YES", "NO",
-  "debugprofilestop",                     -- the perf bracket's clock (performance-§2)
-  -- Premade Groups Filter (## Dependencies) and PremadeRegions (## OptionalDeps). Read only by
-  -- core/PGFBridge.lua, modules/EnvInject.lua and modules/Diagnostics.lua.
+  -- Premade Groups Filter (## Dependencies): read by core/PGFBridge.lua and modules/Diagnostics.lua
+  -- (presence only).
+  -- PremadeRegions (## OptionalDeps): read by modules/EnvInject.lua, modules/RegionTags.lua and
+  -- modules/Diagnostics.lua.
   "PremadeGroupsFilter", "PremadeGroupsFilterDialog", "PremadeGroupsFilterDungeonPanel",
   "PremadeGroupsFilterState", "PremadeRegions",
   -- EllesmereUI (## OptionalDeps), read only by core/EUIBridge.lua and modules/EUISkin.lua.
@@ -41,7 +41,6 @@ files["tests/"] = {
   globals = {
     "_G.PGFE_TEST",
     "_G.PremadeGroupsFilterExtensionDB",
-    "_G.PremadeGroupsFilterExtensionPerfDB",
   },
 }
 

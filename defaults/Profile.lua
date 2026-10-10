@@ -3,8 +3,8 @@ local _, NS = ...
 --
 -- Three scopes, each one AceDB defaults table (settings/Schema.lua's Settings.BuildDefaults
 -- assembles them):
---   profile  master settings (options-ui-§15), their two extra rows and the attached panel's
---            collapsed state;
+--   profile  master settings (options-ui-§15), the General page's two Filters-tab rows and the
+--            attached panel's collapsed state;
 --   char     the filter options, PER CHARACTER by the owner's requirement;
 --   global   the schema stamp, the named presets (shared by every character) and LibDBIcon's table.
 --
@@ -15,8 +15,8 @@ local _, NS = ...
 NS.C = {
     PROFILE = {
         enabled        = true,    -- master switch (the `disabled` hold reads it)
-        filtersActive  = true,    -- Toggle PGF Extension Filters (a Master controls extra row)
-        showRegionTags = true,    -- the region tag on Group Finder rows (a Master controls extra row)
+        filtersActive  = true,    -- Toggle PGF Extension Filters (General -> Filters tab)
+        showRegionTags = true,    -- the region tag on Group Finder rows (General -> Filters tab)
         panelCollapsed = false,   -- the attached panel folded to its title bar (modules/Panel.lua)
         euiSkin        = true,    -- the EllesmereUI skin switch (modules/EUISkin.lua); gated, never forced
     },

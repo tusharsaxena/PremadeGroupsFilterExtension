@@ -61,23 +61,138 @@ test("parity: the Lifecycle stub carries the whole live surface", function()
     T.assertSurfaceParity(degraded.Lifecycle, "LibKa0s-Lifecycle-1.0")
 end)
 
--- The Perf stub answers only what the addon calls: the bracket idiom (`on`, `Note`), the latch
--- view (`suspended`) and the `perf` verb (`OnCommand`). Everything else on the instance is the
--- library's own capture machinery, reached by nothing in this addon.
-test("parity: the Perf stub carries every member the addon calls", function()
-    local live = T.newAddon().Perf
-    local degraded = T.newAddon{ skip = NO_LIBKA0S }.Perf
-    for _, k in ipairs({ "on", "Note", "OnCommand" }) do
-        T.assertEqual(type(degraded[k]), type(live[k]), "Perf." .. k)
-    end
-    T.assertEqual(degraded.suspended, false)
-    T.assertEqual(live.suspended, false)
-end)
-
 test("parity: the Compat arm carries every library member the addon wires", function()
     local degraded = T.newAddon{ skip = NO_LIBKA0S }
     T.assertSurfaceParity(degraded.Compat, "LibKa0s-Compat-1.0", {
         "IsSecret", "CanAccess", "IsSafeKey",
         "GetSpellInfo", "GetSpellName", "GetSpellTexture", "GetSpellCooldown",
     })
+end)
+
+-- C-04: PGF internals are read only through core/PGFBridge.lua (and Diagnostics' presence check).
+-- A structural guard over the two modules that used to reach past the bridge.
+test("parity: no module reads PGF outside the bridge", function()
+    for _, rel in ipairs({ "modules/Season.lua", "modules/EnvInject.lua" }) do
+        local fh = assert(io.open(T.root .. "/" .. rel, "rb"))
+        local src = fh:read("*a"); fh:close()
+        -- red under: revert Season.lua to the direct C.MAP_ID_TO_KEYWORDS read
+        T.assertTrue(src:find("PremadeGroupsFilter", 1, true) == nil, rel .. " names PremadeGroupsFilter")
+    end
+end)
+
+-- C-17/C-18/C-26/C-09: the owner-ratified rows stay in the register, and the architecture-§5 row
+-- names every char.filters writer modules/Filters.lua defines (a new writer must be listed there).
+local REGISTER_RULES = { "architecture-§5", "architecture-§4", "standalone-windows", "`performance-§12`" }
+
+local function registerRows()
+    local fh = assert(io.open(T.root .. "/docs/ARCHITECTURE.md", "rb"))
+    local doc = fh:read("*a"); fh:close()
+    local from = assert(doc:find("\n## Documented deviations", 1, true), "no Documented deviations section")
+    local rows = {}
+    for line in doc:sub(from):gmatch("[^\r\n]+") do
+        if line:find("^### ") then break end
+        local rule = line:match("^| ([^|]-) |")
+        if rule then rows[#rows + 1] = { rule = rule, line = line } end
+    end
+    return rows
+end
+
+local function rowFor(rows, rulePrefix)
+    for _, r in ipairs(rows) do
+        if r.rule:sub(1, #rulePrefix) == rulePrefix then return r.line end
+    end
+    return nil
+end
+
+-- red under: add a Filters.Toggle* without listing it in the architecture-§5 row
+test("parity: the register holds the ratified rows and the §5 row names every Filters writer", function()
+    local rows = registerRows()
+    for _, rule in ipairs(REGISTER_RULES) do
+        T.assertTrue(rowFor(rows, rule) ~= nil, "no register row for " .. rule)
+    end
+    local s5 = rowFor(rows, "architecture-§5")
+    local fh = assert(io.open(T.root .. "/modules/Filters.lua", "rb"))
+    local src = fh:read("*a"); fh:close()
+    local n = 0
+    for name in src:gmatch("function Filters%.([%w_]+)%(") do
+        local writer = name == "Set" or name == "ApplySmartLevel" or name:find("^Toggle") or name:find("^Clear")
+        if writer then
+            n = n + 1
+            local cited = name == "Set" and "Filters.Set`" or name
+            T.assertTrue(s5:find(cited, 1, true) ~= nil, "architecture-§5 row does not name Filters." .. name)
+        end
+    end
+    T.assertTrue(n >= 8, "found only " .. n .. " Filters writers")
+end)
+
+-- C-11 (localization-§3): every locale key the code reads is defined in enUS, and every key enUS
+-- defines is read. A static scan of the TOC's own files (libs\ and locales\ left out) collects the
+-- literal keys: `NS.L["…"]` and `NS.L.IDENT` anywhere, and bare `L["…"]` / `L.IDENT` only in a file
+-- that binds `local L = NS.L` (modules/Diagnostics.lua's `L` is the launcher). Each literal is
+-- evaluated as Lua, so `\"`, `\n` and decimal escapes read the same on both sides. The `MSG_*`,
+-- `REGION_TIP_*` and `PLAYSTYLE_*` families are read through computed keys, so they are exempt from
+-- the "is read" direction.
+local DYNAMIC = { "^MSG_", "^REGION_TIP_", "^PLAYSTYLE_" }
+
+-- The index of the closing quote of the string literal that opens at src[start - 1].
+local function closingQuote(src, start)
+    local i = start
+    while i <= #src do
+        local c = src:sub(i, i)
+        if c == "\\" then i = i + 2
+        elseif c == '"' then break
+        else i = i + 1 end
+    end
+    return i
+end
+
+local function literalKeys(src, bare, out)
+    local pos = 1
+    while true do
+        local s, e, sep = src:find("L([%[%.])", pos)
+        if not s then break end
+        pos = e + 1
+        local before = s > 1 and src:sub(s - 1, s - 1) or ""
+        local viaNS = s > 3 and src:sub(s - 3, s - 1) == "NS."
+        local ok = viaNS or (bare and not before:find("[%w_%.]"))
+        if ok and sep == "." then
+            local ident = src:match("^([%a_][%w_]*)", e + 1)
+            if ident then out[ident] = true end
+        elseif ok and src:sub(e + 1, e + 1) == '"' then
+            local i = closingQuote(src, e + 2)
+            -- A literal followed by `..` is a computed key's prefix (the dynamic families), not a key.
+            if src:find("^%s*%]", i + 1) then
+                local raw = src:sub(e + 2, i - 1)
+                out[assert(loadstring('return "' .. raw .. '"'))()] = true
+            end
+            pos = i + 1
+        end
+    end
+end
+
+-- red under: delete one of the new enUS lines
+test("parity: every locale key used is defined in enUS, and every enUS key is used", function()
+    local used = {}
+    for _, rel in ipairs(T.loadAddon.tocFiles) do
+        local norm = rel:gsub("\\", "/")
+        if norm:find("%.lua$") and not norm:find("^libs/") and not norm:find("^locales/") then
+            local fh = assert(io.open(T.root .. "/" .. norm, "rb"))
+            local src = fh:read("*a"); fh:close()
+            literalKeys(src, src:find("local L%s*=%s*NS%.L%f[^%w_]") ~= nil, used)
+        end
+    end
+    local defined = {}
+    for k in pairs(T.newAddon().L) do defined[k] = true end
+    local missing, unused = {}, {}
+    for k in pairs(used) do
+        if not defined[k] then missing[#missing + 1] = k end
+    end
+    for k in pairs(defined) do
+        local dynamic = false
+        for _, p in ipairs(DYNAMIC) do if k:find(p) then dynamic = true end end
+        if not used[k] and not dynamic then unused[#unused + 1] = k end
+    end
+    table.sort(missing); table.sort(unused)
+    T.assertTrue(#missing == 0 and #unused == 0, ("%d missing from enUS:\n  %s\n%d defined but unused:\n  %s")
+        :format(#missing, table.concat(missing, "\n  "), #unused, table.concat(unused, "\n  ")))
 end)

@@ -50,6 +50,17 @@ test("regiontags: an applicant gets their region in front of their name", functi
     assertEqual(member.Name.text, "|cff33cc66OCE|r Zed")
 end)
 
+test("regiontags: a painter the client lacks is skipped, the other still installs", function()
+    local NS, _, m = T.enableAddon{ mock = function(mock)
+        mock.LFGListApplicationViewer_UpdateApplicantMember = nil
+    end }
+    -- red under: drop the RegionTags.hooked store
+    assertTrue(type(NS.RegionTags.hooked) == "table", "installed painters are recorded")
+    assertEqual(NS.RegionTags.hooked.LFGListSearchEntry_Update, true)
+    assertNil(NS.RegionTags.hooked.LFGListApplicationViewer_UpdateApplicantMember)
+    assertEqual(searchRow(m, 1, "Bob-Barthilas", "X").ActivityName.text, "|cff33cc66OCE|r X")
+end)
+
 test("regiontags: no tag while stood down, with the setting off, or with PremadeRegions loaded", function()
     local NS, _, m = T.enableAddon{}
     NS.addon:OnSlashCommand("disable")

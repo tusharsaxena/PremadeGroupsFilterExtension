@@ -2,8 +2,9 @@ local _, NS = ...
 -- modules/Expression.lua — pure: filter options to PGF's Advanced Expression block.
 --
 -- The addon owns one marked block inside PGF's Advanced Filter Expression. Merge rewrites it,
--- Strip removes it, and the user's own text around it is kept byte for byte. When the user has
--- real (non-comment) text, it is wrapped as `( ours ) and (` … `)` so an `or` in it cannot leak.
+-- Strip removes it, and the user's own text around it is kept line for line (CRLF is normalized
+-- to LF). When the user has real (non-comment) text, it is wrapped as `( ours ) and (` … `)` so
+-- an `or` in it cannot leak.
 -- `ours` is `( not pgfe_on or ( clauses ) )`: neutral whenever the env hook did not run.
 
 local Expression = NS.Expression or {}
@@ -19,15 +20,6 @@ local P_BEGIN, P_END, P_CLOSE = "^%s*%-%- %[pgfe%] begin", "^%s*%-%- %[pgfe%] en
 local function splitLines(text)
     local out = {}
     for line in (text .. "\n"):gmatch("(.-)\r?\n") do out[#out + 1] = line end
-    return out
-end
-
-local function trimBlankEdges(lines)
-    local first, last = 1, #lines
-    while first <= last and lines[first]:match("^%s*$") do first = first + 1 end
-    while last >= first and lines[last]:match("^%s*$") do last = last - 1 end
-    local out = {}
-    for i = first, last do out[#out + 1] = lines[i] end
     return out
 end
 
@@ -62,28 +54,34 @@ function Expression.BuildClauses(opts)
     return c
 end
 
--- Returns the user's text with every managed line removed, and ok. A begin marker without an end
--- marker, or a close marker not followed by a `)` line, is damage: the input comes back unchanged
--- with ok = false so the caller never writes over text it cannot account for.
+-- Returns the user's text with every managed line removed, and ok. Three shapes are damage: a
+-- begin marker without an end marker, a close marker not followed by a `)` line, and a wrapped
+-- block (its body ends `and (`) with no close + `)` pair after it. Deleting both the close marker
+-- and its `)` is refused too (conservative). On damage the input comes back unchanged with
+-- ok = false so the caller never writes over text it cannot account for.
 function Expression.Strip(text)
     text = text or ""
     local lines, out, i = splitLines(text), {}, 1
+    local wrapped, closed = false, false
     while i <= #lines do
         local line = lines[i]
         if line:find(P_BEGIN) then
             local j = i + 1
             while j <= #lines and not lines[j]:find(P_END) do j = j + 1 end
             if j > #lines then return text, false end
+            wrapped = wrapped or (j > i + 1 and lines[j - 1]:match("and %(%s*$") ~= nil)
             i = j + 1
         elseif line:find(P_CLOSE) then
             if not (lines[i + 1] and lines[i + 1]:match("^%s*%)%s*$")) then return text, false end
+            closed = true
             i = i + 2
         else
             out[#out + 1] = line
             i = i + 1
         end
     end
-    return table.concat(trimBlankEdges(out), "\n"), true
+    if wrapped and not closed then return text, false end
+    return table.concat(out, "\n"), true
 end
 
 -- Returns the new expression text, or nil and "damaged" / "toolong".

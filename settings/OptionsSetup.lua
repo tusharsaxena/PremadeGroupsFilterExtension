@@ -10,7 +10,7 @@ local PGFE = NS.addon
 local Settings  = PGFE.Settings
 local lib = LibStub and LibStub("LibKa0s-Options-1.0", true)
 if not lib then
-    local missing = NS.LIBKA0S_MISSING .. ", so the settings panel is unavailable."
+    local missing = NS.L["%s, so the settings panel is unavailable."]:format(NS.LIBKA0S_MISSING)
     local function announcer()
         local said = false
         return function()

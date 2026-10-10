@@ -13,7 +13,7 @@ local BRAND = "Ka0s Premade Groups Filter Extension"
 if not lib then
     -- Degrade, never error. The stub answers every member the addon calls; SetEnabled still flips
     -- the addon's own flag and still acknowledges. What is lost is the window, said once.
-    local missing = NS.LIBKA0S_MISSING .. ", so the debug console window is unavailable."
+    local missing = NS.L["%s, so the debug console window is unavailable."]:format(NS.LIBKA0S_MISSING)
     local said = false
     local function sayOnce()
         if said then return end
@@ -52,13 +52,13 @@ if not lib then
             on = not not on
             if NS.State then NS.State.debug = on end
             if NS.Print then
-                NS.Print("debug logging " .. (on and "|cff40ff40ON|r" or "|cffff4040OFF|r"))
+                NS.Print(on and NS.L["debug logging |cff40ff40ON|r"] or NS.L["debug logging |cffff4040OFF|r"])
             end
             if on then sayOnce() end
         end,
         ConsoleCheckbox = function()
             return {
-                label   = "Debug console",
+                label   = NS.L["Debug console"],
                 tooltip = missing,
                 get     = function() return false end,
                 set     = function() sayOnce() end,

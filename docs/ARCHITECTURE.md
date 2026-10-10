@@ -44,10 +44,10 @@ Recorded here because the plan names them provisionally.
 
 | What | Exact name | Notes |
 |---|---|---|
-| Stand-down accessor | **`NS.IsStoodDown()`** | Published by `core/LifecycleSetup.lua`; true while any hold (`disabled`, `perf`) is taken. The plan's provisional `NS.Lifecycle:IsStoodDown()` does not exist: use `NS.IsStoodDown()` (or `NS.Lifecycle:IsDown()`). Every hook body returns at once when it answers true. |
+| Stand-down accessor | **`NS.IsStoodDown()`** | Published by `core/LifecycleSetup.lua`; true while a hold is taken; production takes one, `disabled` (no perf harness is wired, so nothing takes the library's `perf` hold). The plan's provisional `NS.Lifecycle:IsStoodDown()` does not exist: use `NS.IsStoodDown()` (or `NS.Lifecycle:IsDown()`). Every hook body returns at once when it answers true. |
 | Disabling in a test | `NS.addon:OnSlashCommand("disable")`, or `NS.addon.Settings.Helpers.Set("enabled", false)` | Both go through the write seam to the latch. **`NS.addon:Disable()` is not the stand-down** (that is AceAddon's, and the kit fake does not model it). |
 | Test factories | **`T.newAddon(opts)`**, **`T.bootAddon(opts)`**, **`T.enableAddon(opts)`** on `local T = _G.PGFE_TEST` | Each returns `(NS, env, mock)`, env and mock the same table. `newAddon`: files loaded. `bootAddon`: + `OnInitialize` (db, migrations). `enableAddon`: + `OnEnable` (events, settings category, launcher, latch). |
-| Factory `opts` | `currentRegion`, `realmName`, `mapTable`, `specID`, `role`, `classFile`, `inCombat` seed the mock; `skip` (file list), `mock` (fn), `addonName` | See `tests/loader.lua`. |
+| Factory `opts` | `currentRegion`, `realmName`, `mapTable`, `specID`, `role`, `classFile`, `inCombat` seed the mock; `skip` (file list), `mock` (fn), `addonName`, `afterFile` (fn, run after each addon file) | See `tests/loader.lua`. |
 | Mock fields | `currentRegion`, `realmName`, `mapTable`, `mapUIInfo`, `seasonBest`, `specID`, `role`, `classFile`, `inCombat`, `fireEvent(name, ...)`, `pgf`, `hooks`, `prints`, `popupsShown`, `reloads`, `installEUI(spec)` / `eui` | `tests/wow_mock.lua`; `hooksecurefunc` is a real post-hook. Assigning a mock key sets that global (`m.PremadeRegions = {...}`). |
 | PGF fake | `tests/pgf_fake.lua` (the plan's Task 6 fake, verbatim) | Installed by the mock builder before any addon file loads; handle at `mock.pgf`. |
 | EllesmereUI fake | `m.installEUI{ child, pgfSkin, masterOff, entries }` from a factory's `mock` option | Opt-in (absent by default). Installs `EllesmereUI.RegisterSkin`, `EllesmereUIDB`, `C_AddOns`; `m.eui.dispatch(name)` is the login dispatch, `m.eui.dispatchAll()` the live one; the facade records every primitive call (`m.eui.calls`, `callsFor`, `count`). |
@@ -55,21 +55,21 @@ Recorded here because the plan names them provisionally.
 | Feature events | append `{ "EVENT", "MethodName" }` to `NS.FEATURE_EVENTS` at file load | `core/PGFE.lua` registers the list on enable and stand-up and unregisters it on stand-down. Teardown/rebuild steps go in `NS.STAND_DOWN` / `NS.STAND_UP`. |
 | Spec readers | `NS.Compat.GetSpecialization()`, `NS.Compat.GetSpecializationInfo(i)` | `core/Compat.lua`, through `LibKa0s-Compat-1.0`; use these rather than the bare globals. |
 | Defaults | `NS.C.PROFILE`, `NS.C.CHAR_DEFAULTS`, `NS.C.GLOBAL_DEFAULTS` | `defaults/Profile.lua`; db at `NS.addon.db` (== `NS.db`). |
-| Perf bucket | declare `{ key = "envInject" }` in `core/PerfSetup.lua` in the change that brackets the env hook | Not declared at v0.1.0: the env hook is not bracketed yet, and a bucket no bracket reaches reads 0.000 (performance-§3). |
+| Perf | No Perf instance | performance-§12 exemption; the re-arm trigger is in `## Documented deviations`. |
 
 ## Module Map
 
 Single modular layout (`core/ defaults/ locales/ modules/ settings/`). Load order is the TOC's:
 libraries → `locales/enUS.lua` → the `core/` setup files → `core/PGFBridge.lua` → `core/EUIBridge.lua` → `defaults/` →
-`modules/` → `settings/`, with every load-bearing position annotated at its TOC line. Full per-file
+`modules/` → `settings/`, with every addon file's TOC line annotated. Full per-file
 table and the load-order reasoning: [`module-map.md`](module-map.md).
 
 `LibKa0s` majors wired, one setup file each: Core (`core/CoreSetup.lua`), Media
 (`core/MediaSetup.lua`), Compat (`core/Compat.lua`), Env (`core/EnvSetup.lua`), DebugLog
 (`core/DebugLogSetup.lua`), Launcher (`core/LauncherSetup.lua`), Lifecycle
-(`core/LifecycleSetup.lua`), Perf (`core/PerfSetup.lua`), Schema (`settings/SchemaSetup.lua`), Options
+(`core/LifecycleSetup.lua`), Schema (`settings/SchemaSetup.lua`), Options
 (`settings/OptionsSetup.lua`), Slash (`settings/Slash.lua`). Vendored and not wired: Bus, Pool, Item,
-Widgets. Ace3, LibSharedMedia, LibDataBroker and LibDBIcon are vendored under `libs/` too
+Widgets, Perf (the performance-§12 exemption). Ace3, LibSharedMedia, LibDataBroker and LibDBIcon are vendored under `libs/` too
 (`DEPENDENCIES.md`).
 
 The feature modules, one purpose each:
@@ -97,7 +97,8 @@ Three AceDB scopes on `PremadeGroupsFilterExtensionDB`; full shape and defaults 
 [`schema.md`](schema.md).
 
 - **Schema rows (the write seam).** The Master controls block (`enabled`, `state.debugConsole`,
-  `global.minimap.shown`, plus the two extra rows `filtersActive` and `showRegionTags`), composed by `LibKa0s-Options-1.0` in `settings/Panel.lua` and written only
+  `global.minimap.shown`, composed by `LibKa0s-Options-1.0`) and the General Filters tab's two rows
+  (`filtersActive` and `showRegionTags`, `FILTER_ROWS`), both in `settings/Panel.lua` and written only
   through `NS.SchemaRuntime.Set` (panel, CLI, resets and launcher alike).
 - **`euiSkin`** (profile, default `true`, in `defaults/Profile.lua`): the *Use the EllesmereUI skin*
   row on the General page's *EllesmereUI skin* tab (`settings/Panel.lua`). `disabledIf` while any
@@ -105,21 +106,35 @@ Three AceDB scopes on `PremadeGroupsFilterExtensionDB`; full shape and defaults 
   reset never refused); `onChange` is `NS.EUISkin.OnSwitch` (on paints live, off after a paint asks
   for a reload). A profile switch, copy or reset runs the same `OnSwitch` with the incoming value,
   after the `enabled` latch re-read, so a disabled incoming profile is never painted.
-- **Named non-setting state** (architecture-§5), each written outside the seam by one owner:
-  - `char.filters` — the filter options, **per character**. Owner `modules/Filters.lua`
-    (`Filters.Set`, `Filters.ToggleRegion` / `TogglePlaystyle`, `Filters.ClearRegions` /
-    `ClearPlaystyles`, `Filters.ApplySmartLevel`); `modules/Presets.lua`'s `Presets.Load` also writes it,
-    in place. Edited from the attached panel, which is not a settings page.
+- **Registries outside the seam** (architecture-§5), each written by one owner:
   - `global.presets` — a **structural registry** of named filter snapshots shared by every
     character. One registry writer, `modules/Presets.lua` (`Presets.Save`, `Presets.Delete`); no
     load pass.
-  - `profile.panelCollapsed` — the attached panel folded to its title strip. Owner `modules/Panel.lua`.
   - `global.minimap` — LibDBIcon's own table (`hide`, position), handed to the launcher.
-- **`PremadeGroupsFilterExtensionPerfDB`** — the perf capture ring, written by `LibKa0s-Perf-1.0`.
+- **The attached panel's own state** (`char.filters`, the per-character filter options, and
+  `profile.panelCollapsed`) is written by the panel's controls outside the seam: a ratified
+  architecture-§5 deviation, with every writer named, in
+  [Documented deviations](#documented-deviations).
 
 ## Message Bus
 
-None. The addon defines no AceEvent messages; modules call each other directly through `NS`.
+None, by a ratified deviation from architecture-§4
+([Documented deviations](#documented-deviations)). The two-feature-module threshold is crossed:
+`modules/Apply.lua`, `Panel.lua`, `EUISkin.lua`, `Filters.lua`, `Presets.lua`, `RegionTags.lua`,
+`Targeting.lua` and `EnvInject.lua`. The addon still defines no AceEvent messages, and modules call
+each other directly through `NS`, because each cross-module reaction has one sender and a required
+order that CallbackHandler's fan-out does not promise. There are three reaction sites:
+
+- **`reloadProfile`** (`core/PGFE.lua`, on the three AceDB profile callbacks) runs, in order,
+  `Settings.Helpers.RefreshAll` / `RefreshProfilesPage`, `Panel.Refresh`, the `enabled` latch
+  re-read (`Lifecycle:Set` + `Reevaluate`) and `EUISkin.OnSwitch`. The latch is re-read before the
+  one-way EllesmereUI paint, so a disabled incoming profile is never painted. That order is pinned
+  by `tests/test_euiskin.lua` ("a profile switch to a disabled profile with the switch on paints
+  nothing").
+- **`Apply.OnFiltersToggled`** (`modules/Apply.lua`, the `filtersActive` onChange) runs
+  `Apply.Run` / `Apply.Clear` and then `Panel.Refresh`, so the PGF block is written or cleared
+  before the panel readout refreshes.
+- **`Panel.Create` / `Panel.UpdateVisibility`** (`modules/Panel.lua`) call `EUISkin.TryApply`.
 
 ## Slash Commands
 
@@ -137,11 +152,12 @@ None. The addon defines no AceEvent messages; modules call each other directly t
 | `profile` | Lists profiles, or switches to one |
 | `debug` | The console window; `debug on\|off` the logging flag; `debug diagnostics` the report |
 | `diagnostics` | Writes the diagnostics report to the console |
-| `perf` | The `LibKa0s-Perf-1.0` capture workflow |
 | `apply` | `NS.Apply.Run{ search = true }` (a typed command is a hardware event, so it may search) |
 | `clear` | `NS.Apply.Clear()` |
 
 `apply` and `clear` are refused with the library's disabled line while the addon is stood down.
+`perf` is reserved and unregistered (performance-§12 exemption): the library answers it with the
+unknown-command line and the index.
 
 ## Event Subscriptions
 
@@ -155,7 +171,8 @@ are setup and stay up while disabled.
 | `PLAYER_SPECIALIZATION_CHANGED` | `OnPlayerSpecChanged` | `modules/EnvInject.lua` | Same, for `unit == "player"` |
 | `CHALLENGE_MODE_MAPS_UPDATE` | `OnPanelSeasonData` | `modules/Panel.lua` | Recomputes the Smart key level (when on) and rebuilds the best-timed readout once season data arrives |
 | `CHALLENGE_MODE_COMPLETED` | `OnPanelSeasonData` | `modules/Panel.lua` | Same, after a key finishes |
-| `PLAYER_ENTERING_WORLD` | `OnPanelEnteringWorld` | `modules/Panel.lua` | `Panel.UpdateVisibility()` |
+| `MYTHIC_PLUS_CURRENT_AFFIX_UPDATE` | `OnPanelSeasonData` | `modules/Panel.lua` | Same, when the season's affix data arrives (it can land after the map table) |
+| `PLAYER_ENTERING_WORLD` | `OnPanelEnteringWorld` | `modules/Panel.lua` | Re-arms the season-data request (`Season.ResetRequest()`), then `Panel.UpdateVisibility()` |
 | `UI_SCALE_CHANGED` | `OnEUISkinScale` | `modules/EUISkin.lua` | Re-lays the skinned checkboxes' accent ring and block in whole pixels (nothing to do unless skinned) |
 | `DISPLAY_SIZE_CHANGED` | `OnEUISkinScale` | `modules/EUISkin.lua` | Same |
 
@@ -167,7 +184,9 @@ Besides events, four `hooksecurefunc` hooks run (see [Taint Notes](#taint-notes)
 the dialog hook (`SwitchToPanel`, plus `OnShow`/`OnHide` script hooks), which calls
 `Panel.UpdateVisibility()`; and the two Group Finder row hooks of `modules/RegionTags.lua`
 (`LFGListSearchEntry_Update`, `LFGListApplicationViewer_UpdateApplicantMember`). Stand-up re-runs `EnvInject.RefreshPlayer` and
-`Panel.UpdateVisibility`; stand-down hides the panel.
+`Panel.UpdateVisibility`; stand-down hides the panel, and `GameTooltip` first when the panel or a
+frame inside it owns it (the tooltip handlers' own `OnLeave` gates on the stand-down). Whether the
+dialog hook went in is kept on `Panel.dialogHooked`.
 
 ## Taint Notes
 
@@ -180,7 +199,9 @@ the dialog hook (`SwitchToPanel`, plus `OnShow`/`OnHide` script hooks), which ca
   did. Display only: no Blizzard table field is written. `..` and SetText pass a protected ("secret")
   string through; a leader or applicant name that is not concat-safe gets no tag
   (events-frames-taint-§8). Skipped while stood down, with `showRegionTags` off, or while
-  PremadeRegions is loaded.
+  PremadeRegions is loaded. The env hook's region lookup (`Regions.GetRegion`) probes the leader
+  name the same way before matching it, so a protected name leaves `region` nil and every region
+  key false.
 - `LFGListFrame.SearchPanel.SearchBox` has `securityDisableSetText`: no code path writes it. The key
   range is shown in a read-only field (*Copy into search box*, whose tooltip says why) for the player to copy. Clicking that field
   selects its text (Apply leaves keyboard focus alone); Enter in it moves keyboard focus to the search box (`SetFocus`, pcall-guarded,
@@ -194,27 +215,35 @@ the dialog hook (`SwitchToPanel`, plus `OnShow`/`OnHide` script hooks), which ca
   through EllesmereUI's facade primitives: art removal is alpha-only and overlays are added, never
   `Hide` or `SetParent`. Its hooks (`OnClick` / `OnEnter` / `OnLeave` `HookScript`s and a
   `hooksecurefunc` on each skinned checkbox's own `SetChecked`) return at once while stood down, and
-  the paint itself refuses while stood down (the stand-up retries). It never touches PGF's dialog;
+  the paint itself refuses while stood down (the stand-up retries). The `EllesmereUI.RegisterSkin`
+  callback cannot be unregistered, so it survives a stand-down and gates itself: `onFacade` keeps
+  the facade, registers `repaintLooks` with `S.OnLooksChanged` (it returns at once while stood
+  down) and calls `TryApply`, which refuses while stood down, and the `NS.STAND_UP` row
+  retries (`modules/EUISkin.lua:394-422`; upstream WowAddonStandards #10). It never touches PGF's dialog;
   that is `PremadeGroupsFilter_EllesmereUI`'s job.
 
 ## PGF seams
 
 Every touch of PGF internals is in `core/PGFBridge.lua`, nil-guarded, and read at call time.
-Citations are `<file>:<line>` in PGF **7.6.2**. `Bridge.Check()` tests the six seams marked *checked*
+Citations are `<file>:<line>` in PGF **7.6.2**. `Bridge.Check()` tests the ten seams marked *checked*
 in order and names the first missing one; the panel and Apply then show "PGF version not supported".
 
 | Seam | PGF source | Used for | Checked |
 |---|---|---|---|
-| `PremadeGroupsFilter.Debug` (PGF's private namespace) | `Init.lua:27` | Every other seam; `C.SPECIALIZATIONS`, `C.MAP_ID_TO_KEYWORDS` | yes |
+| `PremadeGroupsFilter.Debug` (PGF's private namespace) | `Init.lua:27` | Every seam on the namespace | yes |
 | `PGF.PutPremadeRegionInfo(env, leaderName)` | `Plugins/PremadeRegions.lua:24`, called per result at `Main.lua:363-364` | The env post-hook | yes |
+| `C.SPECIALIZATIONS` (`Bridge.Specializations()`) | `Modules/Specializations.lua:25` | The player's spec keyword for `pgfe_samespec` (`modules/EnvInject.lua`) | yes |
+| `C.MAP_ID_TO_KEYWORDS` (`Bridge.MapKeywords(mapID)`) | `Modules/ActivityKeywords.lua:59` | The dungeon short names | no (falls back to the name's initials) |
 | `PremadeGroupsFilterDialog` | `UI/Dialog.lua:33`; `panels`, `activeId`, `activeState`, `activePanel` at `UI/Dialog.lua:39-42` | Visibility, category test, state table | yes |
+| `Dialog.panels` | `UI/Dialog.lua:39` | Category test (`panels[activeId]`) | yes |
 | `PremadeGroupsFilterDungeonPanel` | `UI/DungeonPanel.lua:105`; category `c2f4` at `:451`; `name = "dungeon"` at `:109` | Category test, rows, edit box | yes |
 | `Dialog.RefreshButton` | `UI/Dialog.lua:77-78` → `LFGListSearchPanel_DoSearch` (`:147-154`) | The search, inside a hardware event | yes |
 | `DungeonPanel:TriggerFilterExpressionChange()` | `UI/DungeonPanel.lua:314` (it runs `UpdateAdvancedFilters`, `:320`, `:408`) | Re-filter and sync the game's advanced filter | yes |
+| `DungeonPanel.Dungeons` | `UI/DungeonPanel.xml:81` (`parentKey="Dungeons"`) | The dungeon row table | yes |
 | Dungeon rows `panel.Dungeons["Dungeon"..i].cmId`, state key `"dungeon"..i` | `UI/DungeonPanel.lua:59` (8 rows), `:168`, `:210-211`, `:252` | cmID → positional checkbox | no (rows without a `cmId` are skipped) |
 | `activeState.dungeon` (`PremadeGroupsFilterState[activeId]`) | `UI/Dialog.lua:183`, `:196`, `:216-224` | Where checkboxes and `expression` are written | no |
 | `panel:Init(state)` | `UI/DungeonPanel.lua:217-255` | Push written state into the live panel | no (called only when the dungeon panel is the active one) |
-| `panel.Advanced.Expression.EditBox` | `UI/Common.lua:144-156` (commit on `OnEditFocusLost`, `:153-156`) | Clear focus before reading, so typed text is committed | no |
+| `panel.Advanced.Expression.EditBox` | `UI/Common.lua:144-156` (commit on `OnEditFocusLost`, `:153-156`) | Clear focus before reading, so typed text is committed | yes |
 | `Dialog:SwitchToPanel` | `UI/Dialog.lua:116-128`, `:178-199` | Hooked: category switch, minimize, maximize | no (hook skipped if absent) |
 
 When the dialog is minimized the dungeon panel is not the active panel (`SwitchToPanel` makes
@@ -240,8 +269,14 @@ Read against EllesmereUI **9.4** (`EllesmereUI_SharedHelpers.lua`,
 
 The facade `S` (apiVersion 3) is kept from the callback; the paint uses `Shell`, `FadeNineSlice`,
 `FadeRegions`, `Checkbox`, `EditBox`, `Dropdown`, `Button`, `StateButtonLabel`, `Font`, `White`,
-`GetAccentColor`, `GetFont` and `OnLooksChanged`. EllesmereUI skins the Blizzard menus the dropdowns
-open and the preset StaticPopups globally, under its own *popups and menus* switch.
+`GetAccentColor`, `GetFont` and `OnLooksChanged`. The paint checks the facade's shape first: a
+facade missing any of those primitives or getters except `OnLooksChanged` (optional: without it
+the paint just does not follow live theme changes) is refused before anything is painted, and the
+panel stays stock. The paint itself is pcall'd and fails closed: a primitive that raises logs
+`paint failed`, latches, and is never retried (a retry would skin the same widgets twice); turning
+the switch off then offers the reload that drops the partial paint. EllesmereUI skins the Blizzard
+menus the dropdowns open and the preset StaticPopups globally, under its own *popups and menus*
+switch.
 
 **Standards note (ratified deviation).** Reading `EllesmereUIDB` departs from library-stack-§6 /
 anti-pattern #29 ("MUST NOT read a suite's ... SavedVariables"). EllesmereUI has no public query
@@ -297,9 +332,12 @@ and an `or` in `U` cannot change precedence. The `not pgfe_on or` guard makes th
 whenever the env hook did not run: the block lives in PGF's state, which outlives this addon's
 runtime (a stand-down, an AddOns-list disable, an uninstall), and without the guard `pgfe_samespec
 == 0` would compare nil and hide every group. Strip removes `begin..end`, and a `close` marker with
-the `)` line after it. A begin without an end, or a close not followed by `)`, is **damage**: Apply
-and Clear refuse and leave the text alone. No clauses means no block. Over 2000 characters (PGF's
-edit-box limit) refuses.
+the `)` line after it. Three shapes are **damage**: a begin without an end, a close not followed by
+`)`, and a wrapped block (its body ends `and (`) with no close + `)` pair after it. Apply and Clear
+refuse and leave the text alone. Deleting both the close marker and its `)` is refused the same way,
+on purpose: the text may well be recoverable, but Strip never guesses. Everything outside the block
+is kept line for line, blank edge lines included. No clauses means no block. Over 2000 characters
+(PGF's edit-box limit) refuses.
 
 ## Known Limitations
 
@@ -330,13 +368,16 @@ edit-box limit) refuses.
 - The skinned header-only collapse (EllesmereUI's 25px shell bar with its stretched atlas border),
   the shell border's layering over the body, and the dropdowns' look are checked in game only
   ([`smoke-tests.md`](smoke-tests.md), SKIN-*).
+- Best timed levels read 0 until the server answers the season-data request
+  (`C_MythicPlus.RequestMapInfo`, sent once per episode by `Season.GetDungeons`). The client cannot
+  tell a dungeon never timed from one whose best has not loaded yet: both answer no in-time level.
 
 ## Documentation map
 
 Every `.md` under `docs/` appears in exactly one table below. Out of scope and named once each as
 directories, never row by row: `docs/audits/`, `docs/reviews/`, `docs/automated-tests/<run>/`,
-`docs/perf-analysis/<run>/`, `docs/revendor/<date>-v<tag>/`, `docs/superpowers/` (the design spec
-and the implementation plan) and `docs/investigations/`.
+`docs/revendor/<date>-v<tag>/`, `docs/superpowers/` (the design spec and the implementation plan)
+and `docs/investigations/`.
 
 ### Required (documentation-§3, Tier 1)
 
@@ -353,8 +394,8 @@ and the implementation plan) and `docs/investigations/`.
 
 | Doc | Status | Trigger |
 |---|---|---|
-| `perf-analysis/README.md` | Present | The performance harness is wired (`core/PerfSetup.lua`) |
-| `slash-dispatch.md` | Present | 16 commands in `NS.COMMANDS` |
+| `perf-analysis/README.md` | Not applicable | The performance-§12 exemption is held; no harness is wired |
+| `slash-dispatch.md` | Present | 15 commands in `NS.COMMANDS` |
 | `profiles.md` | Present | The Profiles page ships in the options UI |
 | `debug.md` | Present | The diagnostics dump ships in every addon (debug-logging-§14) |
 | `midnight-quirks.md` | Not applicable | The addon carries no client-version workaround of its own |
@@ -385,8 +426,12 @@ deviation not in this table is not ratified.
 
 | Rule | What differs | Why | Decided | Re-check trigger |
 |---|---|---|---|---|
-| library-stack-§6, anti-patterns #29 | `core/EUIBridge.lua` reads EllesmereUI's SavedVariables: `EllesmereUIDB.thirdPartySkinsOff` and `EllesmereUIDB.thirdPartySkinAddons[...]` (our entry and PGF's skin's). Read-only, at call time, nil-guarded, in that one file; never written | The optional EllesmereUI skin's gate and its settings status lines must show the master Third-Party switch, our own entry and PGF's skin's entry separately (owner decision 1 and the "turned off in EllesmereUI" state). EllesmereUI exposes no API for them before it dispatches: `S.IsEnabled()` arrives only with the skin callback, merges the master switch with our entry, and cannot see PGF's entry | 2026-10-09 | EllesmereUI ships a public query for its third-party switches, or the standard gains a carve-out for an optional integration reading the suite's own on/off switches |
-| library-stack-§6, toc-file-§1 | Hard `## Dependencies: PremadeGroupsFilter`; the addon reads/writes PGF state and hooks PGF's env builder | It is an extension of PGF and has no function without it (owner requirement, 2026-10-09) | 2026-10-09 | PGF ships a public API, or the standard gains an extension-addon rule |
+| library-stack-§6, anti-patterns #29 | `core/EUIBridge.lua` reads EllesmereUI's SavedVariables: `EllesmereUIDB.thirdPartySkinsOff` and `EllesmereUIDB.thirdPartySkinAddons[...]` (our entry and PGF's skin's). Read-only, at call time, nil-guarded, in that one file; never written | The optional EllesmereUI skin's gate and its settings status lines must show the master Third-Party switch, our own entry and PGF's skin's entry separately (owner decision 1 in [`superpowers/plans/2026-10-09-eui-skin.md`](superpowers/plans/2026-10-09-eui-skin.md#owner-decisions-2026-10-09) -> `## Owner decisions (2026-10-09)`, ratified at that plan's step 6a; and the "turned off in EllesmereUI" state). EllesmereUI exposes no API for them before it dispatches: `S.IsEnabled()` arrives only with the skin callback, merges the master switch with our entry, and cannot see PGF's entry | 2026-10-09 | EllesmereUI ships a public query for its third-party switches, or the standard gains a carve-out for an optional integration reading the suite's own on/off switches |
+| library-stack-§6, toc-file-§1 | Hard `## Dependencies: PremadeGroupsFilter`; the addon reads/writes PGF state and hooks PGF's env builder | It is an extension of PGF and has no function without it (owner requirement, [`superpowers/specs/2026-10-09-m-plus-v0.1-design.md`](superpowers/specs/2026-10-09-m-plus-v0.1-design.md) §1 item 5 (the requirement) and §2 (recorded as a user-requirement deviation)) | 2026-10-09 | PGF ships a public API, or the standard gains an extension-addon rule |
+| architecture-§5 | The attached panel's per-character filter options (`char.filters`) and `profile.panelCollapsed` are set by the panel's own controls, outside the schema write seam, and no settings-page row or CLI path addresses them. Writers of `char.filters`: `Filters.Set`, `Filters.ToggleRegion` / `ClearRegions`, `Filters.TogglePlaystyle` / `ClearPlaystyles`, `Filters.ToggleComposition` / `ClearComposition` and `Filters.ApplySmartLevel` (`modules/Filters.lua`), reached from the panel controls and from `/pgfe apply` (`modules/Apply.lua` -> `ApplySmartLevel`), plus `Presets.Load` (`modules/Presets.lua`), which refills the table in place. Writer of `profile.panelCollapsed`: `setCollapsed` (`modules/Panel.lua`), from the min/max arrow and the header-strip click | Per-character scope is an owner requirement that the schema seam (profile and global roots only) cannot hold; presets snapshot and refill `char.filters` whole, keeping its identity; the panel is a feature surface attached to PGF's dialog, not a settings page (issue #10; audit `docs/audits/2026-10-10/` PGE-02) | 2026-10-10 (owner) | A filter option or `panelCollapsed` gains a settings-page row or a get/set CLI path, or LibKa0s-Schema gains a char root |
+| architecture-§4, anti-patterns #19 | No AceEvent message bus, although the two-feature-module threshold is crossed (Apply, Panel, EUISkin, Filters, Presets, RegionTags, Targeting, EnvInject). Modules call each other through `NS`. The cross-module reactions: the shell's `reloadProfile` (`core/PGFE.lua`, on the three AceDB profile callbacks) fans out, in order, to `Settings.Helpers.RefreshAll` / `RefreshProfilesPage`, `Panel.Refresh`, the `enabled` latch re-read (`Lifecycle:Set` + `Reevaluate`) and `EUISkin.OnSwitch`; `Apply.OnFiltersToggled` (the `filtersActive` onChange) runs `Apply.Run` / `Apply.Clear` and then calls `Panel.Refresh`; `Panel.Create` / `Panel.UpdateVisibility` call `EUISkin.TryApply` | Every reaction has one sender and a required order that CallbackHandler's fan-out does not promise: `reloadProfile` must re-read the latch before the one-way EllesmereUI paint so a disabled incoming profile is never painted, and `Apply.OnFiltersToggled` must write or clear the PGF block before the panel readout refreshes. `reloadProfile` has several receivers, but none its sender should not know about, and with no messages defined the CallbackHandler clobber §4 guards against cannot occur (issue #10; audit `docs/audits/2026-10-10/` PGE-03) | 2026-10-10 (owner) | A reaction gains an order-independent receiver the sender should not name, a module outside the shell and Apply needs to hear profile-changed or filters-toggled, or the standard adds an ordered-dispatch carve-out |
+| standalone-windows; library-stack-§8; options-ui-§15 | The attached panel (`modules/Panel.lua` `buildFrame`) takes PGF's dialog chrome when unskinned (`PortraitFrameTemplateMinimizable` with the `ButtonFrameTemplateNoPortraitMinimizable` border layout) and EllesmereUI's shell when skinned (`modules/EUISkin.lua`), not the Ka0s window edge. The skinned min/max control draws the Blizzard atlases `UI-QuestTrackerButton-Secondary-Collapse` and `UI-QuestTrackerButton-Secondary-Expand` (`EUISkin.lua` `COLLAPSE_ATLAS` / `EXPAND_ATLAS`) to match EllesmereUI's own minus and plus, not the LibKa0s catalog's minimize / expand glyphs (`libs/LibKa0s/Media.lua:94`). The panel is parented and anchored to PGF's dialog, is not movable and persists no geometry. The General page has no General visibility row (`settings/Panel.lua` `omit = { visibility = true }`): the panel shows only with PGF's dialog on the dungeon category, and the addon holds no visibility state | An extension surface must read as part of the host window it attaches to; its visibility is the host's, so a visibility setting would only duplicate Enable and `filtersActive` (issue #18; audit `docs/audits/2026-10-10/` PGE-17, PGE-19, PGE-26) | 2026-10-10 (owner) | The panel becomes independently shown or movable, or the standard gains an attached-panel or extension-surface rule |
+| `performance-§12` | No performance harness is wired: no `core/PerfSetup.lua`, no `PremadeGroupsFilterExtensionPerfDB` (the TOC declares one SavedVariables global), no `perf` verb registration (`perf` stays reserved; `/pgfe perf` answers with the library's unknown-command line and the index), no suspend/resume contract (production takes only the `disabled` hold), and no `docs/perf-analysis/`. `libs/LibKa0s/` stays vendored whole, `Perf.lua` included, and `docs/performance.md` stays as the one-screen page. The offline `tests/perf.lua` is shipped anyway (it suspends nothing, ships nothing to the client and adds no SavedVariable), so the runner's `perf` suite reads `pass` rather than this exemption's skip | **Criterion (a) plus (b).** (a): the committed whole-repo sweep of `RegisterEvent` / `SetScript("OnUpdate"` / `C_Timer`, with every `hooksecurefunc` / `HookScript` site, in [`performance.md`](./performance.md), sweep at `2c86d49`: no `OnUpdate` handler, no timer of any kind (AceTimer removed, C-35), one registration site over eight `NS.FEATURE_EVENTS` rows that each do one small refresh, hooks that run on the player's own Group Finder actions, and `Apply` refusing in combat; `tests/perf.lua`'s `combatEvents` scenario measures the per-event cost. (b): the capture windows open on the player's combat state (performance-§7), so every declared bucket would read `0.000` by construction. Owner checkpoint D1 (C-09, issue #5; audit `docs/audits/2026-10-10/` PGE-09) | 2026-10-10 (owner) | The first `OnUpdate` handler, repeating ticker, or in-combat event handler doing real work re-arms the full wiring MUST (performance-§12): wire `core/PerfSetup.lua`, `PremadeGroupsFilterExtensionPerfDB`, the `perf` verb and the suspend contract, and retire this row |
 
 ### Files over the 1500-line cap
 

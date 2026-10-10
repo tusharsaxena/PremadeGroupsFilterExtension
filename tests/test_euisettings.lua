@@ -51,8 +51,9 @@ test("euisettings: euiSkin is a schema row, default on, in its own group on the 
     assertEqual(row.page, "general"); assertEqual(row.group, GROUP)
 end)
 
--- options-ui-§15: Master controls stays the first tab.
-test("euisettings: the General page's tabs are Master controls, then EllesmereUI skin", function()
+-- options-ui-§15: Master controls stays the first tab; the filter switches have their own.
+-- red under: AddRows(FILTER_ROWS) after EUI_ROWS
+test("euisettings: the General page has three tabs: Master controls, Filters, EllesmereUI skin", function()
     local NS = T.newAddon()
     local H, seen, order = NS.addon.Settings.Helpers, {}, {}
     for _, row in ipairs(NS.addon.Settings.Schema) do
@@ -61,7 +62,7 @@ test("euisettings: the General page's tabs are Master controls, then EllesmereUI
             order[#order + 1] = row.group
         end
     end
-    assertEqual(table.concat(order, " | "), H.MASTER_GROUP .. " | " .. GROUP)
+    assertEqual(table.concat(order, " | "), H.MASTER_GROUP .. " | Filters | " .. GROUP)
 end)
 
 test("euisettings: the tab draws the switch, a line per condition, then a state line", function()
@@ -205,6 +206,60 @@ test("euisettings: a missing PGF skin gets a box with its CurseForge link; insta
     local NS2, _, m2 = setup{ pgfSkin = false }
     openTab(NS2, m2)
     assertEqual(NS2.addon.Settings.PGFSkinLinkBox, nil, "installed but disabled: no link")
+end)
+
+-- The kit's AceGUI fake gives an EditBox no inner `editbox` frame, so the link box's focus hook
+-- would never run under the harness. Wrap the lib's Create (the table Helpers.AceGUI points at, so
+-- addPGFSkinLink sees the wrap) to hand every EditBox ONE shared stub frame, the way AceGUI's pool
+-- hands a released frame to the next widget. Answers the frame, a focus counter, the EditBox
+-- create count, and the restore.
+local function wrapEditBoxes(NS, m)
+    local AG = NS.addon.Settings.Helpers.AceGUI
+    local eb, hits, creates = m.__stubFrame(), { n = 0 }, { n = 0 }
+    rawset(eb, "HighlightText", function() hits.n = hits.n + 1 end)
+    local orig = AG.Create
+    AG.Create = function(self, t, ...)
+        local w = orig(self, t, ...)
+        if t == "EditBox" then w.editbox = eb; creates.n = creates.n + 1 end
+        return w
+    end
+    return eb, hits, creates, function() AG.Create = orig end
+end
+
+-- red under: drop the OnEditFocusGained hook from addPGFSkinLink
+test("euisettings: focusing the PGF-skin link box selects the link", function()
+    local NS, _, m = setup{ pgfSkin = "missing" }
+    local eb, hits, _, restore = wrapEditBoxes(NS, m)
+    openTab(NS, m)
+    eb:__fire("OnEditFocusGained")
+    restore()
+    assertEqual(hits.n, 1)
+end)
+
+-- red under: delete the OnRelease callback
+test("euisettings: a released PGF-skin link box no longer selects, and is forgotten", function()
+    local NS, _, m = setup{ pgfSkin = "missing" }
+    local eb, hits, _, restore = wrapEditBoxes(NS, m)
+    openTab(NS, m)
+    local box = NS.addon.Settings.PGFSkinLinkBox
+    assertTrue(box ~= nil, "the link box")
+    box:Release()
+    eb:__fire("OnEditFocusGained")
+    restore()
+    assertEqual(hits.n, 0, "the pooled frame no longer selects for a released widget")
+    assertEqual(NS.addon.Settings.PGFSkinLinkBox, nil)
+end)
+
+-- red under: drop the __pgfeLinkHook guard
+test("euisettings: a re-rendered PGF-skin link box hooks its pooled frame once", function()
+    local NS, _, m = setup{ pgfSkin = "missing" }
+    local eb, hits, creates, restore = wrapEditBoxes(NS, m)
+    openTab(NS, m)
+    NS.addon.Settings.Helpers.SelectTab("general", GROUP)
+    assertEqual(creates.n, 2, "the second SelectTab re-rendered the tab")
+    eb:__fire("OnEditFocusGained")
+    restore()
+    assertEqual(hits.n, 1, "one selection per focus, not one per render")
 end)
 
 -- Owner request: a gap above the state line, and the state line (and a failing condition's hint)

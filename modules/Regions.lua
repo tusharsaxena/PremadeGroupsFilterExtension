@@ -44,10 +44,12 @@ function Regions.Lookup(portal)
 end
 
 function Regions.GetRegion(leaderName)
-    -- A type check, not a pcall: this runs once per search result inside PGF's loop.
-    if type(leaderName) ~= "string" or leaderName == "" then return nil end
     local portal = Regions.GetPortal()
     if not portal then return nil end
+    -- A protected ("secret") name must not reach :match (events-frames-taint-§8). The probe is a
+    -- pcall per search result inside PGF's loop, so it runs only on supported portals, after the
+    -- cheap portal check. NS.IsConcatSafe is looked up at call time.
+    if type(leaderName) ~= "string" or not NS.IsConcatSafe(leaderName) or leaderName == "" then return nil end
     local realm = leaderName:match("%-(.+)") or GetRealmName()
     if not realm then return nil end
     return Regions.Lookup(portal)[Regions.Normalize(realm)]

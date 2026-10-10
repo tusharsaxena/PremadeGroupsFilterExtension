@@ -1,7 +1,7 @@
 # Schema — Ka0s Premade Groups Filter Extension
 
-SavedVariables: `PremadeGroupsFilterExtensionDB` (AceDB) and `PremadeGroupsFilterExtensionPerfDB`
-(the perf capture ring, owned by `LibKa0s-Perf-1.0`). Defaults live in `defaults/Profile.lua` and are
+SavedVariables: `PremadeGroupsFilterExtensionDB` (AceDB), the one global the TOC declares. There is
+no perf capture ring: the addon holds the performance-§12 exemption. Defaults live in `defaults/Profile.lua` and are
 assembled by `Settings.BuildDefaults` in `settings/Schema.lua`.
 
 ## `profile` (per AceDB profile)
@@ -9,9 +9,9 @@ assembled by `Settings.BuildDefaults` in `settings/Schema.lua`.
 | Key | Default | Written by |
 |---|---|---|
 | `enabled` | `true` | The write seam: the *Enable* row, `/pgfe enable|disable`, the launcher menu |
-| `panelCollapsed` | `false` | `modules/Panel.lua` (the panel's minimize/maximize button) |
-| `filtersActive` | `true` | The write seam: *Toggle PGF Extension Filters* on the settings page (a Master controls extra row), the panel's first box, `/pgfe set filtersActive`. Its onChange (`Apply.OnFiltersToggled`) removes or rewrites the managed block. Off: Apply refuses (`MSG_INACTIVE`) and `pgfe_on` is false. Separate from `enabled`; not in presets |
-| `showRegionTags` | `true` | The write seam: *Show server regions in the Group Finder* on the settings page (a Master controls extra row), `/pgfe set showRegionTags`. Read by `modules/RegionTags.lua` on every row paint |
+| `panelCollapsed` | `false` | `modules/Panel.lua` `setCollapsed` (the panel's minimize/maximize button and header strip), outside the write seam: the architecture-§5 row in `docs/ARCHITECTURE.md` -> `## Documented deviations` |
+| `filtersActive` | `true` | The write seam: *Toggle PGF Extension Filters* on the General page's *Filters* tab, the panel's first box, `/pgfe set filtersActive`. Its onChange (`Apply.OnFiltersToggled`) removes or rewrites the managed block. Off: Apply refuses (`MSG_INACTIVE`) and `pgfe_on` is false. Separate from `enabled`; not in presets |
+| `showRegionTags` | `true` | The write seam: *Show server regions in the Group Finder* on the General page's *Filters* tab, `/pgfe set showRegionTags`. Read by `modules/RegionTags.lua` on every row paint |
 | `euiSkin` | `true` | The write seam: *Use the EllesmereUI skin* on the General page's *EllesmereUI skin* tab, `/pgfe set euiSkin`. `true` is refused while any EllesmereUI gate condition fails (off always accepted, a bulk reset never refused); onChange `NS.EUISkin.OnSwitch` (a profile switch, copy or reset runs it too, with the incoming value). Read by `modules/EUISkin.lua`: the skin applies only when this AND every condition hold. Additive key: no migration |
 
 ## `char` (per character)
@@ -32,7 +32,9 @@ assembled by `Settings.BuildDefaults` in `settings/Schema.lua`.
 | `filters.maxAgeEnabled` | `false` | |
 | `filters.maxAge` | `15` | Minutes, integer 1–240 |
 
-Owner: `modules/Filters.lua`; `Presets.Load` copies a preset in place.
+Owner: `modules/Filters.lua`; `Presets.Load` copies a preset in place. Written by the attached panel's
+controls outside the write seam: the architecture-§5 row in `docs/ARCHITECTURE.md` -> `## Documented
+deviations` names every writer.
 
 ## `global`
 

@@ -2,8 +2,9 @@ local _, NS = ...
 -- settings/Schema.lua — the schema rows and the one write seam every settings path goes through.
 --
 -- One row per setting drives the panel widget, `/pgfe list|get|set|reset` and the defaults reset
--- (architecture-§5). Today every row is a Master controls row composed by LibKa0s-Options-1.0 in
--- settings/Panel.lua and spliced in at load. The filter options are NOT schema rows: they are the
+-- (architecture-§5). Today every row is a General page row declared in settings/Panel.lua and
+-- spliced in at load: the Master controls rows (composed by LibKa0s-Options-1.0), the Filters
+-- rows and the EllesmereUI skin row. The filter options are NOT schema rows: they are the
 -- attached panel's per-character state, written by modules/Filters.lua (docs/ARCHITECTURE.md ->
 -- Settings Schema names every store and its one owner).
 
@@ -96,7 +97,8 @@ Settings.ConsumeResetCount = S.ConsumeResetCount
 
 local VALID_TYPES = { bool = true, number = true, string = true }
 
---- Validate every row; returns the error count.
+--- Validate every row; returns the error count. The two `schema error` lines below are developer
+--- diagnostics for a malformed row, not player-facing text, so they stay literal (not through NS.L).
 function Helpers.ValidateSchema()
     local errors = S.Validate{ types = VALID_TYPES }
     for i, def in ipairs(Schema) do

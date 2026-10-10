@@ -43,9 +43,10 @@ return is `ok, msgKey, ...` and `Apply.Report` prints `NS.L[msgKey]:format(...)`
    `panel:TriggerFilterExpressionChange()`, which re-filters and has PGF copy the ticked dungeons into
    the game's own advanced filter (`UpdateAdvancedFilters`). Minimized: nothing more; PGF re-reads the
    stored state on the next `SwitchToPanel`.
-9. **Search.** `Apply.LastRange = "N-N"`; with `opts.search`, `Bridge.Search()` clicks
+9. **Search.** `Apply.LastRange = "N-N"` with key targeting on, and `nil` with it off (no range was
+   targeted); with `opts.search`, `Bridge.Search()` clicks
    `PremadeGroupsFilterDialog.RefreshButton`. Returns `MSG_APPLIED` with the count of PGF rows actually ticked (`Bridge.SetDungeons`' return) and
-   the range, or `MSG_APPLIED_NO_TARGETING` with the range when key targeting is off. The panel's copy box
+   the range, or `MSG_APPLIED_NO_TARGETING` when key targeting is off; that message carries no range. The panel's copy box
    (*Copy into search box*) shows the level box's `N-N`, not the last applied one, and is empty
    (dimmed and disabled) while key targeting is off.
 
@@ -83,12 +84,19 @@ minimized); the frame is built on the
 first call that wants it. Every show runs `Panel.Refresh()`, which first recomputes the Smart level
 (`Filters.ApplySmartLevel`, when on and not stood down), then reads `char.filters` into the widgets
 (the level box locked and grayed under Smart), rebuilds the best-timed readout (one line, its gaps closed to one space when it overflows; gold for
-targets, gray otherwise, "loading…" and a `C_MythicPlus.RequestMapInfo()` while season data is
-missing) and the copy box, and lays the frame out (collapsed: the title strip only, drawn by two
+targets, gray otherwise, and "loading…" while season data is missing) and the copy box, and lays the frame out (collapsed: the title strip only, drawn by two
 clipped copies of the border layout; or the "not supported" line when `Bridge.Check()` fails, which
-also disables Apply). `CHALLENGE_MODE_MAPS_UPDATE` and `CHALLENGE_MODE_COMPLETED` recompute the
-Smart level (the panel need not exist) and rebuild the readout; under Smart they also rewrite the
-level box and copy box. Widget handlers write through `Filters.Set` / `Filters.ToggleRegion` /
+also disables Apply). Three events, `CHALLENGE_MODE_MAPS_UPDATE`, `CHALLENGE_MODE_COMPLETED` and
+`MYTHIC_PLUS_CURRENT_AFFIX_UPDATE`, recompute the Smart level (the panel need not exist) and rebuild
+the readout; under Smart they also rewrite the level box and copy box.
+
+The season-data request (`C_MythicPlus.RequestMapInfo()`) belongs to `Season.GetDungeons()`, not to
+the readout, so every reader (the panel, Apply, Smart) asks and none asks twice. It goes out once per
+episode: `Season.RequestOnce()` sends only while unarmed. It is re-armed on `PLAYER_ENTERING_WORLD`
+(`Season.ResetRequest()`, so a lost request recovers on the next loading screen) and on the
+full -> empty rollover of the map table (the first empty read after a full one resets and sends in
+the same call; later empty reads send nothing). The reply event never triggers a second request,
+which is what kept off-season clients in a request/reply loop before. Widget handlers write through `Filters.Set` / `Filters.ToggleRegion` /
 `Filters.TogglePlaystyle` / the `Filters.Clear*` pair (the menus' Any entry) / `Presets.*` and return
 at once when stood down; so do the tooltip handlers.
 

@@ -102,3 +102,53 @@ test("envinject: the block's guard is off while Toggle PGF Extension Filters is 
     -- red under: env.pgfe_on = true unconditionally in EnvInject.Apply
     assertFalse(env.pgfe_on)
 end)
+
+-- Review C-10 / #7: the install result is stored so Diagnostics can report it.
+test("envinject: the env hook's install result is stored", function()
+    local NS = T.newAddon()
+    -- red under: drop the store at the InstallEnvHook call in modules/EnvInject.lua
+    assertTrue(NS.EnvInject.hooked == true)
+end)
+
+-- A truthy, non-function PutPremadeRegionInfo passes Check() but InstallEnvHook refuses it; the
+-- not-installed debug line must degrade, not raise at file load.
+test("envinject: a non-function PutPremadeRegionInfo leaves the hook off without raising", function()
+    -- red under: tostring(select(2, NS.Bridge.Check())) at the not-installed debug line
+    local NS = T.newAddon{ mock = function(mock) mock.pgf.PGF.PutPremadeRegionInfo = true end }
+    assertFalse(NS.EnvInject.hooked)
+end)
+
+-- Review C-32: without PremadeRegions, a protected leader name leaves every region key false.
+test("envinject: a protected leader name injects no region", function()
+    local NS, _, m = T.enableAddon{}
+    m.currentRegion = 1; m.PremadeRegions = nil
+    NS.IsConcatSafe = function() return false end
+    local env = runHook(m, {}, "Bob-Frostmourne")
+    -- red under: drop the IsConcatSafe clause in Regions.GetRegion
+    assertNil(env.region)
+    for _, k in ipairs(NS.Regions.ALL_KEYS) do assertFalse(env[k], k) end
+end)
+
+-- ── debug lines (C-19 / review PGE-04) ──────────────────────────────────────────────────────────
+
+-- How many console lines carry `needle` (plain find).
+local function logged(NS, needle)
+    local n = 0
+    for _, line in ipairs(NS.DebugLog.buffer) do
+        if line:find(needle, 1, true) then n = n + 1 end
+    end
+    return n
+end
+
+test("envinject: a spec refresh logs the keywords once, and again only when they change", function()
+    local NS, _, m = T.enableAddon{ specID = 253, role = "DAMAGER", classFile = "HUNTER" }
+    NS.State.debug = true
+    NS.DebugLog:Clear()
+    NS.EnvInject.RefreshPlayer(); NS.EnvInject.RefreshPlayer()
+    -- red under: drop the DebugChanged line in EnvInject.RefreshPlayer
+    assertEqual(logged(NS, "[Env] spec=beastmastery_hunters classRole=dps_hunters"), 1)
+    m.specID = 262; m.classFile = "SHAMAN"
+    NS.EnvInject.RefreshPlayer()
+    assertEqual(logged(NS, "[Env] spec=elemental_shamans classRole=dps_shamans"), 1)
+    assertEqual(logged(NS, "[Env] spec="), 2)
+end)

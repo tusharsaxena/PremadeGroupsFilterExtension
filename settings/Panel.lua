@@ -1,13 +1,16 @@
 local addonName, NS = ...
--- settings/Panel.lua — the landing page body and the General page (Master controls).
+-- settings/Panel.lua — the landing page body and the General page (Master controls, Filters,
+-- EllesmereUI skin).
 --
 -- The landing page is the host's own buildMain (logo, notes, slash command list) and draws no tab
--- strip (options-ui-§5/§13). The General page renders through the tabbed renderer; its first tab is
--- `Master controls`, composed from one declaration (options-ui-§15), its second `EllesmereUI skin`
--- (the optional skin's status and switch, below). The addon draws no
+-- strip (options-ui-§5/§13). The General page renders through the tabbed renderer, in three
+-- tabs: `Master controls`, composed from one declaration and holding only its mandated rows
+-- (options-ui-§15); `Filters`, the attached panel's two switches; and `EllesmereUI skin` (the
+-- optional skin's status and switch, below). The addon draws no
 -- positionable frame of its own -- the filter panel is anchored to PGF's dialog -- so the block is
 -- frameless (no scale, alpha, lock or reset position) and carries no visibility row: when the panel
--- shows is decided by PGF's dialog and category, not by a setting. It has no test mode.
+-- shows is decided by PGF's dialog and category, not by a setting (ratified: docs/ARCHITECTURE.md
+-- -> Documented deviations). It has no test mode.
 
 local PGFE     = NS.addon
 local Settings = PGFE.Settings
@@ -15,7 +18,7 @@ local Helpers  = Settings.Helpers
 local C        = NS.C
 
 -- The landing page's logo: a larger render of the launcher logo, in the same folder.
-local MAIN_LOGO_TEXTURE = ("Interface\\AddOns\\%s\\media\\logos\\pgfe.logo.tga"):format(addonName)
+local MAIN_LOGO_TEXTURE = ("Interface\\AddOns\\%s\\media\\logos\\premadegroupsfilterextension.logo.tga"):format(addonName)
 
 -- The landing page body, through the library's builder (options-ui-§5): logo (at the library's
 -- 300x300 default, so no logoSize), the TOC notes line,
@@ -53,16 +56,6 @@ local MASTER_ROWS, MASTER_TAIL = Helpers.MasterControls{
     minimapPath      = "global.minimap.shown",
     defaults         = { enabled = C.PROFILE.enabled, debugConsole = false },
     onResetAll       = showResetPopup,
-    -- A legitimate extra (options-ui-§16), after the mandated rows: the attached panel's first box.
-    -- Separate from Enable: this one leaves the panel up and only takes the filters out of PGF.
-    extra            = {
-        { path = "filtersActive", type = "bool", default = C.PROFILE.filtersActive,
-          label = NS.L.FILTERS_ACTIVE, tooltip = NS.L.FILTERS_ACTIVE_TOOLTIP },
-        -- The region tag on Group Finder rows and applicants (modules/RegionTags.lua); read on every
-        -- row paint, so it needs no onChange: the next search or list refresh shows the change.
-        { path = "showRegionTags", type = "bool", default = C.PROFILE.showRegionTags,
-          label = NS.L.SHOW_REGION_TAGS, tooltip = NS.L.SHOW_REGION_TAGS_TOOLTIP },
-    },
 }
 
 -- The Enable row drives the latch: the same Set the CLI, the launcher and a profile switch make.
@@ -70,7 +63,6 @@ local MASTER_HOOKS = {
     enabled = function(v)
         if NS.Lifecycle then NS.Lifecycle:Set(NS.HOLD_DISABLED, not v) end
     end,
-    filtersActive = function(v) NS.Apply.OnFiltersToggled(v and true or false) end,
 }
 
 for _, row in ipairs(MASTER_ROWS) do
@@ -80,7 +72,29 @@ end
 Settings.StampClosureRows(MASTER_ROWS)
 NS.SchemaRuntime.AddRows(MASTER_ROWS, 1)
 
--- ── EllesmereUI skin (the General page's second tab) ────────────────────────────────────────────
+-- ── Filters (the General page's second tab) ─────────────────────────────────────────────────────
+--
+-- The attached panel's two switches, in their own group so their own tab (options-ui-§13): they
+-- are feature switches, not Master controls rows (options-ui-§15). Added after MASTER_ROWS and
+-- before EUI_ROWS, so the tab sits between the two.
+local FILTER_GROUP = NS.L["Filters"]
+local FILTER_ROWS = {
+    -- The attached panel's first box. Separate from Enable: this one leaves the panel up and only
+    -- takes the filters out of PGF.
+    { path = "filtersActive", type = "bool", default = C.PROFILE.filtersActive,
+      page = "general", section = "general", group = FILTER_GROUP,
+      label = NS.L.FILTERS_ACTIVE, tooltip = NS.L.FILTERS_ACTIVE_TOOLTIP,
+      onChange = function(v) NS.Apply.OnFiltersToggled(v and true or false) end },
+    -- The region tag on Group Finder rows and applicants (modules/RegionTags.lua); read on every
+    -- row paint, so it needs no onChange: the next search or list refresh shows the change.
+    { path = "showRegionTags", type = "bool", default = C.PROFILE.showRegionTags,
+      page = "general", section = "general", group = FILTER_GROUP,
+      label = NS.L.SHOW_REGION_TAGS, tooltip = NS.L.SHOW_REGION_TAGS_TOOLTIP },
+}
+Settings.StampClosureRows(FILTER_ROWS)
+NS.SchemaRuntime.AddRows(FILTER_ROWS)
+
+-- ── EllesmereUI skin (the General page's third tab) ────────────────────────────────────────────
 --
 -- Its own group, so its own tab (options-ui-§13): a feature switch with live status lines is not a
 -- Master controls row (options-ui-§15). The tab is a host tab keyed by the group: a status line per
@@ -159,7 +173,10 @@ local function euiTooltip(cb, row)
 end
 
 -- The PGF skin's CurseForge link in a read-only edit box: anything typed puts the link back, and
--- focus selects it, ready for Ctrl+C.
+-- focus selects it, ready for Ctrl+C. AceGUI pools the inner editbox frame, and HookScript cannot
+-- be undone, so the frame is hooked once (`__pgfeLinkHook`) and the hook selects only while this
+-- box owns the frame (`__pgfeLinkActive`). The box's OnRelease clears that flag before the frame
+-- goes back to the pool, and forgets the box.
 local function addPGFSkinLink(scroll)
     local AceGUI = Helpers.AceGUI
     if not AceGUI then return end
@@ -171,9 +188,18 @@ local function addPGFSkinLink(scroll)
     box:DisableButton(true)
     box:SetCallback("OnTextChanged", function(widget) widget:SetText(url) end)
     box:SetCallback("OnEnterPressed", function(widget) widget:SetText(url) end)
-    if box.editbox and box.editbox.HookScript then
-        box.editbox:HookScript("OnEditFocusGained", function(self) self:HighlightText() end)
+    local eb = box.editbox
+    if eb and eb.HookScript and not eb.__pgfeLinkHook then
+        eb.__pgfeLinkHook = true
+        eb:HookScript("OnEditFocusGained", function(self)
+            if self.__pgfeLinkActive then self:HighlightText() end
+        end)
     end
+    if eb then eb.__pgfeLinkActive = true end
+    box:SetCallback("OnRelease", function(w)
+        if w.editbox then w.editbox.__pgfeLinkActive = nil end
+        if Settings.PGFSkinLinkBox == w then Settings.PGFSkinLinkBox = nil end
+    end)
     scroll:AddChild(box)
     Settings.PGFSkinLinkBox = box
 end
@@ -245,11 +271,11 @@ local AFTER_GROUP = {}
 if Helpers.MASTER_GROUP then AFTER_GROUP[Helpers.MASTER_GROUP] = MASTER_TAIL end
 
 local function buildGeneralPage(parentCategory)
-    local ctx = Helpers.CreatePanel("PremadeGroupsFilterExtensionGeneralPanel", "General", {
+    local ctx = Helpers.CreatePanel("PremadeGroupsFilterExtensionGeneralPanel", L["General"], {
         pageKey         = "general",
         defaultsButton  = true,
-        defaultsTooltip = "Reset every Ka0s Premade Groups Filter Extension setting to its default. "
-            .. "Asks for confirmation.",
+        defaultsTooltip = L["Reset every %s setting to its default. Asks for confirmation."]
+            :format("Ka0s Premade Groups Filter Extension"),
     })
     ctx.panel.defaultsOnClick = showResetPopup
     Helpers.SetRenderer(ctx, function(c)
@@ -260,10 +286,10 @@ local function buildGeneralPage(parentCategory)
     -- EllesmereUI status lines and the switch's disabled state (the renderer only draws on the
     -- first show).
     ctx.panel:HookScript("OnShow", function() Helpers.RefreshPanel(ctx, false) end)
-    return _G.Settings.RegisterCanvasLayoutSubcategory(parentCategory, ctx.panel, "General")
+    return _G.Settings.RegisterCanvasLayoutSubcategory(parentCategory, ctx.panel, L["General"])
 end
 
-Helpers.RegisterOptionsPage("general", "General", buildGeneralPage)
+Helpers.RegisterOptionsPage("general", L["General"], buildGeneralPage)
 
 --- Register the settings category. Idempotent; called from OnEnable and from `/pgfe config`.
 function Settings.Register()

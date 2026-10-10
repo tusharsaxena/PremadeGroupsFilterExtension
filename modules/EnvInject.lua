@@ -26,7 +26,7 @@ local player = {}
 --- PGF's own keyword formulas (Modules/Specializations.lua:94, 97):
 ---   specKeyword      = spec:lower() .. "_" .. class:lower() .. "s"   ("beastmastery_hunters")
 ---   roleClassKeyword = ROLE_PREFIX[role] .. "_" .. class:lower() .. "s"  ("dps_hunters")
---- @param specTable table|nil  PGF's C.SPECIALIZATIONS (Modules/Specializations.lua:25)
+--- @param specTable table|nil  PGF's C.SPECIALIZATIONS, from NS.Bridge.Specializations()
 --- @return string|nil specKeyword
 --- @return string|nil classRoleKeyword
 function EnvInject.PlayerKeywords(specID, role, classFile, specTable)
@@ -44,9 +44,11 @@ function EnvInject.RefreshPlayer()
     local specID, role, _
     if idx then specID, _, _, _, role = NS.Compat.GetSpecializationInfo(idx) end
     local _, classFile = UnitClass("player")
-    local pgf = PremadeGroupsFilter and PremadeGroupsFilter.Debug
     player.spec, player.classRole = EnvInject.PlayerKeywords(specID, role, classFile,
-        pgf and pgf.C and pgf.C.SPECIALIZATIONS)
+        NS.Bridge.Specializations())
+    -- Written on a change only: the refresh runs on every spec event and every stand-up.
+    NS.DebugChanged("env.spec", "Env", "spec=%s classRole=%s", tostring(player.spec),
+        tostring(player.classRole))
 end
 
 local function injectRegions(env, leaderName)
@@ -85,5 +87,12 @@ NS.FEATURE_EVENTS[#NS.FEATURE_EVENTS + 1] = { "PLAYER_SPECIALIZATION_CHANGED", "
 NS.STAND_UP[#NS.STAND_UP + 1] = EnvInject.RefreshPlayer
 
 -- Installed at FILE LOAD (hooks at load; never AceHook). PGF is a hard dependency
--- (## Dependencies), so its namespace exists by now.
-NS.Bridge.InstallEnvHook(function(env, leaderName) EnvInject.Apply(env, leaderName) end)
+-- (## Dependencies), so its namespace exists by now. The result is stored for Diagnostics.
+EnvInject.hooked = NS.Bridge.InstallEnvHook(function(env, leaderName) EnvInject.Apply(env, leaderName) end)
+if not EnvInject.hooked then
+    -- Check() returns only `true` when every seam is truthy, yet InstallEnvHook also refuses a
+    -- PutPremadeRegionInfo that is not a function; name that case rather than pass tostring() nothing.
+    local ok, missing = NS.Bridge.Check()
+    NS.Debug("Env", "env hook not installed: %s",
+        ok and "PutPremadeRegionInfo not a function" or tostring(missing))
+end

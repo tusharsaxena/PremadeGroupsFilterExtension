@@ -50,6 +50,21 @@ test("filters: regions on with none selected for this portal filters on no regio
     assertNil(NS.Filters.ToClauseOpts("US").regions)
 end)
 
+-- Issue #8 (C-38): Any is none selected OR every one of the portal's regions selected; both add no
+-- clause. Driven from the live key lists, so a region added to a portal stays covered.
+-- red under: drop the IsAny full-selection branch in regionClause
+test("filters: every region of the portal ticked adds no region clause", function()
+    local NS = boot()
+    local f = NS.Filters.Get()
+    f.regionsEnabled = true
+    for _, portal in ipairs({ "US", "EU" }) do
+        f.regions = {}
+        for _, k in ipairs(NS.Regions.KEYS[portal]) do f.regions[k] = true end
+        assertEqual(#NS.Filters.SelectedRegions(portal), #NS.Regions.KEYS[portal])
+        assertNil(NS.Filters.ToClauseOpts(portal).regions, portal .. ": a full selection is Any")
+    end
+end)
+
 test("filters: playstyles on with some ticked filter on those, in the game's order", function()
     local NS = boot()
     local f = NS.Filters.Get()

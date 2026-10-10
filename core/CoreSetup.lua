@@ -5,9 +5,10 @@ local addonName, NS = ...
 -- later file captures the printer at load. NS.PREFIX is defined in core/PGFE.lua, which loads
 -- later, so the prefix is handed over as a FUNCTION the library re-reads on every call.
 
--- The one cause clause every degraded seam appends its own "so <what> is unavailable" to.
-NS.LIBKA0S_MISSING = "The LibKa0s library is missing from this installation of Ka0s Premade " ..
-    "Groups Filter Extension (expected in libs/LibKa0s)"
+-- The one cause clause every degraded seam appends its own "so <what> is unavailable" to, already
+-- localized (locales/enUS.lua loads first). Each seam wraps it in its own whole-sentence key.
+NS.LIBKA0S_MISSING = NS.L["The LibKa0s library is missing from this installation of %s (expected in libs/LibKa0s)"]
+    :format("Ka0s Premade Groups Filter Extension")
 
 NS.Util = NS.Util or {}
 
@@ -33,7 +34,7 @@ if not lib then
     function NS.Util.print(...)
         if not announced then
             announced = true
-            print(NS.PREFIX, NS.LIBKA0S_MISSING .. "; running on reduced built-in fallbacks.")
+            print(NS.PREFIX, NS.L["%s; running on reduced built-in fallbacks."]:format(NS.LIBKA0S_MISSING))
         end
         local parts = {}
         for i = 1, select("#", ...) do parts[i] = NS.SafeToString((select(i, ...))) end

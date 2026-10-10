@@ -28,7 +28,9 @@ each taking an `opts` table and returning `(NS, env, mock)`:
 - `T.enableAddon(opts)` — plus `OnEnable`.
 
 Named suites the standard requires: `test_surface_parity` (testing-§8), `test_vendor_sync`
-(testing-§11, delegating to the kit), `test_disabled` (slash-commands-§7). Kit suites, declared by
+(testing-§11, delegating to the kit), `test_disabled` (slash-commands-§7: the ten steps, built from
+`T.enableAddon()` and the kit recorders, with the eight feature events pinned by name and the
+library's `perf` hold taken as a test-only second holder). Kit suites, declared by
 directory: `test_eol`, `test_prose`, `test_layout_cap`, `test_diagnostics_contract`,
 `test_lizard_sighted`.
 
@@ -42,7 +44,7 @@ in the change that moves the count (testing-§5).
 |---|---|---|---|
 | `lint` | `luacheck .` | **gates** | gates |
 | `tests` | `lua tests/run.lua` | **gates** | gates |
-| `perf` | `lua tests/perf.lua` | recorded, never fails a run or blocks a commit | gates |
+| `perf` | `lua tests/perf.lua` (six offline scenarios; the addon holds the performance-§12 exemption and ships them anyway, see [`performance.md`](performance.md)) | recorded, never fails a run or blocks a commit | gates |
 | `complexity` | `bash tests/_kit/run-automated-tests.sh --suite complexity` (the sighted shadow) | recorded, never fails a run or blocks a commit | gates, with zero functions above CCN 15 and `blindFiles` 0 |
 
 The release gate is evaluated by `/dev-copilot:bump-version` from the run's `manifest.json`

@@ -8,7 +8,7 @@ they live on the panel attached under PGF's dialog (`modules/Panel.lua`, describ
 | Page | Covers |
 |---|---|
 | Ka0s Premade Groups Filter Extension (landing) | Logo, the TOC notes, and the slash command list from `NS.COMMANDS` |
-| General | Master controls: enable, debug console, minimap button, Toggle PGF Extension Filters, Show server regions in the Group Finder, reset all settings. EllesmereUI skin: the skin's conditions and switch |
+| General | Master controls: enable, debug console, minimap button, reset all settings. Filters: Toggle PGF Extension Filters, Show server regions in the Group Finder. EllesmereUI skin: the skin's conditions and switch |
 | Profiles | AceDB profiles: switch, copy, delete, reset |
 
 ## Page → tab → row
@@ -29,15 +29,20 @@ re-render.
   - *Debug console* → `state.debugConsole` (session-only; the console window).
   - *Minimap button* → `global.minimap.shown`, inverted onto LibDBIcon's `global.minimap.hide`.
     Vetoed out of both resets (launcher-§3).
-  - *Toggle PGF Extension Filters* → `filtersActive` (profile), the first of two legitimate extra
-    rows (options-ui-§16) after the mandated ones. The attached panel's first box writes the same
-    path. Off removes the managed block from PGF's expression; on writes it back. Separate from
-    *Enable*: the addon stays up and the panel stays shown.
-  - *Show server regions in the Group Finder* → `showRegionTags` (profile), the second extra row:
-    the colored region tag on Group Finder rows and applicants (`modules/RegionTags.lua`).
   - *Reset all settings* (button) → confirmation popup → profile reset.
 
-- **EllesmereUI skin** (the second tab; its own group, drawn by a host tab in `settings/Panel.lua`):
+  Master controls holds only those mandated rows (options-ui-§15); the two filter switches have their
+  own tab.
+
+- **Filters** (the second tab; its own group, `FILTER_ROWS` in `settings/Panel.lua`, rendered by the
+  library's default tab body):
+  - *Toggle PGF Extension Filters* → `filtersActive` (profile). The attached panel's first box
+    writes the same path. Off removes the managed block from PGF's expression; on writes it back.
+    Separate from *Enable*: the addon stays up and the panel stays shown.
+  - *Show server regions in the Group Finder* → `showRegionTags` (profile): the colored region tag
+    on Group Finder rows and applicants (`modules/RegionTags.lua`).
+
+- **EllesmereUI skin** (the third tab; its own group, drawn by a host tab in `settings/Panel.lua`):
   - *Use the EllesmereUI skin* → `euiSkin` (profile, default on), first, with a 12px gap below.
     Disabled while any condition fails (never forced on); its tooltip adds what is missing, live.
     Off after a paint asks for a reload, whether from the switch or from a profile switch, copy or

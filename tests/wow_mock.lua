@@ -17,6 +17,8 @@
 --   mapTable       C_ChallengeMode.GetMapTable()'s answer (nil = not loaded yet)
 --   mapUIInfo      [cmID] = { name = ..., mapID = ... } for C_ChallengeMode.GetMapUIInfo
 --   seasonBest     [cmID] = { intime = {level=n}|nil, overtime = {level=n}|nil }
+--   mapInfoRequests  how many times C_MythicPlus.RequestMapInfo() was called; the mock never fires
+--                  the reply event (a suite fires CHALLENGE_MODE_MAPS_UPDATE itself)
 --   specID, role   GetSpecializationInfo(index)'s specID and role token (the deprecated globals
 --                  and C_SpecializationInfo answer the same; a suite nils either rung)
 --   classFile      UnitClass("player")'s class token
@@ -25,6 +27,9 @@
 --   pgf            the PGF fake's handle (tests/pgf_fake.lua): calls, dialog, panel, state, PGF
 --   hooks          every hooksecurefunc post-hook installed, in order: { target, name, fn }
 --   installEUI     installEUI(spec) installs the EllesmereUI fake (see below); m.eui is its handle
+--   GameTooltip    the kit's frame, with a recorded owner: SetOwner(owner, anchor) stores
+--                  __owner / __anchor, GetOwner() returns __owner, Hide() clears it, and
+--                  GetParent() answers nil (a top-level frame, so an owner walk from it ends)
 
 local base = dofile("tests/_kit/mock_base.lua")
 local pgfFake = assert(loadfile("tests/pgf_fake.lua"))()
@@ -38,12 +43,22 @@ local function build()
     M.mapTable      = nil
     M.mapUIInfo     = {}
     M.seasonBest    = {}
+    M.mapInfoRequests = 0
     M.specID        = 253
     M.role          = "DAMAGER"
     M.classFile     = "HUNTER"
     M.inCombat      = false
     M.prints        = {}
     M.hooks         = {}
+
+    -- The kit's GameTooltip is a bare frame: SetOwner is a no-op and GetOwner / GetParent answer
+    -- the tooltip itself, so "who owns the tooltip" could never be asked. Record the owner.
+    local tip = M.GameTooltip
+    local baseHide = tip.Hide
+    rawset(tip, "SetOwner", function(self, owner, anchor) self.__owner = owner; self.__anchor = anchor end)
+    rawset(tip, "GetOwner", function(self) return self.__owner end)
+    rawset(tip, "GetParent", function() return nil end)
+    rawset(tip, "Hide", function(self) self.__owner = nil; return baseHide(self) end)
 
     M.GetCurrentRegion = function() return M.currentRegion end
     M.GetRealmName     = function() return M.realmName end
@@ -77,7 +92,7 @@ local function build()
             if not sb then return nil end
             return sb.intime, sb.overtime
         end,
-        RequestMapInfo = function() end,
+        RequestMapInfo = function() M.mapInfoRequests = M.mapInfoRequests + 1 end,
     }
 
     -- A REAL post-hook, not the base's no-op: the env injection is reachable only through PGF's
@@ -333,6 +348,9 @@ local function build()
     --                         "missing" = not installed at all (C_AddOns.DoesAddOnExist false)
     --   spec.masterOff        EllesmereUIDB.thirdPartySkinsOff = true
     --   spec.entries          EllesmereUIDB.thirdPartySkinAddons (e.g. { PremadeGroupsFilter = false })
+    --   spec.omit             a list of facade members (primitives or getters) left out of S, as an
+    --                         EllesmereUI whose facade changed shape (e.g. { "StateButtonLabel" })
+    --   spec.raise            the name of one primitive that records its call, then error()s
     -- Installs C_AddOns too (the base deliberately leaves it out), answering from `m.loadedAddons`,
     -- with this addon's own folder loaded. Handle: m.eui = { registry, order, fired, calls, looks, accent,
     -- dispatch(name), dispatchAll(), callsFor(fn, target), count(fn) }.
@@ -385,6 +403,14 @@ local function build()
             S.GetStyle = function() return "eui" end
             S.OnLooksChanged = function(fn) eui.looks[#eui.looks + 1] = fn end
             S.IsEnabled = function() return masterOn() and addonOn(name) end
+            if spec.raise then
+                local record = S[spec.raise]
+                S[spec.raise] = function(target, opts)
+                    record(target, opts)
+                    error("EllesmereUI fake: " .. spec.raise .. " raised")
+                end
+            end
+            for _, fname in ipairs(spec.omit or {}) do S[fname] = nil end
             return S
         end
         function eui.dispatch(name)

@@ -61,9 +61,17 @@ end
 
 -- Installed at FILE LOAD. Blizzard's Group Finder painters are global functions present by the
 -- time this addon loads (PremadeRegions hooks them the same way); a client without one skips it.
-for name, fn in pairs({
+-- The table is hoisted out of the for-in header because lizard 1.24 crashes on function literals
+-- there, which leaves the whole file unmeasured.
+local PAINTER_HOOKS = {
     LFGListSearchEntry_Update = function(...) RegionTags.OnSearchEntryUpdate(...) end,
     LFGListApplicationViewer_UpdateApplicantMember = function(...) RegionTags.OnApplicantMemberUpdate(...) end,
-}) do
-    if type(_G[name]) == "function" then hooksecurefunc(name, fn) end
+}
+-- name -> true for each painter actually hooked, read by /pgfe diagnostics.
+RegionTags.hooked = {}
+for name, fn in pairs(PAINTER_HOOKS) do
+    if type(_G[name]) == "function" then
+        hooksecurefunc(name, fn)
+        RegionTags.hooked[name] = true
+    end
 end

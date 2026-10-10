@@ -1,10 +1,11 @@
 local addonName, NS = ...
 -- core/LifecycleSetup.lua — the stand-down latch (slash-commands-§7), LibKa0s-Lifecycle-1.0.
 --
--- ONE latch with two named holds: `disabled` (taken from the stored `enabled` path) and `perf`
--- (taken by the perf harness's suspend). Either hold stands the addon down through NS.StandDown;
--- releasing the last one stands it up through NS.StandUp (core/PGFE.lua). There is no second
--- teardown path.
+-- ONE latch with one production hold, `disabled` (taken from the stored `enabled` path). The
+-- library's other reserved hold, `perf`, is taken by nothing in this addon: it holds the
+-- performance-§12 no-combat-path exemption, so no perf harness is wired. A hold stands the addon
+-- down through NS.StandDown; releasing the last one stands it up through NS.StandUp
+-- (core/PGFE.lua). There is no second teardown path.
 --
 -- THE STAND-DOWN ACCESSOR is NS.IsStoodDown(): every hook body and handler that cannot be
 -- unregistered (hooksecurefunc has no un-hook) returns at once when it answers true.
@@ -43,12 +44,10 @@ if not lib then
         PrintHolds = function() return false end,
     }
     NS.HOLD_DISABLED = "disabled"
-    NS.HOLD_PERF     = "perf"
     return
 end
 
 NS.HOLD_DISABLED = lib.HOLD_DISABLED
-NS.HOLD_PERF     = lib.HOLD_PERF
 
 NS.Lifecycle = lib:New({
     name      = addonName,
