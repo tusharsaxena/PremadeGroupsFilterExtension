@@ -24,12 +24,42 @@ local function panel() return PremadeGroupsFilterDungeonPanel end
 -- The dungeon panel's checkbox rows: NUM_DUNGEON_CHECKBOXES = 8 (UI/DungeonPanel.lua:59).
 local NUM_DUNGEON_ROWS = 8
 
+--- PGF's spec table, [specID] = { class = "HUNTER", spec = "BEASTMASTERY", ... }
+--- (C.SPECIALIZATIONS, Modules/Specializations.lua:25). Read by modules/EnvInject.lua.
+--- @return table|nil
+function Bridge.Specializations()
+    local ns = pgf()
+    return ns and ns.C and ns.C.SPECIALIZATIONS
+end
+
+--- PGF's keyword row for a challenge-mode map, { "<expansion>", "<dungeon>", "<season>" }
+--- (C.MAP_ID_TO_KEYWORDS, Modules/ActivityKeywords.lua:59). Not a checked seam: its only reader
+--- falls back to the dungeon name's initials.
+--- @return table|nil
+function Bridge.MapKeywords(mapID)
+    local ns = pgf()
+    local t = ns and ns.C and ns.C.MAP_ID_TO_KEYWORDS
+    return t and mapID and t[mapID]
+end
+
+-- panel.Advanced.Expression.EditBox (UI/Common.lua:144-156).
+local function editBox()
+    local p = panel()
+    return p and p.Advanced and p.Advanced.Expression and p.Advanced.Expression.EditBox
+end
+
+-- Structural rows: dialog.panels (UI/Dialog.lua:39), panel.Dungeons (UI/DungeonPanel.xml:81) and the
+-- edit box. activeId / activeState are not rows: both are nil until the dialog is first shown.
 local SEAMS = {
     { "PremadeGroupsFilter.Debug", function() return pgf() end },
     { "PutPremadeRegionInfo", function() return pgf() and pgf().PutPremadeRegionInfo end },
+    { "C.SPECIALIZATIONS", function() return Bridge.Specializations() end },
     { "PremadeGroupsFilterDialog", function() return Bridge.GetDialog() end },
-    { "PremadeGroupsFilterDungeonPanel", function() return panel() end },
+    { "Dialog.panels", function() return Bridge.GetDialog() and Bridge.GetDialog().panels end },
     { "Dialog.RefreshButton", function() return Bridge.GetDialog() and Bridge.GetDialog().RefreshButton end },
+    { "PremadeGroupsFilterDungeonPanel", function() return panel() end },
+    { "DungeonPanel.Dungeons", function() return panel() and panel().Dungeons end },
+    { "DungeonPanel.Advanced.Expression.EditBox", function() return editBox() end },
     { "DungeonPanel.TriggerFilterExpressionChange",
         function() return panel() and panel().TriggerFilterExpressionChange end },
 }
@@ -94,12 +124,6 @@ function Bridge.SetDungeons(set)
         end
     end
     return n
-end
-
--- panel.Advanced.Expression.EditBox (UI/Common.lua:144-156).
-local function editBox()
-    local p = panel()
-    return p and p.Advanced and p.Advanced.Expression and p.Advanced.Expression.EditBox
 end
 
 --- The dungeon state's Advanced Filter Expression. Clears the edit box's focus first: PGF commits

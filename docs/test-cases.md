@@ -146,7 +146,7 @@ Total.
 - presets: a preset missing keys loads over the current defaults
 - presets: Smart travels with a preset; an older preset loads the default (on)
 
-### test_envinject.lua (10)
+### test_envinject.lua (11)
 
 - envinject: the module publishes its namespace table
 - envinject: keywords follow PGF's formula
@@ -158,6 +158,7 @@ Total.
 - envinject: regions injected only without PremadeRegions
 - envinject: stood down → hook is a no-op
 - envinject: the block's guard is off while Toggle PGF Extension Filters is off
+- envinject: the env hook's install result is stored
 
 ### test_regiontags.lua (9)
 
@@ -171,11 +172,16 @@ Total.
 - regiontags: a name that is not a plain string gets no tag and raises nothing
 - regiontags: every region bucket has a color
 
-### test_bridge.lua (13)
+### test_bridge.lua (18)
 
 - bridge: the module publishes its namespace table
 - bridge: seams present
 - bridge: missing seam is named, no error
+- bridge: missing C.SPECIALIZATIONS is named
+- bridge: Specializations/MapKeywords read through the bridge, nil-guarded
+- bridge: missing Dialog.panels is named
+- bridge: missing DungeonPanel.Dungeons is named
+- bridge: missing DungeonPanel.Advanced.Expression.EditBox is named
 - bridge: SetDungeons maps cmID → positional key, shuffled order
 - bridge: non-dungeon category → no state
 - bridge: missing dungeon state table is created on the active category
@@ -442,9 +448,9 @@ Total.
 | test_expression.lua | 18 |
 | test_filters.lua | 11 |
 | test_presets.lua | 5 |
-| test_envinject.lua | 10 |
+| test_envinject.lua | 11 |
 | test_regiontags.lua | 9 |
-| test_bridge.lua | 13 |
+| test_bridge.lua | 18 |
 | test_euibridge.lua | 17 |
 | test_apply.lua | 16 |
 | test_panel.lua | 73 |
@@ -457,4 +463,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **343** |
+| **Total** | **349** |

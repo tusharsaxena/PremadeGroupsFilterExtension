@@ -102,3 +102,10 @@ test("envinject: the block's guard is off while Toggle PGF Extension Filters is 
     -- red under: env.pgfe_on = true unconditionally in EnvInject.Apply
     assertFalse(env.pgfe_on)
 end)
+
+-- Review C-10 / #7: the install result is stored so Diagnostics can report it.
+test("envinject: the env hook's install result is stored", function()
+    local NS = T.newAddon()
+    -- red under: drop the store at the InstallEnvHook call in modules/EnvInject.lua
+    assertTrue(NS.EnvInject.hooked == true)
+end)

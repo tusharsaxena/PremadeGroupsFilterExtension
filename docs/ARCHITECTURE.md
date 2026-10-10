@@ -201,21 +201,25 @@ the dialog hook (`SwitchToPanel`, plus `OnShow`/`OnHide` script hooks), which ca
 ## PGF seams
 
 Every touch of PGF internals is in `core/PGFBridge.lua`, nil-guarded, and read at call time.
-Citations are `<file>:<line>` in PGF **7.6.2**. `Bridge.Check()` tests the six seams marked *checked*
+Citations are `<file>:<line>` in PGF **7.6.2**. `Bridge.Check()` tests the ten seams marked *checked*
 in order and names the first missing one; the panel and Apply then show "PGF version not supported".
 
 | Seam | PGF source | Used for | Checked |
 |---|---|---|---|
-| `PremadeGroupsFilter.Debug` (PGF's private namespace) | `Init.lua:27` | Every other seam; `C.SPECIALIZATIONS`, `C.MAP_ID_TO_KEYWORDS` | yes |
+| `PremadeGroupsFilter.Debug` (PGF's private namespace) | `Init.lua:27` | Every seam on the namespace | yes |
 | `PGF.PutPremadeRegionInfo(env, leaderName)` | `Plugins/PremadeRegions.lua:24`, called per result at `Main.lua:363-364` | The env post-hook | yes |
+| `C.SPECIALIZATIONS` (`Bridge.Specializations()`) | `Modules/Specializations.lua:25` | The player's spec keyword for `pgfe_samespec` (`modules/EnvInject.lua`) | yes |
+| `C.MAP_ID_TO_KEYWORDS` (`Bridge.MapKeywords(mapID)`) | `Modules/ActivityKeywords.lua:59` | The dungeon short names | no (falls back to the name's initials) |
 | `PremadeGroupsFilterDialog` | `UI/Dialog.lua:33`; `panels`, `activeId`, `activeState`, `activePanel` at `UI/Dialog.lua:39-42` | Visibility, category test, state table | yes |
+| `Dialog.panels` | `UI/Dialog.lua:39` | Category test (`panels[activeId]`) | yes |
 | `PremadeGroupsFilterDungeonPanel` | `UI/DungeonPanel.lua:105`; category `c2f4` at `:451`; `name = "dungeon"` at `:109` | Category test, rows, edit box | yes |
 | `Dialog.RefreshButton` | `UI/Dialog.lua:77-78` → `LFGListSearchPanel_DoSearch` (`:147-154`) | The search, inside a hardware event | yes |
 | `DungeonPanel:TriggerFilterExpressionChange()` | `UI/DungeonPanel.lua:314` (it runs `UpdateAdvancedFilters`, `:320`, `:408`) | Re-filter and sync the game's advanced filter | yes |
+| `DungeonPanel.Dungeons` | `UI/DungeonPanel.xml:81` (`parentKey="Dungeons"`) | The dungeon row table | yes |
 | Dungeon rows `panel.Dungeons["Dungeon"..i].cmId`, state key `"dungeon"..i` | `UI/DungeonPanel.lua:59` (8 rows), `:168`, `:210-211`, `:252` | cmID → positional checkbox | no (rows without a `cmId` are skipped) |
 | `activeState.dungeon` (`PremadeGroupsFilterState[activeId]`) | `UI/Dialog.lua:183`, `:196`, `:216-224` | Where checkboxes and `expression` are written | no |
 | `panel:Init(state)` | `UI/DungeonPanel.lua:217-255` | Push written state into the live panel | no (called only when the dungeon panel is the active one) |
-| `panel.Advanced.Expression.EditBox` | `UI/Common.lua:144-156` (commit on `OnEditFocusLost`, `:153-156`) | Clear focus before reading, so typed text is committed | no |
+| `panel.Advanced.Expression.EditBox` | `UI/Common.lua:144-156` (commit on `OnEditFocusLost`, `:153-156`) | Clear focus before reading, so typed text is committed | yes |
 | `Dialog:SwitchToPanel` | `UI/Dialog.lua:116-128`, `:178-199` | Hooked: category switch, minimize, maximize | no (hook skipped if absent) |
 
 When the dialog is minimized the dungeon panel is not the active panel (`SwitchToPanel` makes

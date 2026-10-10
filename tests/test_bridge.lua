@@ -23,6 +23,52 @@ test("bridge: missing seam is named, no error", function()
     assertFalse(ok); assertEqual(missing, "PremadeGroupsFilterDungeonPanel")
 end)
 
+-- Review C-04: PGF's C tables are seams like any other; Check() names a renamed one.
+test("bridge: missing C.SPECIALIZATIONS is named", function()
+    local NS, _, m = T.bootAddon()
+    m.pgf.PGF.C.SPECIALIZATIONS = nil
+    local ok, missing = NS.Bridge.Check()
+    -- red under: drop the C.SPECIALIZATIONS row from SEAMS in core/PGFBridge.lua
+    assertFalse(ok); assertEqual(missing, "C.SPECIALIZATIONS")
+end)
+
+test("bridge: Specializations/MapKeywords read through the bridge, nil-guarded", function()
+    local NS, _, m = T.bootAddon()
+    -- red under: drop Bridge.Specializations or Bridge.MapKeywords
+    assertEqual(NS.Bridge.Specializations(), m.pgf.PGF.C.SPECIALIZATIONS)
+    assertEqual(NS.Bridge.MapKeywords(2993), m.pgf.PGF.C.MAP_ID_TO_KEYWORDS[2993])
+    assertNil(NS.Bridge.MapKeywords(nil)); assertNil(NS.Bridge.MapKeywords(1))
+    m.pgf.PGF.C = nil
+    assertNil(NS.Bridge.Specializations()); assertNil(NS.Bridge.MapKeywords(2993))
+    m.PremadeGroupsFilter = nil
+    assertNil(NS.Bridge.Specializations()); assertNil(NS.Bridge.MapKeywords(2993))
+end)
+
+-- Review C-10 / #7: the structural fields the panel and the bridge walk are seams too.
+test("bridge: missing Dialog.panels is named", function()
+    local NS, _, m = T.bootAddon()
+    m.pgf.dialog.panels = nil
+    local ok, missing = NS.Bridge.Check()
+    -- red under: drop the Dialog.panels row from SEAMS
+    assertFalse(ok); assertEqual(missing, "Dialog.panels")
+end)
+
+test("bridge: missing DungeonPanel.Dungeons is named", function()
+    local NS, _, m = T.bootAddon()
+    m.pgf.panel.Dungeons = nil
+    local ok, missing = NS.Bridge.Check()
+    -- red under: drop the DungeonPanel.Dungeons row from SEAMS
+    assertFalse(ok); assertEqual(missing, "DungeonPanel.Dungeons")
+end)
+
+test("bridge: missing DungeonPanel.Advanced.Expression.EditBox is named", function()
+    local NS, _, m = T.bootAddon()
+    m.pgf.panel.Advanced.Expression.EditBox = nil
+    local ok, missing = NS.Bridge.Check()
+    -- red under: drop the DungeonPanel.Advanced.Expression.EditBox row from SEAMS
+    assertFalse(ok); assertEqual(missing, "DungeonPanel.Advanced.Expression.EditBox")
+end)
+
 test("bridge: SetDungeons maps cmID → positional key, shuffled order", function()
     local NS, _, m = T.bootAddon()
     local n = NS.Bridge.SetDungeons({ [588] = true, [249] = true })
