@@ -108,7 +108,7 @@ Please file reports there rather than in comments, so nothing gets lost.
 
 | Version | Date | Highlights |
 |---------|------|------------|
-| 0.1.0 | in development | - First release: a panel under Premade Groups Filter's dialog that ticks every dungeon you haven't timed at your key level, with Smart to pick the level for you<br>- Filters for server region, playstyle and group composition, an experienced-leader filter and a maximum group age<br>- Presets that store a setup under a name for any character, and a toggle that switches the filtering off without turning the addon off<br>- Server-region tags on Group Finder listings and applicants, which replace PremadeRegions<br>- An optional EllesmereUI look for the panel when EllesmereUI skins Premade Groups Filter's dialog |
+| 1.0.0 | 2026-10-10 | - First release: a panel under Premade Groups Filter's dialog that ticks every dungeon you haven't timed at your key level, with Smart to pick the level for you<br>- Filters for server region, playstyle and group composition, an experienced-leader filter and a maximum group age<br>- Presets that store a setup under a name for any character, and a toggle that switches the filtering off without turning the addon off<br>- Server-region tags on Group Finder listings and applicants, which replace PremadeRegions<br>- An optional EllesmereUI look for the panel when EllesmereUI skins Premade Groups Filter's dialog |
 
 ## Credits
 

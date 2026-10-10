@@ -31,7 +31,7 @@ luacheck. Retail only (`## Interface: 120100`). The design is
 and the build plan
 [`superpowers/plans/2026-10-09-m-plus-v0.1.md`](superpowers/plans/2026-10-09-m-plus-v0.1.md).
 
-**State at v0.1.0.** Every module the plan names is built and covered by the headless suite: the
+**State at v1.0.0.** Every module the plan names is built and covered by the headless suite: the
 realm map and region lookup, season data and targeting, the expression compiler, the per-character
 filter options and presets, the PGF bridge and env hook, Apply/Clear with the `apply` and `clear`
 verbs, the attached panel, and the region tags on Group Finder rows (`modules/RegionTags.lua`). What

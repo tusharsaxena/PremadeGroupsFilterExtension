@@ -30,7 +30,7 @@ test("slash: /pgfe and /premadegroupsfilterextension are registered through AceC
     local NS, _, m = T.bootAddon()
     m.prints = {}
     NS.addon:OnSlashCommand("version")
-    assertTrue(printed(m, "0.1.0"))
+    assertTrue(printed(m, "1.0.0"))
 end)
 
 test("slash: disable and enable write the Enable row through the write seam", function()
@@ -84,7 +84,7 @@ test("slash: the library-absent stub still answers version and refuses enable ho
     local NS, _, m = T.bootAddon{ skip = T.loadAddon.libFiles }
     m.prints = {}
     NS.addon:OnSlashCommand("version")
-    assertTrue(printed(m, "0.1.0"))
+    assertTrue(printed(m, "1.0.0"))
     NS.addon:OnSlashCommand("enable")
     assertTrue(printed(m, "unavailable"))
 end)

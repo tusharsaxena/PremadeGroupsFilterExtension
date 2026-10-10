@@ -2,7 +2,7 @@
 ## Title: Ka0s Premade Groups Filter Extension
 ## Notes: Mythic+ conveniences for Premade Groups Filter: untimed-dungeon targeting, server regions, composition and leader filters, presets
 ## Author: add1kted2ka0s
-## Version: 0.1.0
+## Version: 1.0.0
 ## IconTexture: Interface\AddOns\PremadeGroupsFilterExtension\media\logos\premadegroupsfilterextension.logo.128.tga
 ## SavedVariables: PremadeGroupsFilterExtensionDB
 ## Dependencies: PremadeGroupsFilter

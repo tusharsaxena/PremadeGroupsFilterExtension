@@ -31,7 +31,7 @@ season. Know your best timed level per dungeon (the Mythic+ tab) before the APPL
 ## Install
 
 - **INSTALL-1. Loads with PGF.** Enable both addons, `/reload` → no Lua error; the minimap button
-  shows; `/pgfe version` prints `v0.1.0`. Result:
+  shows; `/pgfe version` prints `v1.0.0`. Result:
 - **INSTALL-2. Does not load without PGF.** Disable Premade Groups Filter at the character screen →
   this addon is listed as missing a dependency and does not load; `/pgfe` is an unknown command.
   Result:

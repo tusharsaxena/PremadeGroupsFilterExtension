@@ -7,7 +7,7 @@ test("setup: NS is the AceAddon object, with the cyan [PGFE] tag", function()
     local NS = T.newAddon()
     assertTrue(NS.addon == NS)
     assertEqual(NS.PREFIX, "|cff00ffff[PGFE]|r")
-    assertEqual(NS.version, "0.1.0")
+    assertEqual(NS.version, "1.0.0")
 end)
 
 test("setup: NS.Print is reclaimed from AceConsole and is NS.Util.print", function()
