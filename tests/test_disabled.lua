@@ -73,3 +73,31 @@ test("disabled: every verb keeps answering while disabled", function()
     NS.addon:OnSlashCommand("list")
     assertTrue(#m.prints > 0)
 end)
+
+-- The launcher's Enabled line, read off the LDB object's own OnTooltipShow with a collecting tooltip.
+local function tooltipEnabledLine(NS)
+    local lines = {}
+    NS.Launcher:Object().OnTooltipShow({ AddLine = function(_, text) lines[#lines + 1] = text end })
+    for _, line in ipairs(lines) do
+        if line:find("Enabled: ", 1, true) then return line end
+    end
+end
+
+-- C-16 (launcher-§1): the Enabled line reads the same accessor the Master-controls row reads, the
+-- stored `enabled` setting, not the latch.
+-- red under: revert LauncherSetup:55 to not NS.IsStoodDown()
+test("disabled: while another hold stands the addon down, the launcher reports the stored setting", function()
+    local NS = T.enableAddon()
+    NS.Lifecycle:Hold(HOLD_PERF)
+    assertTrue(NS.IsStoodDown())
+    local line = tooltipEnabledLine(NS)
+    NS.Lifecycle:Release(HOLD_PERF)
+    assertTrue(line ~= nil and line:find("Yes", 1, true) ~= nil, tostring(line))
+end)
+
+test("disabled: after /pgfe disable the launcher's Enabled line says No", function()
+    local NS = T.enableAddon()
+    NS.addon:OnSlashCommand("disable")
+    local line = tooltipEnabledLine(NS)
+    assertTrue(line ~= nil and line:find("No", 1, true) ~= nil, tostring(line))
+end)
