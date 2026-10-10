@@ -19,7 +19,7 @@ Total.
 - harness: fireEvent dispatches to AceEvent handlers
 - harness: the explicit LibKa0s list matches LibKa0s.xml, in XML order (anti-pattern #48)
 
-### test_surface_parity.lua (10)
+### test_surface_parity.lua (11)
 
 - parity: the Core seam's namespace surface survives the library's absence
 - parity: the DebugLog stub carries the whole live surface
@@ -31,6 +31,7 @@ Total.
 - parity: the Lifecycle stub carries the whole live surface
 - parity: the Perf stub carries every member the addon calls
 - parity: the Compat arm carries every library member the addon wires
+- parity: no module reads PGF outside the bridge
 
 ### test_setup.lua (16)
 
@@ -95,7 +96,7 @@ Total.
 - targeting: SmartLevel is the lowest best timed level + 1
 - targeting: SmartLevel counts never-timed as 0, clamps to 2..40, nil without rows
 
-### test_season.lua (7)
+### test_season.lua (8)
 
 - season: the module publishes its namespace table
 - season: nil map table → nil (loading)
@@ -104,6 +105,7 @@ Total.
 - season: dungeon never run (GetSeasonBestForMap → nil) → best timed 0
 - season: unknown mapID falls back to initials
 - season: Apply with no panel still requests season data
+- season: short names fall back to initials without PGF's keyword table
 
 ### test_expression.lua (18)
 
@@ -236,7 +238,7 @@ Total.
 - apply: refuses while Toggle PGF Extension Filters is off, writing nothing
 - apply: the filtersActive setting is a schema row, and its writes remove / rewrite the block
 
-### test_panel.lua (79)
+### test_panel.lua (82)
 
 - panel: the module publishes its namespace table
 - panel: anchored under PGF dialog, both edges
@@ -265,6 +267,9 @@ Total.
 - panel: one event after a rollover already sends the re-armed request
 - panel: PLAYER_ENTERING_WORLD re-arms the request
 - panel: the affix event recomputes Smart and leaves loading
+- panel: a stand-down hides a tooltip the panel showed
+- panel: a stand-down leaves a tooltip owned outside the panel shown
+- panel: the dialog hook install is recorded
 - panel: checkboxes write their filter option
 - panel: Refresh re-reads the filters into the widgets
 - panel: Apply searches and prints; the range field follows
@@ -448,13 +453,13 @@ Total.
 | Suite | Cases |
 |-------|------:|
 | test_harness.lua | 8 |
-| test_surface_parity.lua | 10 |
+| test_surface_parity.lua | 11 |
 | test_setup.lua | 16 |
 | test_slash.lua | 6 |
 | test_disabled.lua | 5 |
 | test_regions.lua | 12 |
 | test_targeting.lua | 9 |
-| test_season.lua | 7 |
+| test_season.lua | 8 |
 | test_expression.lua | 18 |
 | test_filters.lua | 11 |
 | test_presets.lua | 5 |
@@ -463,7 +468,7 @@ Total.
 | test_bridge.lua | 18 |
 | test_euibridge.lua | 17 |
 | test_apply.lua | 16 |
-| test_panel.lua | 79 |
+| test_panel.lua | 82 |
 | test_euiskin.lua | 32 |
 | test_euisettings.lua | 19 |
 | test_vendor_sync.lua | 3 |
@@ -473,4 +478,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **359** |
+| **Total** | **364** |

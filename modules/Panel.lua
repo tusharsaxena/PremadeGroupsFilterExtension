@@ -885,13 +885,25 @@ NS.FEATURE_EVENTS[#NS.FEATURE_EVENTS + 1] = { "CHALLENGE_MODE_COMPLETED", "OnPan
 NS.FEATURE_EVENTS[#NS.FEATURE_EVENTS + 1] = { "MYTHIC_PLUS_CURRENT_AFFIX_UPDATE", "OnPanelSeasonData" }
 NS.FEATURE_EVENTS[#NS.FEATURE_EVENTS + 1] = { "PLAYER_ENTERING_WORLD", "OnPanelEnteringWorld" }
 NS.STAND_DOWN[#NS.STAND_DOWN + 1] = function()
+    -- The tooltip handlers gate on the stand-down, so OnLeave can no longer hide a tooltip the
+    -- panel showed: hide it here, when its owner is the panel or a frame inside it. The walk stops
+    -- at a frame whose GetParent answers itself.
+    if Panel.frame and GameTooltip and GameTooltip.GetOwner then
+        local o = GameTooltip:GetOwner()
+        while o and o ~= Panel.frame do
+            local p = o:GetParent()
+            if p == o then o = nil else o = p end
+        end
+        if o then GameTooltip:Hide() end
+    end
     if Panel.frame then Panel.frame:Hide() end
 end
 NS.STAND_UP[#NS.STAND_UP + 1] = Panel.UpdateVisibility
 
 -- Installed at FILE LOAD (hooks at load; never AceHook). The callback returns at once while stood
--- down (the stand-down already hid the panel; the stand-up re-runs UpdateVisibility).
-NS.Bridge.HookDialog(function()
+-- down (the stand-down already hid the panel; the stand-up re-runs UpdateVisibility). Whether the
+-- hook went in is kept on Panel.dialogHooked, for Diagnostics.
+Panel.dialogHooked = NS.Bridge.HookDialog(function()
     if stoodDown() then return end
     Panel.UpdateVisibility()
 end)

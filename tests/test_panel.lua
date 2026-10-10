@@ -364,6 +364,42 @@ test("panel: the affix event recomputes Smart and leaves loading", function()
     assertTrue(f.readout:GetText() ~= NS.L.READOUT_LOADING)
 end)
 
+-- C-29 (Panel half): every tooltip handler gates on the stand-down, so OnLeave cannot hide a
+-- tooltip the panel showed once the addon stands down. The STAND_DOWN row hides it instead, and
+-- only when the panel (or a frame inside it) owns it.
+test("panel: a stand-down hides a tooltip the panel showed", function()
+    local NS, _, m = T.enableAddon{}
+    local f = NS.Panel.Create(); NS.Panel.Refresh()
+    f.levelBox:__fire("OnEnter")
+    assertTrue(m.GameTooltip:GetOwner() == f.levelBox, "the panel's widget owns the tooltip")
+    local hides, hide = 0, m.GameTooltip.Hide
+    m.GameTooltip.Hide = function(self) hides = hides + 1; return hide(self) end
+    NS.addon:OnSlashCommand("disable")
+    -- red under: drop the tooltip hide in the STAND_DOWN row
+    assertTrue(hides >= 1, "GameTooltip:Hide() ran on stand-down")
+    T.assertNil(m.GameTooltip:GetOwner())
+end)
+
+test("panel: a stand-down leaves a tooltip owned outside the panel shown", function()
+    local NS, _, m = T.enableAddon{}
+    NS.Panel.Create(); NS.Panel.Refresh()
+    local outside = m.CreateFrame("Frame", "SomeOtherAddonFrame", m.UIParent)
+    m.GameTooltip:SetOwner(outside, "ANCHOR_RIGHT"); m.GameTooltip:Show()
+    local hides, hide = 0, m.GameTooltip.Hide
+    m.GameTooltip.Hide = function(self) hides = hides + 1; return hide(self) end
+    NS.addon:OnSlashCommand("disable")
+    -- red under: hide GameTooltip unconditionally in the STAND_DOWN row
+    assertEqual(hides, 0)
+    assertTrue(m.GameTooltip:GetOwner() == outside)
+end)
+
+-- C-10 (Panel store): Diagnostics reads whether the dialog hook went in.
+test("panel: the dialog hook install is recorded", function()
+    local NS = T.enableAddon{}
+    -- red under: drop the Panel.dialogHooked store
+    assertTrue(NS.Panel.dialogHooked == true)
+end)
+
 test("panel: checkboxes write their filter option", function()
     local NS = T.enableAddon{}
     NS.Panel.Create(); NS.Panel.Refresh()

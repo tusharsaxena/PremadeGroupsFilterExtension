@@ -169,7 +169,9 @@ Besides events, four `hooksecurefunc` hooks run (see [Taint Notes](#taint-notes)
 the dialog hook (`SwitchToPanel`, plus `OnShow`/`OnHide` script hooks), which calls
 `Panel.UpdateVisibility()`; and the two Group Finder row hooks of `modules/RegionTags.lua`
 (`LFGListSearchEntry_Update`, `LFGListApplicationViewer_UpdateApplicantMember`). Stand-up re-runs `EnvInject.RefreshPlayer` and
-`Panel.UpdateVisibility`; stand-down hides the panel.
+`Panel.UpdateVisibility`; stand-down hides the panel, and `GameTooltip` first when the panel or a
+frame inside it owns it (the tooltip handlers' own `OnLeave` gates on the stand-down). Whether the
+dialog hook went in is kept on `Panel.dialogHooked`.
 
 ## Taint Notes
 

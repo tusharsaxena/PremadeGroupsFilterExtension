@@ -19,10 +19,9 @@ local function initials(name)
     return table.concat(out)
 end
 
--- PGF's MAP_ID_TO_KEYWORDS rows look like { "<expansion>", "<dungeon>", "<season>" }.
+-- PGF's dungeon keyword, through the bridge (core/PGFBridge.lua, Bridge.MapKeywords); else initials.
 local function shortName(mapID, name)
-    local pgf = PremadeGroupsFilter and PremadeGroupsFilter.Debug
-    local row = pgf and pgf.C and pgf.C.MAP_ID_TO_KEYWORDS and mapID and pgf.C.MAP_ID_TO_KEYWORDS[mapID]
+    local row = NS.Bridge.MapKeywords(mapID)
     if row and row[2] then return row[2]:upper() end
     return initials(name or "?")
 end

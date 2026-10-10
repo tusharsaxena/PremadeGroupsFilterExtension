@@ -27,6 +27,9 @@
 --   pgf            the PGF fake's handle (tests/pgf_fake.lua): calls, dialog, panel, state, PGF
 --   hooks          every hooksecurefunc post-hook installed, in order: { target, name, fn }
 --   installEUI     installEUI(spec) installs the EllesmereUI fake (see below); m.eui is its handle
+--   GameTooltip    the kit's frame, with a recorded owner: SetOwner(owner, anchor) stores
+--                  __owner / __anchor, GetOwner() returns __owner, Hide() clears it, and
+--                  GetParent() answers nil (a top-level frame, so an owner walk from it ends)
 
 local base = dofile("tests/_kit/mock_base.lua")
 local pgfFake = assert(loadfile("tests/pgf_fake.lua"))()
@@ -47,6 +50,15 @@ local function build()
     M.inCombat      = false
     M.prints        = {}
     M.hooks         = {}
+
+    -- The kit's GameTooltip is a bare frame: SetOwner is a no-op and GetOwner / GetParent answer
+    -- the tooltip itself, so "who owns the tooltip" could never be asked. Record the owner.
+    local tip = M.GameTooltip
+    local baseHide = tip.Hide
+    rawset(tip, "SetOwner", function(self, owner, anchor) self.__owner = owner; self.__anchor = anchor end)
+    rawset(tip, "GetOwner", function(self) return self.__owner end)
+    rawset(tip, "GetParent", function() return nil end)
+    rawset(tip, "Hide", function(self) self.__owner = nil; return baseHide(self) end)
 
     M.GetCurrentRegion = function() return M.currentRegion end
     M.GetRealmName     = function() return M.realmName end

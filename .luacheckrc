@@ -26,8 +26,8 @@ read_globals = {
   "InCombatLockdown", "GetCurrentRegion", "GetRealmName", "UnitClass",
   "Settings", "PlaySound", "SOUNDKIT", "LFGListFrame", "MenuResponse", "C_LFGList", "StaticPopup_Show", "StaticPopup_Hide", "YES", "NO",
   "debugprofilestop",                     -- the perf bracket's clock (performance-§2)
-  -- Premade Groups Filter (## Dependencies): read by core/PGFBridge.lua, modules/Diagnostics.lua
-  -- (presence only) and, until its keyword read moves to the bridge, modules/Season.lua.
+  -- Premade Groups Filter (## Dependencies): read by core/PGFBridge.lua and modules/Diagnostics.lua
+  -- (presence only).
   -- PremadeRegions (## OptionalDeps): read by modules/EnvInject.lua, modules/RegionTags.lua and
   -- modules/Diagnostics.lua.
   "PremadeGroupsFilter", "PremadeGroupsFilterDialog", "PremadeGroupsFilterDungeonPanel",

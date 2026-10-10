@@ -81,3 +81,14 @@ test("parity: the Compat arm carries every library member the addon wires", func
         "GetSpellInfo", "GetSpellName", "GetSpellTexture", "GetSpellCooldown",
     })
 end)
+
+-- C-04: PGF internals are read only through core/PGFBridge.lua (and Diagnostics' presence check).
+-- A structural guard over the two modules that used to reach past the bridge.
+test("parity: no module reads PGF outside the bridge", function()
+    for _, rel in ipairs({ "modules/Season.lua", "modules/EnvInject.lua" }) do
+        local fh = assert(io.open(T.root .. "/" .. rel, "rb"))
+        local src = fh:read("*a"); fh:close()
+        -- red under: revert Season.lua to the direct C.MAP_ID_TO_KEYWORDS read
+        T.assertTrue(src:find("PremadeGroupsFilter", 1, true) == nil, rel .. " names PremadeGroupsFilter")
+    end
+end)
