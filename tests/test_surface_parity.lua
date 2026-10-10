@@ -89,6 +89,18 @@ end)
 -- the "is read" direction.
 local DYNAMIC = { "^MSG_", "^REGION_TIP_", "^PLAYSTYLE_" }
 
+-- The index of the closing quote of the string literal that opens at src[start - 1].
+local function closingQuote(src, start)
+    local i = start
+    while i <= #src do
+        local c = src:sub(i, i)
+        if c == "\\" then i = i + 2
+        elseif c == '"' then break
+        else i = i + 1 end
+    end
+    return i
+end
+
 local function literalKeys(src, bare, out)
     local pos = 1
     while true do
@@ -102,13 +114,7 @@ local function literalKeys(src, bare, out)
             local ident = src:match("^([%a_][%w_]*)", e + 1)
             if ident then out[ident] = true end
         elseif ok and src:sub(e + 1, e + 1) == '"' then
-            local i = e + 2
-            while i <= #src do
-                local c = src:sub(i, i)
-                if c == "\\" then i = i + 2
-                elseif c == '"' then break
-                else i = i + 1 end
-            end
+            local i = closingQuote(src, e + 2)
             -- A literal followed by `..` is a computed key's prefix (the dynamic families), not a key.
             if src:find("^%s*%]", i + 1) then
                 local raw = src:sub(e + 2, i - 1)

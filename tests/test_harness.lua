@@ -93,6 +93,17 @@ local function rawTocLines()
     return lines
 end
 
+-- The first line of the annotation block above lines[i], or "" when there is none.
+local function annotationHead(lines, i)
+    local first = i
+    while first > 1 and lines[first - 1]:sub(1, 1) == "#" and lines[first - 1]:sub(1, 2) ~= "##" do
+        first = first - 1
+    end
+    -- A section heading opens its block right after a blank line; it is not an annotation.
+    while first < i and (first == 1 or lines[first - 1] == "") do first = first + 1 end
+    return first < i and lines[first] or ""
+end
+
 -- C-21 / PGE-06/07/08/28: every addon file's TOC line says what it needs at load. The annotation is
 -- the contiguous `#` block directly above the file line, minus a section heading (a comment line
 -- right after a blank line). Its FIRST line carries the marker, so a two-line annotation passes.
@@ -104,13 +115,7 @@ test("harness: every addon file in the TOC is annotated", function()
     for i, line in ipairs(lines) do
         local isFile = line ~= "" and line:sub(1, 1) ~= "#"
         if isFile and not line:find("^libs\\") and not line:find("^locales\\") then
-            local first = i
-            while first > 1 and lines[first - 1]:sub(1, 1) == "#" and lines[first - 1]:sub(1, 2) ~= "##" do
-                first = first - 1
-            end
-            -- A section heading opens its block right after a blank line; it is not an annotation.
-            while first < i and (first == 1 or lines[first - 1] == "") do first = first + 1 end
-            local head = first < i and lines[first] or ""
+            local head = annotationHead(lines, i)
             local ok = false
             for _, m in ipairs(MARKERS) do if head:find(m) then ok = true end end
             assertTrue(ok, "toc:" .. i .. " " .. line .. " has no annotation (got '" .. head .. "')")
