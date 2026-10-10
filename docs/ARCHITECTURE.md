@@ -297,9 +297,12 @@ and an `or` in `U` cannot change precedence. The `not pgfe_on or` guard makes th
 whenever the env hook did not run: the block lives in PGF's state, which outlives this addon's
 runtime (a stand-down, an AddOns-list disable, an uninstall), and without the guard `pgfe_samespec
 == 0` would compare nil and hide every group. Strip removes `begin..end`, and a `close` marker with
-the `)` line after it. A begin without an end, or a close not followed by `)`, is **damage**: Apply
-and Clear refuse and leave the text alone. No clauses means no block. Over 2000 characters (PGF's
-edit-box limit) refuses.
+the `)` line after it. Three shapes are **damage**: a begin without an end, a close not followed by
+`)`, and a wrapped block (its body ends `and (`) with no close + `)` pair after it. Apply and Clear
+refuse and leave the text alone. Deleting both the close marker and its `)` is refused the same way,
+on purpose: the text may well be recoverable, but Strip never guesses. Everything outside the block
+is kept line for line, blank edge lines included. No clauses means no block. Over 2000 characters
+(PGF's edit-box limit) refuses.
 
 ## Known Limitations
 

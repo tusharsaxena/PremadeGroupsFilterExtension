@@ -102,7 +102,7 @@ Total.
 - season: dungeon never run (GetSeasonBestForMap → nil) → best timed 0
 - season: unknown mapID falls back to initials
 
-### test_expression.lua (11)
+### test_expression.lua (18)
 
 - expression: clauses in fixed order
 - expression: empty user text → bare block
@@ -112,6 +112,13 @@ Total.
 - expression: no clauses → user text only (block removed)
 - expression: comment-only user text treated as empty (no `and ( )`)
 - expression: damaged block (begin without end) → error, text untouched
+- expression: close marker without ')' → damaged
+- expression: wrapped block, close marker deleted → damaged
+- expression: deleting both close and ')' is refused (conservative)
+- expression: unwrapped comment-only block strips ok without a close pair
+- expression: strip keeps blank edge lines
+- expression: clear keeps the user's blank edge lines
+- expression: round trip keeps blank edge lines
 - expression: over 2000 chars → toolong
 - expression: the block passes everything when the env hook did not run
 - expression: without the hook, the user's own text still decides
@@ -422,7 +429,7 @@ Total.
 | test_regions.lua | 11 |
 | test_targeting.lua | 9 |
 | test_season.lua | 6 |
-| test_expression.lua | 11 |
+| test_expression.lua | 18 |
 | test_filters.lua | 11 |
 | test_presets.lua | 5 |
 | test_envinject.lua | 10 |
@@ -440,4 +447,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **326** |
+| **Total** | **333** |

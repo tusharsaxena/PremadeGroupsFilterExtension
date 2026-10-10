@@ -63,6 +63,74 @@ test("expression: damaged block (begin without end) → error, text untouched", 
     assertNil(out); assertEqual(err, "damaged")
 end)
 
+test("expression: close marker without ')' → damaged", function()
+    local X = E()
+    local bad = "voice\n" .. X.MARK_CLOSE .. "\nor myrealm"
+    -- red under: drop the `)`-after-close check in Expression.Strip
+    local text, ok = X.Strip(bad)
+    assertFalse(ok); assertEqual(text, bad)
+    local out, err = X.Merge(bad, { "age <= 10" })
+    assertNil(out); assertEqual(err, "damaged")
+end)
+
+test("expression: wrapped block, close marker deleted → damaged", function()
+    local X = E()
+    local d = X.Merge("voice or myrealm", { "age <= 15" }):gsub("%-%- %[pgfe%] close\n", "")
+    -- red under: drop the wrapped-and-not-closed check in Expression.Strip
+    local text, ok = X.Strip(d)
+    assertFalse(ok); assertEqual(text, d)
+    local out, err = X.Merge(d, { "age <= 10" })
+    assertNil(out); assertEqual(err, "damaged")
+    out, err = X.Merge(d, {})
+    assertNil(out); assertEqual(err, "damaged")
+end)
+
+test("expression: deleting both close and ')' is refused (conservative)", function()
+    local X = E()
+    local d = X.Merge("voice or myrealm", { "age <= 15" }):gsub("\n%-%- %[pgfe%] close\n%)$", "")
+    assertNil(d:find("[pgfe] close", 1, true))
+    -- red under: drop the wrapped-and-not-closed check in Expression.Strip
+    local text, ok = X.Strip(d)
+    assertFalse(ok); assertEqual(text, d)
+    local out, err = X.Merge(d, {})
+    assertNil(out); assertEqual(err, "damaged")
+end)
+
+test("expression: unwrapped comment-only block strips ok without a close pair", function()
+    local X = E()
+    local out = X.Merge("-- just a note", { "age <= 15" })
+    -- red under: count every block as wrapped in Expression.Strip (drop the `and (` match)
+    local text, ok = X.Strip(out)
+    assertTrue(ok); assertEqual(text, "-- just a note")
+    text, ok = X.Strip(X.Merge("", { "age <= 15" }))
+    assertTrue(ok); assertEqual(text, "")
+end)
+
+test("expression: strip keeps blank edge lines", function()
+    local X = E()
+    -- red under: restore trimBlankEdges in Expression.Strip
+    for _, s in ipairs{ "\nvoice\n\n", "  \nvoice", "voice\n", "-- note\n\n", "\n\n" } do
+        local text, ok = X.Strip(s)
+        assertTrue(ok); assertEqual(text, s)
+    end
+end)
+
+test("expression: clear keeps the user's blank edge lines", function()
+    local X = E()
+    -- red under: restore trimBlankEdges in Expression.Strip
+    assertEqual(X.Merge(X.Merge("\nvoice\n", { "age <= 15" }), {}), "\nvoice\n")
+end)
+
+test("expression: round trip keeps blank edge lines", function()
+    local X = E()
+    local c = { "age <= 15" }
+    local merged = X.Merge("\nvoice\n", c)
+    -- red under: restore trimBlankEdges in Expression.Strip
+    local text, ok = X.Strip(merged)
+    assertTrue(ok); assertEqual(text, "\nvoice\n")
+    assertEqual(X.Merge(merged, c), merged)
+end)
+
 test("expression: over 2000 chars → toolong", function()
     local X = E()
     local out, err = X.Merge(string.rep("x", 1990), { "age <= 15" })
