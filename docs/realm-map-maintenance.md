@@ -35,7 +35,7 @@ spells them, including the case of a Cyrillic capital and the ASCII apostrophe.
 
 ## How to run it
 
-From the repo root:
+Needs Python 3 (stdlib only); see DEPENDENCIES.md. From the repo root:
 
 ```sh
 python3 tools/realm_map_diff.py "<WoW>/_retail_/Interface/AddOns/PremadeRegions/Regions.lua"
