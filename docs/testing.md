@@ -42,7 +42,7 @@ in the change that moves the count (testing-§5).
 |---|---|---|---|
 | `lint` | `luacheck .` | **gates** | gates |
 | `tests` | `lua tests/run.lua` | **gates** | gates |
-| `perf` | `lua tests/perf.lua` | recorded, never fails a run or blocks a commit | gates |
+| `perf` | `lua tests/perf.lua` (six offline scenarios; the addon holds the performance-§12 exemption and ships them anyway, see [`performance.md`](performance.md)) | recorded, never fails a run or blocks a commit | gates |
 | `complexity` | `bash tests/_kit/run-automated-tests.sh --suite complexity` (the sighted shadow) | recorded, never fails a run or blocks a commit | gates, with zero functions above CCN 15 and `blindFiles` 0 |
 
 The release gate is evaluated by `/dev-copilot:bump-version` from the run's `manifest.json`
