@@ -29,14 +29,16 @@ category. The extension's panel sits right under that dialog and is exactly as w
 Groups Filter to another category, minimize it or close it, and the panel goes away with it.
 
 Type a key level and the panel lists your best timed level in each dungeon this season. The ones you
-still need at that level show in gold, the rest in gray. Or leave **Smart** (next to the level box,
-on for a new character) ticked and the addon picks the level for you: the lowest one where at least
-one dungeon is still untimed. If your best timed runs are 12, 13, 13 and 14, Smart picks 13; once
-everything is timed at 13, it picks 14. Turn on whatever else you want (server regions and
-playstyles, each picked from a dropdown that starts with **Any**, which is the same as ticking none
-or ticking all; composition, a dropdown where you tick one or both exclusions; experienced leader,
-group age) and press **Apply**. Hover over any option to see what it does. Premade Groups Filter's
-dungeon checkboxes and advanced filter update, and the search runs.
+still need at that level show in gold, the rest in gray. Or leave **Smart** ticked (it sits next to
+the level box and starts on for a new character) and the addon picks the level for you: the lowest
+one where at least one dungeon is still untimed. If your best timed runs are 12, 13, 13 and 14,
+Smart picks 13. Once everything is timed at 13, it picks 14.
+
+Then turn on whatever else you want. Server regions and playstyles each have a dropdown that starts
+with **Any**, which is the same as ticking none or ticking all. Composition is a dropdown where you
+tick one or both exclusions, and experienced leader and group age are on the panel too. Hover over
+any option to see what it does, then press **Apply**. Premade Groups Filter's dungeon checkboxes and
+advanced filter update, and the search runs.
 
 The game doesn't let addons type into the Group Finder's search box, so the panel shows the key
 range as text in the **Copy into search box** field at the bottom right, for example `14-14`. Click
@@ -45,12 +47,12 @@ search listings by title.
 
 The first option, **Toggle PGF Extension Filters** (also under Settings → AddOns → Ka0s Premade
 Groups Filter Extension → General → Filters), switches the filtering off without turning the addon
-off: unticking it takes the extension's part out of the advanced filter (your own text and the
-dungeon ticks stay), and ticking it writes it back. Filter choices are saved per character. Presets
-let you store a setup under a name and load it on any character. **Clear** takes the extension's
-part back out of the advanced filter and leaves anything you typed there yourself. If the panel is
-in your way, the arrow in its top corner (or a click anywhere on its title strip) folds it down to
-just that strip; the same click opens it again.
+off. Untick it and the extension's part comes out of the advanced filter, while your own text and
+the dungeon ticks stay. Tick it and that part goes back in. Filter choices are saved per character,
+and presets let you store a setup under a name and load it on any character. **Clear** takes the
+extension's part back out of the advanced filter and leaves anything you typed there yourself. If
+the panel is in your way, the arrow in its top corner (or a click anywhere on its title strip) folds
+it down to just that strip, and the same click opens it again.
 
 If you use EllesmereUI with Premade Groups Filter's EllesmereUI skin, the panel gets the same
 EllesmereUI look as Premade Groups Filter's dialog. That needs EllesmereUI's third-party skinning
@@ -124,7 +126,7 @@ Please file reports there rather than in comments, so nothing gets lost.
 ## Credits
 
 The addon extends [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter)
-by Bernhard Saumweber. PremadeRegions served as a reference when building the realm-to-region list.
+by Bernhard Saumweber. PremadeRegions was the reference for the realm-to-region list.
 
 The debug console uses [JetBrains Mono](https://www.jetbrains.com/lp/mono/), licensed under the SIL
 Open Font License 1.1, and its buttons are drawn from
