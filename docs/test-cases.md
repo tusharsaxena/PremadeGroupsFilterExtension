@@ -330,7 +330,7 @@ Total.
 - euiskin: theme and scale changes while stood down catch up at the stand-up
 - euiskin: the diagnostics dependencies section reports the gate and the skin
 
-### test_euisettings.lua (16)
+### test_euisettings.lua (19)
 
 - euisettings: euiSkin is a schema row, default on, in its own group on the General page
 - euisettings: the General page's tabs are Master controls, then EllesmereUI skin
@@ -345,6 +345,9 @@ Total.
 - euisettings: a gate opened in EllesmereUI's options paints on the panel's next show
 - euisettings: LibKa0s absent with EllesmereUI present loads, registers and keeps the row
 - euisettings: a missing PGF skin gets a box with its CurseForge link; installed, no box
+- euisettings: focusing the PGF-skin link box selects the link
+- euisettings: a released PGF-skin link box no longer selects, and is forgotten
+- euisettings: a re-rendered PGF-skin link box hooks its pooled frame once
 - euisettings: the state line sits below a gap, in an empty icon slot like the hints
 - euisettings: the switch comes first, then a gap, then the condition lines
 - euisettings: each condition line and the state line have a what / why / how tooltip
@@ -439,7 +442,7 @@ Total.
 | test_apply.lua | 16 |
 | test_panel.lua | 73 |
 | test_euiskin.lua | 26 |
-| test_euisettings.lua | 16 |
+| test_euisettings.lua | 19 |
 | test_vendor_sync.lua | 3 |
 | test_eol.lua | 2 |
 | test_prose.lua | 15 |
@@ -447,4 +450,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **333** |
+| **Total** | **336** |

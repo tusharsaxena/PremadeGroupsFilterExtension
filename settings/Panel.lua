@@ -159,7 +159,10 @@ local function euiTooltip(cb, row)
 end
 
 -- The PGF skin's CurseForge link in a read-only edit box: anything typed puts the link back, and
--- focus selects it, ready for Ctrl+C.
+-- focus selects it, ready for Ctrl+C. AceGUI pools the inner editbox frame, and HookScript cannot
+-- be undone, so the frame is hooked once (`__pgfeLinkHook`) and the hook selects only while this
+-- box owns the frame (`__pgfeLinkActive`). The box's OnRelease clears that flag before the frame
+-- goes back to the pool, and forgets the box.
 local function addPGFSkinLink(scroll)
     local AceGUI = Helpers.AceGUI
     if not AceGUI then return end
@@ -171,9 +174,18 @@ local function addPGFSkinLink(scroll)
     box:DisableButton(true)
     box:SetCallback("OnTextChanged", function(widget) widget:SetText(url) end)
     box:SetCallback("OnEnterPressed", function(widget) widget:SetText(url) end)
-    if box.editbox and box.editbox.HookScript then
-        box.editbox:HookScript("OnEditFocusGained", function(self) self:HighlightText() end)
+    local eb = box.editbox
+    if eb and eb.HookScript and not eb.__pgfeLinkHook then
+        eb.__pgfeLinkHook = true
+        eb:HookScript("OnEditFocusGained", function(self)
+            if self.__pgfeLinkActive then self:HighlightText() end
+        end)
     end
+    if eb then eb.__pgfeLinkActive = true end
+    box:SetCallback("OnRelease", function(w)
+        if w.editbox then w.editbox.__pgfeLinkActive = nil end
+        if Settings.PGFSkinLinkBox == w then Settings.PGFSkinLinkBox = nil end
+    end)
     scroll:AddChild(box)
     Settings.PGFSkinLinkBox = box
 end
