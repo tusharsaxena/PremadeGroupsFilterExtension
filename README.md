@@ -1,6 +1,7 @@
 # Ka0s Premade Groups Filter Extension
 
 ![WoW](https://img.shields.io/badge/WoW-Midnight_12.1.0-purple)
+![CurseForge Version](https://img.shields.io/curseforge/v/1736636)
 ![License](https://img.shields.io/badge/License-MIT-orange)
 ![Standard](https://img.shields.io/badge/Ka0s-WoW_Addon_Standard-yellow)
 ![Tests](https://img.shields.io/badge/Tests-414%2F414_passing-green)
