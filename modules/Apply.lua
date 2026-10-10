@@ -12,7 +12,8 @@ local _, NS = ...
 local Apply = NS.Apply or {}
 NS.Apply = Apply
 
---- "N-N" of the last successful Apply, or nil.
+--- "N-N" of the last successful Apply with key targeting on; nil before one, and after an Apply
+--- with targeting off (no range was targeted).
 Apply.LastRange = nil
 
 local VALIDATION_MSG = { badLevel = "MSG_BAD_LEVEL", badAge = "MSG_BAD_AGE" }
@@ -58,9 +59,9 @@ function Apply.Run(opts)
     local ticked = targets and NS.Bridge.SetDungeons(NS.Targeting.ToSet(targets))
     NS.Bridge.SetExpression(text)
     NS.Bridge.Commit()
-    Apply.LastRange = NS.Targeting.RangeText(f.keyLevel)
+    Apply.LastRange = targets and NS.Targeting.RangeText(f.keyLevel) or nil
     if opts and opts.search then NS.Bridge.Search() end
-    if not targets then return true, "MSG_APPLIED_NO_TARGETING", Apply.LastRange end
+    if not targets then return true, "MSG_APPLIED_NO_TARGETING" end
     return true, "MSG_APPLIED", ticked, Apply.LastRange
 end
 

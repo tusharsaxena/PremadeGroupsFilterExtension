@@ -177,9 +177,24 @@ test("apply: the message counts the rows ticked, and says so when targeting is o
     assertTrue(ok); assertEqual(key, "MSG_APPLIED")
     -- red under: report #targets instead of SetDungeons' return
     assertEqual(n, 3)
+    assertEqual(NS.Apply.LastRange, "14-14")
     NS.Filters.Get().keyTargeting = false
-    local ok2, key2, range = NS.Apply.Run{}
-    assertTrue(ok2); assertEqual(key2, "MSG_APPLIED_NO_TARGETING"); assertEqual(range, "14-14")
+    local ok2, key2, extra = NS.Apply.Run{}
+    assertTrue(ok2); assertEqual(key2, "MSG_APPLIED_NO_TARGETING"); assertEqual(extra, nil)
+    -- red under: skip the LastRange write instead of resetting it
+    assertEqual(NS.Apply.LastRange, nil)
+end)
+
+-- Review F-009 (C-28): with targeting off no range was targeted, so the message names none.
+test("apply: the targeting-off message prints no key range", function()
+    local NS, _, m = T.enableAddon{}
+    seasonFromScreenshot(m)
+    local f = NS.Filters.Get(); f.keyLevel = 14; f.keyTargeting = false
+    m.prints = {}
+    NS.Apply.Report(NS.Apply.Run{})
+    -- red under: keep %s in the locale string
+    assertTrue(printed(m, NS.L.MSG_APPLIED_NO_TARGETING))
+    assertFalse(printed(m, "14-14"))
 end)
 
 -- Owner request: with Smart on, `/pgfe apply` uses the computed level too.

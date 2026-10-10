@@ -226,7 +226,7 @@ Total.
 - euibridge: nothing is ever written to EllesmereUI's saved variables
 - euibridge: the PGF skin's state is missing / disabled / off / on, and its line says which
 
-### test_apply.lua (16)
+### test_apply.lua (17)
 
 - apply: the module publishes its namespace table
 - apply: N=14 ticks AOF/RLP/BV/KR, writes block, triggers, searches
@@ -241,6 +241,7 @@ Total.
 - apply: after Apply then /pgfe disable, PGF's evaluation passes groups again
 - apply: PGF minimized → refuses Apply and Clear, nothing written or searched
 - apply: the message counts the rows ticked, and says so when targeting is off
+- apply: the targeting-off message prints no key range
 - apply: with Smart on, Run sets the key level from the season bests first
 - apply: refuses while Toggle PGF Extension Filters is off, writing nothing
 - apply: the filtersActive setting is a schema row, and its writes remove / rewrite the block
@@ -491,7 +492,7 @@ Total.
 | test_regiontags.lua | 9 |
 | test_bridge.lua | 18 |
 | test_euibridge.lua | 17 |
-| test_apply.lua | 16 |
+| test_apply.lua | 17 |
 | test_panel.lua | 82 |
 | test_euiskin.lua | 32 |
 | test_euisettings.lua | 19 |
@@ -504,4 +505,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **382** |
+| **Total** | **383** |

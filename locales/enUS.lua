@@ -60,7 +60,7 @@ L.MSG_BAD_AGE      = "Max age must be a whole number of minutes from 1 to 240."
 L.MSG_DAMAGED      = "The [pgfe] block in the Advanced Filter Expression is damaged; fix or delete it by hand."
 L.MSG_TOOLONG      = "The Advanced Filter Expression would exceed 2000 characters; nothing was applied."
 L.MSG_APPLIED      = "Applied: %d dungeon(s) targeted, key range %s."
-L.MSG_APPLIED_NO_TARGETING = "Applied (dungeon checkboxes left as they were), key range %s."
+L.MSG_APPLIED_NO_TARGETING = "Applied (dungeon checkboxes left as they were)."
 L.MSG_CLEARED      = "Removed this addon's block from the Advanced Filter Expression."
 L.MSG_INACTIVE     = "PGF Extension filters are toggled off; tick Toggle PGF Extension Filters first."
 

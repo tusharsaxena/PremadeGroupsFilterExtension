@@ -43,9 +43,10 @@ return is `ok, msgKey, ...` and `Apply.Report` prints `NS.L[msgKey]:format(...)`
    `panel:TriggerFilterExpressionChange()`, which re-filters and has PGF copy the ticked dungeons into
    the game's own advanced filter (`UpdateAdvancedFilters`). Minimized: nothing more; PGF re-reads the
    stored state on the next `SwitchToPanel`.
-9. **Search.** `Apply.LastRange = "N-N"`; with `opts.search`, `Bridge.Search()` clicks
+9. **Search.** `Apply.LastRange = "N-N"` with key targeting on, and `nil` with it off (no range was
+   targeted); with `opts.search`, `Bridge.Search()` clicks
    `PremadeGroupsFilterDialog.RefreshButton`. Returns `MSG_APPLIED` with the count of PGF rows actually ticked (`Bridge.SetDungeons`' return) and
-   the range, or `MSG_APPLIED_NO_TARGETING` with the range when key targeting is off. The panel's copy box
+   the range, or `MSG_APPLIED_NO_TARGETING` when key targeting is off; that message carries no range. The panel's copy box
    (*Copy into search box*) shows the level box's `N-N`, not the last applied one, and is empty
    (dimmed and disabled) while key targeting is off.
 
