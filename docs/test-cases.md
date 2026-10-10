@@ -57,7 +57,7 @@ Total.
 - setup: logo TGAs are uncompressed 32-bit at their sizes
 - setup: no pgfe.logo file remains
 
-### test_slash.lua (6)
+### test_slash.lua (8)
 
 - slash: NS.COMMANDS is ordered positional triples with every reserved verb
 - slash: /pgfe and /premadegroupsfilterextension are registered through AceConsole
@@ -65,6 +65,8 @@ Total.
 - slash: perf is reserved but not registered
 - slash: the library-absent stub pins the library's disabled line
 - slash: the library-absent stub still answers version and refuses enable honestly
+- slash: player-facing lines go through NS.L (LibKa0s absent, the stub paths)
+- slash: player-facing lines go through NS.L (LibKa0s present)
 
 ### test_disabled.lua (5)
 
@@ -477,7 +479,7 @@ Total.
 | test_harness.lua | 10 |
 | test_surface_parity.lua | 11 |
 | test_setup.lua | 19 |
-| test_slash.lua | 6 |
+| test_slash.lua | 8 |
 | test_disabled.lua | 5 |
 | test_regions.lua | 12 |
 | test_targeting.lua | 9 |
@@ -502,4 +504,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **380** |
+| **Total** | **382** |

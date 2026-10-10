@@ -270,11 +270,11 @@ local AFTER_GROUP = {}
 if Helpers.MASTER_GROUP then AFTER_GROUP[Helpers.MASTER_GROUP] = MASTER_TAIL end
 
 local function buildGeneralPage(parentCategory)
-    local ctx = Helpers.CreatePanel("PremadeGroupsFilterExtensionGeneralPanel", "General", {
+    local ctx = Helpers.CreatePanel("PremadeGroupsFilterExtensionGeneralPanel", L["General"], {
         pageKey         = "general",
         defaultsButton  = true,
-        defaultsTooltip = "Reset every Ka0s Premade Groups Filter Extension setting to its default. "
-            .. "Asks for confirmation.",
+        defaultsTooltip = L["Reset every %s setting to its default. Asks for confirmation."]
+            :format("Ka0s Premade Groups Filter Extension"),
     })
     ctx.panel.defaultsOnClick = showResetPopup
     Helpers.SetRenderer(ctx, function(c)
@@ -285,10 +285,10 @@ local function buildGeneralPage(parentCategory)
     -- EllesmereUI status lines and the switch's disabled state (the renderer only draws on the
     -- first show).
     ctx.panel:HookScript("OnShow", function() Helpers.RefreshPanel(ctx, false) end)
-    return _G.Settings.RegisterCanvasLayoutSubcategory(parentCategory, ctx.panel, "General")
+    return _G.Settings.RegisterCanvasLayoutSubcategory(parentCategory, ctx.panel, L["General"])
 end
 
-Helpers.RegisterOptionsPage("general", "General", buildGeneralPage)
+Helpers.RegisterOptionsPage("general", L["General"], buildGeneralPage)
 
 --- Register the settings category. Idempotent; called from OnEnable and from `/pgfe config`.
 function Settings.Register()

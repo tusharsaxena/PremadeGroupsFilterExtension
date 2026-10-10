@@ -97,7 +97,8 @@ Settings.ConsumeResetCount = S.ConsumeResetCount
 
 local VALID_TYPES = { bool = true, number = true, string = true }
 
---- Validate every row; returns the error count.
+--- Validate every row; returns the error count. The two `schema error` lines below are developer
+--- diagnostics for a malformed row, not player-facing text, so they stay literal (not through NS.L).
 function Helpers.ValidateSchema()
     local errors = S.Validate{ types = VALID_TYPES }
     for i, def in ipairs(Schema) do

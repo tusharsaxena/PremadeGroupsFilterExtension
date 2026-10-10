@@ -15,6 +15,9 @@ NS.L = L
 L["Slash Commands"] = "Slash Commands"
 L["Profiles"]       = "Profiles"
 L["Filters"]        = "Filters"        -- the General page's second tab (settings/Panel.lua)
+L["General"]        = "General"        -- the settings page's name (settings/Panel.lua)
+L["Reset every %s setting to its default. Asks for confirmation."] =
+    "Reset every %s setting to its default. Asks for confirmation."
 L["Reset this profile to the addon's defaults? Everything you have configured or added in it is discarded \226\128\148 your other profiles are not affected."] =
     "Reset this profile to the addon's defaults? Everything you have configured or added in it is discarded \226\128\148 your other profiles are not affected."
 L["all settings reset to defaults"] = "all settings reset to defaults"
@@ -148,6 +151,27 @@ L["%s is unavailable: the LibKa0s library did not load."] =
     "%s is unavailable: the LibKa0s library did not load."
 L["Diagnostic report written to the debug console: %d lines. Use Copy to share it."] =
     "Diagnostic report written to the debug console: %d lines. Use Copy to share it."
+-- The LibKa0s-absent cause clause (core/CoreSetup.lua; %s is the brand) and what each seam says it costs
+L["The LibKa0s library is missing from this installation of %s (expected in libs/LibKa0s)"] =
+    "The LibKa0s library is missing from this installation of %s (expected in libs/LibKa0s)"
+L["%s; running on reduced built-in fallbacks."] = "%s; running on reduced built-in fallbacks."
+L["%s, so the settings CLI is unavailable."] = "%s, so the settings CLI is unavailable."
+L["%s, so the debug console window is unavailable."] = "%s, so the debug console window is unavailable."
+L["%s, so there is no minimap button and no broker plugin."] =
+    "%s, so there is no minimap button and no broker plugin."
+L["%s, so the settings panel is unavailable."] = "%s, so the settings panel is unavailable."
+-- The library-absent debug console stub (core/DebugLogSetup.lua)
+L["debug logging |cff40ff40ON|r"] = "debug logging |cff40ff40ON|r"
+L["debug logging |cffff4040OFF|r"] = "debug logging |cffff4040OFF|r"
+L["Debug console"] = "Debug console"
+
+-- Slash host lines (settings/Slash.lua; the verb tokens are %s arguments)
+L["unknown command '%s'"] = "unknown command '%s'"
+L["v%s slash commands"] = "v%s slash commands"
+L["Settings panel is not available."] = "Settings panel is not available."
+L["Debug console not ready yet"] = "Debug console not ready yet"
+L["|cffFFFF00%s|r takes a setting path: |cffFFFF00%s|r (try |cffFFFF00%s|r). To reset everything: |cffFFFF00%s|r."] =
+    "|cffFFFF00%s|r takes a setting path: |cffFFFF00%s|r (try |cffFFFF00%s|r). To reset everything: |cffFFFF00%s|r."
 
 -- EllesmereUI skin: the gate's four conditions (core/EUIBridge.lua), each a status line and a hint
 L["EllesmereUI and its Blizzard Skin module are loaded"] =

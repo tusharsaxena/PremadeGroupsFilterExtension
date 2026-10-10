@@ -55,7 +55,7 @@ NS.COMMANDS = COMMANDS
 PGFE.COMMANDS = COMMANDS
 
 local lib = LibStub and LibStub("LibKa0s-Slash-1.0", true)
-local CLI_MISSING = NS.LIBKA0S_MISSING .. ", so the settings CLI is unavailable."
+local CLI_MISSING = L["%s, so the settings CLI is unavailable."]:format(NS.LIBKA0S_MISSING)
 
 local function libraryAbsent(verb)
     NS.Print(L["%s is unavailable: the LibKa0s library did not load."]:format(verb))
@@ -80,11 +80,11 @@ if not lib then
             for _, entry in ipairs(COMMANDS) do
                 if entry[1] == name then return entry[3](rest or "") end
             end
-            NS.Print("unknown command '" .. name .. "'")
+            NS.Print(L["unknown command '%s'"]:format(name))
             Sl:PrintHelp()
         end,
         PrintHelp = function()
-            NS.Print("v" .. NS.Version() .. " slash commands")
+            NS.Print(L["v%s slash commands"]:format(NS.Version()))
             for _, entry in ipairs(COMMANDS) do NS.Print("  " .. helpRow(entry)) end
         end,
         HelpRows = function()
@@ -97,7 +97,7 @@ if not lib then
             for i, entry in ipairs(COMMANDS) do out[i] = helpRow(entry) end
             return out
         end,
-        HelpHeader   = function() return "v" .. NS.Version() .. " slash commands" end,
+        HelpHeader   = function() return L["v%s slash commands"]:format(NS.Version()) end,
         DisabledLine = function()
             return DISABLED_LINE_FORMAT:format("Ka0s Premade Groups Filter Extension", "/pgfe enable")
         end,
@@ -146,7 +146,7 @@ end
 function PGFE:OpenSettings()
     if self.Settings and self.Settings.Register then self.Settings.Register() end
     local H = helpers()
-    if not (H and H.OpenOptionsPanel) then return NS.Print("Settings panel is not available.") end
+    if not (H and H.OpenOptionsPanel) then return NS.Print(L["Settings panel is not available."]) end
     H.OpenOptionsPanel()
 end
 
@@ -167,8 +167,8 @@ end
 
 function runReset(rest)
     if trim(rest) == "" then
-        NS.Print("|cffFFFF00/pgfe reset|r takes a setting path: |cffFFFF00/pgfe reset <path>|r "
-            .. "(try |cffFFFF00/pgfe list|r). To reset everything: |cffFFFF00/pgfe resetall|r.")
+        NS.Print(L["|cffFFFF00%s|r takes a setting path: |cffFFFF00%s|r (try |cffFFFF00%s|r). To reset everything: |cffFFFF00%s|r."]
+            :format("/pgfe reset", "/pgfe reset <path>", "/pgfe list", "/pgfe resetall"))
         return
     end
     Sl:CliReset(rest)
@@ -184,7 +184,7 @@ end
 -- `diagnostics` is tested FIRST (inside DebugVerb), then on/off; anything else toggles the window.
 function runDebug(rest)
     local DL = NS.DebugLog
-    if not DL then return NS.Print("Debug console not ready yet") end
+    if not DL then return NS.Print(L["Debug console not ready yet"]) end
     if not DL:DebugVerb(rest) then DL:Toggle() end
 end
 

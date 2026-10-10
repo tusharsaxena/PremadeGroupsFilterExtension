@@ -18,7 +18,7 @@ local function minimapStore()
 end
 
 if not lib then
-    local missing = NS.LIBKA0S_MISSING .. ", so there is no minimap button and no broker plugin."
+    local missing = NS.L["%s, so there is no minimap button and no broker plugin."]:format(NS.LIBKA0S_MISSING)
     local said = false
     NS.Launcher = {
         Register = function()

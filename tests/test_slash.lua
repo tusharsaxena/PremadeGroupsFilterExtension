@@ -88,3 +88,72 @@ test("slash: the library-absent stub still answers version and refuses enable ho
     NS.addon:OnSlashCommand("enable")
     assertTrue(printed(m, "unavailable"))
 end)
+
+-- C-25 (localization-§2): every player-facing line goes through NS.L. A swap "before loading" is
+-- not reachable (tests/loader.lua builds NS, and locales/enUS.lua builds NS.L at load), and a swap
+-- after load misses the strings built at load time. So the loader's afterFile hook wipes NS.L IN
+-- PLACE right after locales/enUS.lua and gives it a sentinel __index: every later `local L = NS.L`
+-- capture is the same table, and every key read answers "<<key>>".
+local function sentinel(opts)
+    opts = opts or {}
+    opts.afterFile = function(path, NS)
+        if path ~= "locales/enUS.lua" then return end
+        for k in pairs(NS.L) do NS.L[k] = nil end
+        setmetatable(NS.L, { __index = function(_, k) return "<<" .. tostring(k) .. ">>" end })
+    end
+    return opts
+end
+
+-- A localized line ENDS in the sentinel's close: a literal tail glued onto an already-localized
+-- part (the "<cause>, so X is unavailable." family wraps the localized cause clause) would
+-- otherwise still contain "<<".
+local function localized(s) return type(s) == "string" and s:find(">>%s*$") ~= nil end
+
+-- Run `fn`, then require it printed at least one line and that every line it printed is localized.
+local function allLocalized(m, what, fn)
+    m.prints = {}
+    fn()
+    assertTrue(#m.prints > 0, what .. ": printed nothing")
+    for _, line in ipairs(m.prints) do
+        assertTrue(localized(line), what .. ": a literal line: " .. line)
+    end
+end
+
+-- red under: revert any site to a literal
+test("slash: player-facing lines go through NS.L (LibKa0s absent, the stub paths)", function()
+    local NS, _, m = T.bootAddon(sentinel{ skip = T.loadAddon.libFiles })
+    local addon, H = NS.addon, NS.addon.Settings.Helpers
+    assertTrue(localized(NS.LIBKA0S_MISSING), NS.LIBKA0S_MISSING)
+    allLocalized(m, "/pgfe bogus", function() addon:OnSlashCommand("bogus") end)
+    allLocalized(m, "help header", function() addon:OnSlashCommand("help") end)
+    assertTrue(localized(NS.SlashCommands:HelpHeader()), "HelpHeader")
+    allLocalized(m, "bare /pgfe reset", function() addon:OnSlashCommand("reset") end)
+    allLocalized(m, "settings CLI", function() addon:OnSlashCommand("list") end)
+    allLocalized(m, "settings panel", function() addon:OnSlashCommand("config") end)
+    allLocalized(m, "launcher", function() NS.Launcher.Register() end)
+    allLocalized(m, "debug logging on", function() NS.DebugLog:SetEnabled(true) end)
+    allLocalized(m, "debug logging off", function() NS.DebugLog:SetEnabled(false) end)
+    local cb = NS.DebugLog:ConsoleCheckbox()
+    assertTrue(localized(cb.label), cb.label)
+    assertTrue(localized(cb.tooltip), cb.tooltip)
+    H.OpenOptionsPanel = nil
+    allLocalized(m, "OpenSettings without the helper", function() addon:OpenSettings() end)
+    NS.DebugLog = nil
+    allLocalized(m, "/pgfe debug, no console", function() addon:OnSlashCommand("debug") end)
+end)
+
+-- With the library loaded, `/pgfe bogus` and the help header are the library's own lines, so only
+-- the sites this addon still prints on that path are asserted.
+-- red under: revert any site to a literal
+test("slash: player-facing lines go through NS.L (LibKa0s present)", function()
+    local NS, _, m = T.enableAddon(sentinel())
+    local addon, H = NS.addon, NS.addon.Settings.Helpers
+    allLocalized(m, "bare /pgfe reset", function() addon:OnSlashCommand("reset") end)
+    local page = m.__subcategories["<<General>>"]
+    assertTrue(page ~= nil, "the General page is registered under its localized name")
+    assertTrue(localized(page.defaultsTooltip), tostring(page.defaultsTooltip))
+    H.OpenOptionsPanel = nil
+    allLocalized(m, "OpenSettings without the helper", function() addon:OpenSettings() end)
+    NS.DebugLog = nil
+    allLocalized(m, "/pgfe debug, console not ready", function() addon:OnSlashCommand("debug") end)
+end)
