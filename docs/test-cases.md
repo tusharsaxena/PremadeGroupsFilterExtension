@@ -392,6 +392,15 @@ Total.
 - reset: the General page's Defaults leaves the minimap button hidden
 - reset: Reset all settings while disabled comes back enabled and running
 
+### test_diagnostics.lua (6)
+
+- diagnostics: dependencies reports the PGF seams as present
+- diagnostics: dependencies reports every hook as installed
+- diagnostics: a missing PGF seam is named
+- diagnostics: the filters section prints a set's keys, not a table
+- diagnostics: an empty filter set reads Any
+- diagnostics: stood down, the feature events are declared but not registered
+
 ### test_vendor_sync.lua (3)
 
 - libs/LibKa0s is the LibKa0s release CLAUDE.md says this addon bundles
@@ -484,6 +493,7 @@ Total.
 | test_euiskin.lua | 32 |
 | test_euisettings.lua | 19 |
 | test_reset.lua | 5 |
+| test_diagnostics.lua | 6 |
 | test_vendor_sync.lua | 3 |
 | test_eol.lua | 2 |
 | test_prose.lua | 15 |
@@ -491,4 +501,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **373** |
+| **Total** | **379** |

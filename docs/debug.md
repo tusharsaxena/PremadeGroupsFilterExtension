@@ -24,8 +24,9 @@ library half and a `pcall` per section. The addon's sections (`modules/Diagnosti
 |---|---|
 | `identity` | Stored and code schema version, profile, `enabled`, stood down, the latch's holds |
 | `settings` | Every schema row that differs from its default (`enabled` always) |
-| `dependencies` | Whether PGF's namespace, dialog and dungeon panel exist; whether PremadeRegions is loaded; the EllesmereUI skin's four gate conditions and its state (registered, facade held, wanted, applied) |
-| `registration` | The feature events this build registers, and any the client rejected |
+| `filters` | The character's filter options: the scalars as one sorted `key=value` list, then each set (`regions`, `playstyles`) as its sorted keys, an empty set reading `Any` |
+| `dependencies` | Whether PGF's namespace, dialog and dungeon panel exist; the PGF seams `Bridge.Check` reads (`ok`, and the first one `missing`); which hooks went in (`env`, `dialog`, `searchRow`, `applicantRow`); whether PremadeRegions is loaded; the EllesmereUI skin's four gate conditions and its state (registered, facade held, wanted, applied) |
+| `registration` | The feature events this build declares (`feature events (declared)`, printed even while stood down), whether they are registered right now (`registered=false` while stood down), and any the client rejected |
 | `launcher` | Whether the launcher is registered and the minimap button shown |
 
 What it does not do: it reads state only. It takes no hold, registers no event, starts no timer,
