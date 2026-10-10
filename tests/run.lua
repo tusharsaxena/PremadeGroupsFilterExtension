@@ -51,7 +51,6 @@ Kit.setSurfaceSource{
     ["LibKa0s-Options-1.0"]   = surfaceNS.addon.Settings.Helpers,
     ["LibKa0s-Launcher-1.0"]  = surfaceNS.Launcher,
     ["LibKa0s-Lifecycle-1.0"] = surfaceNS.Lifecycle,
-    ["LibKa0s-Perf-1.0"]      = surfaceNS.Perf,
     ["LibKa0s-Compat-1.0"]    = surfaceMock.LibStub("LibKa0s-Compat-1.0", true),
     ["LibKa0s-Schema-1.0"]    = surfaceMock.LibStub("LibKa0s-Schema-1.0", true),
 }

@@ -22,7 +22,6 @@ Profiles page. The constraints that fix the order:
   both append to `NS.FEATURE_EVENTS` / `NS.STAND_UP` (Panel also to `NS.STAND_DOWN`) and install
   their hook through the bridge (`NS.Bridge.InstallEnvHook`, `NS.Bridge.HookDialog`) at file load.
 - `core/DebugLogSetup.lua` after `core/PGFE.lua` (font, flag) and before any `NS.Debug` call.
-- `core/LifecycleSetup.lua` before `core/PerfSetup.lua`: the Perf descriptor takes the latch.
 - `defaults/Profile.lua` before `settings/Schema.lua` (`NS.C` is a file-scope upvalue there).
 - `settings/SchemaSetup.lua` → `settings/Schema.lua` → `settings/OptionsSetup.lua` →
   `settings/Panel.lua`: each consumes what the previous publishes at file scope.
@@ -47,7 +46,6 @@ Profiles page. The constraints that fix the order:
 | `core/DebugLogSetup.lua` | `LibKa0s-DebugLog-1.0`: the console, `NS.Debug` and its gates, the diagnostics hook-up |
 | `core/LauncherSetup.lua` | `LibKa0s-Launcher-1.0`: the LDB launcher and minimap button |
 | `core/LifecycleSetup.lua` | `LibKa0s-Lifecycle-1.0`: the stand-down latch, `NS.IsStoodDown()` |
-| `core/PerfSetup.lua` | `LibKa0s-Perf-1.0`: the perf harness |
 | `core/PGFBridge.lua` | The only file that touches PGF internals: seam check, dungeon state and expression read/write, commit, search, the env and dialog hooks |
 | `core/EUIBridge.lua` | The only file that reads EllesmereUI state: the skin's four gate conditions (`Conditions`, `GateOpen`, `WhyClosed`) |
 | `defaults/Profile.lua` | `NS.C`: profile, char and global default values |

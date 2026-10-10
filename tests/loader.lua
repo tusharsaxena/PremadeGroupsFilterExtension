@@ -96,7 +96,6 @@ return function(root, mockBuilder)
         -- The kit's AceDB fake resolves a SavedVariables NAME against the real _G, so a previous
         -- instance's saved table would otherwise be adopted by this one.
         _G.PremadeGroupsFilterExtensionDB = nil
-        _G.PremadeGroupsFilterExtensionPerfDB = nil
 
         for _, src in ipairs(sources) do
             if not skipSet[src.path] then

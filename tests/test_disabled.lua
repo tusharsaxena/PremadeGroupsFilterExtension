@@ -1,11 +1,15 @@
 -- tests/test_disabled.lua — disabled means the addon is not running (slash-commands-§7).
 --
 -- Every feature event actually unregistered (not gated), every module teardown run, through the
--- one latch the perf harness also suspends on; setup (the chat command, the dispatcher, the
--- settings category) stays up and every verb keeps answering.
+-- one latch; setup (the chat command, the dispatcher, the settings category) stays up and every
+-- verb keeps answering. Production takes only the `disabled` hold (the addon holds the
+-- performance-§12 exemption, so no perf harness is wired); the `perf` case below takes the
+-- library's other reserved hold as a test-only second holder.
 
 local T = _G.PGFE_TEST
 local test, assertEqual, assertTrue, assertFalse = T.test, T.assertEqual, T.assertTrue, T.assertFalse
+
+local HOLD_PERF = (T.LibStub("LibKa0s-Lifecycle-1.0", true) or {}).HOLD_PERF or "perf"
 
 -- A fresh addon carrying one feature event and one teardown/rebuild pair of the test's own, wired
 -- exactly the way a feature module wires its rows at file load.
@@ -42,12 +46,11 @@ end)
 
 test("disabled: the perf hold stands the addon down through the same latch", function()
     local NS, _, m, seen = wired()
-    NS.Lifecycle:Hold(NS.HOLD_PERF)
+    NS.Lifecycle:Hold(HOLD_PERF)
     assertTrue(NS.IsStoodDown())
-    assertTrue(NS.Perf.suspended)
     assertEqual(seen.down, 1)
     assertEqual(m.fireEvent("PLAYER_ENTERING_WORLD"), 0)
-    NS.Lifecycle:Release(NS.HOLD_PERF)
+    NS.Lifecycle:Release(HOLD_PERF)
     assertFalse(NS.IsStoodDown())
     assertEqual(seen.up, 1)
 end)

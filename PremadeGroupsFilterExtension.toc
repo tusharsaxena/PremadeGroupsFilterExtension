@@ -4,7 +4,7 @@
 ## Author: add1kted2ka0s
 ## Version: 0.1.0
 ## IconTexture: Interface\AddOns\PremadeGroupsFilterExtension\media\logos\premadegroupsfilterextension.logo.128.tga
-## SavedVariables: PremadeGroupsFilterExtensionDB, PremadeGroupsFilterExtensionPerfDB
+## SavedVariables: PremadeGroupsFilterExtensionDB
 ## Dependencies: PremadeGroupsFilter
 ## OptionalDeps: PremadeRegions, EllesmereUI, Ace3, LibStub, CallbackHandler-1.0, LibSharedMedia-3.0, LibDataBroker-1.1, LibDBIcon-1.0
 ## DefaultState: enabled
@@ -55,10 +55,9 @@ core\Database.lua
 core\DebugLogSetup.lua
 # Conventional: the launcher is built here and registered from OnEnable.
 core\LauncherSetup.lua
-# LOAD-BEARING: publishes NS.Lifecycle, which core\PerfSetup.lua hands the Perf descriptor at load.
+# Conventional: publishes NS.Lifecycle, NS.IsStoodDown and NS.HOLD_DISABLED; every reader
+# (core\PGFE.lua, the modules, settings\Panel.lua) reaches them at call time.
 core\LifecycleSetup.lua
-# LOAD-BEARING: publishes NS.Perf before any module takes it as a load-time upvalue.
-core\PerfSetup.lua
 # Conventional: the PGF bridge; every PGF read happens at call time.
 core\PGFBridge.lua
 # Conventional: the EllesmereUI bridge; every EllesmereUI read happens at call time.

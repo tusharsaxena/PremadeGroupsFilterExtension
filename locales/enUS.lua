@@ -40,8 +40,6 @@ L["Open/close the debug window — `/pgfe debug on|off` toggles logging"] =
     "Open/close the debug window — `/pgfe debug on|off` toggles logging"
 L["Write the diagnostics report to the debug console"] =
     "Write the diagnostics report to the debug console"
-L["Measure performance — try `/pgfe perf` for the workflow"] =
-    "Measure performance — try `/pgfe perf` for the workflow"
 L["Apply the filter options to Premade Groups Filter and search"] =
     "Apply the filter options to Premade Groups Filter and search"
 L["Remove this addon's block from the Advanced Filter Expression"] =

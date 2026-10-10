@@ -21,7 +21,7 @@ Total.
 - harness: every addon file in the TOC is annotated
 - harness: AceTimer is not embedded
 
-### test_surface_parity.lua (11)
+### test_surface_parity.lua (10)
 
 - parity: the Core seam's namespace surface survives the library's absence
 - parity: the DebugLog stub carries the whole live surface
@@ -31,7 +31,6 @@ Total.
 - parity: the Schema host stub carries the library's own members
 - parity: the Launcher stub carries the whole live surface
 - parity: the Lifecycle stub carries the whole live surface
-- parity: the Perf stub carries every member the addon calls
 - parity: the Compat arm carries every library member the addon wires
 - parity: no module reads PGF outside the bridge
 
@@ -48,7 +47,7 @@ Total.
 - setup: the Minimap button row inverts onto LibDBIcon's hide
 - setup: enable registers the settings category and the launcher, and stands up
 - setup: the debug console is built with the addon's folder and brand
-- setup: the perf harness is wired to the lifecycle latch, with no bucket declared yet
+- setup: no perf harness is wired (performance-§12)
 - setup: the Compat spec readers route through LibKa0s-Compat-1.0
 - setup: the media seam names this addon's folder
 - setup: the landing page lists every NS.COMMANDS row
@@ -62,7 +61,7 @@ Total.
 - slash: NS.COMMANDS is ordered positional triples with every reserved verb
 - slash: /pgfe and /premadegroupsfilterextension are registered through AceConsole
 - slash: disable and enable write the Enable row through the write seam
-- slash: perf answers through the harness and prints its lines
+- slash: perf is reserved but not registered
 - slash: the library-absent stub pins the library's disabled line
 - slash: the library-absent stub still answers version and refuses enable honestly
 
@@ -466,7 +465,7 @@ Total.
 | Suite | Cases |
 |-------|------:|
 | test_harness.lua | 10 |
-| test_surface_parity.lua | 11 |
+| test_surface_parity.lua | 10 |
 | test_setup.lua | 19 |
 | test_slash.lua | 6 |
 | test_disabled.lua | 5 |
@@ -492,4 +491,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **374** |
+| **Total** | **373** |

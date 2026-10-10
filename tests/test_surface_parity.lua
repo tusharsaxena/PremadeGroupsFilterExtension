@@ -61,19 +61,6 @@ test("parity: the Lifecycle stub carries the whole live surface", function()
     T.assertSurfaceParity(degraded.Lifecycle, "LibKa0s-Lifecycle-1.0")
 end)
 
--- The Perf stub answers only what the addon calls: the bracket idiom (`on`, `Note`), the latch
--- view (`suspended`) and the `perf` verb (`OnCommand`). Everything else on the instance is the
--- library's own capture machinery, reached by nothing in this addon.
-test("parity: the Perf stub carries every member the addon calls", function()
-    local live = T.newAddon().Perf
-    local degraded = T.newAddon{ skip = NO_LIBKA0S }.Perf
-    for _, k in ipairs({ "on", "Note", "OnCommand" }) do
-        T.assertEqual(type(degraded[k]), type(live[k]), "Perf." .. k)
-    end
-    T.assertEqual(degraded.suspended, false)
-    T.assertEqual(live.suspended, false)
-end)
-
 test("parity: the Compat arm carries every library member the addon wires", function()
     local degraded = T.newAddon{ skip = NO_LIBKA0S }
     T.assertSurfaceParity(degraded.Compat, "LibKa0s-Compat-1.0", {

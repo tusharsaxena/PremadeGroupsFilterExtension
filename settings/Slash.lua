@@ -5,7 +5,8 @@ local _, NS = ...
 -- What stays here is the ordered verb table (positional triples {name, desc, fn}) and the host verbs
 -- that reach into this addon's own state. The feature verbs `apply` and `clear` delegate to
 -- modules/Apply.lua; a typed slash command is a hardware event, so `apply` may search (a macro
--- button works the same way).
+-- button works the same way). `perf` is reserved but never registered: the addon holds the
+-- performance-§12 no-combat-path exemption, and the library answers it as an unknown command.
 
 local PGFE = NS.addon
 local L    = NS.L
@@ -16,7 +17,7 @@ local function trim(s) return (s or ""):gsub("^%s+", ""):gsub("%s+$", "") end
 local ENABLED_PATH = "enabled"
 
 local Sl   -- forward-declared: the handlers below reach it at call time
-local runConfig, runDebug, runReset, runResetAll, runEnabled, runPerf, runApply, runClear
+local runConfig, runDebug, runReset, runResetAll, runEnabled, runApply, runClear
 
 local COMMANDS = {
     {"help",     L["List available commands"],
@@ -45,8 +46,6 @@ local COMMANDS = {
         function(rest) runDebug(rest) end},
     {"diagnostics", L["Write the diagnostics report to the debug console"],
         function() NS.DebugLog:RunDiagnostics() end},
-    {"perf",     L["Measure performance — try `/pgfe perf` for the workflow"],
-        function(rest) runPerf(rest) end},
     {"apply",    L["Apply the filter options to Premade Groups Filter and search"],
         function() runApply() end},
     {"clear",    L["Remove this addon's block from the Advanced Filter Expression"],
@@ -187,11 +186,6 @@ function runDebug(rest)
     local DL = NS.DebugLog
     if not DL then return NS.Print("Debug console not ready yet") end
     if not DL:DebugVerb(rest) then DL:Toggle() end
-end
-
--- `perf` is a reserved verb the ADDON registers (performance-§4); the library returns the lines.
-function runPerf(rest)
-    for _, line in ipairs(NS.Perf.OnCommand(rest) or {}) do NS.Print(line) end
 end
 
 -- `apply` / `clear`: modules/Apply.lua decides; this only prints its message.

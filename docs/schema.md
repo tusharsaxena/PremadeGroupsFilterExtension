@@ -1,7 +1,7 @@
 # Schema — Ka0s Premade Groups Filter Extension
 
-SavedVariables: `PremadeGroupsFilterExtensionDB` (AceDB) and `PremadeGroupsFilterExtensionPerfDB`
-(the perf capture ring, owned by `LibKa0s-Perf-1.0`). Defaults live in `defaults/Profile.lua` and are
+SavedVariables: `PremadeGroupsFilterExtensionDB` (AceDB), the one global the TOC declares. There is
+no perf capture ring: the addon holds the performance-§12 exemption. Defaults live in `defaults/Profile.lua` and are
 assembled by `Settings.BuildDefaults` in `settings/Schema.lua`.
 
 ## `profile` (per AceDB profile)

@@ -104,11 +104,26 @@ test("setup: the debug console is built with the addon's folder and brand", func
     assertEqual(type(NS.DebugAtEnable), "function")
 end)
 
-test("setup: the perf harness is wired to the lifecycle latch, with no bucket declared yet", function()
+-- C-09 / PGE-09: the addon holds the performance-§12 no-combat-path exemption, so no harness is
+-- wired: no NS.Perf, no `perf` hold, one SavedVariables global, no core\PerfSetup.lua line. The
+-- library stays vendored whole (anti-patterns #48), Perf.lua included.
+-- red under: restore the PerfDB SavedVariable, the PerfSetup TOC line or NS.HOLD_PERF
+test("setup: no perf harness is wired (performance-§12)", function()
     local NS = T.newAddon()
-    assertFalse(NS.Perf.on)
-    assertFalse(NS.Perf.suspended)
-    assertEqual(#NS.Perf.BUCKET_ORDER, 0)
+    assertEqual(NS.Perf, nil, "NS.Perf")
+    assertEqual(NS.HOLD_PERF, nil, "NS.HOLD_PERF")
+    local fh = assert(io.open("PremadeGroupsFilterExtension.toc", "rb"))
+    local toc = fh:read("*a"):gsub("\r", "")
+    fh:close()
+    assertEqual(toc:match("\n## SavedVariables: ([^\n]*)"), "PremadeGroupsFilterExtensionDB")
+    for line in toc:gmatch("[^\n]+") do
+        if line:sub(1, 1) ~= "#" then
+            assertTrue(line ~= "core\\PerfSetup.lua", "the TOC loads core\\PerfSetup.lua")
+        end
+    end
+    local lib = io.open("libs/LibKa0s/Perf.lua", "rb")
+    assertTrue(lib ~= nil, "libs/LibKa0s/Perf.lua stays vendored")
+    if lib then lib:close() end
 end)
 
 test("setup: the Compat spec readers route through LibKa0s-Compat-1.0", function()

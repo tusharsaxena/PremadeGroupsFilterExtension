@@ -44,7 +44,7 @@ Recorded here because the plan names them provisionally.
 
 | What | Exact name | Notes |
 |---|---|---|
-| Stand-down accessor | **`NS.IsStoodDown()`** | Published by `core/LifecycleSetup.lua`; true while any hold (`disabled`, `perf`) is taken. The plan's provisional `NS.Lifecycle:IsStoodDown()` does not exist: use `NS.IsStoodDown()` (or `NS.Lifecycle:IsDown()`). Every hook body returns at once when it answers true. |
+| Stand-down accessor | **`NS.IsStoodDown()`** | Published by `core/LifecycleSetup.lua`; true while a hold is taken; production takes one, `disabled` (no perf harness is wired, so nothing takes the library's `perf` hold). The plan's provisional `NS.Lifecycle:IsStoodDown()` does not exist: use `NS.IsStoodDown()` (or `NS.Lifecycle:IsDown()`). Every hook body returns at once when it answers true. |
 | Disabling in a test | `NS.addon:OnSlashCommand("disable")`, or `NS.addon.Settings.Helpers.Set("enabled", false)` | Both go through the write seam to the latch. **`NS.addon:Disable()` is not the stand-down** (that is AceAddon's, and the kit fake does not model it). |
 | Test factories | **`T.newAddon(opts)`**, **`T.bootAddon(opts)`**, **`T.enableAddon(opts)`** on `local T = _G.PGFE_TEST` | Each returns `(NS, env, mock)`, env and mock the same table. `newAddon`: files loaded. `bootAddon`: + `OnInitialize` (db, migrations). `enableAddon`: + `OnEnable` (events, settings category, launcher, latch). |
 | Factory `opts` | `currentRegion`, `realmName`, `mapTable`, `specID`, `role`, `classFile`, `inCombat` seed the mock; `skip` (file list), `mock` (fn), `addonName` | See `tests/loader.lua`. |
@@ -55,7 +55,7 @@ Recorded here because the plan names them provisionally.
 | Feature events | append `{ "EVENT", "MethodName" }` to `NS.FEATURE_EVENTS` at file load | `core/PGFE.lua` registers the list on enable and stand-up and unregisters it on stand-down. Teardown/rebuild steps go in `NS.STAND_DOWN` / `NS.STAND_UP`. |
 | Spec readers | `NS.Compat.GetSpecialization()`, `NS.Compat.GetSpecializationInfo(i)` | `core/Compat.lua`, through `LibKa0s-Compat-1.0`; use these rather than the bare globals. |
 | Defaults | `NS.C.PROFILE`, `NS.C.CHAR_DEFAULTS`, `NS.C.GLOBAL_DEFAULTS` | `defaults/Profile.lua`; db at `NS.addon.db` (== `NS.db`). |
-| Perf bucket | declare `{ key = "envInject" }` in `core/PerfSetup.lua` in the change that brackets the env hook | Not declared at v0.1.0: the env hook is not bracketed yet, and a bucket no bracket reaches reads 0.000 (performance-§3). |
+| Perf | No Perf instance | performance-§12 exemption; the re-arm trigger is in `## Documented deviations`. |
 
 ## Module Map
 
@@ -67,9 +67,9 @@ table and the load-order reasoning: [`module-map.md`](module-map.md).
 `LibKa0s` majors wired, one setup file each: Core (`core/CoreSetup.lua`), Media
 (`core/MediaSetup.lua`), Compat (`core/Compat.lua`), Env (`core/EnvSetup.lua`), DebugLog
 (`core/DebugLogSetup.lua`), Launcher (`core/LauncherSetup.lua`), Lifecycle
-(`core/LifecycleSetup.lua`), Perf (`core/PerfSetup.lua`), Schema (`settings/SchemaSetup.lua`), Options
+(`core/LifecycleSetup.lua`), Schema (`settings/SchemaSetup.lua`), Options
 (`settings/OptionsSetup.lua`), Slash (`settings/Slash.lua`). Vendored and not wired: Bus, Pool, Item,
-Widgets. Ace3, LibSharedMedia, LibDataBroker and LibDBIcon are vendored under `libs/` too
+Widgets, Perf (the performance-§12 exemption). Ace3, LibSharedMedia, LibDataBroker and LibDBIcon are vendored under `libs/` too
 (`DEPENDENCIES.md`).
 
 The feature modules, one purpose each:
@@ -116,7 +116,6 @@ Three AceDB scopes on `PremadeGroupsFilterExtensionDB`; full shape and defaults 
     load pass.
   - `profile.panelCollapsed` — the attached panel folded to its title strip. Owner `modules/Panel.lua`.
   - `global.minimap` — LibDBIcon's own table (`hide`, position), handed to the launcher.
-- **`PremadeGroupsFilterExtensionPerfDB`** — the perf capture ring, written by `LibKa0s-Perf-1.0`.
 
 ## Message Bus
 
@@ -138,11 +137,12 @@ None. The addon defines no AceEvent messages; modules call each other directly t
 | `profile` | Lists profiles, or switches to one |
 | `debug` | The console window; `debug on\|off` the logging flag; `debug diagnostics` the report |
 | `diagnostics` | Writes the diagnostics report to the console |
-| `perf` | The `LibKa0s-Perf-1.0` capture workflow |
 | `apply` | `NS.Apply.Run{ search = true }` (a typed command is a hardware event, so it may search) |
 | `clear` | `NS.Apply.Clear()` |
 
 `apply` and `clear` are refused with the library's disabled line while the addon is stood down.
+`perf` is reserved and unregistered (performance-§12 exemption): the library answers it with the
+unknown-command line and the index.
 
 ## Event Subscriptions
 
@@ -356,8 +356,8 @@ is kept line for line, blank edge lines included. No clauses means no block. Ove
 
 Every `.md` under `docs/` appears in exactly one table below. Out of scope and named once each as
 directories, never row by row: `docs/audits/`, `docs/reviews/`, `docs/automated-tests/<run>/`,
-`docs/perf-analysis/<run>/`, `docs/revendor/<date>-v<tag>/`, `docs/superpowers/` (the design spec
-and the implementation plan) and `docs/investigations/`.
+`docs/revendor/<date>-v<tag>/`, `docs/superpowers/` (the design spec and the implementation plan)
+and `docs/investigations/`.
 
 ### Required (documentation-§3, Tier 1)
 
@@ -374,8 +374,8 @@ and the implementation plan) and `docs/investigations/`.
 
 | Doc | Status | Trigger |
 |---|---|---|
-| `perf-analysis/README.md` | Present | The performance harness is wired (`core/PerfSetup.lua`) |
-| `slash-dispatch.md` | Present | 16 commands in `NS.COMMANDS` |
+| `perf-analysis/README.md` | Not applicable | The performance-§12 exemption is held; no harness is wired |
+| `slash-dispatch.md` | Present | 15 commands in `NS.COMMANDS` |
 | `profiles.md` | Present | The Profiles page ships in the options UI |
 | `debug.md` | Present | The diagnostics dump ships in every addon (debug-logging-§14) |
 | `midnight-quirks.md` | Not applicable | The addon carries no client-version workaround of its own |
