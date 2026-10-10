@@ -32,6 +32,7 @@ archaeology, for the same reason a skip is never a pass (`automated-tests-§4`).
 
 | Run | Commit | Tree | Version | Lint w/e | Files | Tests | Perf | NLOC | Funcs | Avg NLOC | Avg CCN | Max CCN | CCN warn | Verdict |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| [`20261010-130739`](20261010-130739/) | `33c358f` | clean | 0.1.0 | 0/0 | 60 | 414/1/415 | pass | 8665 | 1281 | 5.8 | 2.0 | 14 | 0 | **green** |
 | [`20261010-122612`](20261010-122612/) | `ee090c7` | clean | 0.1.0 | 0/0 | 60 | 414/1/415 | pass | 8665 | 1281 | 5.8 | 2.0 | 14 | 0 | **green** |
 | [`20261009-082905`](20261009-082905/) | `2c78ddb` | clean | 0.1.0 → 0.1.0 | 0/0 | 51 | 186/1/187 | skip | 4144 | 653 | 4.8 | 2.0 | 13 | 0 | **green** |
 | [`20261009-075822`](20261009-075822/) | `5939cc7` | clean | 0.1.0 | 0/0 | 50 | 102/1/103 | skip | 2010 | 404 | 4.0 | 1.9 | 13 | 0 | **green** |
@@ -39,10 +40,10 @@ archaeology, for the same reason a skip is never a pass (`automated-tests-§4`).
 ## Test suite
 
 **415 cases** — 414 passed, 0 failed, 1 skipped. The generated inventory
-[`20261010-122612/test-cases.md`](20261010-122612/test-cases.md) is the authority on which cases existed at this run;
+[`20261010-130739/test-cases.md`](20261010-130739/test-cases.md) is the authority on which cases existed at this run;
 `docs/test-cases.md` is that same list at HEAD.
 
-Moved **187 → 415** since the previous run.
+Unchanged from the previous run at 415 cases.
 
 **1 case(s) reported a `skip`.** A skip is counted in the total and never in `passed`, and at
 the release gate it is NOT EVALUATED rather than passed (`automated-tests-§3`).
@@ -59,23 +60,23 @@ to whoever thinks to open `.luacheckrc`.
 ## Perf
 
 **6 scenarios** from `tests/perf.lua`; the measurements are in
-[`20261010-122612/perf.json`](20261010-122612/perf.json).
+[`20261010-130739/perf.json`](20261010-130739/perf.json).
 
 | `scenario` | `iters` | `ms/iter` | `api/iter` | `bytes/iter` |
 |---|---|---|---|---|
-| `envNoPR` | 1000 | 0.00236 | 1.20 | 80.1 |
-| `envWithPR` | 1000 | 0.00087 | 0.00 | 0.0 |
-| `envStoodDown` | 1000 | 0.00055 | 0.00 | 0.0 |
-| `searchRowPaint` | 1000 | 0.00249 | 5.20 | 160.4 |
-| `applicantRowPaint` | 1000 | 0.00242 | 5.20 | 160.4 |
-| `combatEvents` | 1000 | 0.13517 | 143.00 | 28161.1 |
+| `envNoPR` | 1000 | 0.00229 | 1.20 | 80.1 |
+| `envWithPR` | 1000 | 0.00080 | 0.00 | 0.0 |
+| `envStoodDown` | 1000 | 0.00047 | 0.00 | 0.0 |
+| `searchRowPaint` | 1000 | 0.00251 | 5.20 | 160.4 |
+| `applicantRowPaint` | 1000 | 0.00251 | 5.20 | 160.4 |
+| `combatEvents` | 1000 | 0.15104 | 143.00 | 28161.1 |
 
 `perf` never fails a run and never blocks a commit — it is recorded, read and compared, not
 thresholded (`performance-§9`). It does gate the **tag** (`automated-tests-§3`).
 
 ## Complexity watch list
 
-Current as of [`20261010-122612`](20261010-122612/) — **this run's measurement, not its diff.** Max CCN **14** across 1281
+Current as of [`20261010-130739`](20261010-130739/) — **this run's measurement, not its diff.** Max CCN **14** across 1281
 functions, **0** of them warned on; 1 file(s) in the 1000–1500 band and 0 over the 1500 cap
 (`layout-§1`).
 

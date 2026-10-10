@@ -26,7 +26,7 @@ review bundle `docs/reviews/2026-10-10/` were consolidated in
 `docs/reviews/2026-10-10/06_CONSOLIDATED_FINDINGS.md` and fixed on `fix/2026-10-10-audit-review`,
 closing issues #4-#19, or filed upstream as LibKa0s#46, LibKa0s#47, WowAddonStandards#8, #9, #10;
 the re-vendor is tracked in #25). The newest automated-test record is
-`docs/automated-tests/20261010-122612/`.
+`docs/automated-tests/20261010-130739/`.
 
 When in doubt, treat standard conformance as a hard requirement and ask.
 
