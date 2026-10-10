@@ -151,12 +151,13 @@ Total.
 - envinject: stood down → hook is a no-op
 - envinject: the block's guard is off while Toggle PGF Extension Filters is off
 
-### test_regiontags.lua (8)
+### test_regiontags.lua (9)
 
 - regiontags: a search row gets the leader's colored region in front of its activity
 - regiontags: a leader on the player's own realm, an unknown realm, an unsupported portal
 - regiontags: EU realms are tagged by language
 - regiontags: an applicant gets their region in front of their name
+- regiontags: a painter the client lacks is skipped, the other still installs
 - regiontags: no tag while stood down, with the setting off, or with PremadeRegions loaded
 - regiontags: the setting is a schema row, on by default
 - regiontags: a name that is not a plain string gets no tag and raises nothing
@@ -425,7 +426,7 @@ Total.
 | test_filters.lua | 11 |
 | test_presets.lua | 5 |
 | test_envinject.lua | 10 |
-| test_regiontags.lua | 8 |
+| test_regiontags.lua | 9 |
 | test_bridge.lua | 13 |
 | test_euibridge.lua | 17 |
 | test_apply.lua | 16 |
@@ -439,4 +440,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **325** |
+| **Total** | **326** |
