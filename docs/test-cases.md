@@ -146,10 +146,11 @@ Total.
 - expression: the block passes everything when the env hook did not run
 - expression: without the hook, the user's own text still decides
 
-### test_filters.lua (11)
+### test_filters.lua (12)
 
 - filters: clause opts honor enable flags and portal order
 - filters: regions on with none selected for this portal filters on no region
+- filters: every region of the portal ticked adds no region clause
 - filters: playstyles on with some ticked filter on those, in the game's order
 - filters: validation
 - filters: set and region toggle write the live table
@@ -516,7 +517,7 @@ Total.
 | test_targeting.lua | 9 |
 | test_season.lua | 8 |
 | test_expression.lua | 18 |
-| test_filters.lua | 11 |
+| test_filters.lua | 12 |
 | test_presets.lua | 6 |
 | test_envinject.lua | 14 |
 | test_regiontags.lua | 9 |
@@ -535,4 +536,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **413** |
+| **Total** | **414** |
