@@ -165,8 +165,7 @@ end
 local function updateReadout(f)
     local dungeons = NS.Season.GetDungeons()
     if not dungeons then
-        f.readout:SetText(L.READOUT_LOADING)
-        if C_MythicPlus.RequestMapInfo then C_MythicPlus.RequestMapInfo() end
+        f.readout:SetText(L.READOUT_LOADING) -- Season.GetDungeons already asked the server
         return
     end
     local level, parts = NS.Filters.Get().keyLevel, {}
@@ -875,12 +874,15 @@ function addon.OnPanelSeasonData()
     updateReadout(f)
 end
 
+-- A loading screen re-arms the season-data request, so one lost on the way recovers here.
 function addon.OnPanelEnteringWorld()
+    NS.Season.ResetRequest()
     Panel.UpdateVisibility()
 end
 
 NS.FEATURE_EVENTS[#NS.FEATURE_EVENTS + 1] = { "CHALLENGE_MODE_MAPS_UPDATE", "OnPanelSeasonData" }
 NS.FEATURE_EVENTS[#NS.FEATURE_EVENTS + 1] = { "CHALLENGE_MODE_COMPLETED", "OnPanelSeasonData" }
+NS.FEATURE_EVENTS[#NS.FEATURE_EVENTS + 1] = { "MYTHIC_PLUS_CURRENT_AFFIX_UPDATE", "OnPanelSeasonData" }
 NS.FEATURE_EVENTS[#NS.FEATURE_EVENTS + 1] = { "PLAYER_ENTERING_WORLD", "OnPanelEnteringWorld" }
 NS.STAND_DOWN[#NS.STAND_DOWN + 1] = function()
     if Panel.frame then Panel.frame:Hide() end

@@ -17,6 +17,8 @@
 --   mapTable       C_ChallengeMode.GetMapTable()'s answer (nil = not loaded yet)
 --   mapUIInfo      [cmID] = { name = ..., mapID = ... } for C_ChallengeMode.GetMapUIInfo
 --   seasonBest     [cmID] = { intime = {level=n}|nil, overtime = {level=n}|nil }
+--   mapInfoRequests  how many times C_MythicPlus.RequestMapInfo() was called; the mock never fires
+--                  the reply event (a suite fires CHALLENGE_MODE_MAPS_UPDATE itself)
 --   specID, role   GetSpecializationInfo(index)'s specID and role token (the deprecated globals
 --                  and C_SpecializationInfo answer the same; a suite nils either rung)
 --   classFile      UnitClass("player")'s class token
@@ -38,6 +40,7 @@ local function build()
     M.mapTable      = nil
     M.mapUIInfo     = {}
     M.seasonBest    = {}
+    M.mapInfoRequests = 0
     M.specID        = 253
     M.role          = "DAMAGER"
     M.classFile     = "HUNTER"
@@ -77,7 +80,7 @@ local function build()
             if not sb then return nil end
             return sb.intime, sb.overtime
         end,
-        RequestMapInfo = function() end,
+        RequestMapInfo = function() M.mapInfoRequests = M.mapInfoRequests + 1 end,
     }
 
     -- A REAL post-hook, not the base's no-op: the env injection is reachable only through PGF's

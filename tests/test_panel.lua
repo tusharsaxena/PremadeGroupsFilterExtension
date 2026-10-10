@@ -291,6 +291,79 @@ test("panel: readout says loading until the season data arrives", function()
     assertTrue(NS.Panel.frame.readout:GetText() ~= NS.L.READOUT_LOADING)
 end)
 
+-- C-06 / C-07: the season-data request goes out once per episode, from Season.GetDungeons (spec
+-- section 4, the state machine), never once per CHALLENGE_MODE_MAPS_UPDATE round trip.
+test("panel: an empty map table asks the server once, not every round trip", function()
+    local NS, _, m = T.enableAddon{ mapTable = {} }
+    local f = NS.Panel.Create(); NS.Panel.Refresh()
+    m.fireEvent("CHALLENGE_MODE_MAPS_UPDATE")
+    m.fireEvent("CHALLENGE_MODE_MAPS_UPDATE")
+    m.fireEvent("CHALLENGE_MODE_MAPS_UPDATE")
+    m.fireEvent("CHALLENGE_MODE_COMPLETED")
+    typeInto(f.levelBox, "12"); f.levelBox:__fire("OnEnterPressed")
+    -- red under: drop the request guard
+    assertEqual(m.mapInfoRequests, 1)
+    assertEqual(f.readout:GetText(), NS.L.READOUT_LOADING)
+end)
+
+test("panel: a populated map table still requests once", function()
+    local NS, _, m = T.enableAddon{}
+    seasonFromScreenshot(m)
+    NS.Panel.Create(); NS.Panel.Refresh(); NS.Panel.Refresh()
+    m.fireEvent("CHALLENGE_MODE_MAPS_UPDATE")
+    m.fireEvent("MYTHIC_PLUS_CURRENT_AFFIX_UPDATE")
+    -- red under: request only when GetDungeons is nil
+    assertEqual(m.mapInfoRequests, 1)
+end)
+
+test("panel: a rollover re-arms the request once, not once per event", function()
+    local NS, _, m = T.enableAddon{}
+    seasonFromScreenshot(m)
+    NS.Panel.Create(); NS.Panel.Refresh()
+    local before = m.mapInfoRequests
+    m.mapTable = {}
+    m.fireEvent("CHALLENGE_MODE_MAPS_UPDATE")
+    m.fireEvent("CHALLENGE_MODE_MAPS_UPDATE")
+    -- red under: leave lastFull set on reset
+    assertEqual(m.mapInfoRequests, before + 1)
+end)
+
+test("panel: one event after a rollover already sends the re-armed request", function()
+    local NS, _, m = T.enableAddon{}
+    -- Smart off, so the event makes exactly one season read (the readout's), not two.
+    NS.Filters.Get().smartKeyLevel = false
+    seasonFromScreenshot(m)
+    NS.Panel.Create(); NS.Panel.Refresh()
+    local before = m.mapInfoRequests
+    m.mapTable = {}
+    m.fireEvent("CHALLENGE_MODE_MAPS_UPDATE")
+    -- red under: ResetRequest without the RequestOnce after it
+    assertEqual(m.mapInfoRequests, before + 1)
+end)
+
+test("panel: PLAYER_ENTERING_WORLD re-arms the request", function()
+    local NS, _, m = T.enableAddon{ mapTable = {} }
+    NS.Panel.Create(); NS.Panel.Refresh()
+    assertEqual(m.mapInfoRequests, 1)
+    m.fireEvent("PLAYER_ENTERING_WORLD")
+    m.fireEvent("CHALLENGE_MODE_MAPS_UPDATE")
+    -- red under: drop the ResetRequest from OnPanelEnteringWorld
+    assertEqual(m.mapInfoRequests, 2)
+end)
+
+test("panel: the affix event recomputes Smart and leaves loading", function()
+    local NS, _, m = T.enableAddon{}
+    NS.Filters.Get().smartKeyLevel = true
+    local f = NS.Panel.Create(); NS.Panel.Refresh()
+    assertEqual(f.readout:GetText(), NS.L.READOUT_LOADING)
+    seasonFromScreenshot(m)
+    m.fireEvent("MYTHIC_PLUS_CURRENT_AFFIX_UPDATE")
+    -- red under: drop the AFFIX FEATURE_EVENTS row
+    assertEqual(NS.Filters.Get().keyLevel, 14)
+    assertEqual(f.levelBox:GetText(), "14")
+    assertTrue(f.readout:GetText() ~= NS.L.READOUT_LOADING)
+end)
+
 test("panel: checkboxes write their filter option", function()
     local NS = T.enableAddon{}
     NS.Panel.Create(); NS.Panel.Refresh()

@@ -156,7 +156,8 @@ are setup and stay up while disabled.
 | `PLAYER_SPECIALIZATION_CHANGED` | `OnPlayerSpecChanged` | `modules/EnvInject.lua` | Same, for `unit == "player"` |
 | `CHALLENGE_MODE_MAPS_UPDATE` | `OnPanelSeasonData` | `modules/Panel.lua` | Recomputes the Smart key level (when on) and rebuilds the best-timed readout once season data arrives |
 | `CHALLENGE_MODE_COMPLETED` | `OnPanelSeasonData` | `modules/Panel.lua` | Same, after a key finishes |
-| `PLAYER_ENTERING_WORLD` | `OnPanelEnteringWorld` | `modules/Panel.lua` | `Panel.UpdateVisibility()` |
+| `MYTHIC_PLUS_CURRENT_AFFIX_UPDATE` | `OnPanelSeasonData` | `modules/Panel.lua` | Same, when the season's affix data arrives (it can land after the map table) |
+| `PLAYER_ENTERING_WORLD` | `OnPanelEnteringWorld` | `modules/Panel.lua` | Re-arms the season-data request (`Season.ResetRequest()`), then `Panel.UpdateVisibility()` |
 | `UI_SCALE_CHANGED` | `OnEUISkinScale` | `modules/EUISkin.lua` | Re-lays the skinned checkboxes' accent ring and block in whole pixels (nothing to do unless skinned) |
 | `DISPLAY_SIZE_CHANGED` | `OnEUISkinScale` | `modules/EUISkin.lua` | Same |
 
@@ -345,6 +346,9 @@ is kept line for line, blank edge lines included. No clauses means no block. Ove
 - The skinned header-only collapse (EllesmereUI's 25px shell bar with its stretched atlas border),
   the shell border's layering over the body, and the dropdowns' look are checked in game only
   ([`smoke-tests.md`](smoke-tests.md), SKIN-*).
+- Best timed levels read 0 until the server answers the season-data request
+  (`C_MythicPlus.RequestMapInfo`, sent once per episode by `Season.GetDungeons`). The client cannot
+  tell a dungeon never timed from one whose best has not loaded yet: both answer no in-time level.
 
 ## Documentation map
 

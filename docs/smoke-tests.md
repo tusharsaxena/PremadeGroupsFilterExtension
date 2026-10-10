@@ -18,7 +18,7 @@ takes the next free number in its theme and a retired number is never reused.
 | COMBAT-1..2 | Combat | Apply refusal, settings panel in combat |
 | DIAG-1..2 | Diagnostics | Debug console, the diagnostics report |
 | DEGRADED-1 | Degraded install | LibKa0s absent |
-| APPLY-1..24 | Attached panel and Apply | The panel under PGF, targeting, regions, playstyle, composition, leader, age, presets, Clear, PGF minimized, collapse, layout, tooltips, Smart key level, filters toggle, row spacing, region tags |
+| APPLY-1..25 | Attached panel and Apply | The panel under PGF, targeting, regions, playstyle, composition, leader, age, presets, Clear, PGF minimized, collapse, layout, tooltips, Smart key level, filters toggle, row spacing, region tags, the season-data request |
 | LOC-1..2 | Non-English client | Realm-name and dungeon-name seams on a deDE/frFR client |
 | SKIN-1..10 | EllesmereUI skin | The gate's four conditions, the PGF skin's install states and link, the settings tab, the painted panel, live on, reload off |
 
@@ -217,6 +217,13 @@ substitute its numbers.
   their region. Settings → General → untick *Show server regions in the Group Finder*, refresh →
   no tags. Enable PremadeRegions again → exactly one tag per row (its own). No Lua error and no
   "action blocked" with `/console taintLog 1`. Result:
+- **APPLY-25. Season-data request, off-season and fresh login.** With `/etrace` (or an event trace
+  addon) filtered to `CHALLENGE_MODE_MAPS_UPDATE`, log in fresh and open PGF on Dungeons → the
+  readout says loading, then fills in; the trace shows a handful of updates, not a steady stream.
+  Off-season (the map table empty), open the panel and leave it up a minute → the readout stays on
+  loading and the trace stays quiet: exactly one `C_MythicPlus.RequestMapInfo` per loading screen,
+  no request/reply loop. Zone through a loading screen → one more request, then quiet again.
+  Headless stand-in: the `panel:` request-count cases (`m.mapInfoRequests`). Result:
 
 ## EllesmereUI skin
 
@@ -292,4 +299,5 @@ or wrong. These are the addon's locale seams.
 |---|---|---|
 | INSTALL-1..3, SLASH-1..3, PANEL-1..3, PROFILE-1..2, STATE-1..2, COMBAT-2, DIAG-1..2, DEGRADED-1 | Scaffold, 2026-10-09 | No client pass recorded yet |
 | COMBAT-1, APPLY-1..24, LOC-1..2 | M+ v0.1 (0.1.0) | Built and covered headlessly; no client pass recorded yet |
+| APPLY-25 | 2026-10-10 audit fixes (C-06, C-07) | Covered headlessly by the request-count cases; the request/reply pacing needs the client |
 | SKIN-1..10 | EllesmereUI skin (2026-10-09) | Built and covered headlessly against an EllesmereUI fake; the look needs the client |

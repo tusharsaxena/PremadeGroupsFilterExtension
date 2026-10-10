@@ -36,3 +36,12 @@ test("season: unknown mapID falls back to initials", function()
     m.mapTable = { 9999 }; m.mapUIInfo[9999] = { name = "New Shiny Place", mapID = 1 }
     assertEqual(NS.Season.GetDungeons()[1].short, "NSP")
 end)
+
+-- C-06: the request lives in Season.GetDungeons, so a caller with no panel still asks the server.
+test("season: Apply with no panel still requests season data", function()
+    local NS, _, m = T.enableAddon{}
+    NS.Apply.Run{}
+    assertNil(NS.Panel.frame)
+    -- red under: move the RequestOnce from GetDungeons back to the panel's readout
+    assertEqual(m.mapInfoRequests, 1)
+end)

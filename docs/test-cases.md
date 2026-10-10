@@ -95,7 +95,7 @@ Total.
 - targeting: SmartLevel is the lowest best timed level + 1
 - targeting: SmartLevel counts never-timed as 0, clamps to 2..40, nil without rows
 
-### test_season.lua (6)
+### test_season.lua (7)
 
 - season: the module publishes its namespace table
 - season: nil map table → nil (loading)
@@ -103,6 +103,7 @@ Total.
 - season: best timed from intimeInfo, untimed → 0, short from PGF keyword
 - season: dungeon never run (GetSeasonBestForMap → nil) → best timed 0
 - season: unknown mapID falls back to initials
+- season: Apply with no panel still requests season data
 
 ### test_expression.lua (18)
 
@@ -235,7 +236,7 @@ Total.
 - apply: refuses while Toggle PGF Extension Filters is off, writing nothing
 - apply: the filtersActive setting is a schema row, and its writes remove / rewrite the block
 
-### test_panel.lua (73)
+### test_panel.lua (79)
 
 - panel: the module publishes its namespace table
 - panel: anchored under PGF dialog, both edges
@@ -258,6 +259,12 @@ Total.
 - panel: the age box commits whole values and re-syncs a rejected one
 - panel: readout highlights targeted dungeons, grays the rest
 - panel: readout says loading until the season data arrives
+- panel: an empty map table asks the server once, not every round trip
+- panel: a populated map table still requests once
+- panel: a rollover re-arms the request once, not once per event
+- panel: one event after a rollover already sends the re-armed request
+- panel: PLAYER_ENTERING_WORLD re-arms the request
+- panel: the affix event recomputes Smart and leaves loading
 - panel: checkboxes write their filter option
 - panel: Refresh re-reads the filters into the widgets
 - panel: Apply searches and prints; the range field follows
@@ -447,7 +454,7 @@ Total.
 | test_disabled.lua | 5 |
 | test_regions.lua | 12 |
 | test_targeting.lua | 9 |
-| test_season.lua | 6 |
+| test_season.lua | 7 |
 | test_expression.lua | 18 |
 | test_filters.lua | 11 |
 | test_presets.lua | 5 |
@@ -456,7 +463,7 @@ Total.
 | test_bridge.lua | 18 |
 | test_euibridge.lua | 17 |
 | test_apply.lua | 16 |
-| test_panel.lua | 73 |
+| test_panel.lua | 79 |
 | test_euiskin.lua | 32 |
 | test_euisettings.lua | 19 |
 | test_vendor_sync.lua | 3 |
@@ -466,4 +473,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **352** |
+| **Total** | **359** |
