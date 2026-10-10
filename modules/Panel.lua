@@ -48,7 +48,10 @@ local BODY_BOTTOM   = 12
 local LABEL_X       = 35
 local CHECK_SIZE    = 32          -- UICheckButtonTemplate's size; the label starts LABEL_X - 32 past it
 local INPUT_GAP     = 10
-local SMART_GAP     = 16          -- the level box to the Smart box: room so the first row is not crowded
+-- The level box to the Smart box's frame. Both skins draw the box ~4px inside its frame (EllesmereUI's
+-- borderInset; Blizzard's art margin) and keep its left edge, so the visible gap is SMART_GAP + 4:
+-- 60 at the owner's request (20, doubled to 40, then 50% more).
+local SMART_GAP     = 56
 local BUTTON_GAP    = 4
 local BUTTON_PAD    = 20          -- a button's width past its text
 local READOUT_PULL  = 6           -- the dungeon readout sits this much closer under the key-level row
@@ -248,14 +251,15 @@ local function numberBox(parent, after, digits, key, accept, tip, locked)
     return box
 end
 
--- The Smart checkbox, right of the level box, with its own label.
+-- The Smart checkbox, right of the level box, with its own label. The label starts the rows'
+-- LABEL_X - CHECK_SIZE past the box's right edge, so the box-to-text gap matches every row's.
 local function buildSmart(f, body, after)
     local cb = checkButton(f, body, "smartKeyLevel")
     cb:SetPoint("LEFT", after, "RIGHT", SMART_GAP, 0)
     local fs = body:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-    fs:SetPoint("LEFT", cb, "RIGHT", -2, 0)
+    fs:SetPoint("LEFT", cb, "RIGHT", LABEL_X - CHECK_SIZE, 0)
     fs:SetText(L.SMART)
-    stretchHitRect(cb, fs, -2)
+    stretchHitRect(cb, fs, LABEL_X - CHECK_SIZE)
     tooltip(cb, L.SMART, L.SMART_TOOLTIP)
     f.smartLabel = fs
 end

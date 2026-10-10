@@ -900,9 +900,14 @@ test("panel: Smart sits right of the level box; ticked, it locks the box and set
     local p, rel, rp, x = cb:GetPoint(1)
     assertEqual(p, "LEFT"); assertTrue(rel == f.levelBox); assertEqual(rp, "RIGHT")
     -- Owner request: Smart a bit further right, so the row is less crowded.
-    -- red under: the old BUTTON_GAP (4)
-    assertEqual(x, 16)
+    -- red under: the old BUTTON_GAP (4); then the owner asked for a 60px visible gap (56 + 4)
+    assertEqual(x, 56)
     assertEqual(f.smartLabel:GetText(), NS.L.SMART)
+    -- Owner report (screenshot): the box-to-text gap matches the rows' (LABEL_X 35 - 32 box).
+    -- red under: the old LEFT-to-RIGHT, -2 anchor
+    local lp, lrel, lrp, lx = f.smartLabel:GetPoint(1)
+    assertEqual(lp, "LEFT"); assertTrue(lrel == cb); assertEqual(lrp, "RIGHT")
+    assertEqual(lx, 35 - 32)
     assertTrue(f.levelBox:IsEnabled())
     cb:SetChecked(true); cb:__fire("OnClick")
     assertTrue(NS.Filters.Get().smartKeyLevel)
@@ -976,7 +981,7 @@ test("panel: the level row fits the body: label, box, Smart and its label", func
     local f = NS.Panel.Create()
     local _, _, _, gap = f.levelBox:GetPoint(1)
     local _, _, _, smartGap = f.checks.smartKeyLevel:GetPoint(1)
-    local right = 35 + #NS.L.KEY_TARGETING * 6 + gap + f.levelBox.__width + smartGap + 32 - 2
+    local right = 35 + #NS.L.KEY_TARGETING * 6 + gap + f.levelBox.__width + smartGap + 32 + 3
         + f.smartLabel:GetStringWidth()
     assertTrue(right < 398, "ends at " .. right)
 end)

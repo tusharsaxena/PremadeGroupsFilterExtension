@@ -331,9 +331,15 @@ test("euiskin: checkboxes shrink to 24, row boxes stay on their row, hit rects f
     -- red under: shrinkCheckBox not stretching the row box's hit rect
     local _, r = row:GetHitRectInsets()
     assertEqual(r, rowR - 8)
-    -- red under: treating the Smart box as a row box (labelOnBox ignored)
+    -- Owner report (screenshot): Smart's box-to-text gap must match the rows'. A row's text stays
+    -- put while its box's right edge moves in by 8, so Smart's text moves out by 8 with its hit rect.
+    -- red under: Smart's label left where the shrink found it
     local _, sr = smart:GetHitRectInsets()
-    assertEqual(sr, smartR, "Smart's label rides the box")
+    assertEqual(sr, smartR - 8, "Smart's hit rect follows its label")
+    local _, _, _, rowLabelX = f.checks.keyTargeting:GetPoint(1)
+    local rowGap = 35 - (rowLabelX + row.__width)
+    local _, _, _, smartGap = f.smartLabel:GetPoint(1)
+    assertEqual(smartGap, rowGap, "Smart's text sits as far from its box as a row's")
     local p2, rel2, rp2, x2, y2 = smart:GetPoint(1)
     assertEqual(p2, sp); assertEqual(rel2, srel); assertEqual(rp2, srp); assertEqual(x2, sx); assertEqual(y2, sy)
     assertEqual(#m.eui.callsFor("Checkbox", row), 1)

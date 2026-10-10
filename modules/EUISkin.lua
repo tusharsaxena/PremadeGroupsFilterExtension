@@ -70,9 +70,10 @@ function EUISkin.HasFacade() return S ~= nil end
 -- UICheckButtonTemplate is 32px; the skin's box is drawn CHECKBOX_BORDER_INSET in from the frame,
 -- so the frame shrinks to 24 for a 16px box. A TOP-anchored row box moves down by half what it
 -- loses, so it stays centered on its row. Its label is pinned to the body, so the box's right edge
--- moved away from it: the hit rect stretches by what was lost. The Smart box's label rides the box
--- (`labelOnBox`), so its hit rect stays.
-local function shrinkCheckBox(cb, labelOnBox)
+-- moved away from it: the hit rect stretches by what was lost. The Smart box's label (`boxLabel`)
+-- is anchored to the box's right edge, so it moves right by what was lost too: its gap from the box
+-- then grows exactly as a row's does, and the two stay equal.
+local function shrinkCheckBox(cb, boxLabel)
     local size = cb:GetHeight()
     if type(size) ~= "number" or size <= CHECKBOX_SIZE then return end
     local lost = size - CHECKBOX_SIZE
@@ -83,9 +84,14 @@ local function shrinkCheckBox(cb, labelOnBox)
         if rel then cb:SetPoint(point, rel, relPoint, x, y - lost / 2)
         else cb:SetPoint(point, x, y - lost / 2) end
     end
-    if not labelOnBox then
-        local l, r, t, b = cb:GetHitRectInsets()
-        if type(r) == "number" then cb:SetHitRectInsets(l, r - lost, t, b) end
+    local l, r, t, b = cb:GetHitRectInsets()
+    if type(r) == "number" then cb:SetHitRectInsets(l, r - lost, t, b) end
+    if boxLabel then
+        local lp, lrel, lrp, lx, ly = boxLabel:GetPoint(1)
+        if lp and type(lx) == "number" then
+            boxLabel:ClearAllPoints()
+            boxLabel:SetPoint(lp, lrel, lrp, lx + lost, ly)
+        end
     end
 end
 
@@ -164,9 +170,9 @@ local function paintAccentMark(cb)
     end
 end
 
-local function skinCheckBox(cb, labelOnBox)
+local function skinCheckBox(cb, boxLabel)
     if not cb then return 0 end
-    shrinkCheckBox(cb, labelOnBox)
+    shrinkCheckBox(cb, boxLabel)
     S.Checkbox(cb, { borderInset = CHECKBOX_BORDER_INSET })
     checkBoxes[#checkBoxes + 1] = cb
     accentBorders[cb] = createAccentBorder(cb)
@@ -292,8 +298,10 @@ local function paintShell(f)
 end
 
 local function paintBody(f)
-    local n = skinCheckBox(f.activeCheck, false)
-    for key, cb in pairs(f.checks or {}) do n = n + skinCheckBox(cb, key == "smartKeyLevel") end
+    local n = skinCheckBox(f.activeCheck)
+    for key, cb in pairs(f.checks or {}) do
+        n = n + skinCheckBox(cb, key == "smartKeyLevel" and f.smartLabel or nil)
+    end
     for _, box in ipairs({ f.levelBox, f.ageBox, f.rangeBox }) do n = n + skinEditBox(box) end
     for _, dd in ipairs({ f.regionSelect, f.playstyleSelect, f.compositionSelect, f.presetDropdown }) do
         n = n + skinDropdown(dd)
