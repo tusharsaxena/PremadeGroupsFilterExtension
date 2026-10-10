@@ -70,7 +70,7 @@ A resumed run starts at the first row that is not `done`. Branch: `fix/2026-10-1
 | 12 | Locale: missing keys, literals through `NS.L` | C-11, C-25 | 3 | done | `9113702` |
 | 13 | Debug lines on feature flows; targeting-off message | C-19, C-28 (+ C-03 Apply-level case) | 4 (first) | done | `1d06f55` |
 | 14 | Launcher enable pair; ten-step disabled suite | C-16, C-08 | 4 (after T13) | done | `ad0aeb4` |
-| — | **Milestone M1: push** (all code fixes) | | | pending | |
+| — | **Milestone M1: push** (all code fixes) | | | done | pushed at `24d7f05` |
 | 15 | Docs + register rows + spec/DEPENDENCIES fixes | C-17, C-18, C-26, C-34, C-09 (register row), C-39, C-38, C-24, C-37 (note) | 5 | pending | |
 | 16 | Full automated-test bundle + CLAUDE.md pointers | C-13 | 6 | pending | |
 | — | **Milestone M2: push** (docs, register, bundle) | | | pending | |

@@ -80,6 +80,51 @@ test("parity: no module reads PGF outside the bridge", function()
     end
 end)
 
+-- C-17/C-18/C-26/C-09: the owner-ratified rows stay in the register, and the architecture-§5 row
+-- names every char.filters writer modules/Filters.lua defines (a new writer must be listed there).
+local REGISTER_RULES = { "architecture-§5", "architecture-§4", "standalone-windows", "`performance-§12`" }
+
+local function registerRows()
+    local fh = assert(io.open(T.root .. "/docs/ARCHITECTURE.md", "rb"))
+    local doc = fh:read("*a"); fh:close()
+    local from = assert(doc:find("\n## Documented deviations", 1, true), "no Documented deviations section")
+    local rows = {}
+    for line in doc:sub(from):gmatch("[^\r\n]+") do
+        if line:find("^### ") then break end
+        local rule = line:match("^| ([^|]-) |")
+        if rule then rows[#rows + 1] = { rule = rule, line = line } end
+    end
+    return rows
+end
+
+local function rowFor(rows, rulePrefix)
+    for _, r in ipairs(rows) do
+        if r.rule:sub(1, #rulePrefix) == rulePrefix then return r.line end
+    end
+    return nil
+end
+
+-- red under: add a Filters.Toggle* without listing it in the architecture-§5 row
+test("parity: the register holds the ratified rows and the §5 row names every Filters writer", function()
+    local rows = registerRows()
+    for _, rule in ipairs(REGISTER_RULES) do
+        T.assertTrue(rowFor(rows, rule) ~= nil, "no register row for " .. rule)
+    end
+    local s5 = rowFor(rows, "architecture-§5")
+    local fh = assert(io.open(T.root .. "/modules/Filters.lua", "rb"))
+    local src = fh:read("*a"); fh:close()
+    local n = 0
+    for name in src:gmatch("function Filters%.([%w_]+)%(") do
+        local writer = name == "Set" or name == "ApplySmartLevel" or name:find("^Toggle") or name:find("^Clear")
+        if writer then
+            n = n + 1
+            local cited = name == "Set" and "Filters.Set`" or name
+            T.assertTrue(s5:find(cited, 1, true) ~= nil, "architecture-§5 row does not name Filters." .. name)
+        end
+    end
+    T.assertTrue(n >= 8, "found only " .. n .. " Filters writers")
+end)
+
 -- C-11 (localization-§3): every locale key the code reads is defined in enUS, and every key enUS
 -- defines is read. A static scan of the TOC's own files (libs\ and locales\ left out) collects the
 -- literal keys: `NS.L["…"]` and `NS.L.IDENT` anywhere, and bare `L["…"]` / `L.IDENT` only in a file

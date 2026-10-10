@@ -9,7 +9,8 @@ local addonName, NS = ...
 -- optional skin's status and switch, below). The addon draws no
 -- positionable frame of its own -- the filter panel is anchored to PGF's dialog -- so the block is
 -- frameless (no scale, alpha, lock or reset position) and carries no visibility row: when the panel
--- shows is decided by PGF's dialog and category, not by a setting. It has no test mode.
+-- shows is decided by PGF's dialog and category, not by a setting (ratified: docs/ARCHITECTURE.md
+-- -> Documented deviations). It has no test mode.
 
 local PGFE     = NS.addon
 local Settings = PGFE.Settings

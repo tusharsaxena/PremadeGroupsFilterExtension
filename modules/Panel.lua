@@ -8,7 +8,8 @@ local _, NS = ...
 -- Styled like PGF's own dialog (PGF UI/Dialog.xml: PortraitFrameTemplateMinimizable, the
 -- ButtonFrameTemplateNoPortraitMinimizable border, portrait hidden, strata FULLSCREEN) and its
 -- filter rows (PGF UI/Templates.xml PremadeGroupsFilterBasicTemplate: a UICheckButtonTemplate at
--- y+4 and a GameFontHighlight title at x+35, 23px rows). Anchored across the dialog's bottom edge,
+-- y+4 and a GameFontHighlight title at x+35, 23px rows) (ratified: docs/ARCHITECTURE.md ->
+-- Documented deviations). Anchored across the dialog's bottom edge,
 -- so its width follows PGF's. Shown only while the dialog is shown on the Dungeons category and the
 -- addon is not stood down; built lazily the first time it is wanted. Collapsed, only the title
 -- strip is left.

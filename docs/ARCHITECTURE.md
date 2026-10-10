@@ -106,20 +106,35 @@ Three AceDB scopes on `PremadeGroupsFilterExtensionDB`; full shape and defaults 
   reset never refused); `onChange` is `NS.EUISkin.OnSwitch` (on paints live, off after a paint asks
   for a reload). A profile switch, copy or reset runs the same `OnSwitch` with the incoming value,
   after the `enabled` latch re-read, so a disabled incoming profile is never painted.
-- **Named non-setting state** (architecture-§5), each written outside the seam by one owner:
-  - `char.filters` — the filter options, **per character**. Owner `modules/Filters.lua`
-    (`Filters.Set`, `Filters.ToggleRegion` / `TogglePlaystyle`, `Filters.ClearRegions` /
-    `ClearPlaystyles`, `Filters.ApplySmartLevel`); `modules/Presets.lua`'s `Presets.Load` also writes it,
-    in place. Edited from the attached panel, which is not a settings page.
+- **Registries outside the seam** (architecture-§5), each written by one owner:
   - `global.presets` — a **structural registry** of named filter snapshots shared by every
     character. One registry writer, `modules/Presets.lua` (`Presets.Save`, `Presets.Delete`); no
     load pass.
-  - `profile.panelCollapsed` — the attached panel folded to its title strip. Owner `modules/Panel.lua`.
   - `global.minimap` — LibDBIcon's own table (`hide`, position), handed to the launcher.
+- **The attached panel's own state** (`char.filters`, the per-character filter options, and
+  `profile.panelCollapsed`) is written by the panel's controls outside the seam: a ratified
+  architecture-§5 deviation, with every writer named, in
+  [Documented deviations](#documented-deviations).
 
 ## Message Bus
 
-None. The addon defines no AceEvent messages; modules call each other directly through `NS`.
+None, by a ratified deviation from architecture-§4
+([Documented deviations](#documented-deviations)). The two-feature-module threshold is crossed:
+`modules/Apply.lua`, `Panel.lua`, `EUISkin.lua`, `Filters.lua`, `Presets.lua`, `RegionTags.lua`,
+`Targeting.lua` and `EnvInject.lua`. The addon still defines no AceEvent messages, and modules call
+each other directly through `NS`, because each cross-module reaction has one sender and a required
+order that CallbackHandler's fan-out does not promise. There are three reaction sites:
+
+- **`reloadProfile`** (`core/PGFE.lua`, on the three AceDB profile callbacks) runs, in order,
+  `Settings.Helpers.RefreshAll` / `RefreshProfilesPage`, `Panel.Refresh`, the `enabled` latch
+  re-read (`Lifecycle:Set` + `Reevaluate`) and `EUISkin.OnSwitch`. The latch is re-read before the
+  one-way EllesmereUI paint, so a disabled incoming profile is never painted. That order is pinned
+  by `tests/test_euiskin.lua` ("a profile switch to a disabled profile with the switch on paints
+  nothing").
+- **`Apply.OnFiltersToggled`** (`modules/Apply.lua`, the `filtersActive` onChange) runs
+  `Apply.Run` / `Apply.Clear` and then `Panel.Refresh`, so the PGF block is written or cleared
+  before the panel readout refreshes.
+- **`Panel.Create` / `Panel.UpdateVisibility`** (`modules/Panel.lua`) call `EUISkin.TryApply`.
 
 ## Slash Commands
 
@@ -408,6 +423,10 @@ deviation not in this table is not ratified.
 |---|---|---|---|---|
 | library-stack-§6, anti-patterns #29 | `core/EUIBridge.lua` reads EllesmereUI's SavedVariables: `EllesmereUIDB.thirdPartySkinsOff` and `EllesmereUIDB.thirdPartySkinAddons[...]` (our entry and PGF's skin's). Read-only, at call time, nil-guarded, in that one file; never written | The optional EllesmereUI skin's gate and its settings status lines must show the master Third-Party switch, our own entry and PGF's skin's entry separately (owner decision 1 and the "turned off in EllesmereUI" state). EllesmereUI exposes no API for them before it dispatches: `S.IsEnabled()` arrives only with the skin callback, merges the master switch with our entry, and cannot see PGF's entry | 2026-10-09 | EllesmereUI ships a public query for its third-party switches, or the standard gains a carve-out for an optional integration reading the suite's own on/off switches |
 | library-stack-§6, toc-file-§1 | Hard `## Dependencies: PremadeGroupsFilter`; the addon reads/writes PGF state and hooks PGF's env builder | It is an extension of PGF and has no function without it (owner requirement, 2026-10-09) | 2026-10-09 | PGF ships a public API, or the standard gains an extension-addon rule |
+| architecture-§5 | The attached panel's per-character filter options (`char.filters`) and `profile.panelCollapsed` are set by the panel's own controls, outside the schema write seam, and no settings-page row or CLI path addresses them. Writers of `char.filters`: `Filters.Set`, `Filters.ToggleRegion` / `ClearRegions`, `Filters.TogglePlaystyle` / `ClearPlaystyles`, `Filters.ToggleComposition` / `ClearComposition` and `Filters.ApplySmartLevel` (`modules/Filters.lua`), reached from the panel controls and from `/pgfe apply` (`modules/Apply.lua` -> `ApplySmartLevel`), plus `Presets.Load` (`modules/Presets.lua`), which refills the table in place. Writer of `profile.panelCollapsed`: `setCollapsed` (`modules/Panel.lua`), from the min/max arrow and the header-strip click | Per-character scope is an owner requirement that the schema seam (profile and global roots only) cannot hold; presets snapshot and refill `char.filters` whole, keeping its identity; the panel is a feature surface attached to PGF's dialog, not a settings page (issue #10; audit `docs/audits/2026-10-10/` PGE-02) | 2026-10-10 (owner) | A filter option or `panelCollapsed` gains a settings-page row or a get/set CLI path, or LibKa0s-Schema gains a char root |
+| architecture-§4, anti-patterns #19 | No AceEvent message bus, although the two-feature-module threshold is crossed (Apply, Panel, EUISkin, Filters, Presets, RegionTags, Targeting, EnvInject). Modules call each other through `NS`. The cross-module reactions: the shell's `reloadProfile` (`core/PGFE.lua`, on the three AceDB profile callbacks) fans out, in order, to `Settings.Helpers.RefreshAll` / `RefreshProfilesPage`, `Panel.Refresh`, the `enabled` latch re-read (`Lifecycle:Set` + `Reevaluate`) and `EUISkin.OnSwitch`; `Apply.OnFiltersToggled` (the `filtersActive` onChange) runs `Apply.Run` / `Apply.Clear` and then calls `Panel.Refresh`; `Panel.Create` / `Panel.UpdateVisibility` call `EUISkin.TryApply` | Every reaction has one sender and a required order that CallbackHandler's fan-out does not promise: `reloadProfile` must re-read the latch before the one-way EllesmereUI paint so a disabled incoming profile is never painted, and `Apply.OnFiltersToggled` must write or clear the PGF block before the panel readout refreshes. `reloadProfile` has several receivers, but none its sender should not know about, and with no messages defined the CallbackHandler clobber §4 guards against cannot occur (issue #10; audit `docs/audits/2026-10-10/` PGE-03) | 2026-10-10 (owner) | A reaction gains an order-independent receiver the sender should not name, a module outside the shell and Apply needs to hear profile-changed or filters-toggled, or the standard adds an ordered-dispatch carve-out |
+| standalone-windows; library-stack-§8; options-ui-§15 | The attached panel (`modules/Panel.lua` `buildFrame`) takes PGF's dialog chrome when unskinned (`PortraitFrameTemplateMinimizable` with the `ButtonFrameTemplateNoPortraitMinimizable` border layout) and EllesmereUI's shell when skinned (`modules/EUISkin.lua`), not the Ka0s window edge. The skinned min/max control draws the Blizzard atlases `UI-QuestTrackerButton-Secondary-Collapse` and `UI-QuestTrackerButton-Secondary-Expand` (`EUISkin.lua` `COLLAPSE_ATLAS` / `EXPAND_ATLAS`) to match EllesmereUI's own minus and plus, not the LibKa0s catalog's minimize / expand glyphs (`libs/LibKa0s/Media.lua:94`). The panel is parented and anchored to PGF's dialog, is not movable and persists no geometry. The General page has no General visibility row (`settings/Panel.lua` `omit = { visibility = true }`): the panel shows only with PGF's dialog on the dungeon category, and the addon holds no visibility state | An extension surface must read as part of the host window it attaches to; its visibility is the host's, so a visibility setting would only duplicate Enable and `filtersActive` (issue #18; audit `docs/audits/2026-10-10/` PGE-17, PGE-19, PGE-26) | 2026-10-10 (owner) | The panel becomes independently shown or movable, or the standard gains an attached-panel or extension-surface rule |
+| `performance-§12` | No performance harness is wired: no `core/PerfSetup.lua`, no `PremadeGroupsFilterExtensionPerfDB` (the TOC declares one SavedVariables global), no `perf` verb registration (`perf` stays reserved; `/pgfe perf` answers with the library's unknown-command line and the index), no suspend/resume contract (production takes only the `disabled` hold), and no `docs/perf-analysis/`. `libs/LibKa0s/` stays vendored whole, `Perf.lua` included, and `docs/performance.md` stays as the one-screen page. The offline `tests/perf.lua` is shipped anyway (it suspends nothing, ships nothing to the client and adds no SavedVariable), so the runner's `perf` suite reads `pass` rather than this exemption's skip | **Criterion (a) plus (b).** (a): the committed whole-repo sweep of `RegisterEvent` / `SetScript("OnUpdate"` / `C_Timer`, with every `hooksecurefunc` / `HookScript` site, in [`performance.md`](./performance.md), sweep at ``2c86d49``: no `OnUpdate` handler, no timer of any kind (AceTimer removed, C-35), one registration site over eight `NS.FEATURE_EVENTS` rows that each do one small refresh, hooks that run on the player's own Group Finder actions, and `Apply` refusing in combat; `tests/perf.lua`'s `combatEvents` scenario measures the per-event cost. (b): the capture windows open on the player's combat state (performance-§7), so every declared bucket would read `0.000` by construction. Owner checkpoint D1 (C-09, issue #5; audit `docs/audits/2026-10-10/` PGE-09) | 2026-10-10 (owner) | The first `OnUpdate` handler, repeating ticker, or in-combat event handler doing real work re-arms the full wiring MUST (performance-§12): wire `core/PerfSetup.lua`, `PremadeGroupsFilterExtensionPerfDB`, the `perf` verb and the suspend contract, and retire this row |
 
 ### Files over the 1500-line cap
 

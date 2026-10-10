@@ -33,15 +33,15 @@ stays reserved and unregistered) and no suspend contract. `libs/LibKa0s/` stays 
 
 Swept with `grep -rn -E 'RegisterEvent|RegisterUnitEvent|OnUpdate|C_Timer|NewTicker|ScheduleTimer|ScheduleRepeatingTimer|hooksecurefunc|HookScript|SetScript'`
 over every file outside `libs/`, `tests/` and `docs/`. The search found no `OnUpdate`, `C_Timer`
-call, ticker or AceTimer (removed, C-35). `C_Timer` appears only as a `.luacheckrc` read-global.
+call, ticker or AceTimer (removed, C-35), and nothing outside `libs/` reads `C_Timer`.
 There is one registration site, and every hook runs on a player UI action.
 
 | Site | Hit | Work per event or call | Runs in combat? |
 |---|---|---|---|
-| `core/PGFE.lua:42` | `registerFeatureEvents`, through `NS.SafeRegisterEvent` (`core/CoreSetup.lua:55-79`) | The only registration site. It registers the 8 `NS.FEATURE_EVENTS` rows below on enable and stand-up, and unregisters them on stand-down | — |
-| `modules/EnvInject.lua:82-83` | `ACTIVE_PLAYER_SPECIALIZATION_CHANGED`, `PLAYER_SPECIALIZATION_CHANGED` | `RefreshPlayer`: 3 calls (spec index, spec info, `UnitClass`) | Rare (a spec change) |
-| `modules/Panel.lua:883-885` | `CHALLENGE_MODE_MAPS_UPDATE`, `CHALLENGE_MODE_COMPLETED`, `MYTHIC_PLUS_CURRENT_AFFIX_UPDATE` | `OnPanelSeasonData`: Smart level, then the readout rebuilt over 8 dungeons. 34 calls, about 7 KB | Rare (a season-data reply, a completed key, an affix change) |
-| `modules/Panel.lua:886` | `PLAYER_ENTERING_WORLD` | Re-arms the season request, then `Panel.UpdateVisibility` (the readout as above). 35 calls | At a loading screen |
+| `core/PGFE.lua:42` | `registerFeatureEvents`, through `NS.SafeRegisterEvent` (`core/CoreSetup.lua:56-80`) | The only registration site. It registers the 8 `NS.FEATURE_EVENTS` rows below on enable and stand-up, and unregisters them on stand-down | — |
+| `modules/EnvInject.lua:85-86` | `ACTIVE_PLAYER_SPECIALIZATION_CHANGED`, `PLAYER_SPECIALIZATION_CHANGED` | `RefreshPlayer`: 3 calls (spec index, spec info, `UnitClass`) | Rare (a spec change) |
+| `modules/Panel.lua:885-887` | `CHALLENGE_MODE_MAPS_UPDATE`, `CHALLENGE_MODE_COMPLETED`, `MYTHIC_PLUS_CURRENT_AFFIX_UPDATE` | `OnPanelSeasonData`: Smart level, then the readout rebuilt over 8 dungeons. 34 calls, about 7 KB | Rare (a season-data reply, a completed key, an affix change) |
+| `modules/Panel.lua:888` | `PLAYER_ENTERING_WORLD` | Re-arms the season request, then `Panel.UpdateVisibility` (the readout as above). 35 calls | At a loading screen |
 | `modules/EUISkin.lua:382-383` | `UI_SCALE_CHANGED`, `DISPLAY_SIZE_CHANGED` | Re-lays out the skin's checkbox marks; returns before a paint. 0 calls | Rare (a scale change) |
 | `core/PGFE.lua:105-108` | AceDB `OnProfileChanged` / `Copied` / `Reset` | Migrations, panel refresh, the latch re-read | Player action |
 | `core/PGFBridge.lua:173` | `hooksecurefunc(PGF, "PutPremadeRegionInfo")` | `EnvInject.Apply`, above: 1.2 calls and 80 bytes per result, 0 while stood down | Only while PGF filters a search the player started |
@@ -50,7 +50,7 @@ There is one registration site, and every hook runs on a player UI action.
 | `modules/EUISkin.lua:176-177`, `:236-240` | Skin checkbox `OnClick` / `SetChecked`; min/max glyph `OnEnter` / `OnLeave` | One accent repaint; one vertex color | Player action |
 | `modules/Panel.lua:90-96` | Tooltip `OnEnter` / `OnLeave` | Fill and show `GameTooltip`; hide it | Player action |
 | `modules/Panel.lua`, `settings/Panel.lua` | `SetScript` / `HookScript` on the addon's own widgets (click, edit box, focus, settings `OnShow`) | One handler per player action | Player action |
-| `modules/Apply.lua:22` | `InCombatLockdown()` in `precheck` | Apply refuses in combat | Refused |
+| `modules/Apply.lua:37` | `InCombatLockdown()` in `precheck` | Apply refuses in combat | Refused |
 
 `PLAYER_REGEN_DISABLED` and every other combat event are unregistered. `combatEvents` fires them
 with `InCombatLockdown` true and finds no handler and no call.

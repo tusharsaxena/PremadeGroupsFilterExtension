@@ -20,7 +20,7 @@ globals = {
 
 read_globals = {
   "_G", "LibStub", "hooksecurefunc",
-  "C_AddOns", "C_Timer", "C_ChallengeMode", "C_MythicPlus",
+  "C_AddOns", "C_ChallengeMode", "C_MythicPlus",
   "CreateFrame", "UIParent", "GameTooltip", "NineSliceUtil",
   "InCombatLockdown", "GetCurrentRegion", "GetRealmName", "UnitClass",
   "Settings", "PlaySound", "SOUNDKIT", "LFGListFrame", "MenuResponse", "C_LFGList", "StaticPopup_Show", "StaticPopup_Hide", "YES", "NO",
