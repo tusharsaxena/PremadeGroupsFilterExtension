@@ -1168,3 +1168,30 @@ test("panel: a click on the header strip collapses and expands, like the arrow",
     h:__fire("OnClick")
     assertFalse(NS.addon.db.profile.panelCollapsed, "nothing while stood down")
 end)
+
+-- ── debug lines (C-19 / review PGE-04) ──────────────────────────────────────────────────────────
+
+-- How many console lines carry `needle` (plain find).
+local function logged(NS, needle)
+    local n = 0
+    for _, line in ipairs(NS.DebugLog.buffer) do
+        if line:find(needle, 1, true) then n = n + 1 end
+    end
+    return n
+end
+
+test("panel: visibility logs on change only, and again after a stand-down", function()
+    local NS, _, m = T.enableAddon{}
+    NS.State.debug = true
+    NS.DebugLog:Clear()
+    NS.Panel.UpdateVisibility(); NS.Panel.UpdateVisibility()
+    assertEqual(logged(NS, "[Panel] shown"), 1, "a repeat show is not logged")
+    m.pgf.dialog.activeId = "c3f0"; NS.Panel.UpdateVisibility()
+    assertEqual(logged(NS, "[Panel] hidden"), 1)
+    m.pgf.dialog.activeId = "c2f4"; NS.Panel.UpdateVisibility()
+    assertEqual(logged(NS, "[Panel] shown"), 2)
+    NS.addon:OnSlashCommand("disable")
+    NS.addon:OnSlashCommand("enable")
+    -- red under: drop the DebugForget on the STAND_DOWN hide
+    assertEqual(logged(NS, "[Panel] shown"), 3)
+end)

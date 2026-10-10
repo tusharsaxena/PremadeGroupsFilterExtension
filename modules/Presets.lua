@@ -31,24 +31,40 @@ end
 -- ok, err: "badName" for an empty or whitespace-only name. An existing preset is overwritten.
 function Presets.Save(name)
     name = cleanName(name)
-    if name == "" then return false, "badName" end
+    if name == "" then
+        NS.Debug("Preset", "save refused: badName")
+        return false, "badName"
+    end
     store()[name] = copy(NS.Filters.Get())
+    NS.Debug("Preset", "saved '%s'", name)
     return true
 end
 
 -- ok, err: "missing" when no preset has this name.
 function Presets.Load(name)
-    local src = store()[cleanName(name)]
-    if not src then return false, "missing" end
+    name = cleanName(name)
+    local src = store()[name]
+    if not src then
+        NS.Debug("Preset", "load '%s' refused: missing", name)
+        return false, "missing"
+    end
     local fresh = copy(NS.C.CHAR_DEFAULTS.filters)
     for k, v in pairs(copy(src)) do fresh[k] = v end
     local live = NS.Filters.Get()
     for k in pairs(live) do live[k] = nil end
     for k, v in pairs(fresh) do live[k] = v end
+    NS.Debug("Preset", "loaded '%s'", name)
     return true
 end
 
 function Presets.Delete(name)
-    store()[cleanName(name)] = nil
+    name = cleanName(name)
+    local presets = store()
+    if presets[name] == nil then
+        NS.Debug("Preset", "delete '%s': absent", name)
+    else
+        presets[name] = nil
+        NS.Debug("Preset", "deleted '%s'", name)
+    end
     return true
 end

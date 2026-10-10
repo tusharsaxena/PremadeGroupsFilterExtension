@@ -7,7 +7,8 @@ local _, NS = ...
 -- the merge refuses. Each return is `ok, msgKey, ...` where `...` are the format arguments of
 -- NS.L[msgKey]. With Smart on, Run recomputes the key level once the prechecks pass
 -- (Filters.ApplySmartLevel), so `/pgfe apply` and the button target the same level. Search() is
--- called only when the caller is inside a hardware event (opts.search).
+-- called only when the caller is inside a hardware event (opts.search). Every return passes through
+-- done(), which writes one `[Apply]` / `[Clear]` debug line (`ok: KEY` or `refused: KEY`).
 
 local Apply = NS.Apply or {}
 NS.Apply = Apply
@@ -18,6 +19,19 @@ Apply.LastRange = nil
 
 local VALIDATION_MSG = { badLevel = "MSG_BAD_LEVEL", badAge = "MSG_BAD_AGE" }
 local EXPR_MSG = { damaged = "MSG_DAMAGED", toolong = "MSG_TOOLONG" }
+
+-- One debug line per Run/Clear outcome; the arguments pass through unchanged. MSG_NO_PGF names
+-- the missing seam.
+local function done(tag, ok, key, ...)
+    if ok then
+        NS.Debug(tag, "ok: %s", key)
+    elseif key == "MSG_NO_PGF" then
+        NS.Debug(tag, "refused: %s (missing %s)", key, tostring((...)))
+    else
+        NS.Debug(tag, "refused: %s", key)
+    end
+    return ok, key, ...
+end
 
 local function precheck()
     if InCombatLockdown() then return "MSG_COMBAT" end
@@ -43,26 +57,31 @@ end
 --- @return string msgKey
 function Apply.Run(opts)
     local err, arg = precheck()
-    if err then return false, err, arg end
-    if not NS.Filters.IsActive() then return false, "MSG_INACTIVE" end
+    if err then return done("Apply", false, err, arg) end
+    if not NS.Filters.IsActive() then return done("Apply", false, "MSG_INACTIVE") end
     NS.Filters.ApplySmartLevel()
     local portal = NS.Regions.GetPortal()
     local valid, why = NS.Filters.Validate()
-    if not valid then return false, VALIDATION_MSG[why] end
+    if not valid then return done("Apply", false, VALIDATION_MSG[why]) end
     local f = NS.Filters.Get()
     local targets, tErr = dungeonTargets(f)
-    if tErr then return false, tErr, f.keyLevel end
+    if tErr then return done("Apply", false, tErr, f.keyLevel) end
     local text, xErr = NS.Expression.Merge(NS.Bridge.GetExpression(),
         NS.Expression.BuildClauses(NS.Filters.ToClauseOpts(portal)))
-    if not text then return false, EXPR_MSG[xErr] end
+    if not text then return done("Apply", false, EXPR_MSG[xErr]) end
     -- The rows PGF actually has for the targets, not #targets (a row without a cmId is skipped).
     local ticked = targets and NS.Bridge.SetDungeons(NS.Targeting.ToSet(targets))
     NS.Bridge.SetExpression(text)
     NS.Bridge.Commit()
     Apply.LastRange = targets and NS.Targeting.RangeText(f.keyLevel) or nil
-    if opts and opts.search then NS.Bridge.Search() end
-    if not targets then return true, "MSG_APPLIED_NO_TARGETING" end
-    return true, "MSG_APPLIED", ticked, Apply.LastRange
+    NS.Debug("Apply", "wrote %s dungeon rows, %d expr chars, range %s", tostring(ticked or "untouched"),
+        #text, tostring(Apply.LastRange))
+    if opts and opts.search then
+        NS.Debug("Apply", "search")
+        NS.Bridge.Search()
+    end
+    if not targets then return done("Apply", true, "MSG_APPLIED_NO_TARGETING") end
+    return done("Apply", true, "MSG_APPLIED", ticked, Apply.LastRange)
 end
 
 --- Remove the managed block, restoring the user's own expression text.
@@ -70,12 +89,13 @@ end
 --- @return string msgKey
 function Apply.Clear()
     local err, arg = precheck()
-    if err then return false, err, arg end
+    if err then return done("Clear", false, err, arg) end
     local text, xErr = NS.Expression.Merge(NS.Bridge.GetExpression(), {})
-    if not text then return false, EXPR_MSG[xErr] end
+    if not text then return done("Clear", false, EXPR_MSG[xErr]) end
     NS.Bridge.SetExpression(text)
     NS.Bridge.Commit()
-    return true, "MSG_CLEARED"
+    NS.Debug("Clear", "wrote %d expr chars", #text)
+    return done("Clear", true, "MSG_CLEARED")
 end
 
 --- The `filtersActive` row's onChange (settings/Panel.lua): every write of "Toggle PGF Extension
@@ -85,6 +105,7 @@ end
 --- (`pgfe_on`, modules/EnvInject.lua) keeps a block left in PGF's state neutral while it is off.
 function Apply.OnFiltersToggled(on)
     if NS.IsStoodDown() then return end
+    NS.Debug("Apply", "filters toggled %s", on and "on" or "off")
     if NS.Bridge.IsDungeonPanelActive() then
         if on then Apply.Report(Apply.Run{}) else Apply.Report(Apply.Clear()) end
     end

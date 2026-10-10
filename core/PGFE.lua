@@ -140,6 +140,21 @@ function PGFE:OnEnable()
     -- The launcher needs db.global.minimap, which exists from OnInitialize.
     if NS.Launcher then NS.Launcher:Register() end
 
+    -- The seams and hook installs, written now with logging on or held for the next enable edge.
+    -- The install results are the stores each module keeps at load (Diagnostics reads them too).
+    if NS.DebugAtEnable and NS.Bridge then
+        local seamsOk, missing = NS.Bridge.Check()
+        local rows = NS.RegionTags and NS.RegionTags.hooked or {}
+        NS.DebugAtEnable("Init",
+            "PGF seams %s; PremadeRegions %s; hooks env=%s dialog=%s searchRow=%s applicantRow=%s",
+            seamsOk and "ok" or ("missing " .. tostring(missing)),
+            _G.PremadeRegions and "loaded" or "absent",
+            tostring(NS.EnvInject and NS.EnvInject.hooked == true or false),
+            tostring(NS.Panel and NS.Panel.dialogHooked == true or false),
+            tostring(rows.LFGListSearchEntry_Update == true),
+            tostring(rows.LFGListApplicationViewer_UpdateApplicantMember == true))
+    end
+
     -- THE LATCH, taken from the stored path. Last, so everything above is up before it can be taken
     -- back down.
     if NS.Lifecycle then

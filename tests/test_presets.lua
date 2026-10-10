@@ -63,3 +63,33 @@ test("presets: Smart travels with a preset; an older preset loads the default (o
     assertEqual(NS.C.CHAR_DEFAULTS.filters.smartKeyLevel, true)
     NS.Presets.Load("old"); assertEqual(f.smartKeyLevel, true)
 end)
+
+-- ── debug lines (C-19 / review PGE-04) ──────────────────────────────────────────────────────────
+
+-- How many console lines carry `needle` (plain find).
+local function logged(NS, needle)
+    local n = 0
+    for _, line in ipairs(NS.DebugLog.buffer) do
+        if line:find(needle, 1, true) then n = n + 1 end
+    end
+    return n
+end
+
+-- red under: drop the NS.Debug lines in Presets.Save / Load / Delete
+test("presets: save, load, delete and refusals each write one [Preset] line", function()
+    local NS = T.bootAddon()
+    NS.State.debug = true
+    NS.DebugLog:Clear()
+    NS.Presets.Save("  push  ")
+    assertEqual(logged(NS, "[Preset] saved 'push'"), 1)
+    NS.Presets.Load("push")
+    assertEqual(logged(NS, "[Preset] loaded 'push'"), 1)
+    NS.Presets.Delete("push")
+    assertEqual(logged(NS, "[Preset] deleted 'push'"), 1)
+    NS.Presets.Delete("push")
+    assertEqual(logged(NS, "[Preset] delete 'push': absent"), 1)
+    NS.Presets.Save("   ")
+    assertEqual(logged(NS, "[Preset] save refused: badName"), 1)
+    NS.Presets.Load("zzz")
+    assertEqual(logged(NS, "[Preset] load 'zzz' refused: missing"), 1)
+end)

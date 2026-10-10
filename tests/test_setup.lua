@@ -218,3 +218,23 @@ test("setup: no pgfe.logo file remains", function()
         assertTrue(fh == nil, "media/logos/pgfe.logo." .. ext .. " still exists")
     end
 end)
+
+-- ── debug lines (C-19 / review PGE-04) ──────────────────────────────────────────────────────────
+
+-- How many console lines carry `needle` (plain find).
+local function logged(NS, needle)
+    local n = 0
+    for _, line in ipairs(NS.DebugLog.buffer) do
+        if line:find(needle, 1, true) then n = n + 1 end
+    end
+    return n
+end
+
+test("setup: the enable writes one [Init] PGF seams and hooks line", function()
+    local NS = T.bootAddon()
+    NS.State.debug = true
+    NS.addon:OnEnable()
+    -- red under: drop the DebugAtEnable line in PGFE:OnEnable
+    assertEqual(logged(NS, "[Init] PGF seams ok; PremadeRegions"), 1)
+    assertEqual(logged(NS, "hooks env=true dialog=true searchRow="), 1)
+end)

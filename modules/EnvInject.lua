@@ -46,6 +46,9 @@ function EnvInject.RefreshPlayer()
     local _, classFile = UnitClass("player")
     player.spec, player.classRole = EnvInject.PlayerKeywords(specID, role, classFile,
         NS.Bridge.Specializations())
+    -- Written on a change only: the refresh runs on every spec event and every stand-up.
+    NS.DebugChanged("env.spec", "Env", "spec=%s classRole=%s", tostring(player.spec),
+        tostring(player.classRole))
 end
 
 local function injectRegions(env, leaderName)

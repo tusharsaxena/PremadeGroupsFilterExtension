@@ -128,3 +128,27 @@ test("envinject: a protected leader name injects no region", function()
     assertNil(env.region)
     for _, k in ipairs(NS.Regions.ALL_KEYS) do assertFalse(env[k], k) end
 end)
+
+-- ── debug lines (C-19 / review PGE-04) ──────────────────────────────────────────────────────────
+
+-- How many console lines carry `needle` (plain find).
+local function logged(NS, needle)
+    local n = 0
+    for _, line in ipairs(NS.DebugLog.buffer) do
+        if line:find(needle, 1, true) then n = n + 1 end
+    end
+    return n
+end
+
+test("envinject: a spec refresh logs the keywords once, and again only when they change", function()
+    local NS, _, m = T.enableAddon{ specID = 253, role = "DAMAGER", classFile = "HUNTER" }
+    NS.State.debug = true
+    NS.DebugLog:Clear()
+    NS.EnvInject.RefreshPlayer(); NS.EnvInject.RefreshPlayer()
+    -- red under: drop the DebugChanged line in EnvInject.RefreshPlayer
+    assertEqual(logged(NS, "[Env] spec=beastmastery_hunters classRole=dps_hunters"), 1)
+    m.specID = 262; m.classFile = "SHAMAN"
+    NS.EnvInject.RefreshPlayer()
+    assertEqual(logged(NS, "[Env] spec=elemental_shamans classRole=dps_shamans"), 1)
+    assertEqual(logged(NS, "[Env] spec="), 2)
+end)

@@ -843,6 +843,8 @@ function Panel.UpdateVisibility()
     -- A gate condition EllesmereUI's options turned on since the last show paints now.
     if want and NS.EUISkin then NS.EUISkin.TryApply() end
     f:SetShown(want and true or false)
+    -- Written on a change only: the dialog hook and PLAYER_ENTERING_WORLD re-run this often.
+    NS.DebugChanged("panel.vis", "Panel", want and "shown" or "hidden")
     if want then Panel.Refresh() end
 end
 
@@ -897,6 +899,9 @@ NS.STAND_DOWN[#NS.STAND_DOWN + 1] = function()
         if o then GameTooltip:Hide() end
     end
     if Panel.frame then Panel.frame:Hide() end
+    -- Re-arm the visibility line, so the stand-up's "shown" is written rather than held as a
+    -- repeat. DebugForget is on the instance only (core/DebugLogSetup.lua publishes no bare name).
+    NS.DebugLog.DebugForget("panel.vis")
 end
 NS.STAND_UP[#NS.STAND_UP + 1] = Panel.UpdateVisibility
 

@@ -10,6 +10,20 @@ Lines are written with `NS.Debug(tag, fmt, ...)`; the library writes its own `[C
 one `applied: N widgets` summary, and a `skipped: <reason>` line each time the reason changes. The `[Init]` summary (name, version, schema, profile, enabled,
 PremadeRegions) lands when logging is turned on.
 
+## Tag vocabulary
+
+The addon's own feature lines, by tag. Each flow writes one line per outcome; the per-result PGF
+env hook (`EnvInject.Apply`) and the Blizzard row painters write nothing.
+
+| Tag | Written by | Lines |
+|---|---|---|
+| `Apply` | `modules/Apply.lua` `Run`, `OnFiltersToggled` | `refused: MSG_X` for every refusal (`MSG_NO_PGF` adds `(missing <seam>)`); on success `wrote <N\|untouched> dungeon rows, <n> expr chars, range <N-N\|nil>`, then `search` only with `opts.search`, then `ok: MSG_X`; `filters toggled on\|off` |
+| `Clear` | `modules/Apply.lua` `Clear` | `refused: MSG_X`; on success `wrote <n> expr chars`, then `ok: MSG_CLEARED` |
+| `Panel` | `modules/Panel.lua` `UpdateVisibility` | `shown` / `hidden`, on a change only (`DebugChanged` key `panel.vis`); the stand-down re-arms the key, so the stand-up's `shown` is written |
+| `Preset` | `modules/Presets.lua` | `saved '<name>'`, `loaded '<name>'`, `deleted '<name>'`, `delete '<name>': absent`, `save refused: badName`, `load '<name>' refused: missing` |
+| `Env` | `modules/EnvInject.lua` `RefreshPlayer` | `spec=<keyword> classRole=<keyword>`, on a change only (`DebugChanged` key `env.spec`); `env hook not installed: <reason>` at load |
+| `Init` | `core/PGFE.lua` `OnEnable` | `PGF seams ok\|missing <seam>; PremadeRegions loaded\|absent; hooks env= dialog= searchRow= applicantRow=` (`DebugAtEnable`: held until logging is turned on), beside the library's session summary |
+
 ## The diagnostics report (debug-logging-§14)
 
 Two forms and no third: `/pgfe diagnostics` and `/pgfe debug diagnostics` (also the console's orange

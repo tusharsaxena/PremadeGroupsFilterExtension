@@ -35,7 +35,7 @@ Total.
 - parity: no module reads PGF outside the bridge
 - parity: every locale key used is defined in enUS, and every enUS key is used
 
-### test_setup.lua (19)
+### test_setup.lua (20)
 
 - setup: NS is the AceAddon object, with the cyan [PGFE] tag
 - setup: NS.Print is reclaimed from AceConsole and is NS.Util.print
@@ -56,6 +56,7 @@ Total.
 - setup: the TOC icon is the launcher icon and the folder-named 128 TGA
 - setup: logo TGAs are uncompressed 32-bit at their sizes
 - setup: no pgfe.logo file remains
+- setup: the enable writes one [Init] PGF seams and hooks line
 
 ### test_slash.lua (8)
 
@@ -149,15 +150,16 @@ Total.
 - filters: ApplySmartLevel sets the level from the season only when Smart is on
 - filters: composition applies only while its box is on
 
-### test_presets.lua (5)
+### test_presets.lua (6)
 
 - presets: save/load round-trip is a deep copy into the same table
 - presets: list sorted, delete, bad names, missing
 - presets: names are trimmed and saving overwrites
 - presets: a preset missing keys loads over the current defaults
 - presets: Smart travels with a preset; an older preset loads the default (on)
+- presets: save, load, delete and refusals each write one [Preset] line
 
-### test_envinject.lua (13)
+### test_envinject.lua (14)
 
 - envinject: the module publishes its namespace table
 - envinject: keywords follow PGF's formula
@@ -172,6 +174,7 @@ Total.
 - envinject: the env hook's install result is stored
 - envinject: a non-function PutPremadeRegionInfo leaves the hook off without raising
 - envinject: a protected leader name injects no region
+- envinject: a spec refresh logs the keywords once, and again only when they change
 
 ### test_regiontags.lua (9)
 
@@ -226,7 +229,7 @@ Total.
 - euibridge: nothing is ever written to EllesmereUI's saved variables
 - euibridge: the PGF skin's state is missing / disabled / off / on, and its line says which
 
-### test_apply.lua (17)
+### test_apply.lua (33)
 
 - apply: the module publishes its namespace table
 - apply: N=14 ticks AOF/RLP/BV/KR, writes block, triggers, searches
@@ -245,8 +248,24 @@ Total.
 - apply: with Smart on, Run sets the key level from the season bests first
 - apply: refuses while Toggle PGF Extension Filters is off, writing nothing
 - apply: the filtersActive setting is a schema row, and its writes remove / rewrite the block
+- apply: a MSG_COMBAT refusal writes an [Apply] refused line
+- apply: a MSG_NO_PGF refusal writes an [Apply] refused line
+- apply: a MSG_NOT_DUNGEONS refusal writes an [Apply] refused line
+- apply: a MSG_MINIMIZED refusal writes an [Apply] refused line
+- apply: a MSG_INACTIVE refusal writes an [Apply] refused line
+- apply: a MSG_BAD_LEVEL refusal writes an [Apply] refused line
+- apply: a MSG_BAD_AGE refusal writes an [Apply] refused line
+- apply: a MSG_LOADING refusal writes an [Apply] refused line
+- apply: a MSG_ALL_TIMED refusal writes an [Apply] refused line
+- apply: a MSG_DAMAGED refusal writes an [Apply] refused line
+- apply: a MSG_TOOLONG refusal writes an [Apply] refused line
+- apply: a success writes the wrote and ok lines, and search only when searching
+- apply: a targeting-off success says the dungeon rows were untouched
+- apply: Clear refuses a wrapped block with its close marker deleted, and logs it
+- apply: a Clear refusal and a Clear success each write one [Clear] line
+- apply: a filtersActive toggle writes one [Apply] toggled line
 
-### test_panel.lua (82)
+### test_panel.lua (83)
 
 - panel: the module publishes its namespace table
 - panel: anchored under PGF dialog, both edges
@@ -330,6 +349,7 @@ Total.
 - panel: the panel's frame level is above PGF's dialog and its border
 - panel: the title is the full addon name, and the copy box centers its range
 - panel: a click on the header strip collapses and expands, like the arrow
+- panel: visibility logs on change only, and again after a stand-down
 
 ### test_euiskin.lua (32)
 
@@ -479,7 +499,7 @@ Total.
 |-------|------:|
 | test_harness.lua | 10 |
 | test_surface_parity.lua | 11 |
-| test_setup.lua | 19 |
+| test_setup.lua | 20 |
 | test_slash.lua | 8 |
 | test_disabled.lua | 5 |
 | test_regions.lua | 12 |
@@ -487,13 +507,13 @@ Total.
 | test_season.lua | 8 |
 | test_expression.lua | 18 |
 | test_filters.lua | 11 |
-| test_presets.lua | 5 |
-| test_envinject.lua | 13 |
+| test_presets.lua | 6 |
+| test_envinject.lua | 14 |
 | test_regiontags.lua | 9 |
 | test_bridge.lua | 18 |
 | test_euibridge.lua | 17 |
-| test_apply.lua | 17 |
-| test_panel.lua | 82 |
+| test_apply.lua | 33 |
+| test_panel.lua | 83 |
 | test_euiskin.lua | 32 |
 | test_euisettings.lua | 19 |
 | test_reset.lua | 5 |
@@ -505,4 +525,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **383** |
+| **Total** | **403** |
