@@ -1,10 +1,12 @@
 local addonName, NS = ...
--- settings/Panel.lua — the landing page body and the General page (Master controls).
+-- settings/Panel.lua — the landing page body and the General page (Master controls, Filters,
+-- EllesmereUI skin).
 --
 -- The landing page is the host's own buildMain (logo, notes, slash command list) and draws no tab
--- strip (options-ui-§5/§13). The General page renders through the tabbed renderer; its first tab is
--- `Master controls`, composed from one declaration (options-ui-§15), its second `EllesmereUI skin`
--- (the optional skin's status and switch, below). The addon draws no
+-- strip (options-ui-§5/§13). The General page renders through the tabbed renderer, in three
+-- tabs: `Master controls`, composed from one declaration and holding only its mandated rows
+-- (options-ui-§15); `Filters`, the attached panel's two switches; and `EllesmereUI skin` (the
+-- optional skin's status and switch, below). The addon draws no
 -- positionable frame of its own -- the filter panel is anchored to PGF's dialog -- so the block is
 -- frameless (no scale, alpha, lock or reset position) and carries no visibility row: when the panel
 -- shows is decided by PGF's dialog and category, not by a setting. It has no test mode.
@@ -53,16 +55,6 @@ local MASTER_ROWS, MASTER_TAIL = Helpers.MasterControls{
     minimapPath      = "global.minimap.shown",
     defaults         = { enabled = C.PROFILE.enabled, debugConsole = false },
     onResetAll       = showResetPopup,
-    -- A legitimate extra (options-ui-§16), after the mandated rows: the attached panel's first box.
-    -- Separate from Enable: this one leaves the panel up and only takes the filters out of PGF.
-    extra            = {
-        { path = "filtersActive", type = "bool", default = C.PROFILE.filtersActive,
-          label = NS.L.FILTERS_ACTIVE, tooltip = NS.L.FILTERS_ACTIVE_TOOLTIP },
-        -- The region tag on Group Finder rows and applicants (modules/RegionTags.lua); read on every
-        -- row paint, so it needs no onChange: the next search or list refresh shows the change.
-        { path = "showRegionTags", type = "bool", default = C.PROFILE.showRegionTags,
-          label = NS.L.SHOW_REGION_TAGS, tooltip = NS.L.SHOW_REGION_TAGS_TOOLTIP },
-    },
 }
 
 -- The Enable row drives the latch: the same Set the CLI, the launcher and a profile switch make.
@@ -70,7 +62,6 @@ local MASTER_HOOKS = {
     enabled = function(v)
         if NS.Lifecycle then NS.Lifecycle:Set(NS.HOLD_DISABLED, not v) end
     end,
-    filtersActive = function(v) NS.Apply.OnFiltersToggled(v and true or false) end,
 }
 
 for _, row in ipairs(MASTER_ROWS) do
@@ -80,7 +71,29 @@ end
 Settings.StampClosureRows(MASTER_ROWS)
 NS.SchemaRuntime.AddRows(MASTER_ROWS, 1)
 
--- ── EllesmereUI skin (the General page's second tab) ────────────────────────────────────────────
+-- ── Filters (the General page's second tab) ─────────────────────────────────────────────────────
+--
+-- The attached panel's two switches, in their own group so their own tab (options-ui-§13): they
+-- are feature switches, not Master controls rows (options-ui-§15). Added after MASTER_ROWS and
+-- before EUI_ROWS, so the tab sits between the two.
+local FILTER_GROUP = NS.L["Filters"]
+local FILTER_ROWS = {
+    -- The attached panel's first box. Separate from Enable: this one leaves the panel up and only
+    -- takes the filters out of PGF.
+    { path = "filtersActive", type = "bool", default = C.PROFILE.filtersActive,
+      page = "general", section = "general", group = FILTER_GROUP,
+      label = NS.L.FILTERS_ACTIVE, tooltip = NS.L.FILTERS_ACTIVE_TOOLTIP,
+      onChange = function(v) NS.Apply.OnFiltersToggled(v and true or false) end },
+    -- The region tag on Group Finder rows and applicants (modules/RegionTags.lua); read on every
+    -- row paint, so it needs no onChange: the next search or list refresh shows the change.
+    { path = "showRegionTags", type = "bool", default = C.PROFILE.showRegionTags,
+      page = "general", section = "general", group = FILTER_GROUP,
+      label = NS.L.SHOW_REGION_TAGS, tooltip = NS.L.SHOW_REGION_TAGS_TOOLTIP },
+}
+Settings.StampClosureRows(FILTER_ROWS)
+NS.SchemaRuntime.AddRows(FILTER_ROWS)
+
+-- ── EllesmereUI skin (the General page's third tab) ────────────────────────────────────────────
 --
 -- Its own group, so its own tab (options-ui-§13): a feature switch with live status lines is not a
 -- Master controls row (options-ui-§15). The tab is a host tab keyed by the group: a status line per

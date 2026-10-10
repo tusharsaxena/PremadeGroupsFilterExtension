@@ -60,6 +60,26 @@ test("setup: the Master controls rows are in the schema, frameless", function()
     end
 end)
 
+-- options-ui-§15: Master controls holds the mandated rows and nothing else; the two filter
+-- switches live on the General page's own Filters tab.
+-- red under: put either back in MasterControls extra
+test("setup: Master controls holds only the canonical rows", function()
+    local NS = T.newAddon()
+    local H = NS.addon.Settings.Helpers
+    local canonical = { enabled = true, ["state.debugConsole"] = true, ["global.minimap.shown"] = true }
+    for _, row in ipairs(NS.addon.Settings.Schema) do
+        if row.group == H.MASTER_GROUP then
+            assertTrue(canonical[row.path], tostring(row.path) .. " is not a Master controls row")
+        end
+    end
+    for _, path in ipairs({ "filtersActive", "showRegionTags" }) do
+        local row = H.FindSchema(path)
+        assertTrue(row ~= nil, path)
+        assertEqual(row.group, NS.L["Filters"], path .. " group")
+        assertEqual(row.page, "general", path .. " page")
+    end
+end)
+
 test("setup: the Minimap button row inverts onto LibDBIcon's hide", function()
     local NS = T.enableAddon()
     local H = NS.addon.Settings.Helpers

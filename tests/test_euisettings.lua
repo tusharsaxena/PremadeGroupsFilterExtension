@@ -51,8 +51,9 @@ test("euisettings: euiSkin is a schema row, default on, in its own group on the 
     assertEqual(row.page, "general"); assertEqual(row.group, GROUP)
 end)
 
--- options-ui-§15: Master controls stays the first tab.
-test("euisettings: the General page's tabs are Master controls, then EllesmereUI skin", function()
+-- options-ui-§15: Master controls stays the first tab; the filter switches have their own.
+-- red under: AddRows(FILTER_ROWS) after EUI_ROWS
+test("euisettings: the General page has three tabs: Master controls, Filters, EllesmereUI skin", function()
     local NS = T.newAddon()
     local H, seen, order = NS.addon.Settings.Helpers, {}, {}
     for _, row in ipairs(NS.addon.Settings.Schema) do
@@ -61,7 +62,7 @@ test("euisettings: the General page's tabs are Master controls, then EllesmereUI
             order[#order + 1] = row.group
         end
     end
-    assertEqual(table.concat(order, " | "), H.MASTER_GROUP .. " | " .. GROUP)
+    assertEqual(table.concat(order, " | "), H.MASTER_GROUP .. " | Filters | " .. GROUP)
 end)
 
 test("euisettings: the tab draws the switch, a line per condition, then a state line", function()

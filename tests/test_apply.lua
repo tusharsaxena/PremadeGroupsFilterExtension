@@ -210,7 +210,7 @@ test("apply: the filtersActive setting is a schema row, and its writes remove / 
     seasonFromScreenshot(m)
     local H = NS.addon.Settings.Helpers
     local row = H.FindSchema("filtersActive")
-    -- red under: drop the `extra` row from settings/Panel.lua's MasterControls
+    -- red under: drop the filtersActive row from settings/Panel.lua's FILTER_ROWS
     assertTrue(row ~= nil); assertEqual(row.default, true); assertEqual(row.label, NS.L.FILTERS_ACTIVE)
     assertTrue(H.FindSchema("enabled") ~= row, "separate from the master Enable")
     local f = NS.Filters.Get(); f.smartKeyLevel = false; f.keyLevel = 14

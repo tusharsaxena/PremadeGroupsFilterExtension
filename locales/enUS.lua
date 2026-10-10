@@ -14,6 +14,7 @@ NS.L = L
 -- Settings panel and landing page
 L["Slash Commands"] = "Slash Commands"
 L["Profiles"]       = "Profiles"
+L["Filters"]        = "Filters"        -- the General page's second tab (settings/Panel.lua)
 L["Reset this profile to the addon's defaults? Everything you have configured or added in it is discarded \226\128\148 your other profiles are not affected."] =
     "Reset this profile to the addon's defaults? Everything you have configured or added in it is discarded \226\128\148 your other profiles are not affected."
 L["all settings reset to defaults"] = "all settings reset to defaults"

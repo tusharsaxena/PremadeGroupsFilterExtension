@@ -32,7 +32,7 @@ Total.
 - parity: the Perf stub carries every member the addon calls
 - parity: the Compat arm carries every library member the addon wires
 
-### test_setup.lua (15)
+### test_setup.lua (16)
 
 - setup: NS is the AceAddon object, with the cyan [PGFE] tag
 - setup: NS.Print is reclaimed from AceConsole and is NS.Util.print
@@ -41,6 +41,7 @@ Total.
 - setup: profile defaults hold the master switch and the panel's collapsed state
 - setup: migrations stamp the schema version
 - setup: the Master controls rows are in the schema, frameless
+- setup: Master controls holds only the canonical rows
 - setup: the Minimap button row inverts onto LibDBIcon's hide
 - setup: enable registers the settings category and the launcher, and stands up
 - setup: the debug console is built with the addon's folder and brand
@@ -333,7 +334,7 @@ Total.
 ### test_euisettings.lua (19)
 
 - euisettings: euiSkin is a schema row, default on, in its own group on the General page
-- euisettings: the General page's tabs are Master controls, then EllesmereUI skin
+- euisettings: the General page has three tabs: Master controls, Filters, EllesmereUI skin
 - euisettings: the tab draws the switch, a line per condition, then a state line
 - euisettings: each failing condition disables the switch and is named on its line
 - euisettings: a re-show re-reads the lines and the switch after EllesmereUI changed
@@ -426,7 +427,7 @@ Total.
 |-------|------:|
 | test_harness.lua | 8 |
 | test_surface_parity.lua | 10 |
-| test_setup.lua | 15 |
+| test_setup.lua | 16 |
 | test_slash.lua | 6 |
 | test_disabled.lua | 5 |
 | test_regions.lua | 11 |
@@ -450,4 +451,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **336** |
+| **Total** | **337** |

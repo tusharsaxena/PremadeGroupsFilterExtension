@@ -97,7 +97,8 @@ Three AceDB scopes on `PremadeGroupsFilterExtensionDB`; full shape and defaults 
 [`schema.md`](schema.md).
 
 - **Schema rows (the write seam).** The Master controls block (`enabled`, `state.debugConsole`,
-  `global.minimap.shown`, plus the two extra rows `filtersActive` and `showRegionTags`), composed by `LibKa0s-Options-1.0` in `settings/Panel.lua` and written only
+  `global.minimap.shown`, composed by `LibKa0s-Options-1.0`) and the General Filters tab's two rows
+  (`filtersActive` and `showRegionTags`, `FILTER_ROWS`), both in `settings/Panel.lua` and written only
   through `NS.SchemaRuntime.Set` (panel, CLI, resets and launcher alike).
 - **`euiSkin`** (profile, default `true`, in `defaults/Profile.lua`): the *Use the EllesmereUI skin*
   row on the General page's *EllesmereUI skin* tab (`settings/Panel.lua`). `disabledIf` while any

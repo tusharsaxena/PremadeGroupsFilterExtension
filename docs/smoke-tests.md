@@ -50,9 +50,10 @@ season. Know your best timed level per dungeon (the Mythic+ tab) before the APPL
 
 - **PANEL-1. Landing page.** Settings → AddOns → Ka0s Premade Groups Filter Extension → the logo,
   the notes line and one row per slash command; no tab strip. Result:
-- **PANEL-2. General page.** General → one tab, `Master controls`: Enable, Debug console, Minimap
-  button, *Toggle PGF Extension Filters*, *Show server regions in the Group Finder*, and a *Reset all
-  settings* button. No scale, alpha, lock, visibility or test-mode rows.
+- **PANEL-2. General page.** General → three tabs. `Master controls`: Enable, Debug console,
+  Minimap button and a *Reset all settings* button. `Filters`: *Toggle PGF Extension Filters* and
+  *Show server regions in the Group Finder*. `EllesmereUI skin`: the skin's switch and status lines.
+  No scale, alpha, lock, visibility or test-mode rows.
   Result:
 - **PANEL-3. Defaults button.** Header **Defaults** → a confirmation popup; Yes → `/pgfe list` back
   at defaults; the minimap button keeps its shown/hidden state. Result:
@@ -198,7 +199,7 @@ substitute its numbers.
 - **APPLY-21. Toggle PGF Extension Filters.** It is the first row, ticked on a new profile, with a
   wider gap under it. Apply, then untick it → chat says the block was removed; PGF's advanced filter
   holds only your own text, the dungeon ticks are unchanged, Apply is grayed out and `/pgfe apply`
-  refuses. Settings → General shows *Toggle PGF Extension Filters* unticked as well (and *Enable*
+  refuses. Settings → General → Filters shows *Toggle PGF Extension Filters* unticked as well (and *Enable*
   still ticked). Load a preset → it stays unticked. Tick it on the settings page → the panel's box
   ticks and the block is written back (no search runs). Result:
 - **APPLY-23. Row spacing.** Every row, from Untimed dungeons to Presets (the dungeon readout
