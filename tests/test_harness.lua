@@ -119,3 +119,14 @@ test("harness: every addon file in the TOC is annotated", function()
     end
     assertTrue(checked > 20, "the TOC walk saw the addon files (" .. checked .. ")")
 end)
+
+-- C-35 / PGE-20: nothing schedules a timer, so AceTimer is neither mixed in nor loaded. The TOC half
+-- reads the raw file: Loader.tocFiles drops every libs\ line, so it could never see the library.
+-- red under: restore the AceTimer-3.0 mixin in core\PGFE.lua, or the TOC line
+test("harness: AceTimer is not embedded", function()
+    local NS = T.newAddon()
+    assertNil(NS.addon.ScheduleTimer, "the AceTimer mixin is not embedded")
+    for i, line in ipairs(rawTocLines()) do
+        assertTrue(not line:find("AceTimer%-3%.0"), "toc:" .. i .. " names AceTimer-3.0")
+    end
+end)

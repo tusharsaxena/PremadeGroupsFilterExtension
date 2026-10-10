@@ -6,8 +6,7 @@ local addonName, NS = ...
 -- declared in NS.FEATURE_EVENTS, so OnEnable and the stand-up register exactly the same list and the
 -- stand-down unregisters exactly that list (slash-commands-§7).
 
-local PGFE = LibStub("AceAddon-3.0"):NewAddon(NS, addonName,
-    "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0")
+local PGFE = LibStub("AceAddon-3.0"):NewAddon(NS, addonName, "AceConsole-3.0", "AceEvent-3.0")
 NS.addon = PGFE
 
 NS.version   = "0.1.0"
