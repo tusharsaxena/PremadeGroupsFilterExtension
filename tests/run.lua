@@ -18,8 +18,8 @@ local root      = "."
 local loadAddon = dofile("tests/loader.lua")(root, mock)
 
 -- THE THREE FACTORIES. Each returns (NS, env, mock) -- env and mock are the same table -- and each
--- takes the same `opts` table (tests/loader.lua: skip, mock, addonName, and the mock fields
--- currentRegion, realmName, mapTable, specID, role, classFile, inCombat). Fresh per call.
+-- takes the same `opts` table (tests/loader.lua: skip, mock, addonName, afterFile, and the mock
+-- fields currentRegion, realmName, mapTable, specID, role, classFile, inCombat). Fresh per call.
 
 -- Every file loaded; nothing run.
 local function newAddon(opts)
