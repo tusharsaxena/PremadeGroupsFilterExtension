@@ -10,7 +10,7 @@ local addonName, NS = ...
 local lib = LibStub and LibStub("LibKa0s-Launcher-1.0", true)
 
 -- The 128x128 uncompressed 32-bit logo; the same path as the TOC's ## IconTexture.
-local ICON = ("Interface\\AddOns\\%s\\media\\logos\\pgfe.logo.128.tga"):format(addonName)
+local ICON = ("Interface\\AddOns\\%s\\media\\logos\\premadegroupsfilterextension.logo.128.tga"):format(addonName)
 
 local function minimapStore()
     local db = NS.addon and NS.addon.db

@@ -17,7 +17,7 @@ local Helpers  = Settings.Helpers
 local C        = NS.C
 
 -- The landing page's logo: a larger render of the launcher logo, in the same folder.
-local MAIN_LOGO_TEXTURE = ("Interface\\AddOns\\%s\\media\\logos\\pgfe.logo.tga"):format(addonName)
+local MAIN_LOGO_TEXTURE = ("Interface\\AddOns\\%s\\media\\logos\\premadegroupsfilterextension.logo.tga"):format(addonName)
 
 -- The landing page body, through the library's builder (options-ui-§5): logo (at the library's
 -- 300x300 default, so no logoSize), the TOC notes line,

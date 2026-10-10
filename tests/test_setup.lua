@@ -144,7 +144,7 @@ test("setup: the landing page is drawn by the library's BuildLandingPage, logo a
     H.BuildLandingPage = real
     -- red under: the private addLogo / addCommandRows body in settings/Panel.lua
     assertTrue(seen ~= nil, "BuildMainContent delegates to the library")
-    assertTrue(seen.logo:find("media\\logos\\pgfe.logo.tga", 1, true) ~= nil, seen.logo)
+    assertTrue(seen.logo:find("media\\logos\\premadegroupsfilterextension.logo.tga", 1, true) ~= nil, seen.logo)
     assertEqual(seen.logoSize, nil, "the library's 300x300 default (options-ui-§5)")
     assertEqual(#seen.sections, 1)
     assertEqual(#seen.sections[1].rows(), #NS.COMMANDS)

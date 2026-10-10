@@ -74,13 +74,13 @@ Versions are pinned only where a version matters: `lua5.1` is hard, `luacheck` a
 ## Release / assets
 
 **One entry: Python 3 with Pillow**, and only for **regenerating** the launcher logo from its
-source. `media/logos/pgfe.logo.128.tga` (128×128, uncompressed 32-bit) and the larger landing-page
-render `media/logos/pgfe.logo.tga` are committed, so nothing is generated at package time. The
-recipe (layout-§4), run by hand when `media/logos/pgfe.logo.png` changes:
+source. `media/logos/premadegroupsfilterextension.logo.128.tga` (128×128, uncompressed 32-bit) and the larger landing-page
+render `media/logos/premadegroupsfilterextension.logo.tga` are committed, so nothing is generated at package time. The
+recipe (layout-§4), run by hand when `media/logos/premadegroupsfilterextension.logo.png` changes:
 
 ```sh
 sudo apt-get install -y python3-pil
-python3 -c 'from PIL import Image; Image.open("media/logos/pgfe.logo.png").convert("RGBA").resize((128, 128), Image.LANCZOS).save("media/logos/pgfe.logo.128.tga", format="TGA")'
+python3 -c 'from PIL import Image; Image.open("media/logos/premadegroupsfilterextension.logo.png").convert("RGBA").resize((128, 128), Image.LANCZOS).save("media/logos/premadegroupsfilterextension.logo.128.tga", format="TGA")'
 python3 -c 'import PIL; print(PIL.__version__)'   # verify
 ```
 
