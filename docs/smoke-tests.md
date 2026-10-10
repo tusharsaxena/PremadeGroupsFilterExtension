@@ -161,7 +161,8 @@ substitute its numbers.
   `/reload` → it stays folded with the same arrow; press the arrow → the rows return, the border
   looks exactly as before folding, and the arrow flips back. Result:
 - **APPLY-15. Layout.** Expanded, no label is covered by its input box (key level, min score, max
-  age) or by the Smart checkbox; the readout (`AOF 13  RLP 13 …`) is one line, not cut off, and the
+  age) or by the Smart checkbox. The Smart checkbox sits about 60px right of the level box, and its
+  text is as far from its box as every other row's text is from its own box; the readout (`AOF 13  RLP 13 …`) is one line, not cut off, and the
   gap from it to the Server regions row matches the gap between the other rows. The Server regions,
   Playstyle and Composition dropdowns are equally wide (about half the panel) and share one
   right-hand column.
@@ -240,7 +241,8 @@ settings tab and record any difference.
 - **SKIN-2. Everything on.** All four conditions on, *Use the EllesmereUI skin* ticked, `/reload`,
   open PGF on Dungeons → the panel wears the same flat shell as PGF's dialog, flush against it
   and neither drawn over the other; title white and centered in the 25px top bar; 16px
-  checkboxes with the accent block and ring when ticked; flat number boxes (Smart's grayed level and
+  checkboxes with the accent block and ring when ticked, Smart's text as far from its box as every
+  row's (no tighter); flat number boxes (Smart's grayed level and
   the dimmed copy box keep their gray); flat dropdowns with EllesmereUI's arrow, opening
   EllesmereUI-styled menus; flat buttons (gray when disabled); the readout's gold/gray colors kept.
   The settings tab shows four green lines and "The skin is applied." Result:

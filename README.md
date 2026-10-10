@@ -20,56 +20,41 @@ Filter has to be installed; without it this addon doesn't load.
 
 ## Screenshots
 
-I'll add screenshots of the panel under Premade Groups Filter's dialog here with the first
-CurseForge release.
+**_Classic Skin_**
+
+![Classic Skin](https://media.forgecdn.net/attachments/2034/686/screenshot-01-png.png)
+
+**_EllesmereUI Skin_**
+
+![EllesmereUI Skin](https://media.forgecdn.net/attachments/2034/687/screenshot-02-png.png)
+
+**_Addon in Action_**
+
+![Addon in Action](https://media.forgecdn.net/attachments/2034/688/screenshot-03-png.png)
 
 ## Usage
 
-Open the Group Finder, start a Mythic+ search and open Premade Groups Filter's dialog on the dungeon
-category. The extension's panel sits right under that dialog and is exactly as wide. Switch Premade
-Groups Filter to another category, minimize it or close it, and the panel goes away with it.
+Open Premade Groups Filter's dialog on the dungeon category during a Mythic+ search. The panel sits
+right under it and follows it: switch category, minimize or close the dialog and the panel goes too.
+Click the panel's title strip to fold it down when it's in the way.
 
-Type a key level and the panel lists your best timed level in each dungeon this season. The ones you
-still need at that level show in gold, the rest in gray. Or leave **Smart** ticked (it sits next to
-the level box and starts on for a new character) and the addon picks the level for you: the lowest
-one where at least one dungeon is still untimed. If your best timed runs are 12, 13, 13 and 14,
-Smart picks 13. Once everything is timed at 13, it picks 14.
+Type a key level, or leave **Smart** ticked and the addon picks the lowest level where at least one
+dungeon is still untimed. The panel lists your best timed level in each dungeon this season, with the
+ones you still need in gold. Set regions, playstyle, composition and the rest (hover any option to
+see what it does), then press **Apply**: Premade Groups Filter's dungeon checkboxes and advanced
+filter update and the search runs. **Clear** takes the extension's part back out and leaves your own
+text alone. `/pgfe apply` does the same as the button, so it works in a macro.
 
-Then turn on whatever else you want. Server regions and playstyles each have a dropdown that starts
-with **Any**, which is the same as ticking none or ticking all. Composition is a dropdown where you
-tick one or both exclusions, and experienced leader and group age are on the panel too. Hover over
-any option to see what it does, then press **Apply**. Premade Groups Filter's dungeon checkboxes and
-advanced filter update, and the search runs.
+Addons can't type into the Group Finder's search box, so the panel shows the key range (`14-14`, say)
+in **Copy into search box**. Click it, press Ctrl+C, then Enter to jump to the search box, then Ctrl+V
+and Enter.
 
-The game doesn't let addons type into the Group Finder's search box, so the panel shows the key
-range as text in the **Copy into search box** field at the bottom right, for example `14-14`. Click
-it to select the text, press Ctrl+C, then Enter to jump to the search box, then Ctrl+V and Enter to
-search listings by title.
-
-The first option, **Toggle PGF Extension Filters** (also under Settings → AddOns → Ka0s Premade
-Groups Filter Extension → General → Filters), switches the filtering off without turning the addon
-off. Untick it and the extension's part comes out of the advanced filter, while your own text and
-the dungeon ticks stay. Tick it and that part goes back in. Filter choices are saved per character,
-and presets let you store a setup under a name and load it on any character. **Clear** takes the
-extension's part back out of the advanced filter and leaves anything you typed there yourself. If
-the panel is in your way, the arrow in its top corner (or a click anywhere on its title strip) folds
-it down to just that strip, and the same click opens it again.
-
-If you use EllesmereUI with Premade Groups Filter's EllesmereUI
-[skin](https://www.curseforge.com/wow/addons/premade-groups-filter-ellesmereui), the panel gets the
-same EllesmereUI look as Premade Groups Filter's dialog. That needs EllesmereUI's third-party skinning
-turned on (Blizz UI Enhanced → Blizzard Window Skins → Third-Party Addons), with both
-PremadeGroupsFilter and PremadeGroupsFilterExtension ticked there. Settings → AddOns → Ka0s Premade
-Groups Filter Extension → General → EllesmereUI skin shows which of these are on, and has a switch
-to keep the panel's Blizzard look anyway. The switch can't turn the skin on while something is
-missing, and turning it off takes effect after a reload.
-
-`/pgfe apply` does what the Apply button does, so it works in a macro. Like the button, it only runs
-while Premade Groups Filter is on the dungeon category.
-
-Everything else is under **Settings → AddOns → Ka0s Premade Groups Filter Extension**, and
-`/pgfe help` (or `/premadegroupsfilterextension help`) prints the command list. `/pgfe` on its own
-opens the settings.
+Filter choices are saved per character, and presets load on any character. **Toggle PGF Extension
+Filters** switches the filtering off without turning the addon off. If you use EllesmereUI with
+Premade Groups Filter's EllesmereUI
+[skin](https://www.curseforge.com/wow/addons/premade-groups-filter-ellesmereui), the panel matches
+it once EllesmereUI's third-party skinning is on for both addons; the EllesmereUI skin tab in the
+settings shows what's missing. `/pgfe` opens the settings and `/pgfe help` lists the commands.
 
 ## How the filtering works
 
