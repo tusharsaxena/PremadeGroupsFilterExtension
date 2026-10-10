@@ -17,5 +17,6 @@ ignore:
   - DEPENDENCIES.md
   - media/logos/*.png   # the editable logo source (layout-§4): committed, never loadable, never shipped
   - media/logos/*.jpg   # a JPEG copy of that source: committed, never loadable, never shipped
+  - media/screenshots  # project-page images, not loaded by the addon; WoW cannot load PNG/JPG
   - _dev
   - "*.bak"
