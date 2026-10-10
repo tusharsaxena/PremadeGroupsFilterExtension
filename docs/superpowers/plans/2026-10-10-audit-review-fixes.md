@@ -56,12 +56,12 @@ A resumed run starts at the first row that is not `done`. Branch: `fix/2026-10-1
 | # | Task | Findings | Wave | Status | Commit |
 |---|---|---|---|---|---|
 | 0 | Preflight: baseline counts, tools, branch; owner checkpoint D1 (C-09 route) | — | 0 | done | this commit (D1 = §12) |
-| 1 | RegionTags hoist + install store | C-02, C-14 (local), C-10 (store) | 1 | pending | |
-| 2 | Expression Strip: wrapped-without-close damage, byte-for-byte edges | C-03, C-33 | 1 | pending | |
-| 3 | Settings page: PGF-link hook, Filters tab | C-01, C-15 | 1 | pending | |
-| 4 | EllesmereUI skin hardening | C-05, C-20, C-30, C-29 (EUISkin half) | 1 | pending | |
-| 5 | PGF bridge seams, region probe, bridge test | C-04 (bridge + EnvInject), C-32, C-31, C-10 (SEAMS + env store) | 1 | pending | |
-| 6 | GitHub admin, upstream issues, local re-vendor issue | C-27, C-12, C-14, C-36, C-37 (+ #15 narrowing) | 1 | pending | |
+| 1 | RegionTags hoist + install store | C-02, C-14 (local), C-10 (store) | 1 | done | `10350bc` |
+| 2 | Expression Strip: wrapped-without-close damage, byte-for-byte edges | C-03, C-33 | 1 | done | `c768fd0` |
+| 3 | Settings page: PGF-link hook, Filters tab | C-01, C-15 | 1 | done | `195bc63` |
+| 4 | EllesmereUI skin hardening | C-05, C-20, C-30, C-29 (EUISkin half) | 1 | done | `40237ba` |
+| 5 | PGF bridge seams, region probe, bridge test | C-04 (bridge + EnvInject), C-32, C-31, C-10 (SEAMS + env store) | 1 | done | `fd73897` |
+| 6 | GitHub admin, upstream issues, local re-vendor issue | C-27, C-12, C-14, C-36, C-37 (+ #15 narrowing) | 1 | blocked | Step 1 done (C-27: 8 labels recolored, verified with `gh label list`); Steps 2-7 blocked: GitHub writes refused by the permission classifier, so no issue URLs yet (#4-#19 re-severity unconfirmed) |
 | 7 | Season request guard, affix event, panel tooltip, dialog store | C-06, C-07, C-04 (Season half), C-29 (Panel half), C-10 (Panel store) | 2 | pending | |
 | 8 | performance-§12 exemption: remove the perf wiring, ship `tests/perf.lua` | C-09 | 2b (after wave 2) | pending | |
 | 9 | TOC annotations, AceTimer removal, logo rename + 512 render | C-21, C-35, C-23 | 2 | pending | |
