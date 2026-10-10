@@ -79,3 +79,69 @@ test("parity: no module reads PGF outside the bridge", function()
         T.assertTrue(src:find("PremadeGroupsFilter", 1, true) == nil, rel .. " names PremadeGroupsFilter")
     end
 end)
+
+-- C-11 (localization-§3): every locale key the code reads is defined in enUS, and every key enUS
+-- defines is read. A static scan of the TOC's own files (libs\ and locales\ left out) collects the
+-- literal keys: `NS.L["…"]` and `NS.L.IDENT` anywhere, and bare `L["…"]` / `L.IDENT` only in a file
+-- that binds `local L = NS.L` (modules/Diagnostics.lua's `L` is the launcher). Each literal is
+-- evaluated as Lua, so `\"`, `\n` and decimal escapes read the same on both sides. The `MSG_*`,
+-- `REGION_TIP_*` and `PLAYSTYLE_*` families are read through computed keys, so they are exempt from
+-- the "is read" direction.
+local DYNAMIC = { "^MSG_", "^REGION_TIP_", "^PLAYSTYLE_" }
+
+local function literalKeys(src, bare, out)
+    local pos = 1
+    while true do
+        local s, e, sep = src:find("L([%[%.])", pos)
+        if not s then break end
+        pos = e + 1
+        local before = s > 1 and src:sub(s - 1, s - 1) or ""
+        local viaNS = s > 3 and src:sub(s - 3, s - 1) == "NS."
+        local ok = viaNS or (bare and not before:find("[%w_%.]"))
+        if ok and sep == "." then
+            local ident = src:match("^([%a_][%w_]*)", e + 1)
+            if ident then out[ident] = true end
+        elseif ok and src:sub(e + 1, e + 1) == '"' then
+            local i = e + 2
+            while i <= #src do
+                local c = src:sub(i, i)
+                if c == "\\" then i = i + 2
+                elseif c == '"' then break
+                else i = i + 1 end
+            end
+            -- A literal followed by `..` is a computed key's prefix (the dynamic families), not a key.
+            if src:find("^%s*%]", i + 1) then
+                local raw = src:sub(e + 2, i - 1)
+                out[assert(loadstring('return "' .. raw .. '"'))()] = true
+            end
+            pos = i + 1
+        end
+    end
+end
+
+-- red under: delete one of the new enUS lines
+test("parity: every locale key used is defined in enUS, and every enUS key is used", function()
+    local used = {}
+    for _, rel in ipairs(T.loadAddon.tocFiles) do
+        local norm = rel:gsub("\\", "/")
+        if norm:find("%.lua$") and not norm:find("^libs/") and not norm:find("^locales/") then
+            local fh = assert(io.open(T.root .. "/" .. norm, "rb"))
+            local src = fh:read("*a"); fh:close()
+            literalKeys(src, src:find("local L%s*=%s*NS%.L%f[^%w_]") ~= nil, used)
+        end
+    end
+    local defined = {}
+    for k in pairs(T.newAddon().L) do defined[k] = true end
+    local missing, unused = {}, {}
+    for k in pairs(used) do
+        if not defined[k] then missing[#missing + 1] = k end
+    end
+    for k in pairs(defined) do
+        local dynamic = false
+        for _, p in ipairs(DYNAMIC) do if k:find(p) then dynamic = true end end
+        if not used[k] and not dynamic then unused[#unused + 1] = k end
+    end
+    table.sort(missing); table.sort(unused)
+    T.assertTrue(#missing == 0 and #unused == 0, ("%d missing from enUS:\n  %s\n%d defined but unused:\n  %s")
+        :format(#missing, table.concat(missing, "\n  "), #unused, table.concat(unused, "\n  ")))
+end)

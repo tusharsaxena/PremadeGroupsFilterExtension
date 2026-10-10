@@ -21,7 +21,7 @@ Total.
 - harness: every addon file in the TOC is annotated
 - harness: AceTimer is not embedded
 
-### test_surface_parity.lua (10)
+### test_surface_parity.lua (11)
 
 - parity: the Core seam's namespace surface survives the library's absence
 - parity: the DebugLog stub carries the whole live surface
@@ -33,6 +33,7 @@ Total.
 - parity: the Lifecycle stub carries the whole live surface
 - parity: the Compat arm carries every library member the addon wires
 - parity: no module reads PGF outside the bridge
+- parity: every locale key used is defined in enUS, and every enUS key is used
 
 ### test_setup.lua (19)
 
@@ -474,7 +475,7 @@ Total.
 | Suite | Cases |
 |-------|------:|
 | test_harness.lua | 10 |
-| test_surface_parity.lua | 10 |
+| test_surface_parity.lua | 11 |
 | test_setup.lua | 19 |
 | test_slash.lua | 6 |
 | test_disabled.lua | 5 |
@@ -501,4 +502,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **379** |
+| **Total** | **380** |

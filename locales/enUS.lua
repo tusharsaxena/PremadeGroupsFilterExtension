@@ -162,8 +162,19 @@ L["PremadeGroupsFilterExtension is on in EllesmereUI's Third-Party Addons list"]
 L["In EllesmereUI's Third-Party Addons list, turn on PremadeGroupsFilterExtension."] =
     "In EllesmereUI's Third-Party Addons list, turn on PremadeGroupsFilterExtension."
 L["Premade Groups Filter's own EllesmereUI skin is on"] = "Premade Groups Filter's own EllesmereUI skin is on"
-L["Install and enable Premade Groups Filter - EllesmereUI Skin, and turn on PremadeGroupsFilter in EllesmereUI's Third-Party Addons list."] =
-    "Install and enable Premade Groups Filter - EllesmereUI Skin, and turn on PremadeGroupsFilter in EllesmereUI's Third-Party Addons list."
+-- The pgf line's other three states (core/EUIBridge.lua PGF_TEXT): label, then hint
+L["Premade Groups Filter - EllesmereUI Skin is not installed"] =
+    "Premade Groups Filter - EllesmereUI Skin is not installed"
+L["Install it from CurseForge (copy the link below), then restart the game."] =
+    "Install it from CurseForge (copy the link below), then restart the game."
+L["Premade Groups Filter - EllesmereUI Skin is installed but disabled"] =
+    "Premade Groups Filter - EllesmereUI Skin is installed but disabled"
+L["Enable it in the AddOns list, then reload."] =
+    "Enable it in the AddOns list, then reload."
+L["Premade Groups Filter - EllesmereUI Skin is turned off in EllesmereUI"] =
+    "Premade Groups Filter - EllesmereUI Skin is turned off in EllesmereUI"
+L["In EllesmereUI's Third-Party Addons list, turn on PremadeGroupsFilter."] =
+    "In EllesmereUI's Third-Party Addons list, turn on PremadeGroupsFilter."
 L["The EllesmereUI skin comes off after a reload. Reload the UI now?"] =
     "The EllesmereUI skin comes off after a reload. Reload the UI now?"
 L["Reload"] = "Reload"
@@ -186,3 +197,16 @@ L["The skin is not applied: a condition above is not met."] =
 L["The skin is off."] = "The skin is off."
 L["The skin is applied after a reload."] = "The skin is applied after a reload."
 L["The skin is applied when the panel next shows."] = "The skin is applied when the panel next shows."
+L["Get Premade Groups Filter - EllesmereUI Skin (select, then Ctrl+C):"] =
+    "Get Premade Groups Filter - EllesmereUI Skin (select, then Ctrl+C):"
+-- Each condition line's tooltip (CONDITION_TIPS eui/master/own/pgf), then the state line's (STATE_TIP)
+L["EllesmereUI paints windows through its Blizzard Skin module (EllesmereUIBlizzardSkin), which holds its skinning engine. Without both there is nothing to paint this panel with.\n\nHow: install EllesmereUI and keep EllesmereUI Blizzard Skin enabled in the AddOns list."] =
+    "EllesmereUI paints windows through its Blizzard Skin module (EllesmereUIBlizzardSkin), which holds its skinning engine. Without both there is nothing to paint this panel with.\n\nHow: install EllesmereUI and keep EllesmereUI Blizzard Skin enabled in the AddOns list."
+L["EllesmereUI's master switch for skinning other addons' windows. While it is off, EllesmereUI skins no third-party addon, this one included.\n\nHow: EllesmereUI options > Blizz UI Enhanced > Blizzard Window Skins > Third-Party Addons > Skin Third-Party Addons."] =
+    "EllesmereUI's master switch for skinning other addons' windows. While it is off, EllesmereUI skins no third-party addon, this one included.\n\nHow: EllesmereUI options > Blizz UI Enhanced > Blizzard Window Skins > Third-Party Addons > Skin Third-Party Addons."
+L["EllesmereUI lists every addon that registers a skin with it, each with its own switch. This is this addon's entry.\n\nHow: in the same Third-Party Addons list, tick PremadeGroupsFilterExtension. EllesmereUI applies a skin it turns on at once; one it turns off goes after a reload."] =
+    "EllesmereUI lists every addon that registers a skin with it, each with its own switch. This is this addon's entry.\n\nHow: in the same Third-Party Addons list, tick PremadeGroupsFilterExtension. EllesmereUI applies a skin it turns on at once; one it turns off goes after a reload."
+L["This panel sits under Premade Groups Filter's window, so the skin is only used while that window is skinned too: the two always match. That is Premade Groups Filter - EllesmereUI Skin, a separate addon.\n\nHow: install it from CurseForge (the link appears below when it is missing), enable it in the AddOns list, and tick PremadeGroupsFilter in EllesmereUI's Third-Party Addons list."] =
+    "This panel sits under Premade Groups Filter's window, so the skin is only used while that window is skinned too: the two always match. That is Premade Groups Filter - EllesmereUI Skin, a separate addon.\n\nHow: install it from CurseForge (the link appears below when it is missing), enable it in the AddOns list, and tick PremadeGroupsFilter in EllesmereUI's Third-Party Addons list."
+L["What the skin is doing this session. EllesmereUI applies a skin once per session: turning the skin on paints the panel at once, turning it off takes effect after a reload. It is never applied while a condition above is not met, whatever the switch says."] =
+    "What the skin is doing this session. EllesmereUI applies a skin once per session: turning the skin on paints the panel at once, turning it off takes effect after a reload. It is never applied while a condition above is not met, whatever the switch says."
