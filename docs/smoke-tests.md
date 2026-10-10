@@ -214,7 +214,7 @@ substitute its numbers.
 - **APPLY-24. Region tags.** With PremadeRegions disabled, search Mythic+ → every listing's dungeon
   name starts with the leader's colored region (OCE, LA, CHI, MEX, BZL on US; ENG, GER, ... on EU),
   matching what PremadeRegions showed; list your own group → each applicant's name starts with
-  their region. Settings → General → untick *Show server regions in the Group Finder*, refresh →
+  their region. Settings → General → Filters → untick *Show server regions in the Group Finder*, refresh →
   no tags. Enable PremadeRegions again → exactly one tag per row (its own). No Lua error and no
   "action blocked" with `/console taintLog 1`. Result:
 - **APPLY-25. Season-data request, off-season and fresh login.** With `/etrace` (or an event trace

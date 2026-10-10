@@ -15,13 +15,13 @@ I'll add screenshots of the panel under Premade Groups Filter's dialog here with
 
 ## Usage
 
-Open the Group Finder, start a Mythic+ search and open Premade Groups Filter's dialog on the dungeon category. The extension's panel sits right under that dialog and is exactly as wide. Switch Premade Groups Filter to another category, or close it, and the panel goes away with it.
+Open the Group Finder, start a Mythic+ search and open Premade Groups Filter's dialog on the dungeon category. The extension's panel sits right under that dialog and is exactly as wide. Switch Premade Groups Filter to another category, minimize it or close it, and the panel goes away with it.
 
 Type a key level and the panel lists your best timed level in each dungeon this season. The ones you still need at that level show in gold, the rest in gray. Or leave **Smart** (next to the level box, on for a new character) ticked and the addon picks the level for you: the lowest one where at least one dungeon is still untimed. If your best timed runs are 12, 13, 13 and 14, Smart picks 13; once everything is timed at 13, it picks 14. Turn on whatever else you want (server regions and playstyles, each picked from a dropdown that starts with **Any**, which is the same as ticking none or ticking all; composition, a dropdown where you tick one or both exclusions; experienced leader, group age) and press **Apply**. Hover over any option to see what it does. Premade Groups Filter's dungeon checkboxes and advanced filter update, and the search runs.
 
 The game doesn't let addons type into the Group Finder's search box, so the panel shows the key range as text in the **Copy into search box** field at the bottom right, for example `14-14`. Click it to select the text, press Ctrl+C, then Enter to jump to the search box, then Ctrl+V and Enter to search listings by title.
 
-The first option, **Toggle PGF Extension Filters** (also under Settings → AddOns), switches the filtering off without turning the addon off: unticking it takes the extension's part out of the advanced filter (your own text and the dungeon ticks stay), and ticking it writes it back. Filter choices are saved per character. Presets let you store a setup under a name and load it on any character. **Clear** takes the extension's part back out of the advanced filter and leaves anything you typed there yourself. If the panel is in your way, the arrow in its top corner (or a click anywhere on its title strip) folds it down to just that strip; the same click opens it again.
+The first option, **Toggle PGF Extension Filters** (also under Settings → AddOns → Ka0s Premade Groups Filter Extension → General → Filters), switches the filtering off without turning the addon off: unticking it takes the extension's part out of the advanced filter (your own text and the dungeon ticks stay), and ticking it writes it back. Filter choices are saved per character. Presets let you store a setup under a name and load it on any character. **Clear** takes the extension's part back out of the advanced filter and leaves anything you typed there yourself. If the panel is in your way, the arrow in its top corner (or a click anywhere on its title strip) folds it down to just that strip; the same click opens it again.
 
 If you use EllesmereUI with Premade Groups Filter's EllesmereUI skin, the panel gets the same EllesmereUI look as Premade Groups Filter's dialog. That needs EllesmereUI's third-party skinning turned on (Blizz UI Enhanced → Blizzard Window Skins → Third-Party Addons), with both PremadeGroupsFilter and PremadeGroupsFilterExtension ticked there. Settings → AddOns → Ka0s Premade Groups Filter Extension → General → EllesmereUI skin shows which of these are on, and has a switch to keep the panel's Blizzard look anyway. The switch can't turn the skin on while something is missing, and turning it off takes effect after a reload.
 
@@ -43,7 +43,7 @@ Everything else is under **Settings → AddOns → Ka0s Premade Groups Filter Ex
 |---|---|
 | Can it fill in the search box for me? | No. The game blocks addons from typing into it, and a listing's title is hidden from addons, so the key level can't be filtered any other way. Click the Copy into search box field, then Ctrl+C, Enter, Ctrl+V, Enter. |
 | Can it filter on the leader's item level? | No. The game only tells addons the item level a group *requires*, not the leader's. For the leader's M+ rating, use Premade Groups Filter's own M+ Rating row. |
-| Do I need PremadeRegions? | No, this addon replaces it. It shows each listing's server region in front of the dungeon name (and each applicant's in front of their name), and the region filter uses its own realm list. You can uninstall PremadeRegions; while it is still installed, this addon leaves the tags to it so you don't see two. Turn the tags off under Settings → AddOns → Ka0s Premade Groups Filter Extension → General. |
+| Do I need PremadeRegions? | No, this addon replaces it. It shows each listing's server region in front of the dungeon name (and each applicant's in front of their name), and the region filter uses its own realm list. You can uninstall PremadeRegions; while it is still installed, this addon leaves the tags to it so you don't see two. Turn the tags off with **Show server regions in the Group Finder** under Settings → AddOns → Ka0s Premade Groups Filter Extension → General → Filters. |
 | Why does it need Premade Groups Filter? | It works through Premade Groups Filter's own checkboxes and advanced filter, so there is nothing for it to do on its own. |
 | Does it change anything I typed in the advanced filter? | No. Apply adds its own marked block around your text, and Clear removes only that block. |
 | Are my settings shared between characters? | Filter choices are per character. Presets are shared by all your characters. |
@@ -53,9 +53,12 @@ Everything else is under **Settings → AddOns → Ka0s Premade Groups Filter Ex
 | Symptom | Fix |
 |---|---|
 | The addon doesn't load | Premade Groups Filter must be installed and enabled. |
-| The panel shows "PGF version not supported" | Premade Groups Filter changed in an update. Report it (see below) and include your Premade Groups Filter version. |
+| The panel says "This Premade Groups Filter version is not supported" | Premade Groups Filter changed in an update. Report it (see below) and include your Premade Groups Filter version. |
 | Apply says it can't run in combat | Wait until combat ends and press it again. |
 | Apply asks you to open Premade Groups Filter on the Dungeons category | Switch Premade Groups Filter's dialog to Dungeons, then press Apply again. |
+| `/pgfe apply` asks you to maximize Premade Groups Filter | Maximize Premade Groups Filter's dialog, then run it again. |
+| The Apply button is grayed out, or `/pgfe apply` says PGF Extension filters are toggled off | Apply stays off while the filters are toggled off. Tick **Toggle PGF Extension Filters** (the panel's first box), then apply again. |
+| Apply says the advanced filter would exceed 2000 characters | Shorten your own text in Premade Groups Filter's advanced filter, then press Apply again. |
 | The panel says season data is loading | The game sends it a few seconds after login. Wait, then look again. |
 | Apply says the [pgfe] block is damaged | The lines between the `-- [pgfe]` markers in the advanced filter were changed by hand. Delete the block, markers included, and press Apply again. |
 | Something looks wrong and I want to report it | Follow [Reporting a bug](#reporting-a-bug) below. |

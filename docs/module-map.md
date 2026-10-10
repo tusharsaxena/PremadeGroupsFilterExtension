@@ -15,7 +15,8 @@ Profiles page. The constraints that fix the order:
 - `core/CoreSetup.lua` first in core: every later file captures `NS.Print` / `NS.Util.print`.
 - `core/MediaSetup.lua` before `core/PGFE.lua`: `NS.FONT_MONO` is resolved from `NS.MediaFont` at load.
 - `core/PGFE.lua` before every other addon file below it: it promotes `NS` to the AceAddon object
-  and publishes `NS.PREFIX`, `NS.State`, `NS.FEATURE_EVENTS`, `NS.STAND_DOWN` and `NS.STAND_UP`.
+  and publishes `NS.PREFIX`, `NS.State`, `NS.FONT_MONO`, `NS.FEATURE_EVENTS`, `NS.STAND_DOWN` and
+  `NS.STAND_UP`.
   `modules/EnvInject.lua`, `modules/Panel.lua`, `modules/EUISkin.lua` and every `settings/` file
   read `NS.addon` at load.
 - `core/PGFE.lua` and `core/PGFBridge.lua` before `modules/EnvInject.lua` and `modules/Panel.lua`:
@@ -47,25 +48,25 @@ Profiles page. The constraints that fix the order:
 | `core/LauncherSetup.lua` | `LibKa0s-Launcher-1.0`: the LDB launcher and minimap button |
 | `core/LifecycleSetup.lua` | `LibKa0s-Lifecycle-1.0`: the stand-down latch, `NS.IsStoodDown()` |
 | `core/PGFBridge.lua` | The only file that touches PGF internals: seam check, dungeon state and expression read/write, commit, search, the env and dialog hooks |
-| `core/EUIBridge.lua` | The only file that reads EllesmereUI state: the skin's four gate conditions (`Conditions`, `GateOpen`, `WhyClosed`) |
+| `core/EUIBridge.lua` | The only file that reads EllesmereUI state: the skin's four gate conditions (`Conditions`, `GateOpen`, `WhyClosed`) and the per-condition readers behind them (`IsSuiteReady`, `IsMasterOn`, `IsEntryOn`, `PGFSkinState` / `IsPGFSkinOn`), plus `SKIN_NAME` |
 | `defaults/Profile.lua` | `NS.C`: profile, char and global default values |
 | `defaults/Realms.lua` | `NS.RealmLists`: realm display names per portal and region bucket |
 | `modules/Regions.lua` | Portal detection, realm normalization, leader name → region key |
 | `modules/Season.lua` | Season dungeons, their short keywords and the player's best timed levels |
 | `modules/Targeting.lua` | Pure: untimed dungeons at a level, the Smart level, level validation, the `N-N` range text |
 | `modules/Expression.lua` | Pure: options → PGF expression block, merge and strip |
-| `modules/Filters.lua` | The per-character filter options: get/set, region and playstyle toggles (all ticked = Any), validation, clause options, the Smart level write |
+| `modules/Filters.lua` | The per-character filter options: get/set, region, playstyle and composition toggles (all ticked = Any), validation, clause options, the Smart level write |
 | `modules/Presets.lua` | Named presets, account-wide: list, save, load in place, delete |
 | `modules/EnvInject.lua` | The PGF env post-hook body and the player's cached spec keywords; installs the hook at load |
 | `modules/Apply.lua` | Apply / Clear orchestration: prechecks, validation, targeting, expression merge, bridge writes, search |
 | `modules/RegionTags.lua` | The region tag on Group Finder rows and applicants; installs its two Blizzard hooks at load |
 | `modules/Panel.lua` | The panel attached under PGF's dialog; installs the dialog hook at load |
 | `modules/EUISkin.lua` | The optional EllesmereUI skin of that panel: registers at load, keeps the facade, paints when every condition and the switch hold, the reload prompt |
-| `modules/Diagnostics.lua` | The sections of `/pgfe diagnostics` |
+| `modules/Diagnostics.lua` | The sections of `/pgfe diagnostics` (`NS.Diagnostics.Sections()`, wired as the DebugLog descriptor's `diagnostics` hook in `core/DebugLogSetup.lua`) |
 | `settings/SchemaSetup.lua` | `LibKa0s-Schema-1.0` or its host stub |
-| `settings/Schema.lua` | Schema rows, the write seam, defaults assembly, the reset |
+| `settings/Schema.lua` | The write seam (`NS.SchemaRuntime`), the closure stamping for session and global rows (`Settings.StampClosureRows`), schema validation, defaults assembly and the reset. Declares no rows: `settings/Panel.lua` adds every row at load |
 | `settings/OptionsSetup.lua` | `LibKa0s-Options-1.0`: the settings panel descriptor |
-| `settings/Panel.lua` | Landing page body and the General page (Master controls; the EllesmereUI skin tab and its `euiSkin` row) |
+| `settings/Panel.lua` | Landing page body and the General page, in three tabs: Master controls, Filters (`filtersActive`, `showRegionTags`) and EllesmereUI skin (its `euiSkin` row and status lines) |
 | `settings/Slash.lua` | `NS.COMMANDS` and `LibKa0s-Slash-1.0` |
 | `settings/Profiles.lua` | The Profiles page |
 | `tests/run.lua` | Suite list, factories, surface source, diagnostics facts |
@@ -73,5 +74,6 @@ Profiles page. The constraints that fix the order:
 | `tests/wow_mock.lua` | Mock extender (client APIs this addon reads, AceDB `char`, LDB fakes, the opt-in EllesmereUI fake) |
 | `tests/pgf_fake.lua` | Premade Groups Filter stand-in |
 | `tests/prose_waivers.lua` | Per-file, per-word waivers for the kit's prose gate (realm names) |
+| `tests/perf.lua` | The offline performance scenarios (`lua tests/perf.lua`): env hook, row painters, stood-down hook, `combatEvents`. Outside the green gate; ships under the performance-§12 exemption ([`performance.md`](performance.md)) |
 | `tests/test_*.lua` | One suite per module plus the standard's named suites |
 | `tools/realm_map_diff.py` | Diffs `defaults/Realms.lua` against an installed PremadeRegions ([`realm-map-maintenance.md`](realm-map-maintenance.md)) |

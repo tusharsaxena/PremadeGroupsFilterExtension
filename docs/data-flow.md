@@ -64,14 +64,14 @@ PGF builds one `env` per result, counts the members into it (`<spec>_<class>s`,
 `hooksecurefunc` post-hook installed at file load runs `EnvInject.Apply(env, leaderName)`:
 
 1. Stood down → return.
-2. `PremadeRegions` not loaded → every region key `false`, then
+2. `env.pgfe_on = Filters.IsActive()` (the managed block's guard: `not pgfe_on or ( … )` is neutral
+   while *Toggle PGF Extension Filters* is off and when the hook did not run).
+3. `PremadeRegions` not loaded → every region key `false`, then
    `Regions.GetRegion(leaderName)`: portal from `GetCurrentRegion()` (1 US, 3 EU, else nil), realm
    from the `-Realm` suffix or `GetRealmName()` when there is none, `Regions.Normalize` (lowercase,
    whitespace and ASCII punctuation dropped), lookup in the per-portal table built once from
    `NS.RealmLists`. Sets `env.region` and `env[region] = true`.
-3. `env.pgfe_on = Filters.IsActive()` (the managed block's guard: `not pgfe_on or ( … )` is neutral
-   while *Toggle PGF Extension Filters* is off and when the hook did not run), then `env.pgfe_samespec` and `env.pgfe_sameclassrole` from the two cached
-   player keywords.
+4. `env.pgfe_samespec` and `env.pgfe_sameclassrole` from the two cached player keywords.
 
 PGF then evaluates the expression, including the addon's block, against that env.
 
@@ -97,8 +97,10 @@ episode: `Season.RequestOnce()` sends only while unarmed. It is re-armed on `PLA
 full -> empty rollover of the map table (the first empty read after a full one resets and sends in
 the same call; later empty reads send nothing). The reply event never triggers a second request,
 which is what kept off-season clients in a request/reply loop before. Widget handlers write through `Filters.Set` / `Filters.ToggleRegion` /
-`Filters.TogglePlaystyle` / the `Filters.Clear*` pair (the menus' Any entry) / `Presets.*` and return
-at once when stood down; so do the tooltip handlers.
+`Filters.TogglePlaystyle` / `Filters.ToggleComposition` / the three `Filters.Clear*` functions
+(`ClearRegions`, `ClearPlaystyles`, `ClearComposition`: each dropdown's Any entry) /
+`Filters.SetActive` (the first box, through the schema write seam) / `Presets.*` and return at once
+when stood down; so do the tooltip handlers.
 
 ## Region tags
 

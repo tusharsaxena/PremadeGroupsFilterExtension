@@ -1,11 +1,16 @@
 # Common tasks — Ka0s Premade Groups Filter Extension
 
-## Add a master setting (a schema row)
+## Add a setting (a schema row)
 
 1. Add the default value to `NS.C.PROFILE` in `defaults/Profile.lua`.
-2. Add the row in `settings/Schema.lua` (or as a composed row in `settings/Panel.lua`) with a
-   `section`, `group`, `label` and `tooltip`, and an `enUS` key for every label and tooltip.
-3. Cover it in a suite; `lua tests/run.lua`, `luacheck .`.
+2. Declare the row in `settings/Panel.lua` beside `FILTER_ROWS` / `EUI_ROWS`: `page = "general"`,
+   `section = "general"`, a `group` (its own tab, never Master controls, which holds only the
+   mandated rows, options-ui-§15), `label`, `tooltip` and any `onChange`. Run
+   `Settings.StampClosureRows` on it when it is a session or global row, then add it with
+   `NS.SchemaRuntime.AddRows`. Add an `enUS` key for every label and tooltip. `settings/Schema.lua`
+   declares no rows.
+3. Add it to `docs/schema.md` and `docs/settings-panel.md`.
+4. Cover it in a suite; `lua tests/run.lua`, `luacheck .`.
 
 ## Add a filter option (per character)
 
@@ -49,12 +54,19 @@ stand-up. Put any teardown in `NS.STAND_DOWN` and its rebuild in `NS.STAND_UP`.
 
 ## Hook PGF
 
-Only in `core/PGFBridge.lua`, with `hooksecurefunc` at file load, nil-guarded, and a body that
-returns at once when `NS.IsStoodDown()`. Record the seam (PGF file:line) in `docs/ARCHITECTURE.md`.
+Only through `core/PGFBridge.lua`: add a `Bridge.Install…` / `Bridge.Hook…` function there that
+nil-guards the PGF member, calls `hooksecurefunc` (or `HookScript`) and returns whether it installed.
+Call it at the consuming module's file load, store the result on the module (as `EnvInject.hooked` /
+`Panel.dialogHooked` / `RegionTags.hooked` do) and add it to the `hooks` line in
+`modules/Diagnostics.lua`. The body returns at once when `NS.IsStoodDown()`. Record the seam (PGF
+file:line) in `docs/ARCHITECTURE.md`.
 
 ## Add a locale string
 
 Add `L["English text"] = "English text"` to `locales/enUS.lua` and use `NS.L["English text"]`.
+Apply/Clear messages and attached-panel widget strings use an identifier key instead
+(`L.MSG_<NAME>`, `L.<WIDGET_ID>`, in their commented blocks); use `NS.L.<ID>`. `Apply.Report` formats
+`NS.L[msgKey]`, so a new `MSG_*` key must exist here.
 
 ## Re-vendor LibKa0s
 

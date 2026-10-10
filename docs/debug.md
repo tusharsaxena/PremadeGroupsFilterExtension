@@ -6,8 +6,9 @@
 `/pgfe debug on|off` toggles logging. The logging flag is session-only (`NS.State.debug`, off after
 every `/reload`) and independent of the window, so a bug can be reproduced with the window closed.
 Lines are written with `NS.Debug(tag, fmt, ...)`; the library writes its own `[Cmd]`, `[Cfg]`,
-`[Launcher]` and `[Lifecycle]` lines. The EllesmereUI skin writes `[Skin]` lines: the callback,
-one `applied: N widgets` summary, and a `skipped: <reason>` line each time the reason changes. The `[Init]` summary (name, version, schema, profile, enabled,
+`[Launcher]` and `[Lifecycle]` lines. The EllesmereUI skin writes `[Skin]` lines: `EllesmereUI called back (apiVersion <n>)`,
+one `applied: N widgets` summary, `paint failed: <error>` when a paint raises (latched, never retried), and a
+`skipped: <reason>` line each time the reason changes. The `[Init]` summary (name, version, schema, profile, enabled,
 PremadeRegions) lands when logging is turned on.
 
 ## Tag vocabulary
@@ -23,6 +24,8 @@ env hook (`EnvInject.Apply`) and the Blizzard row painters write nothing.
 | `Preset` | `modules/Presets.lua` | `saved '<name>'`, `loaded '<name>'`, `deleted '<name>'`, `delete '<name>': absent`, `save refused: badName`, `load '<name>' refused: missing` |
 | `Env` | `modules/EnvInject.lua` `RefreshPlayer` | `spec=<keyword> classRole=<keyword>`, on a change only (`DebugChanged` key `env.spec`); `env hook not installed: <reason>` at load |
 | `Init` | `core/PGFE.lua` `OnEnable` | `PGF seams ok\|missing <seam>; PremadeRegions loaded\|absent; hooks env= dialog= searchRow= applicantRow=` (`DebugAtEnable`: held until logging is turned on), beside the library's session summary |
+| `Profile` | `core/PGFE.lua` `OnProfileChanged` | `switched to '<name>'` |
+| `Set` | `core/PGFE.lua` `OnProfileCopied` / `OnProfileReset`; `settings/Schema.lua` `RestoreAllDefaults` | `copied profile '<src>' → '<dst>'`; `reset profile '<name>' to defaults (<n> rows)` (without the count when none was taken); `reset profile '<name>' to defaults (stopped by an error)` |
 
 ## The diagnostics report (debug-logging-§14)
 

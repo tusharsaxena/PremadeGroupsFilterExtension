@@ -48,7 +48,7 @@ There is one registration site, and every hook runs on a player UI action.
 | `core/PGFBridge.lua:184-186` | `SwitchToPanel`, dialog `OnShow` / `OnHide` | `Panel.UpdateVisibility` | Player action |
 | `modules/RegionTags.lua:74` | `LFGListSearchEntry_Update`, `LFGListApplicationViewer_UpdateApplicantMember` | One row tag: 5.2 calls, 160 bytes | Only while the Group Finder repaints |
 | `modules/EUISkin.lua:176-177`, `:236-240` | Skin checkbox `OnClick` / `SetChecked`; min/max glyph `OnEnter` / `OnLeave` | One accent repaint; one vertex color | Player action |
-| `modules/Panel.lua:90-96` | Tooltip `OnEnter` / `OnLeave` | Fill and show `GameTooltip`; hide it | Player action |
+| `modules/Panel.lua:91-97` | Tooltip `OnEnter` / `OnLeave` | Fill and show `GameTooltip`; hide it | Player action |
 | `modules/Panel.lua`, `settings/Panel.lua` | `SetScript` / `HookScript` on the addon's own widgets (click, edit box, focus, settings `OnShow`) | One handler per player action | Player action |
 | `modules/Apply.lua:37` | `InCombatLockdown()` in `precheck` | Apply refuses in combat | Refused |
 

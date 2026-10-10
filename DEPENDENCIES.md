@@ -35,11 +35,11 @@ such rather than listed as a requirement.
 
 | Tool | Version | Needed for | Evidence |
 |---|---|---|---|
-| `lua5.1` (+ `luac`) | **5.1 exactly** | the headless suite, `lua tests/run.lua` | `tests/_kit/loader.lua` and `tests/loader.lua` use `setfenv` |
+| `lua5.1` | **5.1 exactly** | the headless suite, `lua tests/run.lua`, and the offline perf scenarios (`tests/perf.lua`) | `tests/_kit/loader.lua` and `tests/loader.lua` use `setfenv` |
 | `luacheck` | any recent | `luacheck .`, the other half of the green gate | `.luacheckrc` at the repo root |
 | `lizard` | any recent | the `complexity` suite of `tests/_kit/run-automated-tests.sh`, which runs it over a sanitized shadow because `lizard` alone is blind in Lua (automated-tests-§3). "Any recent" holds only while the source keeps lizard's shape rule: function-literal tables are named locals, never a function literal inside a `for … in` header (the shape that crashed the runner, C-02) | `lizard --version` |
-| `git` | any recent | vendoring, the vendor gate's comparison against the LibKa0s checkout, the line-ending gate | `tests/_kit/vendor_sync.lua`, `tests/_kit/test_eol.lua` |
-| POSIX shell (`bash`) | any | the automated-test runner and the commands in this file | `tests/_kit/run-automated-tests.sh` |
+| `git` | any recent | vendoring, the vendor gate's comparison against the LibKa0s checkout, the line-ending and layout-cap gates, and the runner's manifest (sha/branch/dirty) | `tests/_kit/vendor_sync.lua`, `tests/_kit/test_eol.lua`, `tests/_kit/test_layout_cap.lua`, `tests/_kit/run-automated-tests.sh` |
+| `bash` | **4+** (associative arrays) | the automated-test runner and the commands in this file | `tests/_kit/run-automated-tests.sh` (`declare -A`) |
 
 **Lua 5.1 is a requirement, not a preference.** The harness sandboxes each source file with
 `setfenv`, which was removed in 5.2 — "5.2 will probably work" is false and costs an hour to
@@ -52,7 +52,7 @@ checkout its two payload cases report SKIP with the reason, never PASS.
 ```sh
 # Lua 5.1 and luacheck
 sudo apt-get update
-sudo apt-get install -y lua5.1 luarocks
+sudo apt-get install -y lua5.1 luarocks build-essential   # build-essential: luacheck depends on luafilesystem, a C rock luarocks compiles
 sudo luarocks install luacheck
 
 # lizard — via pipx, NOT pip. Ubuntu 24.04 marks its Python EXTERNALLY-MANAGED (PEP 668),
@@ -66,6 +66,7 @@ lua5.1 -v                # Lua 5.1.5 …   (if `lua` is not 5.1, use lua5.1 expl
 luacheck --version
 lizard --version
 git --version
+bash --version           # GNU bash, version 4 or newer
 ```
 
 Versions are pinned only where a version matters: `lua5.1` is hard, `luacheck` and `lizard` are
@@ -76,6 +77,9 @@ rule in its row: keep function-literal tables as named locals.
 
 **None of this group is required to build, run or test the addon.**
 
+- **Packaging: nothing to install.** `.pkgmeta` configures the hosting packager, which ships the
+  repo as-is minus its `ignore:` list. It has no `externals:` block because every library is
+  vendored and committed (library-stack-§3), so there is no local packaging step.
 - **Python 3 with Pillow**, only for **regenerating** the logos from their source. Both renders are
   committed, so nothing is generated at package time:
   `media/logos/premadegroupsfilterextension.logo.128.tga` (128×128, uncompressed 32-bit; the TOC

@@ -25,5 +25,5 @@ The runner is the kit's (`tests/_kit/`), recorded `100755` in the git index, and
   and `blindFiles` 0 on the sighted complexity suite, evaluated by `/dev-copilot:bump-version` from the
   run's `manifest.json`.
 - A missing tool is a **skip** with its reason, never a pass; a skip is not a pass for the release
-  gate either. Today `perf` skips with "no tests/perf.lua": the offline scenarios arrive with the
-  first hot path, the env hook, and are owed before the `v0.1.0` tag.
+  gate either. `perf` runs the six offline scenarios in `tests/perf.lua` (the addon holds the
+  performance-§12 exemption and ships them anyway; see [`../performance.md`](../performance.md)).
