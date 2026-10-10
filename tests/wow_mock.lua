@@ -333,6 +333,9 @@ local function build()
     --                         "missing" = not installed at all (C_AddOns.DoesAddOnExist false)
     --   spec.masterOff        EllesmereUIDB.thirdPartySkinsOff = true
     --   spec.entries          EllesmereUIDB.thirdPartySkinAddons (e.g. { PremadeGroupsFilter = false })
+    --   spec.omit             a list of facade members (primitives or getters) left out of S, as an
+    --                         EllesmereUI whose facade changed shape (e.g. { "StateButtonLabel" })
+    --   spec.raise            the name of one primitive that records its call, then error()s
     -- Installs C_AddOns too (the base deliberately leaves it out), answering from `m.loadedAddons`,
     -- with this addon's own folder loaded. Handle: m.eui = { registry, order, fired, calls, looks, accent,
     -- dispatch(name), dispatchAll(), callsFor(fn, target), count(fn) }.
@@ -385,6 +388,14 @@ local function build()
             S.GetStyle = function() return "eui" end
             S.OnLooksChanged = function(fn) eui.looks[#eui.looks + 1] = fn end
             S.IsEnabled = function() return masterOn() and addonOn(name) end
+            if spec.raise then
+                local record = S[spec.raise]
+                S[spec.raise] = function(target, opts)
+                    record(target, opts)
+                    error("EllesmereUI fake: " .. spec.raise .. " raised")
+                end
+            end
+            for _, fname in ipairs(spec.omit or {}) do S[fname] = nil end
             return S
         end
         function eui.dispatch(name)

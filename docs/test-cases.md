@@ -302,7 +302,7 @@ Total.
 - panel: the title is the full addon name, and the copy box centers its range
 - panel: a click on the header strip collapses and expands, like the arrow
 
-### test_euiskin.lua (26)
+### test_euiskin.lua (28)
 
 - euiskin: the module publishes its namespace table
 - euiskin: registers once, at file load, under the folder name
@@ -320,6 +320,8 @@ Total.
 - euiskin: a profile switch to one with the switch on paints
 - euiskin: a profile switch to one with the switch off, after a paint, asks for a reload
 - euiskin: a profile switch to a disabled profile with the switch on paints nothing
+- euiskin: a facade missing a primitive is refused before any paint
+- euiskin: a primitive that raises fails closed, once
 - euiskin: skinned, the collapsed panel is the shell's 25px bar and the metal copies are hidden
 - euiskin: skinned, the panel sits flush under PGF's dialog, both edges
 - euiskin: the min/max buttons get the minus (collapse) and the plus (expand)
@@ -442,7 +444,7 @@ Total.
 | test_euibridge.lua | 17 |
 | test_apply.lua | 16 |
 | test_panel.lua | 73 |
-| test_euiskin.lua | 26 |
+| test_euiskin.lua | 28 |
 | test_euisettings.lua | 19 |
 | test_vendor_sync.lua | 3 |
 | test_eol.lua | 2 |
@@ -451,4 +453,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **337** |
+| **Total** | **339** |

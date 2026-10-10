@@ -241,8 +241,13 @@ Read against EllesmereUI **9.4** (`EllesmereUI_SharedHelpers.lua`,
 
 The facade `S` (apiVersion 3) is kept from the callback; the paint uses `Shell`, `FadeNineSlice`,
 `FadeRegions`, `Checkbox`, `EditBox`, `Dropdown`, `Button`, `StateButtonLabel`, `Font`, `White`,
-`GetAccentColor`, `GetFont` and `OnLooksChanged`. EllesmereUI skins the Blizzard menus the dropdowns
-open and the preset StaticPopups globally, under its own *popups and menus* switch.
+`GetAccentColor`, `GetFont` and `OnLooksChanged`. The paint checks the facade's shape first: a
+facade missing any of those primitives or getters is refused before anything is painted, and the
+panel stays stock. The paint itself is pcall'd and fails closed: a primitive that raises logs
+`paint failed`, latches, and is never retried (a retry would skin the same widgets twice); turning
+the switch off then offers the reload that drops the partial paint. EllesmereUI skins the Blizzard
+menus the dropdowns open and the preset StaticPopups globally, under its own *popups and menus*
+switch.
 
 **Standards note (ratified deviation).** Reading `EllesmereUIDB` departs from library-stack-§6 /
 anti-pattern #29 ("MUST NOT read a suite's ... SavedVariables"). EllesmereUI has no public query

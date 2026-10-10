@@ -35,6 +35,10 @@ local EXPAND_ATLAS   = "UI-QuestTrackerButton-Secondary-Expand"     -- a plus
 local GLYPH_SIZE, GLYPH_ALPHA, GLYPH_OFFSET_X = 16, 0.75, -2
 local FONTSIZE_TEXTBOX, TEXT_INSET = 12, 4
 local POPUP_RELOAD = "PGFE_EUI_SKIN_RELOAD"
+-- Every facade member the paint calls. A facade missing one is refused before anything is painted,
+-- so a changed EllesmereUI API leaves the panel stock rather than half-skinned.
+local REQUIRED = { "Shell", "FadeNineSlice", "FadeRegions", "Checkbox", "EditBox", "Dropdown", "Button",
+    "StateButtonLabel", "Font", "White", "GetAccentColor", "GetFont" }
 
 EUISkin.SHELL_HEADER_H = SHELL_HEADER_H
 EUISkin.SHELL_GAP      = SHELL_GAP
@@ -42,6 +46,7 @@ EUISkin.POPUP_RELOAD   = POPUP_RELOAD
 
 local S             -- the facade, once EllesmereUI has called back
 local applied = false
+local paintFailed   -- the error of a paint that raised: no retry, a reload drops the partial paint
 local lastSkip      -- the last skip reason logged: a panel re-show repeats it, the log does not
 local checkBoxes, textBoxes = {}, {}
 local accentBorders = setmetatable({}, { __mode = "k" })
@@ -305,6 +310,10 @@ end
 local function blocked()
     if stoodDown() then return "stood down" end
     if not S then return "EllesmereUI has not called back (a condition was off at login)" end
+    if paintFailed then return "paint failed earlier: " .. paintFailed end
+    for _, name in ipairs(REQUIRED) do
+        if type(S[name]) ~= "function" then return "facade lacks " .. name end
+    end
     if not switchOn() then return "switch off" end
     local open, failing = NS.EUIBridge.GateOpen()
     if not open then return "condition '" .. tostring(failing) .. "' not met" end
@@ -324,20 +333,27 @@ function EUISkin.TryApply()
         lastSkip = why
         return false
     end
-    applied = true
     local f = NS.Panel.frame
-    local n = paintShell(f) + paintBody(f)
+    -- Fail closed: a primitive that raises leaves what it painted (only a reload removes a skin)
+    -- and latches paintFailed, so the next show never paints the same widgets twice.
+    local ok, res = pcall(function() return paintShell(f) + paintBody(f) end)
+    if not ok then
+        paintFailed = tostring(res)
+        NS.Debug(TAG, "paint failed: %s", paintFailed)
+        return false
+    end
+    applied = true
     NS.Panel.Refresh()          -- re-runs applyLayout (header height) and SetChecked (accent rings)
-    NS.Debug(TAG, "applied: %d widgets", n)
+    NS.Debug(TAG, "applied: %d widgets", res)
     return true
 end
 
---- The euiSkin switch's onChange. On paints now (when S is held); off after a paint asks for a
---- reload, since a skin cannot be taken off live.
+--- The euiSkin switch's onChange. On paints now (when S is held); off after a paint, or after a
+--- paint that failed part-way, asks for a reload, since a skin cannot be taken off live.
 function EUISkin.OnSwitch(on)
     if on then
         EUISkin.TryApply()
-    elseif applied then
+    elseif applied or paintFailed then
         StaticPopup_Show(POPUP_RELOAD)
     end
 end

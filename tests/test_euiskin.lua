@@ -195,6 +195,41 @@ test("euiskin: a profile switch to a disabled profile with the switch on paints 
     assertEqual(m.eui.count("Shell"), 0)
 end)
 
+-- ── a facade that changed shape, or raises ──────────────────────────────────────────────────────
+
+-- An EllesmereUI whose facade lost a member must never half-paint the panel: the paint checks the
+-- whole shape first and refuses, and the panel stays stock and usable.
+-- red under: drop the REQUIRED shape check in blocked()
+test("euiskin: a facade missing a primitive is refused before any paint", function()
+    local NS, m, f = painted{ omit = { "StateButtonLabel" } }
+    assertTrue(NS.EUISkin.HasFacade(), "S is kept")
+    assertFalse(NS.EUISkin.IsApplied())
+    assertFalse(NS.EUISkin.TryApply())
+    assertEqual(m.eui.count("Shell"), 0, "nothing painted")
+    NS.Panel.UpdateVisibility()
+    assertTrue(f:IsShown(), "the panel still shows")
+end)
+
+-- A primitive that raises mid-paint fails closed: no raise out of TryApply, no retry (a retry would
+-- skin the same widgets twice), and the switch turned off offers the reload that drops the partial
+-- paint.
+-- red under: drop the pcall, or the paintFailed latch
+test("euiskin: a primitive that raises fails closed, once", function()
+    local NS, _, m = setup{ raise = "Dropdown" }
+    NS.Panel.Create()
+    m.eui.dispatch(NAME)
+    assertFalse(NS.EUISkin.IsApplied())
+    local boxes = m.eui.count("Checkbox")
+    assertTrue(boxes > 0, "the paint got as far as the boxes")
+    assertFalse(NS.EUISkin.TryApply())
+    NS.Panel.UpdateVisibility()
+    assertEqual(m.eui.count("Checkbox"), boxes, "no second paint")
+    NS.addon.db.profile.euiSkin = false
+    NS.EUISkin.OnSwitch(false)
+    assertEqual(#m.popupsShown, 1)
+    assertEqual(m.popupsShown[1][1], NS.EUISkin.POPUP_RELOAD)
+end)
+
 -- ── geometry ────────────────────────────────────────────────────────────────────────────────────
 
 test("euiskin: skinned, the collapsed panel is the shell's 25px bar and the metal copies are hidden", function()
