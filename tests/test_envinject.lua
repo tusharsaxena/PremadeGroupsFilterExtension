@@ -110,6 +110,14 @@ test("envinject: the env hook's install result is stored", function()
     assertTrue(NS.EnvInject.hooked == true)
 end)
 
+-- A truthy, non-function PutPremadeRegionInfo passes Check() but InstallEnvHook refuses it; the
+-- not-installed debug line must degrade, not raise at file load.
+test("envinject: a non-function PutPremadeRegionInfo leaves the hook off without raising", function()
+    -- red under: tostring(select(2, NS.Bridge.Check())) at the not-installed debug line
+    local NS = T.newAddon{ mock = function(mock) mock.pgf.PGF.PutPremadeRegionInfo = true end }
+    assertFalse(NS.EnvInject.hooked)
+end)
+
 -- Review C-32: without PremadeRegions, a protected leader name leaves every region key false.
 test("envinject: a protected leader name injects no region", function()
     local NS, _, m = T.enableAddon{}

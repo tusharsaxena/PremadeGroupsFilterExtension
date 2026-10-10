@@ -147,7 +147,7 @@ Total.
 - presets: a preset missing keys loads over the current defaults
 - presets: Smart travels with a preset; an older preset loads the default (on)
 
-### test_envinject.lua (12)
+### test_envinject.lua (13)
 
 - envinject: the module publishes its namespace table
 - envinject: keywords follow PGF's formula
@@ -160,6 +160,7 @@ Total.
 - envinject: stood down → hook is a no-op
 - envinject: the block's guard is off while Toggle PGF Extension Filters is off
 - envinject: the env hook's install result is stored
+- envinject: a non-function PutPremadeRegionInfo leaves the hook off without raising
 - envinject: a protected leader name injects no region
 
 ### test_regiontags.lua (9)
@@ -450,7 +451,7 @@ Total.
 | test_expression.lua | 18 |
 | test_filters.lua | 11 |
 | test_presets.lua | 5 |
-| test_envinject.lua | 12 |
+| test_envinject.lua | 13 |
 | test_regiontags.lua | 9 |
 | test_bridge.lua | 18 |
 | test_euibridge.lua | 17 |
@@ -465,4 +466,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **351** |
+| **Total** | **352** |

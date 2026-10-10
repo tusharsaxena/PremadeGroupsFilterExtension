@@ -87,5 +87,9 @@ NS.STAND_UP[#NS.STAND_UP + 1] = EnvInject.RefreshPlayer
 -- (## Dependencies), so its namespace exists by now. The result is stored for Diagnostics.
 EnvInject.hooked = NS.Bridge.InstallEnvHook(function(env, leaderName) EnvInject.Apply(env, leaderName) end)
 if not EnvInject.hooked then
-    NS.Debug("Env", "env hook not installed: %s", tostring(select(2, NS.Bridge.Check())))
+    -- Check() returns only `true` when every seam is truthy, yet InstallEnvHook also refuses a
+    -- PutPremadeRegionInfo that is not a function; name that case rather than pass tostring() nothing.
+    local ok, missing = NS.Bridge.Check()
+    NS.Debug("Env", "env hook not installed: %s",
+        ok and "PutPremadeRegionInfo not a function" or tostring(missing))
 end
