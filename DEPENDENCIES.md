@@ -85,10 +85,10 @@ rule in its row: keep function-literal tables as named locals.
 
   ```sh
   sudo apt-get install -y python3-pil
-  python3 -c 'from PIL import Image; Image.open("media/logos/premadegroupsfilterextension.logo.png").convert("RGBA").resize((128, 128), Image.LANCZOS).save("media/logos/premadegroupsfilterextension.logo.128.tga", format="TGA")'
-  python3 -c 'from PIL import Image; Image.open("media/logos/premadegroupsfilterextension.logo.png").convert("RGBA").resize((512, 512), Image.LANCZOS).save("media/logos/premadegroupsfilterextension.logo.tga", format="TGA")'
+  python3 -c 'from PIL import Image; Image.open("media/logos/premadegroupsfilterextension.logo.png").convert("RGBA").resize((128, 128), Image.LANCZOS).save("media/logos/premadegroupsfilterextension.logo.128.tga", format="TGA", orientation=1)'
+  python3 -c 'from PIL import Image; Image.open("media/logos/premadegroupsfilterextension.logo.png").convert("RGBA").resize((512, 512), Image.LANCZOS).save("media/logos/premadegroupsfilterextension.logo.tga", format="TGA", orientation=1)'
   python3 -c 'import PIL; print(PIL.__version__)'   # verify
-  file media/logos/*.tga   # check: RGBA 128 x 128 x 32 and RGBA 512 x 512 x 32
+  file media/logos/*.tga   # check: RGBA 128 x 128 x 32 and RGBA 512 x 512 x 32, both "top"
   ```
 
   Pass no `compression=`: both TGAs stay uncompressed, and `tests/test_setup.lua` reads their

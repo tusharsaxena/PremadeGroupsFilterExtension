@@ -73,8 +73,8 @@ A resumed run starts at the first row that is not `done`. Branch: `fix/2026-10-1
 | — | **Milestone M1: push** (all code fixes) | | | done | pushed at `24d7f05` |
 | 15 | Docs + register rows + spec/DEPENDENCIES fixes | C-17, C-18, C-26, C-34, C-09 (register row), C-39, C-38, C-24, C-37 (note) | 5 | done | `9797a62`, `94c7b74`, `07e2a2a`, then this commit (DEPENDENCIES) |
 | 16 | Full automated-test bundle + CLAUDE.md pointers | C-13 | 6 | done | this commit (bundle `20261010-122612`, measured `ee090c7`) |
-| — | **Milestone M2: push** (docs, register, bundle) | | | pending | |
-| — | **Milestone M3: `gh pr create`, ask the owner for the merge go-ahead** | | | pending | |
+| — | **Milestone M2: push** (docs, register, bundle) | | | done | pushed at `431a604` |
+| — | **Milestone M3: `gh pr create`, ask the owner for the merge go-ahead** | | | done | PR #26 opened; awaiting the owner. Follow-up: the TGA `orientation=1` recipe fix and these ticks landed after `431a604`, so the automated-test record was re-cut as the last commit |
 | 17 | After go-ahead: merge `--no-ff`, push `main`, close issues, delete branch, clean worktrees/stashes | — | 7 | pending | |
 
 ## Parallelism
