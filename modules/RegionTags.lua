@@ -13,12 +13,40 @@ local _, NS = ...
 local RegionTags = NS.RegionTags or {}
 NS.RegionTags = RegionTags
 
--- One color per bucket. US: data centers; EU: realm languages.
-RegionTags.COLORS = {
-    oce = "33cc66", la = "3399ff", chi = "ff4040", mex = "ff9f1c", bzl = "e6d600",
-    eng = "66ccff", ger = "ffd100", fra = "ff6b6b", ita = "40e080", spa = "ff9933",
-    por = "bb88ff", rus = "e0e0e0",
-}
+-- Each bucket's color is the profile's `regionColors.<key>` (the General page's Region colors tab,
+-- or `/pgfe set regionColors.<key> r g b`), turned into the hex a |c escape takes. The hex is cached
+-- per key against the stored table it came from: every write (picker, CLI, reset, profile switch)
+-- puts a new table there, so a changed identity is a changed color, and a row paint costs one
+-- table read and one compare rather than a string.format.
+local hexCache = {} -- key -> { src = <stored table>, hex = "rrggbb" }
+
+local function channel(v)
+    v = tonumber(v) or 1
+    if v < 0 then v = 0 elseif v > 1 then v = 1 end
+    return math.floor(v * 255 + 0.5)
+end
+
+--- The six-digit hex for a region key: the stored color, else the default.
+--- @return string
+function RegionTags.Hex(key)
+    local p = NS.addon.db and NS.addon.db.profile
+    local src = p and type(p.regionColors) == "table" and p.regionColors[key] or nil
+    local hit = hexCache[key]
+    if hit and hit.src == src then return hit.hex end
+    local hex
+    if type(src) == "table" then
+        hex = ("%02x%02x%02x"):format(channel(src.r), channel(src.g), channel(src.b))
+    else
+        hex = NS.C.REGION_HEX[key] or "ffffff"
+    end
+    hexCache[key] = { src = src, hex = hex }
+    return hex
+end
+
+--- The region's label in its color, e.g. "|cff33cc66OCE|r".
+function RegionTags.Colored(key)
+    return "|cff" .. RegionTags.Hex(key) .. NS.Regions.LABELS[key] .. "|r"
+end
 local UNKNOWN = "|cff9d9d9d?|r" -- a supported portal, a realm the map does not know
 
 local function active()
@@ -34,7 +62,7 @@ function RegionTags.Tag(name)
     if type(name) ~= "string" or not NS.IsConcatSafe(name) or not NS.Regions.GetPortal() then return nil end
     local key = NS.Regions.GetRegion(name)
     if not key then return UNKNOWN end
-    return "|cff" .. RegionTags.COLORS[key] .. NS.Regions.LABELS[key] .. "|r"
+    return RegionTags.Colored(key)
 end
 
 local function prefix(fontString, tag)

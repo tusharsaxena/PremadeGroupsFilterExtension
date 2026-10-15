@@ -93,9 +93,65 @@ test("regiontags: a name that is not a plain string gets no tag and raises nothi
     NS.IsConcatSafe = real
 end)
 
-test("regiontags: every region bucket has a color", function()
+test("regiontags: every region bucket has a default color and a color row", function()
     local NS = T.newAddon()
+    local H = NS.addon.Settings.Helpers
     for _, key in ipairs(NS.Regions.ALL_KEYS) do
-        assertTrue(type(NS.RegionTags.COLORS[key]) == "string" and #NS.RegionTags.COLORS[key] == 6, key)
+        assertTrue(type(NS.C.REGION_HEX[key]) == "string" and #NS.C.REGION_HEX[key] == 6, key)
+        -- red under: drop a key from REGION_ROWS in settings/Panel.lua
+        local row = H.FindSchema("regionColors." .. key)
+        assertTrue(row ~= nil, key .. " row")
+        assertEqual(row.type, "color"); assertEqual(row.group, "Region colors"); assertEqual(row.page, "general")
+        assertEqual(row.hasAlpha, false, "a |c escape has no alpha")
+        assertEqual(NS.RegionTags.Hex(key), NS.C.REGION_HEX[key], key .. " default round-trips to its hex")
     end
+end)
+
+test("regiontags: a changed color paints the next tag, and reset puts the default back", function()
+    local NS, _, m = T.enableAddon{}
+    local H = NS.addon.Settings.Helpers
+    H.Set("regionColors.oce", { r = 1, g = 0, b = 0.5, a = 1 })
+    -- red under: read RegionTags.Tag's color from the defaults instead of the profile
+    assertEqual(searchRow(m, 1, "Bob-Barthilas", "X").ActivityName.text, "|cffff0080OCE|r X")
+    H.Set("regionColors.oce", { r = 0, g = 0, b = 1, a = 1 })
+    -- red under: cache the hex per key without comparing the stored table
+    assertEqual(searchRow(m, 2, "Bob-Barthilas", "X").ActivityName.text, "|cff0000ffOCE|r X")
+    H.Set("regionColors.chi", { r = 0, g = 1, b = 0, a = 1 })
+    NS.addon.Settings.ResetRegionColors()
+    assertEqual(searchRow(m, 3, "Bob-Barthilas", "X").ActivityName.text, "|cff33cc66OCE|r X")
+    assertEqual(NS.RegionTags.Hex("chi"), "ff4040")
+end)
+
+test("regiontags: /pgfe set takes a color in 0-255", function()
+    local NS = T.enableAddon{}
+    NS.addon:OnSlashCommand("set regionColors.rus 255 128 0")
+    assertEqual(NS.RegionTags.Hex("rus"), "ff8000")
+end)
+
+test("regiontags: the Region colors tab shows each portal's tags and a picker per region", function()
+    local NS, _, m = T.enableAddon{}
+    local H = NS.addon.Settings.Helpers
+    local p = m.__subcategories["General"]
+    p:Show(); p:__fire("OnShow")
+    local ctx = H.__panelFor("general")
+    H.SelectTab("general", "Region colors")
+    local pickers, labels, buttons = 0, {}, 0
+    local function walk(w)
+        if w.type == "ColorPicker" then pickers = pickers + 1 end
+        if w.type == "Label" and type(w.text) == "string" then labels[#labels + 1] = w.text end
+        if w.type == "Button" then buttons = buttons + 1 end
+        for _, c in ipairs(w.children or {}) do walk(c) end
+    end
+    for _, w in ipairs(ctx.scroll.children) do walk(w) end
+    -- red under: skip a portal's line in renderRegionTab
+    assertEqual(pickers, #NS.Regions.ALL_KEYS)
+    assertEqual(buttons, 1, "the reset button")
+    local all = table.concat(labels, "\n")
+    assertTrue(all:find("|cff33cc66OCE|r", 1, true) ~= nil, "US preview")
+    assertTrue(all:find("|cffe0e0e0RUS|r", 1, true) ~= nil, "EU preview")
+    -- The preview follows a write.
+    H.Set("regionColors.rus", { r = 1, g = 1, b = 1, a = 1 })
+    labels = {}
+    for _, w in ipairs(ctx.scroll.children) do walk(w) end
+    assertTrue(table.concat(labels, "\n"):find("|cffffffffRUS|r", 1, true) ~= nil, "preview refreshed")
 end)

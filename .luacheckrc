@@ -23,7 +23,7 @@ read_globals = {
   "C_AddOns", "C_ChallengeMode", "C_MythicPlus",
   "CreateFrame", "UIParent", "GameTooltip", "NineSliceUtil",
   "InCombatLockdown", "GetCurrentRegion", "GetRealmName", "UnitClass",
-  "Settings", "PlaySound", "SOUNDKIT", "LFGListFrame", "MenuResponse", "C_LFGList", "StaticPopup_Show", "StaticPopup_Hide", "YES", "NO",
+  "Settings", "PlaySound", "SOUNDKIT", "LFGListFrame", "MenuResponse", "C_LFGList", "C_Timer", "StaticPopup_Show", "StaticPopup_Hide", "YES", "NO",
   -- Premade Groups Filter (## Dependencies): read by core/PGFBridge.lua and modules/Diagnostics.lua
   -- (presence only).
   -- PremadeRegions (## OptionalDeps): read by modules/EnvInject.lua, modules/RegionTags.lua and

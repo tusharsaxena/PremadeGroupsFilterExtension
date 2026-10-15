@@ -106,6 +106,15 @@ L.REGION_TIP_ITA        = "Italian-language realms."
 L.REGION_TIP_SPA        = "Spanish-language realms."
 L.REGION_TIP_POR        = "Portuguese-language realms."
 L.REGION_TIP_RUS        = "Russian-language realms."
+
+-- The General page's Region colors tab (settings/Panel.lua)
+L["Region colors"] = "Region colors"
+L["US realms (by data center)"] = "US realms (by data center)"
+L["EU realms (by language)"] = "EU realms (by language)"
+L.REGION_COLOR_TOOLTIP  = "The color of this region's tag in the Group Finder. Click the swatch to change it."
+L["Reset region colors"] = "Reset region colors"
+L["Put every region tag back to its default color. Your other settings are not touched."] =
+    "Put every region tag back to its default color. Your other settings are not touched."
 -- One line per playstyle (the playstyle menu's entries; keyed by PGF's playstyle keyword)
 L.PLAYSTYLE_TIP_LEARNING    = "Groups learning the dungeon or the level: expect a slower run with explanations."
 L.PLAYSTYLE_TIP_RELAXED     = "Groups that care more about finishing the key than beating the timer."
