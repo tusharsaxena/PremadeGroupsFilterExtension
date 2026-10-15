@@ -16,7 +16,7 @@ local _, NS = ...
 -- centers; EU: realm languages. The stored setting is a {r, g, b} table per key (below).
 local REGION_HEX = {
     oce = "a330c9", la = "3399ff", chi = "ff4040", mex = "ff9f1c", bzl = "00ff98",
-    eng = "c41e3a", ger = "ff7c0a", fra = "ffff00", ita = "00ff98", spa = "0070dd",
+    eng = "ff4040", ger = "ff7c0a", fra = "ffff00", ita = "00ff98", spa = "3399ff",
     por = "8788ee", rus = "a330c9",
 }
 
