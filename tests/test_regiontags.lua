@@ -22,14 +22,14 @@ test("regiontags: a search row gets the leader's colored region in front of its 
     local _, _, m = T.enableAddon{}
     -- red under: drop the LFGListSearchEntry_Update hook in modules/RegionTags.lua
     local row = searchRow(m, 1, "Bob-Barthilas", "Ruby Life Pools (Mythic Keystone)")
-    assertEqual(row.ActivityName.text, "|cff33cc66OCE|r Ruby Life Pools (Mythic Keystone)")
+    assertEqual(row.ActivityName.text, "|cffa330c9OCE|r Ruby Life Pools (Mythic Keystone)")
     row = searchRow(m, 2, "Ann-Area52", "Altar of Fangs")
     assertEqual(row.ActivityName.text, "|cffff4040CHI|r Altar of Fangs")
 end)
 
 test("regiontags: a leader on the player's own realm, an unknown realm, an unsupported portal", function()
     local _, _, m = T.enableAddon{}
-    assertEqual(searchRow(m, 1, "Bob", "X").ActivityName.text, "|cff33cc66OCE|r X", "no suffix: Frostmourne")
+    assertEqual(searchRow(m, 1, "Bob", "X").ActivityName.text, "|cffa330c9OCE|r X", "no suffix: Frostmourne")
     assertEqual(searchRow(m, 2, "Bob-Nowhere", "X").ActivityName.text, "|cff9d9d9d?|r X")
     m.currentRegion = 2
     assertEqual(searchRow(m, 3, "Bob-Barthilas", "X").ActivityName.text, "X", "KR/TW/CN: no tag")
@@ -38,7 +38,7 @@ end)
 test("regiontags: EU realms are tagged by language", function()
     local _, _, m = T.enableAddon{}
     m.currentRegion = 3
-    assertEqual(searchRow(m, 1, "Hans-Antonidas", "X").ActivityName.text, "|cffffd100GER|r X")
+    assertEqual(searchRow(m, 1, "Hans-Antonidas", "X").ActivityName.text, "|cffff7c0aGER|r X")
 end)
 
 test("regiontags: an applicant gets their region in front of their name", function()
@@ -47,7 +47,7 @@ test("regiontags: an applicant gets their region in front of their name", functi
     local member = { Name = fontString("Zed") }
     -- red under: drop the LFGListApplicationViewer_UpdateApplicantMember hook
     m.LFGListApplicationViewer_UpdateApplicantMember(member, 7, 1, "applied", false)
-    assertEqual(member.Name.text, "|cff33cc66OCE|r Zed")
+    assertEqual(member.Name.text, "|cffa330c9OCE|r Zed")
 end)
 
 test("regiontags: a painter the client lacks is skipped, the other still installs", function()
@@ -58,7 +58,7 @@ test("regiontags: a painter the client lacks is skipped, the other still install
     assertTrue(type(NS.RegionTags.hooked) == "table", "installed painters are recorded")
     assertEqual(NS.RegionTags.hooked.LFGListSearchEntry_Update, true)
     assertNil(NS.RegionTags.hooked.LFGListApplicationViewer_UpdateApplicantMember)
-    assertEqual(searchRow(m, 1, "Bob-Barthilas", "X").ActivityName.text, "|cff33cc66OCE|r X")
+    assertEqual(searchRow(m, 1, "Bob-Barthilas", "X").ActivityName.text, "|cffa330c9OCE|r X")
 end)
 
 test("regiontags: no tag while stood down, with the setting off, or with PremadeRegions loaded", function()
@@ -118,7 +118,7 @@ test("regiontags: a changed color paints the next tag, and reset puts the defaul
     assertEqual(searchRow(m, 2, "Bob-Barthilas", "X").ActivityName.text, "|cff0000ffOCE|r X")
     H.Set("regionColors.chi", { r = 0, g = 1, b = 0, a = 1 })
     NS.addon.Settings.ResetRegionColors()
-    assertEqual(searchRow(m, 3, "Bob-Barthilas", "X").ActivityName.text, "|cff33cc66OCE|r X")
+    assertEqual(searchRow(m, 3, "Bob-Barthilas", "X").ActivityName.text, "|cffa330c9OCE|r X")
     assertEqual(NS.RegionTags.Hex("chi"), "ff4040")
 end)
 
@@ -147,8 +147,8 @@ test("regiontags: the Region colors tab shows each portal's tags and a picker pe
     assertEqual(pickers, #NS.Regions.ALL_KEYS)
     assertEqual(buttons, 1, "the reset button")
     local all = table.concat(labels, "\n")
-    assertTrue(all:find("|cff33cc66OCE|r", 1, true) ~= nil, "US preview")
-    assertTrue(all:find("|cffe0e0e0RUS|r", 1, true) ~= nil, "EU preview")
+    assertTrue(all:find("|cffa330c9OCE|r", 1, true) ~= nil, "US preview")
+    assertTrue(all:find("|cffa330c9RUS|r", 1, true) ~= nil, "EU preview")
     -- The preview follows a write.
     H.Set("regionColors.rus", { r = 1, g = 1, b = 1, a = 1 })
     labels = {}

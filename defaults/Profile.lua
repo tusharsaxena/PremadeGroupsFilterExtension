@@ -15,9 +15,9 @@ local _, NS = ...
 -- The region tags' default colors, one per bucket (modules/Regions.lua's keys), as hex. US: data
 -- centers; EU: realm languages. The stored setting is a {r, g, b} table per key (below).
 local REGION_HEX = {
-    oce = "33cc66", la = "3399ff", chi = "ff4040", mex = "ff9f1c", bzl = "e6d600",
-    eng = "66ccff", ger = "ffd100", fra = "ff6b6b", ita = "40e080", spa = "ff9933",
-    por = "bb88ff", rus = "e0e0e0",
+    oce = "a330c9", la = "3399ff", chi = "ff4040", mex = "ff9f1c", bzl = "00ff98",
+    eng = "c41e3a", ger = "ff7c0a", fra = "ffff00", ita = "00ff98", spa = "0070dd",
+    por = "8788ee", rus = "a330c9",
 }
 
 -- In the shape the settings panel's color picker and `/pgfe set` write: { r =, g =, b =, a = }, 0..1.
