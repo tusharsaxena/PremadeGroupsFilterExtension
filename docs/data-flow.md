@@ -113,5 +113,5 @@ through `LFGListApplicationViewer_UpdateApplicantMember(member, appID, memberIdx
    `C_LFGList.GetApplicantMemberInfo(appID, memberIdx)`.
 3. `RegionTags.Tag(name)`: nil for a non-string or not concat-safe name (events-frames-taint-§8) or
    an unsupported portal; `Regions.GetRegion` (the same lookup as the env hook) gives the bucket,
-   colored from `RegionTags.COLORS`; an unknown realm gives a gray `?`.
+   colored by `RegionTags.Hex` (the profile's `regionColors.<key>`, cached per stored table); an unknown realm gives a gray `?`.
 4. The row's own font string (`ActivityName`, `Name`) gets `SetText(tag .. " " .. text)`.
