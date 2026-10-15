@@ -101,6 +101,11 @@ Three AceDB scopes on `PremadeGroupsFilterExtensionDB`; full shape and defaults 
   `global.minimap.shown`, composed by `LibKa0s-Options-1.0`) and the General Filters tab's two rows
   (`filtersActive` and `showRegionTags`, `FILTER_ROWS`), both in `settings/Panel.lua` and written only
   through `NS.SchemaRuntime.Set` (panel, CLI, resets and launcher alike).
+- **`regionColors.<key>`** (profile, one `type = "color"` row per region bucket, `REGION_ROWS` in
+  `settings/Panel.lua`; defaults from `REGION_HEX` in `defaults/Profile.lua`): the General page's
+  *Region colors* tab, a host tab drawing per portal a heading, a preview line of every tag in its
+  current color and the portal's pickers, then *Reset region colors*. No alpha. `RegionTags.Hex`
+  turns the stored color into the tag's hex, cached per stored table (every write stores a new one).
 - **`euiSkin`** (profile, default `true`, in `defaults/Profile.lua`): the *Use the EllesmereUI skin*
   row on the General page's *EllesmereUI skin* tab (`settings/Panel.lua`). `disabledIf` while any
   gate condition fails; its `validate` refuses `true` while one fails (off always passes, a bulk

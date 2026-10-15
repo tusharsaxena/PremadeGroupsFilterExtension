@@ -1,12 +1,12 @@
 local addonName, NS = ...
 -- settings/Panel.lua — the landing page body and the General page (Master controls, Filters,
--- EllesmereUI skin).
+-- Region colors, EllesmereUI skin).
 --
 -- The landing page is the host's own buildMain (logo, notes, slash command list) and draws no tab
--- strip (options-ui-§5/§13). The General page renders through the tabbed renderer, in three
+-- strip (options-ui-§5/§13). The General page renders through the tabbed renderer, in four
 -- tabs: `Master controls`, composed from one declaration and holding only its mandated rows
--- (options-ui-§15); `Filters`, the attached panel's two switches; and `EllesmereUI skin` (the
--- optional skin's status and switch, below). The addon draws no
+-- (options-ui-§15); `Filters`, the attached panel's two switches; `Region colors`, the region
+-- tags' colors; and `EllesmereUI skin` (the optional skin's status and switch, below). The addon draws no
 -- positionable frame of its own -- the filter panel is anchored to PGF's dialog -- so the block is
 -- frameless (no scale, alpha, lock or reset position) and carries no visibility row: when the panel
 -- shows is decided by PGF's dialog and category, not by a setting (ratified: docs/ARCHITECTURE.md
@@ -94,7 +94,80 @@ local FILTER_ROWS = {
 Settings.StampClosureRows(FILTER_ROWS)
 NS.SchemaRuntime.AddRows(FILTER_ROWS)
 
--- ── EllesmereUI skin (the General page's third tab) ────────────────────────────────────────────
+-- ── Region colors (the General page's third tab) ────────────────────────────────────────────────
+--
+-- One color row per region bucket, `regionColors.<key>` (profile), so the tag colors go through
+-- the schema like every other setting: the panel's picker, `/pgfe get|set|reset regionColors.oce`
+-- and both resets. No alpha: a |c escape has none. Read on every row paint (modules/RegionTags.lua
+-- caches the hex per stored table), so no onChange: the next search or list refresh shows it.
+-- The tab is a host tab: per portal a heading, a line of every tag in its current color, then the
+-- portal's pickers three to a line; a button under both puts the twelve defaults back.
+local L = NS.L
+local REGION_GROUP = L["Region colors"]
+local PORTAL_HEADINGS = {
+    US = L["US realms (by data center)"],
+    EU = L["EU realms (by language)"],
+}
+local PICKERS_PER_LINE = 3
+
+local REGION_ROWS = {}
+for _, key in ipairs(NS.Regions.ALL_KEYS) do
+    REGION_ROWS[#REGION_ROWS + 1] = {
+        path = "regionColors." .. key, type = "color", hasAlpha = false,
+        default = C.PROFILE.regionColors[key],
+        page = "general", section = "general", group = REGION_GROUP,
+        label = NS.Regions.LABELS[key],
+        tooltip = L["REGION_TIP_" .. key:upper()] .. "\n\n" .. L.REGION_COLOR_TOOLTIP,
+        regionKey = key,
+    }
+end
+NS.SchemaRuntime.AddRows(REGION_ROWS)
+
+--- Every tag of one portal in its current color, spaced: the tab's preview line.
+function Settings.RegionPreviewText(portal)
+    local RT, parts = NS.RegionTags, {}
+    for _, key in ipairs(NS.Regions.KEYS[portal]) do parts[#parts + 1] = RT.Colored(key) end
+    return table.concat(parts, "   ")
+end
+
+--- Put every region color back to its default, as one bulk act (one debug line, one refresh).
+function Settings.ResetRegionColors()
+    local S = NS.SchemaRuntime
+    S.BulkRun("reset", "region colors", function()
+        for _, row in ipairs(REGION_ROWS) do S.ApplyDefault(row) end
+    end)
+end
+
+local function renderRegionTab(ctx, rows)
+    local AceGUI, scroll = Helpers.AceGUI, Helpers.EnsureScroll(ctx)
+    if not (AceGUI and scroll) then return end
+    local byKey = {}
+    for _, row in ipairs(rows or {}) do byKey[row.regionKey] = row end
+    for _, portal in ipairs({ "US", "EU" }) do
+        Helpers.Section(ctx, PORTAL_HEADINGS[portal])
+        local preview = Helpers.TextRow(ctx, Settings.RegionPreviewText(portal), { fontObject = "GameFontHighlightLarge" })
+        if preview then
+            ctx.refreshers[#ctx.refreshers + 1] = function() preview:SetText(Settings.RegionPreviewText(portal)) end
+        end
+        Helpers.AddSpacer(scroll, 6)
+        local line = AceGUI:Create("SimpleGroup")
+        line:SetLayout("Flow")
+        line:SetFullWidth(true)
+        for _, key in ipairs(NS.Regions.KEYS[portal]) do
+            if byKey[key] then Helpers.RenderField(ctx, byKey[key], line, 1 / PICKERS_PER_LINE - 0.01) end
+        end
+        scroll:AddChild(line)
+        ctx.lastGroup = portal
+    end
+    Helpers.AddSpacer(scroll, 12)
+    Helpers.InlineButtonPair(ctx, {
+        text    = L["Reset region colors"],
+        tooltip = L["Put every region tag back to its default color. Your other settings are not touched."],
+        onClick = Settings.ResetRegionColors,
+    })
+end
+
+-- ── EllesmereUI skin (the General page's fourth tab) ────────────────────────────────────────────
 --
 -- Its own group, so its own tab (options-ui-§13): a feature switch with live status lines is not a
 -- Master controls row (options-ui-§15). The tab is a host tab keyed by the group: a status line per
@@ -104,7 +177,6 @@ NS.SchemaRuntime.AddRows(FILTER_ROWS)
 -- parity with the disabled box: `/pgfe set euiSkin true` is refused, with the reason, while a
 -- condition fails (slash-commands-§6); off is always accepted, and a bulk reset never refused.
 
-local L = NS.L
 local EUI_GROUP = L["EllesmereUI skin"]
 
 local function euiGateOpen() return NS.EUIBridge ~= nil and (NS.EUIBridge.GateOpen()) end
@@ -265,7 +337,10 @@ local function renderEuiTab(ctx, rows)
     if scroll and B.PGFSkinState() == "missing" then addPGFSkinLink(scroll) end
 end
 
-local GENERAL_OPTS = { tabs = { { key = EUI_GROUP, render = renderEuiTab } } }
+local GENERAL_OPTS = { tabs = {
+    { key = REGION_GROUP, render = renderRegionTab },
+    { key = EUI_GROUP,    render = renderEuiTab },
+} }
 
 local AFTER_GROUP = {}
 if Helpers.MASTER_GROUP then AFTER_GROUP[Helpers.MASTER_GROUP] = MASTER_TAIL end

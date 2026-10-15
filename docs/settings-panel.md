@@ -8,7 +8,7 @@ they live on the panel attached under PGF's dialog (`modules/Panel.lua`, describ
 | Page | Covers |
 |---|---|
 | Ka0s Premade Groups Filter Extension (landing) | Logo, the TOC notes, and the slash command list from `NS.COMMANDS` |
-| General | Master controls: enable, debug console, minimap button, reset all settings. Filters: Toggle PGF Extension Filters, Show server regions in the Group Finder. EllesmereUI skin: the skin's conditions and switch |
+| General | Master controls: enable, debug console, minimap button, reset all settings. Filters: Toggle PGF Extension Filters, Show server regions in the Group Finder. Region colors: every region tag's color, with a picker each. EllesmereUI skin: the skin's conditions and switch |
 | Profiles | AceDB profiles: switch, copy, delete, reset |
 
 ## Page → tab → row
@@ -42,7 +42,17 @@ re-render.
   - *Show server regions in the Group Finder* → `showRegionTags` (profile): the colored region tag
     on Group Finder rows and applicants (`modules/RegionTags.lua`).
 
-- **EllesmereUI skin** (the third tab; its own group, drawn by a host tab in `settings/Panel.lua`):
+- **Region colors** (the third tab; its own group, `REGION_ROWS`, drawn by a host tab in
+  `settings/Panel.lua`):
+  - Per portal, *US realms (by data center)* then *EU realms (by language)*: a heading, a preview
+    line with every region tag of that portal in its current color (re-read on every write), then
+    one color picker per region (`regionColors.<key>`, profile, no alpha), three to a line, labeled
+    with the tag and tooltipped with the region's description.
+  - *Reset region colors* (button): every region color back to its default, as one bulk act. The
+    page's Defaults button and Reset all settings reset them too, as profile rows.
+  - A change shows on the Group Finder's next search or list refresh.
+
+- **EllesmereUI skin** (the fourth tab; its own group, drawn by a host tab in `settings/Panel.lua`):
   - *Use the EllesmereUI skin* → `euiSkin` (profile, default on), first, with a 12px gap below.
     Disabled while any condition fails (never forced on); its tooltip adds what is missing, live.
     Off after a paint asks for a reload, whether from the switch or from a profile switch, copy or

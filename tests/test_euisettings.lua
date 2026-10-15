@@ -53,7 +53,7 @@ end)
 
 -- options-ui-§15: Master controls stays the first tab; the filter switches have their own.
 -- red under: AddRows(FILTER_ROWS) after EUI_ROWS
-test("euisettings: the General page has three tabs: Master controls, Filters, EllesmereUI skin", function()
+test("euisettings: the General page has four tabs: Master controls, Filters, Region colors, EllesmereUI skin", function()
     local NS = T.newAddon()
     local H, seen, order = NS.addon.Settings.Helpers, {}, {}
     for _, row in ipairs(NS.addon.Settings.Schema) do
@@ -62,7 +62,7 @@ test("euisettings: the General page has three tabs: Master controls, Filters, El
             order[#order + 1] = row.group
         end
     end
-    assertEqual(table.concat(order, " | "), H.MASTER_GROUP .. " | Filters | " .. GROUP)
+    assertEqual(table.concat(order, " | "), H.MASTER_GROUP .. " | Filters | Region colors | " .. GROUP)
 end)
 
 test("euisettings: the tab draws the switch, a line per condition, then a state line", function()

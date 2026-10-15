@@ -18,7 +18,7 @@ takes the next free number in its theme and a retired number is never reused.
 | COMBAT-1..2 | Combat | Apply refusal, settings panel in combat |
 | DIAG-1..2 | Diagnostics | Debug console, the diagnostics report |
 | DEGRADED-1 | Degraded install | LibKa0s absent |
-| APPLY-1..25 | Attached panel and Apply | The panel under PGF, targeting, regions, playstyle, composition, leader, age, presets, Clear, PGF minimized, collapse, layout, tooltips, Smart key level, filters toggle, row spacing, region tags, the season-data request |
+| APPLY-1..26 | Attached panel and Apply | The panel under PGF, targeting, regions, playstyle, composition, leader, age, presets, Clear, PGF minimized, collapse, layout, tooltips, Smart key level, filters toggle, row spacing, region tags, the season-data request, region colors |
 | LOC-1..2 | Non-English client | Realm-name and dungeon-name seams on a deDE/frFR client |
 | SKIN-1..10 | EllesmereUI skin | The gate's four conditions, the PGF skin's install states and link, the settings tab, the painted panel, live on, reload off |
 
@@ -50,11 +50,11 @@ season. Know your best timed level per dungeon (the Mythic+ tab) before the APPL
 
 - **PANEL-1. Landing page.** Settings → AddOns → Ka0s Premade Groups Filter Extension → the logo,
   the notes line and one row per slash command; no tab strip. Result: pass (owner-marked 2026-10-10)
-- **PANEL-2. General page.** General → three tabs. `Master controls`: Enable, Debug console,
+- **PANEL-2. General page.** General → four tabs. `Master controls`: Enable, Debug console,
   Minimap button and a *Reset all settings* button. `Filters`: *Toggle PGF Extension Filters* and
-  *Show server regions in the Group Finder*. `EllesmereUI skin`: the skin's switch and status lines.
-  No scale, alpha, lock, visibility or test-mode rows.
-  Result: pass (owner-marked 2026-10-10)
+  *Show server regions in the Group Finder*. `Region colors`: see APPLY-26. `EllesmereUI skin`: the
+  skin's switch and status lines. No scale, alpha, lock, visibility or test-mode rows.
+  Result: pass with three tabs (owner-marked 2026-10-10); re-check owed for the Region colors tab (added 2026-10-15)
 - **PANEL-3. Defaults button.** Header **Defaults** → a confirmation popup; Yes → `/pgfe list` back
   at defaults; the minimap button keeps its shown/hidden state. Result: pass (owner-marked 2026-10-10)
 
@@ -225,6 +225,14 @@ substitute its numbers.
   loading and the trace stays quiet: exactly one `C_MythicPlus.RequestMapInfo` per loading screen,
   no request/reply loop. Zone through a loading screen → one more request, then quiet again.
   Headless stand-in: the `panel:` request-count cases (`m.mapInfoRequests`). Result: pass (owner-marked 2026-10-10)
+- **APPLY-26. Region colors.** Settings → General → *Region colors* → a *US realms (by data center)*
+  heading with OCE LA CHI MEX BZL in their colors, the five pickers under it, then *EU realms (by
+  language)* with ENG ... RUS and seven pickers, then *Reset region colors*. Hover a picker → the
+  region's description. Change OCE's color (drag in the color wheel, then Okay) → the preview line
+  follows; search Mythic+ on a US character → OCE listings show the new color, others unchanged.
+  Open the color wheel and Cancel → the old color stays. `/pgfe set regionColors.oce 255 0 128` →
+  pink; *Reset region colors* → every tag back to its default, other settings untouched. The color
+  wheel shows no opacity slider. Result:
 
 ## EllesmereUI skin
 

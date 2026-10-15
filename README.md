@@ -4,7 +4,7 @@
 ![CurseForge Version](https://img.shields.io/curseforge/v/1736636)
 ![License](https://img.shields.io/badge/License-MIT-orange)
 ![Standard](https://img.shields.io/badge/Ka0s-WoW_Addon_Standard-yellow)
-![Tests](https://img.shields.io/badge/Tests-414%2F414_passing-green)
+![Tests](https://img.shields.io/badge/Tests-417%2F417_passing-green)
 
 A small companion to [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter)
 for Mythic+. You type the key level you want to push (or let Smart pick it), and it ticks every
@@ -70,7 +70,7 @@ settings shows what's missing. `/pgfe` opens the settings and `/pgfe help` lists
 |----------|--------|
 | Can it fill in the search box for me? | No. The game blocks addons from typing into it, and a listing's title is hidden from addons, so the key level can't be filtered any other way. Click the Copy into search box field, then Ctrl+C, Enter, Ctrl+V, Enter. |
 | Can it filter on the leader's item level? | No. The game only tells addons the item level a group *requires*, not the leader's. For the leader's M+ rating, use Premade Groups Filter's own M+ Rating row. |
-| Do I need PremadeRegions? | No, this addon replaces it. It shows each listing's server region in front of the dungeon name (and each applicant's in front of their name), and the region filter uses its own realm list. You can uninstall PremadeRegions; while it is still installed, this addon leaves the tags to it so you don't see two. Turn the tags off with **Show server regions in the Group Finder** under Settings → AddOns → Ka0s Premade Groups Filter Extension → General → Filters. |
+| Do I need PremadeRegions? | No, this addon replaces it. It shows each listing's server region in front of the dungeon name (and each applicant's in front of their name), and the region filter uses its own realm list. You can uninstall PremadeRegions; while it is still installed, this addon leaves the tags to it so you don't see two. Turn the tags off with **Show server regions in the Group Finder** under Settings → AddOns → Ka0s Premade Groups Filter Extension → General → Filters, and pick each region's color under General → Region colors. |
 | Why does it need Premade Groups Filter? | It works through Premade Groups Filter's own checkboxes and advanced filter, so there is nothing for it to do on its own. |
 | Does it change anything I typed in the advanced filter? | No. Apply adds its own marked block around your text, and Clear removes only that block. |
 | Are my settings shared between characters? | Filter choices are per character. Presets are shared by all your characters. |

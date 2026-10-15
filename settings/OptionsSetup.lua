@@ -92,6 +92,14 @@ local O = lib:New({
     allRows     = function() return Settings.Schema end,
     validate = function() host.ValidateSchema() end,
     buildMain = function(ctx) Settings.Helpers.BuildMainContent(ctx) end,
+    -- Backs the color picker's 50 ms drag throttle (the Region colors tab). The addon embeds no
+    -- AceTimer, so the client's C_Timer.After; without it the drag commits every frame.
+    scheduleTimer = function(fn, delay)
+        if C_Timer and C_Timer.After then return C_Timer.After(delay, fn) end
+        fn()
+    end,
+    -- No colorDecode/colorEncode: the library's default keyed shape { r =, g =, b =, a = } is what
+    -- defaults/Profile.lua stores and what `/pgfe set` parses a color into.
     bulkBegin = NS.SchemaRuntime.BulkBegin,
     bulkEnd   = NS.SchemaRuntime.BulkEnd,
     resetProfile = function() PGFE.db:ResetProfile() end,
