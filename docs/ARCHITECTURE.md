@@ -26,7 +26,7 @@ on, and the *Use the EllesmereUI skin* switch (default on) is too: see
 
 Built to the Ka0s WoW Addon Standard: Ace3, vendored `LibKa0s` v1.71.0 (one setup file per adopted
 major), schema-driven master settings, the launcher, one stand-down latch, headless tests and
-luacheck. Retail only (`## Interface: 120100`). The design is
+luacheck. Retail only (`## Interface: 120105`). The design is
 [`superpowers/specs/2026-10-09-m-plus-v0.1-design.md`](superpowers/specs/2026-10-09-m-plus-v0.1-design.md)
 and the build plan
 [`superpowers/plans/2026-10-09-m-plus-v0.1.md`](superpowers/plans/2026-10-09-m-plus-v0.1.md).

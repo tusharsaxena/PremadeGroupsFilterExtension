@@ -9,7 +9,7 @@ such rather than listed as a requirement.
 
 ## Runtime (in-game) — what a player needs
 
-- **World of Warcraft (Retail).** Single `## Interface: 120100` line in
+- **World of Warcraft (Retail).** Single `## Interface: 120105` line in
   `PremadeGroupsFilterExtension.toc` — Retail only.
 - **Premade Groups Filter — required.** `## Dependencies: PremadeGroupsFilter` in the TOC: the
   client will not load this addon without it. This addon drives PGF's own dungeon checkboxes and
