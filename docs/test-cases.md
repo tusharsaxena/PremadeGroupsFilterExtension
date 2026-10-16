@@ -187,7 +187,7 @@ Total.
 - envinject: a protected leader name injects no region
 - envinject: a spec refresh logs the keywords once, and again only when they change
 
-### test_regiontags.lua (12)
+### test_regiontags.lua (13)
 
 - regiontags: a search row gets the leader's colored region in front of its activity
 - regiontags: a leader on the player's own realm, an unknown realm, an unsupported portal
@@ -198,6 +198,7 @@ Total.
 - regiontags: the setting is a schema row, on by default
 - regiontags: a name that is not a plain string gets no tag and raises nothing
 - regiontags: every region bucket has a default color and a color row
+- regiontags: the color rows pass the schema check
 - regiontags: a changed color paints the next tag, and reset puts the default back
 - regiontags: /pgfe set takes a color in 0-255
 - regiontags: the Region colors tab shows each portal's tags and a picker per region
@@ -523,7 +524,7 @@ Total.
 | test_filters.lua | 12 |
 | test_presets.lua | 6 |
 | test_envinject.lua | 14 |
-| test_regiontags.lua | 12 |
+| test_regiontags.lua | 13 |
 | test_bridge.lua | 18 |
 | test_euibridge.lua | 17 |
 | test_apply.lua | 33 |
@@ -539,4 +540,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **417** |
+| **Total** | **418** |

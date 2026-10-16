@@ -107,6 +107,12 @@ test("regiontags: every region bucket has a default color and a color row", func
     end
 end)
 
+test("regiontags: the color rows pass the schema check", function()
+    local NS = T.newAddon()
+    -- red under: drop `color` from VALID_TYPES in settings/Schema.lua (one login error per row)
+    assertEqual(NS.addon.Settings.Helpers.ValidateSchema(), 0)
+end)
+
 test("regiontags: a changed color paints the next tag, and reset puts the default back", function()
     local NS, _, m = T.enableAddon{}
     local H = NS.addon.Settings.Helpers
