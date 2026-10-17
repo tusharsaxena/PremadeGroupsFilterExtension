@@ -37,6 +37,12 @@ Owner: `modules/Filters.lua`; `Presets.Load` copies a preset in place. Written b
 controls outside the write seam: the architecture-§5 row in `docs/ARCHITECTURE.md` -> `## Documented
 deviations` names every writer.
 
+`char.selectedPreset` (no default): the name the panel's preset dropdown shows as selected, kept
+across reloads and logins. It is the `global.presets` registry's current-member pointer
+(architecture-§5, standard v2.82.0), owned by the registry writer `modules/Presets.lua`:
+`Presets.Save` and `Presets.Load` set it, `Presets.Delete` clears it, and `Presets.GetSelected` reads
+a name gone from `global.presets` as none.
+
 ## `global`
 
 | Key | Default | Notes |

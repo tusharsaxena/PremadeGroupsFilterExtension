@@ -93,3 +93,42 @@ test("presets: save, load, delete and refusals each write one [Preset] line", fu
     NS.Presets.Load("zzz")
     assertEqual(logged(NS, "[Preset] load 'zzz' refused: missing"), 1)
 end)
+
+-- ── the selected preset persists per character ───────────────────────────────────────────────────
+
+-- Boot a second instance over the first one's SavedVariables (the loader clears the global before
+-- loading, so it is put back after the first file).
+local function reboot(saved)
+    return T.bootAddon({ afterFile = function()
+        _G.PremadeGroupsFilterExtensionDB = saved
+    end })
+end
+
+-- red under: keep the selection in a Panel/Presets local instead of char.selectedPreset
+test("presets: the selected preset survives a reload", function()
+    local NS = T.bootAddon()
+    NS.Presets.Save("a"); NS.Presets.Save("b")
+    assertTrue(NS.Presets.Load("a"))
+    assertEqual(NS.Presets.GetSelected(), "a")
+    local NS2 = reboot(_G.PremadeGroupsFilterExtensionDB)
+    assertEqual(NS2.Presets.GetSelected(), "a")
+end)
+
+test("presets: Save and Load select; Delete of the selected one clears it", function()
+    local NS = T.bootAddon()
+    assertEqual(NS.Presets.GetSelected(), nil)
+    NS.Presets.Save("  x  "); assertEqual(NS.Presets.GetSelected(), "x")
+    NS.Presets.Save("y"); assertEqual(NS.Presets.GetSelected(), "y")
+    NS.Presets.Load(" x "); assertEqual(NS.Presets.GetSelected(), "x")
+    NS.Presets.Load("zzz"); assertEqual(NS.Presets.GetSelected(), "x", "a refused load keeps it")
+    NS.Presets.Delete("y"); assertEqual(NS.Presets.GetSelected(), "x", "another delete keeps it")
+    NS.Presets.Delete("x"); assertEqual(NS.Presets.GetSelected(), nil)
+end)
+
+test("presets: a selection whose preset is gone from the shared registry reads as none", function()
+    local NS = T.bootAddon()
+    NS.Presets.Save("shared")
+    NS.addon.db.global.presets.shared = nil   -- deleted on another character
+    assertEqual(NS.Presets.GetSelected(), nil)
+    assertEqual(NS.addon.db.char.selectedPreset, nil)
+end)

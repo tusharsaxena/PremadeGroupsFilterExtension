@@ -115,7 +115,10 @@ Three AceDB scopes on `PremadeGroupsFilterExtensionDB`; full shape and defaults 
 - **Registries outside the seam** (architecture-§5), each written by one owner:
   - `global.presets` — a **structural registry** of named filter snapshots shared by every
     character. One registry writer, `modules/Presets.lua` (`Presets.Save`, `Presets.Delete`); no
-    load pass.
+    load pass. Its **current-member pointer** is `char.selectedPreset`, the preset the panel's
+    dropdown shows as selected, kept per character across reloads and logins. The same writer
+    owns it: `Presets.Save` and `Presets.Load` set it, `Presets.Delete` clears it, and
+    `Presets.GetSelected` reads a name gone from `global.presets` as none.
   - `global.minimap` — LibDBIcon's own table (`hide`, position), handed to the launcher.
 - **The attached panel's own state** (`char.filters`, the per-character filter options, and
   `profile.panelCollapsed`) is written by the panel's controls outside the seam: a ratified

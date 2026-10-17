@@ -65,8 +65,6 @@ local NOT_TARGETED  = "|cff808080%s %d|r"
 local POPUP_SAVE_AS = "PGFE_PRESET_SAVE_AS"
 local POPUP_DELETE  = "PGFE_PRESET_DELETE"
 
--- The preset the dropdown shows as selected (session only).
-local selectedPreset
 
 local function stoodDown() return NS.IsStoodDown() end
 
@@ -454,7 +452,7 @@ end
 
 -- ── presets ─────────────────────────────────────────────────────────────────────────────────────
 
-local function isSelectedPreset(name) return name == selectedPreset end
+local function isSelectedPreset(name) return name == NS.Presets.GetSelected() end
 
 local function presetMenu(_, root)
     local names = NS.Presets.List()
@@ -473,14 +471,12 @@ local function saveAs(name)
         NS.Print(L.PRESET_BAD_NAME)
         return
     end
-    selectedPreset = name
     NS.Print(L.PRESET_SAVED:format(name))
     Panel.Refresh()
 end
 
 local function deletePreset(name)
     NS.Presets.Delete(name)
-    if selectedPreset == name then selectedPreset = nil end
     NS.Print(L.PRESET_DELETED:format(name))
     Panel.Refresh()
 end
@@ -518,11 +514,13 @@ end
 local function buildPresetRow(f, body, y)
     y = y - ACTION_GAP
     f.saveButton = button(body, L.SAVE, L.SAVE_TOOLTIP, function()
-        if selectedPreset then saveAs(selectedPreset) end
+        local name = NS.Presets.GetSelected()
+        if name then saveAs(name) end
     end)
     f.saveAsButton = button(body, L.SAVE_AS, L.SAVE_AS_TOOLTIP, function() StaticPopup_Show(POPUP_SAVE_AS) end)
     f.deleteButton = button(body, L.DELETE, L.DELETE_TOOLTIP, function()
-        if selectedPreset then StaticPopup_Show(POPUP_DELETE, selectedPreset, nil, selectedPreset) end
+        local name = NS.Presets.GetSelected()
+        if name then StaticPopup_Show(POPUP_DELETE, name, nil, name) end
     end)
     local row = { f.saveButton, f.saveAsButton, f.deleteButton }
     sameWidth(row, PRESET_BUTTON_MIN_W)
@@ -828,8 +826,9 @@ function Panel.Refresh()
     f.playstyleSelect.RefreshSummary()
     f.compositionSelect.RefreshSummary()
     setCopyEnabled(f, filters.keyTargeting == true)
-    f.saveButton:SetEnabled(selectedPreset ~= nil)
-    f.deleteButton:SetEnabled(selectedPreset ~= nil)
+    local selected = NS.Presets.GetSelected() ~= nil
+    f.saveButton:SetEnabled(selected)
+    f.deleteButton:SetEnabled(selected)
     f.presetDropdown:GenerateMenu()
     updateReadout(f)
     updateRange(f)
@@ -856,10 +855,7 @@ end
 --- Load a preset into the filter options and show it as selected (the dropdown's setSelected).
 function Panel.SelectPreset(name)
     if stoodDown() then return end
-    if NS.Presets.Load(name) then
-        selectedPreset = trim(name)
-        Panel.Refresh()
-    end
+    if NS.Presets.Load(name) then Panel.Refresh() end
 end
 
 -- ── events, stand-down, hooks ───────────────────────────────────────────────────────────────────

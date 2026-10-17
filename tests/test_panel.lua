@@ -510,6 +510,19 @@ test("panel: preset Delete removes the selected preset after confirming", functi
     assertEqual(#NS.Presets.List(), 0)
 end)
 
+-- red under: keep the dropdown's selection in a Panel local (it was session only)
+test("panel: the selected preset is still selected after a reload", function()
+    local NS = T.enableAddon{}
+    NS.Presets.Save("Keep")
+    NS.Panel.Create(); NS.Panel.SelectPreset("Keep")
+    local saved = _G.PremadeGroupsFilterExtensionDB
+    local NS2 = T.enableAddon{ afterFile = function() _G.PremadeGroupsFilterExtensionDB = saved end }
+    NS2.Panel.Create(); NS2.Panel.Refresh()
+    assertEqual(NS2.Presets.GetSelected(), "Keep")
+    assertTrue(NS2.Panel.frame.saveButton:IsEnabled())
+    assertTrue(NS2.Panel.frame.deleteButton:IsEnabled())
+end)
+
 test("panel: Enter in the Save as box saves and closes the popup", function()
     local NS, _, m = T.enableAddon{}
     NS.Panel.Create()

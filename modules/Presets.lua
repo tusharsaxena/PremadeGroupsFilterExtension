@@ -5,6 +5,10 @@ local _, NS = ...
 -- every holder of Filters.Get() sees the loaded values and the stored preset is never aliased. Load
 -- lays the preset over a copy of the current filter defaults, so a preset saved before a filter key
 -- existed still loads a complete option set.
+--
+-- The selected preset (the panel dropdown's choice) is per character, in char.selectedPreset, so it
+-- survives a reload or login. Save and Load select; Delete clears it. A name another character
+-- deleted from the shared registry reads back as no selection.
 
 local Presets = NS.Presets or {}
 NS.Presets = Presets
@@ -19,6 +23,18 @@ local function store() return NS.addon.db.global.presets end
 
 local function cleanName(name)
     return type(name) == "string" and name:match("^%s*(.-)%s*$") or ""
+end
+
+local function char() return NS.addon.db.char end
+
+--- @return string|nil name  the selected preset, nil when none is selected or it no longer exists
+function Presets.GetSelected()
+    local name = char().selectedPreset
+    if name ~= nil and store()[name] == nil then
+        char().selectedPreset = nil
+        return nil
+    end
+    return name
 end
 
 function Presets.List()
@@ -36,6 +52,7 @@ function Presets.Save(name)
         return false, "badName"
     end
     store()[name] = copy(NS.Filters.Get())
+    char().selectedPreset = name
     NS.Debug("Preset", "saved '%s'", name)
     return true
 end
@@ -53,6 +70,7 @@ function Presets.Load(name)
     local live = NS.Filters.Get()
     for k in pairs(live) do live[k] = nil end
     for k, v in pairs(fresh) do live[k] = v end
+    char().selectedPreset = name
     NS.Debug("Preset", "loaded '%s'", name)
     return true
 end
@@ -64,6 +82,7 @@ function Presets.Delete(name)
         NS.Debug("Preset", "delete '%s': absent", name)
     else
         presets[name] = nil
+        if char().selectedPreset == name then char().selectedPreset = nil end
         NS.Debug("Preset", "deleted '%s'", name)
     end
     return true

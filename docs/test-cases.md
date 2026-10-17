@@ -161,7 +161,7 @@ Total.
 - filters: ApplySmartLevel sets the level from the season only when Smart is on
 - filters: composition applies only while its box is on
 
-### test_presets.lua (6)
+### test_presets.lua (9)
 
 - presets: save/load round-trip is a deep copy into the same table
 - presets: list sorted, delete, bad names, missing
@@ -169,6 +169,9 @@ Total.
 - presets: a preset missing keys loads over the current defaults
 - presets: Smart travels with a preset; an older preset loads the default (on)
 - presets: save, load, delete and refusals each write one [Preset] line
+- presets: the selected preset survives a reload
+- presets: Save and Load select; Delete of the selected one clears it
+- presets: a selection whose preset is gone from the shared registry reads as none
 
 ### test_envinject.lua (14)
 
@@ -280,7 +283,7 @@ Total.
 - apply: a Clear refusal and a Clear success each write one [Clear] line
 - apply: a filtersActive toggle writes one [Apply] toggled line
 
-### test_panel.lua (83)
+### test_panel.lua (84)
 
 - panel: the module publishes its namespace table
 - panel: anchored under PGF dialog, both edges
@@ -322,6 +325,7 @@ Total.
 - panel: a profile switch refreshes the attached panel's layout
 - panel: preset Save as stores a named preset; Load refills the widgets
 - panel: preset Delete removes the selected preset after confirming
+- panel: the selected preset is still selected after a reload
 - panel: Enter in the Save as box saves and closes the popup
 - panel: a blank preset name is refused
 - panel: each number box is anchored to the right of its own label
@@ -522,13 +526,13 @@ Total.
 | test_season.lua | 8 |
 | test_expression.lua | 18 |
 | test_filters.lua | 12 |
-| test_presets.lua | 6 |
+| test_presets.lua | 9 |
 | test_envinject.lua | 14 |
 | test_regiontags.lua | 13 |
 | test_bridge.lua | 18 |
 | test_euibridge.lua | 17 |
 | test_apply.lua | 33 |
-| test_panel.lua | 83 |
+| test_panel.lua | 84 |
 | test_euiskin.lua | 32 |
 | test_euisettings.lua | 19 |
 | test_reset.lua | 5 |
@@ -540,4 +544,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **418** |
+| **Total** | **422** |
