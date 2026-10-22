@@ -116,6 +116,6 @@ The addon extends [Premade Groups Filter](https://www.curseforge.com/wow/addons/
 by Bernhard Saumweber. PremadeRegions was the reference for the realm-to-region list.
 
 The debug console uses [JetBrains Mono](https://www.jetbrains.com/lp/mono/), licensed under the SIL
-Open Font License 1.1, and its buttons are drawn from
-[Open Iconic](https://github.com/iconic/open-iconic) (MIT). Both ship inside the addon, with their
-license text beside them.
+Open Font License 1.1. Its three buttons (clear, copy and close) are from
+[Open Iconic](https://github.com/iconic/open-iconic) by Waybury, under the MIT license. Both ship
+inside the addon, with their license text beside them.

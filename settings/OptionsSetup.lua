@@ -46,7 +46,6 @@ if not lib then
     H.__tabPlacement       = function() end
     H.__layoutTabs         = function() end
     H.__scrollTopInset     = function() end
-    H.__releaseChrome      = function() end
     H.__releaseSubTabs     = function() end
     H.__tabArtHeight       = function() return 0 end
     H.__resetTabArtHeight  = function() end
@@ -56,6 +55,7 @@ if not lib then
     H.BarGroup             = function() return {} end
     H.MasterControls       = function() return {}, function() end end
     H.ChoiceGrid           = function() end
+    H.Drawer               = function() end
     H.IdInput              = function() end
     H.IdList               = function() end
     H.ResolveId            = function() return nil end

@@ -1,7 +1,8 @@
 local addonName, NS = ...
 -- core/MediaSetup.lua — NS.Icon / NS.MediaFont from LibKa0s-Media-1.0 and the one RegisterLSM call.
 --
--- The icon catalog and the monospace face ship inside the vendored payload (library-stack-§8).
+-- The monospace face ships inside the vendored payload (library-stack-§8); of the icon catalog, the
+-- payload ships only the icons CLAUDE.md's `LibKa0s icons:` line declares (library-stack-§7).
 -- Every call passes the addon's own FOLDER name: the library is vendored and cannot know which
 -- folder it was copied into, and a wrong texture path draws nothing and raises nothing.
 
