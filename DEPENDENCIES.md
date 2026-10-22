@@ -37,7 +37,7 @@ such rather than listed as a requirement.
 |---|---|---|---|
 | `lua5.1` | **5.1 exactly** | the headless suite, `lua tests/run.lua`, and the offline perf scenarios (`tests/perf.lua`) | `tests/_kit/loader.lua` and `tests/loader.lua` use `setfenv` |
 | `luacheck` | any recent | `luacheck .`, the other half of the green gate | `.luacheckrc` at the repo root |
-| `lizard` | any recent | the `complexity` suite of `tests/_kit/run-automated-tests.sh`, which runs it over a sanitized shadow because `lizard` alone is blind in Lua (automated-tests-§3). "Any recent" holds only while the source keeps lizard's shape rule: function-literal tables are named locals, never a function literal inside a `for … in` header (the shape that crashed the runner, C-02) | `lizard --version` |
+| `lizard` | any recent | the `complexity` suite of `tests/_kit/run-automated-tests.sh`, which runs it over a sanitized shadow because `lizard` alone is blind in Lua (automated-tests-§3). "Any recent" holds only while the source keeps lizard's shape rule: function-literal tables are named locals, never a function literal inside a `for … in` header (the shape that crashed the runner, C-02). Since kit revision 41 a crash is reported as a complexity `fail` naming the file (`crashedFiles`), never a silent pass | `lizard --version` |
 | `git` | any recent | vendoring, the vendor gate's comparison against the LibKa0s checkout, the line-ending and layout-cap gates, and the runner's manifest (sha/branch/dirty) | `tests/_kit/vendor_sync.lua`, `tests/_kit/test_eol.lua`, `tests/_kit/test_layout_cap.lua`, `tests/_kit/run-automated-tests.sh` |
 | `bash` | **4+** (associative arrays) | the automated-test runner and the commands in this file | `tests/_kit/run-automated-tests.sh` (`declare -A`) |
 

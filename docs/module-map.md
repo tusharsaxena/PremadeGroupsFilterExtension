@@ -1,7 +1,7 @@
 # Module map — Ka0s Premade Groups Filter Extension
 
 Every non-vendored file, in TOC load order, with its one responsibility. Vendored: `libs/` (Ace3,
-LibStub, CallbackHandler, LibSharedMedia, LibDataBroker, LibDBIcon, LibKa0s v1.71.0) and
+LibStub, CallbackHandler, LibSharedMedia, LibDataBroker, LibDBIcon, LibKa0s v1.75.0) and
 `tests/_kit/` (the LibKa0s test kit) — never edited here.
 
 ## Load order and why

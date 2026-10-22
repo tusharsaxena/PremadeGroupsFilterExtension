@@ -16,7 +16,7 @@ takes the next free number in its theme and a retired number is never reused.
 | PROFILE-1..2 | Profiles | The Profiles page and `/pgfe profile` |
 | STATE-1..2 | Enable / disable | Stand-down and stand-up |
 | COMBAT-1..2 | Combat | Apply refusal, settings panel in combat |
-| DIAG-1..2 | Diagnostics | Debug console, the diagnostics report |
+| DIAG-1..3 | Diagnostics | Debug console, the diagnostics report, the console icons |
 | DEGRADED-1 | Degraded install | LibKa0s absent |
 | APPLY-1..26 | Attached panel and Apply | The panel under PGF, targeting, regions, playstyle, composition, leader, age, presets, Clear, PGF minimized, collapse, layout, tooltips, Smart key level, filters toggle, row spacing, region tags, the season-data request, region colors |
 | LOC-1..2 | Non-English client | Realm-name and dungeon-name seams on a deDE/frFR client |
@@ -89,6 +89,9 @@ season. Know your best timed level per dungeon (the Mythic+ tab) before the APPL
 - **DIAG-2. Report.** `/pgfe diagnostics` with logging off → the report appends between two
   `Ka0s Premade Groups Filter Extension` markers and logging is now on; the `dependencies` line says
   PGF's namespace, dialog and dungeon panel are present. Result: pass (owner-marked 2026-10-10)
+- **DIAG-3. Console icons.** `/pgfe debug` → the console's title bar draws the clear, copy and close
+  glyphs (none blank, no fallback `x`); Copy opens the copy window and its close glyph draws too.
+  Result:
 
 ## Degraded install
 

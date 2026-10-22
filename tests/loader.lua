@@ -20,7 +20,9 @@ local LIBKA0S = {
     "libs/LibKa0s/Schema.lua",
     "libs/LibKa0s/Pool.lua",
     "libs/LibKa0s/Item.lua",
+    "libs/LibKa0s/Glow.lua",
     "libs/LibKa0s/Media.lua",
+    "libs/LibKa0s/MediaIcons.lua",
     "libs/LibKa0s/Widgets.lua",
     "libs/LibKa0s/WidgetsReorder.lua",
     "libs/LibKa0s/WidgetsDragHandle.lua",
@@ -42,10 +44,14 @@ local LIBKA0S = {
     "libs/LibKa0s/OptionsCompose.lua",
     "libs/LibKa0s/OptionsScroll.lua",
     "libs/LibKa0s/OptionsNav.lua",
+    "libs/LibKa0s/OptionsDrawer.lua",
     "libs/LibKa0s/Perf.lua",
     "libs/LibKa0s/PerfSampler.lua",
     "libs/LibKa0s/PerfCommands.lua",
     "libs/LibKa0s/PerfPanel.lua",
+    "libs/LibKa0s/Sim.lua",
+    "libs/LibKa0s/SimTimeline.lua",
+    "libs/LibKa0s/SimPanel.lua",
 }
 
 -- Mock fields a factory's `opts` may seed before any source loads (see tests/wow_mock.lua).

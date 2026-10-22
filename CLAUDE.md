@@ -25,7 +25,8 @@ The newest compliance snapshot is `docs/audits/2026-10-10/` (standard v2.78.0; i
 review bundle `docs/reviews/2026-10-10/` were consolidated in
 `docs/reviews/2026-10-10/06_CONSOLIDATED_FINDINGS.md` and fixed on `fix/2026-10-10-audit-review`,
 closing issues #4-#19, or filed upstream as LibKa0s#46, LibKa0s#47, WowAddonStandards#8, #9, #10;
-the re-vendor is tracked in #25). The newest automated-test record is
+the re-vendor they waited on landed at LibKa0s v1.75.0, kit 41, closing #25; its record is
+`docs/revendor/2026-10-22-v1.75.0/`). The newest automated-test record is
 `docs/automated-tests/20261010-130739/`.
 
 When in doubt, treat standard conformance as a hard requirement and ask.
@@ -46,4 +47,5 @@ Green gate before every commit: `lua tests/run.lua` and `luacheck .` (0/0). Neve
 `tests/_kit/` (vendored; re-vendor instead). Never auto-stage/commit/push and never bump the version
 without an explicit instruction.
 
-Bundles [LibKa0s](https://github.com/tusharsaxena/LibKa0s) v1.71.0 (MIT).
+Bundles [LibKa0s](https://github.com/tusharsaxena/LibKa0s) v1.75.0 (MIT).
+LibKa0s icons: clear, close, copy.
