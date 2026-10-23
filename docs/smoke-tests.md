@@ -91,7 +91,7 @@ season. Know your best timed level per dungeon (the Mythic+ tab) before the APPL
   PGF's namespace, dialog and dungeon panel are present. Result: pass (owner-marked 2026-10-10)
 - **DIAG-3. Console icons.** `/pgfe debug` → the console's title bar draws the clear, copy and close
   glyphs (none blank, no fallback `x`); Copy opens the copy window and its close glyph draws too.
-  Result:
+  Result: pass (owner-marked 2026-10-23)
 
 ## Degraded install
 
