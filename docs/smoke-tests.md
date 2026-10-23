@@ -54,7 +54,7 @@ season. Know your best timed level per dungeon (the Mythic+ tab) before the APPL
   Minimap button and a *Reset all settings* button. `Filters`: *Toggle PGF Extension Filters* and
   *Show server regions in the Group Finder*. `Region colors`: see APPLY-26. `EllesmereUI skin`: the
   skin's switch and status lines. No scale, alpha, lock, visibility or test-mode rows.
-  Result: pass with three tabs (owner-marked 2026-10-10); re-check owed for the Region colors tab (added 2026-10-15)
+  Result: pass with three tabs (owner-marked 2026-10-10); Region colors tab re-check pass (owner-marked 2026-10-23)
 - **PANEL-3. Defaults button.** Header **Defaults** → a confirmation popup; Yes → `/pgfe list` back
   at defaults; the minimap button keeps its shown/hidden state. Result: pass (owner-marked 2026-10-10)
 
@@ -235,7 +235,7 @@ substitute its numbers.
   follows; search Mythic+ on a US character → OCE listings show the new color, others unchanged.
   Open the color wheel and Cancel → the old color stays. `/pgfe set regionColors.oce 255 0 128` →
   pink; *Reset region colors* → every tag back to its default, other settings untouched. The color
-  wheel shows no opacity slider. Result:
+  wheel shows no opacity slider. Result: pass (owner-marked 2026-10-23)
 
 ## EllesmereUI skin
 
