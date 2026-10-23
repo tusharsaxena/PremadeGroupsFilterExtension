@@ -38,3 +38,25 @@
   0 failed, 1 skipped, 423 total (`tests/test_vendor_sync.lua` green at v1.76.0); largest authored
   `.lua` file 1,215 lines (`tests/test_panel.lua`), under the 1,500 cap.
 - **Owner smoke owed:** none new; PGFE's UI is unchanged by this release.
+
+## Addendum: the tag moved (PG-RV2, 2026-10-23)
+
+LibKa0s item LK-91 moved the local annotated tag `v1.76.0` from tag object `546e284` (commit
+`9949368`) to tag object `2949c78` (commit `7e81ff7`), to bound the step-panel row labels before
+the command column (the owner's BankLedger `/bl sim` overlap report). PG-RV2 re-vendored
+`libs/LibKa0s/` and `tests/_kit/` whole from the moved tag (git archive into a scratch dir, tag
+never checked out) and re-ran `tools/prune-icons.lua` against the unchanged declaration
+`LibKa0s icons: clear, close, copy.` (kept 4 files, removed 5,836 the copy had brought back).
+
+- **Files that changed:** `libs/LibKa0s/PerfPanel.lua` (minor 7 -> 8, Perf key 15.1.1.7 ->
+  15.1.1.8) and `libs/LibKa0s/SimPanel.lua` (minor stays 5, already bumped in the unpublished
+  v1.76.0). Every other payload file and the whole kit (still 41) are byte-identical.
+- **Contract:** no blocker. PGFE loads both files only through `tests/loader.lua` and calls neither
+  Sim nor the Perf panel; the change is row-label anchoring with no signature change. Adopted
+  nothing new.
+- **Verify:** before the prune both `diff -r` runs were empty; after it the only differences are
+  the same 223 `Only in` lines under `media/icons/`.
+- **Gates:** `luacheck .` 0 warnings / 0 errors in 60 files; `lua tests/run.lua` 422 passed,
+  0 failed, 1 skipped (`tests/test_vendor_sync.lua` green against the moved tag); largest authored
+  `.lua` file 1,215 lines.
+- **Provenance line:** already `v1.76.0`; kept. No standard change.
