@@ -82,7 +82,8 @@ end)
 
 -- C-17/C-18/C-26/C-09: the owner-ratified rows stay in the register, and the architecture-§5 row
 -- names every char.filters writer modules/Filters.lua defines (a new writer must be listed there).
-local REGISTER_RULES = { "architecture-§5", "architecture-§4", "standalone-windows", "`performance-§12`" }
+local REGISTER_RULES = { "architecture-§5", "architecture-§4", "standalone-windows", "`performance-§12`",
+    "frame-layering-§1" }
 
 local function registerRows()
     local fh = assert(io.open(T.root .. "/docs/ARCHITECTURE.md", "rb"))

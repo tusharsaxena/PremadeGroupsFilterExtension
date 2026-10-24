@@ -102,6 +102,7 @@ Kit.run{
         "test_apply",
         "test_panel",
         "test_euiskin",
+        "test_layers",
         "test_euisettings",
         "test_reset",
         "test_diagnostics",

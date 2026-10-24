@@ -19,6 +19,7 @@ takes the next free number in its theme and a retired number is never reused.
 | DIAG-1..3 | Diagnostics | Debug console, the diagnostics report, the console icons |
 | DEGRADED-1 | Degraded install | LibKa0s absent |
 | APPLY-1..26 | Attached panel and Apply | The panel under PGF, targeting, regions, playstyle, composition, leader, age, presets, Clear, PGF minimized, collapse, layout, tooltips, Smart key level, filters toggle, row spacing, region tags, the season-data request, region colors |
+| LAYER-1..3 | Frame layering | The panel layered with PGF's dialog, PGFE popups lifted over the panel and put back |
 | LOC-1..2 | Non-English client | Realm-name and dungeon-name seams on a deDE/frFR client |
 | SKIN-1..10 | EllesmereUI skin | The gate's four conditions, the PGF skin's install states and link, the settings tab, the painted panel, live on, reload off |
 
@@ -285,6 +286,32 @@ settings tab and record any difference.
   scale → the accent block stays centered. `/pgfe diagnostics` → the dependencies section names the
   four conditions and `applied=true`. Result: pass (owner-marked 2026-10-10)
 
+## Frame layering
+
+The panel takes PGF's dialog strata by reading it, and a PGFE StaticPopup shown while the panel is
+visible is lifted one strata above it, then put back on hide (`core/Constants.lua`,
+`core/Popup.lua`; item 030 of the 2026-10-24 run). Headless stand-ins: the `layers:` cases.
+
+- **LAYER-1. The panel layers with PGF's dialog.** Open PGF on Dungeons, unskinned (metal border).
+  `/dump PremadeGroupsFilterExtensionPanel:GetFrameStrata(), PremadeGroupsFilterDialog:GetFrameStrata()`
+  → the same value twice (FULLSCREEN today). `/dump PremadeGroupsFilterExtensionPanel:GetFrameLevel() - PremadeGroupsFilterDialog:GetFrameLevel()`
+  → 5. The panel's title strip draws over PGF's bottom metal border, never under it, on several
+  opens and with the panel collapsed. **Failure looks like:** PGF's border across the panel's title
+  strip, or two different strata. Result: not yet run
+- **LAYER-2. Preset popups over the panel.** Move PGF's dialog (PGF's *dialogMovable*) so it sits at
+  the top center of the screen, under where StaticPopup1 opens. *Save as* → the popup draws over
+  PGF's dialog and the panel, its edit box visible and typing into it works; Save. Select the new
+  preset, *Delete* → the confirm draws over them too; No. Then, with the Group Finder closed, trigger
+  any Blizzard popup (for example `/pgfe resetall`, then No) and `/dump StaticPopup1:GetFrameStrata()`
+  → DIALOG: the lift did not stick to the shared frame. **Failure looks like:** a popup under the
+  panel, or StaticPopup1 left at FULLSCREEN_DIALOG after the panel's popup closed. Result: not yet run
+- **LAYER-3. Reset and reload prompts.** With PGF open on Dungeons, `/pgfe resetall` from chat → the
+  confirm draws over the panel; No. Close the Group Finder, `/pgfe config` → General → *Reset all
+  settings* → the confirm draws over the Settings window as before; No. With EllesmereUI's skin
+  applied, untick *Use the EllesmereUI skin* while the Group Finder is open → the reload prompt is
+  over the panel; *Later*. **Failure looks like:** any of the three under PGF's dialog or the panel,
+  or a Lua error on show or hide. Result: not yet run
+
 ## Non-English client
 
 The headless mock is enUS, so a path keyed off a localized string passes there whether it is right
@@ -308,7 +335,9 @@ or wrong. These are the addon's locale seams.
 
 ## Pending sign-off
 
-None. On 2026-10-10 the owner marked every check in this file as passed, recorded on its
+- LAYER-1, LAYER-2, LAYER-3 (added 2026-10-24, item 030 frame layering)
+
+Before them, none: on 2026-10-10 the owner marked every check in this file as passed, recorded on its
 `Result:` line as `pass (owner-marked 2026-10-10)`; a check that already carried a dated owner pass
 keeps it. A check added or rewritten after that date is listed here until its `Result:` line records
 a pass.

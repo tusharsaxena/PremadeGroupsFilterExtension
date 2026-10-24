@@ -212,7 +212,7 @@ test("disabled 6: the EllesmereUI callback and the skin's SetChecked hook paint 
     local before = shownSet(m)
     quiet(m)
     m.eui.dispatch(NAME)
-    -- red under: remove the stoodDown() check from EUISkin blocked() (modules/EUISkin.lua:310)
+    -- red under: remove the stoodDown() check from EUISkin blocked() (modules/EUISkin.lua:312)
     assertEqual(#m.eui.calls, 0, "nothing painted")
     assertFalse(NS.EUISkin.IsApplied())
     assertEqual(#m.__svWrites(), 0)

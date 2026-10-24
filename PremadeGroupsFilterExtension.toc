@@ -39,6 +39,9 @@ locales\enUS.lua
 # Core -- dependency-correct order (layout-§1)
 # LOAD-BEARING: publishes NS.Util.print / NS.Print and NS.LIBKA0S_MISSING, read at load below.
 core\CoreSetup.lua
+# LOAD-BEARING: publishes NS.Constants.LAYERS, which modules\Panel.lua and modules\EUISkin.lua take as
+# file-scope upvalues.
+core\Constants.lua
 # LOAD-BEARING: publishes NS.MediaFont, which core\PGFE.lua resolves NS.FONT_MONO from at load.
 core\MediaSetup.lua
 # Conventional: NS.Compat is read inside functions only.
@@ -58,6 +61,9 @@ core\LauncherSetup.lua
 # Conventional: publishes NS.Lifecycle, NS.IsStoodDown and NS.HOLD_DISABLED; every reader
 # (core\PGFE.lua, the modules, settings\Panel.lua) reaches them at call time.
 core\LifecycleSetup.lua
+# Conventional: publishes NS.ShowPopup / NS.RestorePopupStrata; reads NS.Panel and NS.Constants at
+# call time.
+core\Popup.lua
 # Conventional: the PGF bridge; every PGF read happens at call time.
 core\PGFBridge.lua
 # Conventional: the EllesmereUI bridge; every EllesmereUI read happens at call time.

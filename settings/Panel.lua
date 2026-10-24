@@ -43,7 +43,7 @@ end
 
 local function showResetPopup()
     Settings.EnsureResetPopup()
-    StaticPopup_Show("PREMADEGROUPSFILTEREXTENSION_RESET_ALL")
+    NS.ShowPopup("PREMADEGROUPSFILTEREXTENSION_RESET_ALL")
 end
 
 local MASTER_ROWS, MASTER_TAIL = Helpers.MasterControls{

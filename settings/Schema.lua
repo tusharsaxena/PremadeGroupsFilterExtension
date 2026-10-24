@@ -182,5 +182,6 @@ function Settings.EnsureResetPopup()
             Helpers.RestoreAllDefaults()
             pout(L["all settings reset to defaults"])
         end,
+        OnHide       = NS.RestorePopupStrata,   -- puts back a lift over the panel (core/Popup.lua)
     }
 end

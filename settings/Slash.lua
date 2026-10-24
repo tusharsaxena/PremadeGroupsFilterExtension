@@ -178,7 +178,7 @@ function runResetAll()
     local H = helpers()
     if not (H and H.RestoreAllDefaults) then return NS.Print(CLI_MISSING) end
     PGFE.Settings.EnsureResetPopup()
-    StaticPopup_Show("PREMADEGROUPSFILTEREXTENSION_RESET_ALL")
+    NS.ShowPopup("PREMADEGROUPSFILTEREXTENSION_RESET_ALL")
 end
 
 -- `diagnostics` is tested FIRST (inside DebugVerb), then on/off; anything else toggles the window.

@@ -405,6 +405,17 @@ Total.
 - euiskin: theme and scale changes while stood down catch up at the stand-up
 - euiskin: the diagnostics dependencies section reports the gate and the skin
 
+### test_layers.lua (8)
+
+- layers: one table names the strata and every level offset
+- layers: the panel takes PGF's dialog strata by reading it, never a literal
+- layers: a host that cannot answer its strata leaves the panel inheriting it
+- layers: the panel's level band (L, header art L, chrome L+1, widgets L+2, ring +3)
+- layers: a popup shown over the visible panel is lifted, and put back to what it was
+- layers: with the panel not visible the popup keeps the client's strata
+- layers: every PGFE popup spec restores on hide
+- layers: no strata literal, no absolute level, no direct StaticPopup_Show
+
 ### test_euisettings.lua (19)
 
 - euisettings: euiSkin is a schema row, default on, in its own group on the General page
@@ -534,6 +545,7 @@ Total.
 | test_apply.lua | 33 |
 | test_panel.lua | 84 |
 | test_euiskin.lua | 32 |
+| test_layers.lua | 8 |
 | test_euisettings.lua | 19 |
 | test_reset.lua | 5 |
 | test_diagnostics.lua | 6 |
@@ -544,4 +556,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **422** |
+| **Total** | **430** |

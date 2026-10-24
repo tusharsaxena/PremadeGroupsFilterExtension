@@ -13,6 +13,8 @@ needs at load, `# Conventional` says it reads its neighbors at call time only, a
 Profiles page. The constraints that fix the order:
 
 - `core/CoreSetup.lua` first in core: every later file captures `NS.Print` / `NS.Util.print`.
+- `core/Constants.lua` before `modules/`: `modules/Panel.lua` and `modules/EUISkin.lua` take
+  `NS.Constants.LAYERS` as a file-scope upvalue.
 - `core/MediaSetup.lua` before `core/PGFE.lua`: `NS.FONT_MONO` is resolved from `NS.MediaFont` at load.
 - `core/PGFE.lua` before every other addon file below it: it promotes `NS` to the AceAddon object
   and publishes `NS.PREFIX`, `NS.State`, `NS.FONT_MONO`, `NS.FEATURE_EVENTS`, `NS.STAND_DOWN` and
@@ -39,6 +41,7 @@ Profiles page. The constraints that fix the order:
 | `PremadeGroupsFilterExtension.toc` | Metadata and the load order |
 | `locales/enUS.lua` | `NS.L` with the key-is-English metatable fallback |
 | `core/CoreSetup.lua` | `LibKa0s-Core-1.0`: the `[PGFE]` printer, `SafeRegister*`, skin, close-button wrapper |
+| `core/Constants.lua` | `NS.Constants.LAYERS`: the one layers table, every strata and level offset the addon sets, with the whole stack in its header comment (frame-layering-§5) |
 | `core/MediaSetup.lua` | `LibKa0s-Media-1.0`: `NS.Icon`, `NS.MediaFont`, the LSM registration |
 | `core/Compat.lua` | `LibKa0s-Compat-1.0`: the spec readers |
 | `core/EnvSetup.lua` | `LibKa0s-Env-1.0`: `NS.Meta`, `NS.Version` |
@@ -47,6 +50,7 @@ Profiles page. The constraints that fix the order:
 | `core/DebugLogSetup.lua` | `LibKa0s-DebugLog-1.0`: the console, `NS.Debug` and its gates, the diagnostics hook-up |
 | `core/LauncherSetup.lua` | `LibKa0s-Launcher-1.0`: the LDB launcher and minimap button |
 | `core/LifecycleSetup.lua` | `LibKa0s-Lifecycle-1.0`: the stand-down latch, `NS.IsStoodDown()` |
+| `core/Popup.lua` | `NS.ShowPopup` / `NS.RestorePopupStrata`: every PGFE StaticPopup, lifted over the attached panel while it is visible and put back on hide |
 | `core/PGFBridge.lua` | The only file that touches PGF internals: seam check, dungeon state and expression read/write, commit, search, the env and dialog hooks |
 | `core/EUIBridge.lua` | The only file that reads EllesmereUI state: the skin's four gate conditions (`Conditions`, `GateOpen`, `WhyClosed`) and the per-condition readers behind them (`IsSuiteReady`, `IsMasterOn`, `IsEntryOn`, `PGFSkinState` / `IsPGFSkinOn`), plus `SKIN_NAME` |
 | `defaults/Profile.lua` | `NS.C`: profile, char and global default values |

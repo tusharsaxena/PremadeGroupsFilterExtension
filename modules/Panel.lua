@@ -6,7 +6,7 @@ local _, NS = ...
 -- expanded height is measured from the stack. The dropdowns share one right-aligned column.
 --
 -- Styled like PGF's own dialog (PGF UI/Dialog.xml: PortraitFrameTemplateMinimizable, the
--- ButtonFrameTemplateNoPortraitMinimizable border, portrait hidden, strata FULLSCREEN) and its
+-- ButtonFrameTemplateNoPortraitMinimizable border, portrait hidden, the dialog's strata) and its
 -- filter rows (PGF UI/Templates.xml PremadeGroupsFilterBasicTemplate: a UICheckButtonTemplate at
 -- y+4 and a GameFontHighlight title at x+35, 23px rows) (ratified: docs/ARCHITECTURE.md ->
 -- Documented deviations). Anchored across the dialog's bottom edge,
@@ -25,6 +25,7 @@ local Panel = NS.Panel or {}
 NS.Panel = Panel
 
 local L = NS.L
+local LEVEL = NS.Constants.LAYERS.LEVEL   -- the panel's level band: core/Constants.lua
 
 local FRAME_NAME    = "PremadeGroupsFilterExtensionPanel"
 local BORDER_LAYOUT = "ButtonFrameTemplateNoPortraitMinimizable"
@@ -39,11 +40,6 @@ local BODY_TOP      = -28
 -- units of world between them (owner screenshot, 5px at that UI scale); 5 made them meet. Raised 2
 -- the owner asked for 1px less of a gap, so the panel is raised by 3.
 local ATTACH_RAISE  = 3
--- Frame levels above the dialog. A child frame defaults to its parent's level + 1, which is also
--- where PGF's own border (its NineSlice) sits, in the same FULLSCREEN strata: with the two borders
--- overlapping by ATTACH_RAISE, the client drew PGF's bottom border over this panel's title strip in
--- no fixed order (owner screenshot). Raised clear of it, this panel always draws on top.
-local ABOVE_DIALOG  = 5
 local BODY_BOTTOM   = 12
 local LABEL_X       = 35
 local CHECK_SIZE    = 32          -- UICheckButtonTemplate's size; the label starts LABEL_X - 32 past it
@@ -497,6 +493,7 @@ local function definePopups()
             StaticPopup_Hide(POPUP_SAVE_AS)
         end,
         EditBoxOnEscapePressed = function() StaticPopup_Hide(POPUP_SAVE_AS) end,
+        OnHide = NS.RestorePopupStrata,   -- puts back a lift over the panel (core/Popup.lua)
     }
     StaticPopupDialogs[POPUP_DELETE] = {
         text = L.PRESET_DELETE_CONFIRM, button1 = YES, button2 = NO,
@@ -504,6 +501,7 @@ local function definePopups()
         OnAccept = function(_, name)
             if name and not stoodDown() then deletePreset(name) end
         end,
+        OnHide = NS.RestorePopupStrata,
     }
 end
 
@@ -517,10 +515,10 @@ local function buildPresetRow(f, body, y)
         local name = NS.Presets.GetSelected()
         if name then saveAs(name) end
     end)
-    f.saveAsButton = button(body, L.SAVE_AS, L.SAVE_AS_TOOLTIP, function() StaticPopup_Show(POPUP_SAVE_AS) end)
+    f.saveAsButton = button(body, L.SAVE_AS, L.SAVE_AS_TOOLTIP, function() NS.ShowPopup(POPUP_SAVE_AS) end)
     f.deleteButton = button(body, L.DELETE, L.DELETE_TOOLTIP, function()
         local name = NS.Presets.GetSelected()
-        if name then StaticPopup_Show(POPUP_DELETE, name, nil, name) end
+        if name then NS.ShowPopup(POPUP_DELETE, name, nil, name) end
     end)
     local row = { f.saveButton, f.saveAsButton, f.deleteButton }
     sameWidth(row, PRESET_BUTTON_MIN_W)
@@ -627,11 +625,12 @@ local CLIP_PAD    = 24   -- clip margin past the border overhangs (corners: x -1
 -- shrunk to fit (its corners overlap). Two copies of the same layout are laid out full size instead,
 -- each inside a clipping frame: the top copy is cut at HEADER_SEAM and the bottom copy shows only
 -- what lies below it. The template's NineSlice is left untouched for the expanded look.
--- Both frames sit at the panel's own level: a child defaults to one above it, which ties with the
--- MaximizeMinimize frame and the close button and leaves their draw order to chance.
+-- Both frames sit at the panel's own level (LEVEL.HEADER_ART): a child defaults to one above it,
+-- which ties with the MaximizeMinimize frame and the close button and leaves their draw order to
+-- chance. Set once, at build: anything that later re-levels the panel must re-sink them.
 local function sinkToParentLevel(frame, parent)
     local level = parent:GetFrameLevel()
-    if type(level) == "number" then frame:SetFrameLevel(level) end
+    if type(level) == "number" then frame:SetFrameLevel(level + LEVEL.HEADER_ART) end
 end
 
 local function buildHeaderHalf(f, util, layout, top)
@@ -765,11 +764,20 @@ local function centerTitle(f)
     tc:SetPoint("TOPRIGHT", f, "TOPRIGHT", -TITLE_INSET, -1)
 end
 
+-- A host-matched surface (frame-layering-§1): the panel takes PGF's dialog strata by reading it,
+-- so a PGF release that moves its dialog takes the panel along; a dialog that cannot say leaves it
+-- inheriting, as a child does. Its level is the dialog's + LEVEL.ABOVE_HOST, set before any of the
+-- panel's own frames are built, so they are born in the band core/Constants.lua names.
+local function layerWithDialog(f, dialog)
+    local strata = type(dialog.GetFrameStrata) == "function" and dialog:GetFrameStrata()
+    if type(strata) == "string" then f:SetFrameStrata(strata) end
+    local dialogLevel = type(dialog.GetFrameLevel) == "function" and dialog:GetFrameLevel()
+    if type(dialogLevel) == "number" then f:SetFrameLevel(dialogLevel + LEVEL.ABOVE_HOST) end
+end
+
 local function buildFrame(dialog)
     local f = CreateFrame("Frame", FRAME_NAME, dialog, "PortraitFrameTemplateMinimizable")
-    f:SetFrameStrata("FULLSCREEN")
-    local dialogLevel = dialog.GetFrameLevel and dialog:GetFrameLevel()
-    if type(dialogLevel) == "number" then f:SetFrameLevel(dialogLevel + ABOVE_DIALOG) end
+    layerWithDialog(f, dialog)
     f:SetBorder(BORDER_LAYOUT)
     buildHeaderArt(f)
     f:SetPortraitShown(false)

@@ -302,7 +302,7 @@ end)
 
 -- A stand-down while the pointer is on a min/max button: the OnLeave hook is gated off, so the
 -- stand-down puts the glyph back to its resting alpha itself. 0.75 is GLYPH_ALPHA, a file-local
--- (modules/EUISkin.lua:35) the module does not export.
+-- (modules/EUISkin.lua:37) the module does not export.
 -- red under: drop the glyph reset row
 test("euiskin: a stand-down restores the min/max glyph alpha", function()
     local NS, _, f = painted()
