@@ -438,6 +438,10 @@ Total.
 - euisettings: the switch comes first, then a gap, then the condition lines
 - euisettings: each condition line and the state line have a what / why / how tooltip
 
+### test_settings_layout.lua (1)
+
+- layout: every stored path, its type and its default are unchanged by item 020
+
 ### test_reset.lua (5)
 
 - reset: Reset all settings resets only the active profile
@@ -547,6 +551,7 @@ Total.
 | test_euiskin.lua | 32 |
 | test_layers.lua | 8 |
 | test_euisettings.lua | 19 |
+| test_settings_layout.lua | 1 |
 | test_reset.lua | 5 |
 | test_diagnostics.lua | 6 |
 | test_vendor_sync.lua | 3 |
@@ -556,4 +561,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **430** |
+| **Total** | **431** |

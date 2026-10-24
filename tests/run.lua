@@ -104,6 +104,7 @@ Kit.run{
         "test_euiskin",
         "test_layers",
         "test_euisettings",
+        "test_settings_layout",
         "test_reset",
         "test_diagnostics",
         "test_vendor_sync",
