@@ -77,3 +77,30 @@
   0 failed, 1 skipped, 431 total; largest authored `.lua` file 1,215 lines
   (`tests/test_panel.lua`), under the 1,500 cap.
 - **Owner smoke owed:** none new from this item.
+
+## Re-vendor after the tag moved again (one key button)
+
+- **Why:** LK-96 moved the local annotated tag `v1.77.0` in `../LibKa0s` again, for the owner's
+  one-key-button follow-up to 015 (one key button and Clear per row on the in-addon Keybindings
+  tab; Options -> Keybindings untouched). Item PG-RV3 re-vendors it exactly as PG-RV2 did; no new
+  bundle, no adoption.
+- **Old tag:** tag object `b2b8ee25c5f9fa26db146254bf786b366dec986b`, commit
+  `afae2f75cb7ff61c57156d9a3d8a6b2b9f4c5e10`.
+- **New tag:** tag object `e9b126d961c2970e5b14d0566480f7c1d8b5e5e8`, commit
+  `2f2b2e22b4c9219cd8a4101d7e894681c7aea16e` (`git -C ../LibKa0s rev-parse v1.77.0^{}`), never
+  checked out; extracted with `git archive v1.77.0 LibKa0s testkit` into a scratch dir.
+- **Minors moved:** OptionsKeybinds 3 -> 4 (each row is one key button showing the bound keys
+  plus Clear; slot 2 is the second key set on Options -> Keybindings). In `tests/_kit/`,
+  `bindings_xml.lua` (`Kit.keybindThroughTab` slot 2 on a one-button row writes through
+  `lib.__keybindSet(command, 2, chord)`) and its `README.md` row moved; kit revision unchanged at
+  42. Every other `libs/LibKa0s/` file is byte-identical; `LibKa0s.xml` is unchanged, so
+  `tests/loader.lua` is too.
+- **Provenance line:** unchanged, `Bundles LibKa0s v1.77.0 (MIT).`. Icon line kept,
+  `LibKa0s icons: clear, close, copy.`; the tag's `tools/prune-icons.lua` kept 4 files and removed
+  the 5,836 the copy brought back, so the committed icon folder is unchanged.
+- **Degradation stub:** no new public Options member (the minor adds only locals), so
+  `settings/OptionsSetup.lua` is unchanged; kit surface parity is green.
+- **Gates:** `luacheck .` 0 warnings / 0 errors in 64 files; `lua tests/run.lua` 439 passed,
+  0 failed, 1 skipped, 440 total (README badge and `docs/test-cases.md` already say 439); largest
+  authored `.lua` file 1,215 lines (`tests/test_panel.lua`), under the 1,500 cap.
+- **Owner smoke owed:** none new from this item.
