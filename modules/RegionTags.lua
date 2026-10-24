@@ -13,7 +13,7 @@ local _, NS = ...
 local RegionTags = NS.RegionTags or {}
 NS.RegionTags = RegionTags
 
--- Each bucket's color is the profile's `regionColors.<key>` (the General page's Region colors tab,
+-- Each bucket's color is the profile's `regionColors.<key>` (the General page's Region tags tab,
 -- or `/pgfe set regionColors.<key> r g b`), turned into the hex a |c escape takes. The hex is cached
 -- per key against the stored table it came from: every write (picker, CLI, reset, profile switch)
 -- puts a new table there, so a changed identity is a changed color, and a row paint costs one

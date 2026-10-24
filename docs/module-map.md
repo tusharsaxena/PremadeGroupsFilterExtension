@@ -70,7 +70,7 @@ Profiles page. The constraints that fix the order:
 | `settings/SchemaSetup.lua` | `LibKa0s-Schema-1.0` or its host stub |
 | `settings/Schema.lua` | The write seam (`NS.SchemaRuntime`), the closure stamping for session and global rows (`Settings.StampClosureRows`), schema validation, defaults assembly and the reset. Declares no rows: `settings/Panel.lua` adds every row at load |
 | `settings/OptionsSetup.lua` | `LibKa0s-Options-1.0`: the settings panel descriptor |
-| `settings/Panel.lua` | Landing page body and the General page, in four tabs: Master controls, Filters (`filtersActive`, `showRegionTags`), Region colors (`regionColors.<key>`, `REGION_ROWS`) and EllesmereUI skin (its `euiSkin` row and status lines) |
+| `settings/Panel.lua` | Landing page body and the General page, in four tabs: Master controls, Filters (`filtersActive` and a line pointing at the attached panel), Region tags (`showRegionTags`, then `regionColors.<key>`, `REGION_ROWS`) and EllesmereUI skin (its `euiSkin` row and status lines) |
 | `settings/Slash.lua` | `NS.COMMANDS` and `LibKa0s-Slash-1.0` |
 | `settings/Profiles.lua` | The Profiles page |
 | `tests/run.lua` | Suite list, factories, surface source, diagnostics facts |

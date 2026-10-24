@@ -15,7 +15,7 @@ return is `ok, msgKey, ...` and `Apply.Report` prints `NS.L[msgKey]:format(...)`
    `MSG_NO_PGF`. `Bridge.IsDungeonCategory()` false (the dialog is on another category, or was
    never opened) → `MSG_NOT_DUNGEONS`. `Bridge.IsDungeonPanelActive()` false (the dialog is
    minimized, so PGF filters with its mini panel and the dungeon state would not take effect) →
-   `MSG_MINIMIZED`. *Toggle PGF Extension Filters* off (`profile.filtersActive`) →
+   `MSG_MINIMIZED`. *Use the extension's filters* off (`profile.filtersActive`) →
    `MSG_INACTIVE`. Every write of that setting runs `Apply.OnFiltersToggled`: off runs Clear, on runs
    Apply without a search, both only while PGF's dungeon panel is up.
 3. **Smart level.** With `smartKeyLevel` on, `Filters.ApplySmartLevel()` sets `keyLevel` to
@@ -65,7 +65,7 @@ PGF builds one `env` per result, counts the members into it (`<spec>_<class>s`,
 
 1. Stood down → return.
 2. `env.pgfe_on = Filters.IsActive()` (the managed block's guard: `not pgfe_on or ( … )` is neutral
-   while *Toggle PGF Extension Filters* is off and when the hook did not run).
+   while *Use the extension's filters* is off and when the hook did not run).
 3. `PremadeRegions` not loaded → every region key `false`, then
    `Regions.GetRegion(leaderName)`: portal from `GetCurrentRegion()` (1 US, 3 EU, else nil), realm
    from the `-Realm` suffix or `GetRealmName()` when there is none, `Regions.Normalize` (lowercase,

@@ -208,7 +208,7 @@ test("apply: with Smart on, Run sets the key level from the season bests first",
     assertEqual(f.keyLevel, 14)
 end)
 
-test("apply: refuses while Toggle PGF Extension Filters is off, writing nothing", function()
+test("apply: refuses while Use the extension's filters is off, writing nothing", function()
     local NS, _, m = T.enableAddon{}
     seasonFromScreenshot(m)
     NS.Filters.SetActive(false) -- its own Clear commits once

@@ -72,10 +72,12 @@ test("setup: Master controls holds only the canonical rows", function()
             assertTrue(canonical[row.path], tostring(row.path) .. " is not a Master controls row")
         end
     end
-    for _, path in ipairs({ "filtersActive", "showRegionTags" }) do
+    -- The two feature switches lead their own tabs (item 020): the filters switch on Filters, the
+    -- region-tag switch on Region tags, above the colors it governs.
+    for path, group in pairs({ filtersActive = NS.L["Filters"], showRegionTags = NS.L["Region tags"] }) do
         local row = H.FindSchema(path)
         assertTrue(row ~= nil, path)
-        assertEqual(row.group, NS.L["Filters"], path .. " group")
+        assertEqual(row.group, group, path .. " group")
         assertEqual(row.page, "general", path .. " page")
     end
 end)

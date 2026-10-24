@@ -184,7 +184,7 @@ Total.
 - envinject: PLAYER_SPECIALIZATION_CHANGED refreshes for the player only
 - envinject: regions injected only without PremadeRegions
 - envinject: stood down → hook is a no-op
-- envinject: the block's guard is off while Toggle PGF Extension Filters is off
+- envinject: the block's guard is off while Use the extension's filters is off
 - envinject: the env hook's install result is stored
 - envinject: a non-function PutPremadeRegionInfo leaves the hook off without raising
 - envinject: a protected leader name injects no region
@@ -204,7 +204,7 @@ Total.
 - regiontags: the color rows pass the schema check
 - regiontags: a changed color paints the next tag, and reset puts the default back
 - regiontags: /pgfe set takes a color in 0-255
-- regiontags: the Region colors tab shows each portal's tags and a picker per region
+- regiontags: the Region tags tab shows each portal's tags and a picker per region
 
 ### test_bridge.lua (18)
 
@@ -264,7 +264,7 @@ Total.
 - apply: the message counts the rows ticked, and says so when targeting is off
 - apply: the targeting-off message prints no key range
 - apply: with Smart on, Run sets the key level from the season bests first
-- apply: refuses while Toggle PGF Extension Filters is off, writing nothing
+- apply: refuses while Use the extension's filters is off, writing nothing
 - apply: the filtersActive setting is a schema row, and its writes remove / rewrite the block
 - apply: a MSG_COMBAT refusal writes an [Apply] refused line
 - apply: a MSG_NO_PGF refusal writes an [Apply] refused line
@@ -360,8 +360,8 @@ Total.
 - panel: a fresh character sees the owner's default panel
 - panel: the presets row has the same extra space above as below, buttons as tall as the dropdown
 - panel: Composition is one dropdown; Any clears, both ticked stays both (not Any)
-- panel: Toggle PGF Extension Filters is the first row, on by default
-- panel: unticking Toggle PGF Extension Filters removes the block; ticking writes it back
+- panel: Use the extension's filters is the first row, on by default
+- panel: unticking Use the extension's filters removes the block; ticking writes it back
 - panel: presets never switch the extension on or off
 - panel: the title is centered on the whole header
 - panel: the copy box and its label dim, disable and empty while key targeting is off
@@ -419,7 +419,7 @@ Total.
 ### test_euisettings.lua (19)
 
 - euisettings: euiSkin is a schema row, default on, in its own group on the General page
-- euisettings: the General page has four tabs: Master controls, Filters, Region colors, EllesmereUI skin
+- euisettings: the General page has four tabs: Master controls, Filters, Region tags, EllesmereUI skin
 - euisettings: the tab draws the switch, a line per condition, then a state line
 - euisettings: each failing condition disables the switch and is named on its line
 - euisettings: a re-show re-reads the lines and the switch after EllesmereUI changed
@@ -438,9 +438,17 @@ Total.
 - euisettings: the switch comes first, then a gap, then the condition lines
 - euisettings: each condition line and the state line have a what / why / how tooltip
 
-### test_settings_layout.lua (1)
+### test_settings_layout.lua (9)
 
 - layout: every stored path, its type and its default are unchanged by item 020
+- layout: the region-tag switch leads the Region tags tab, unheaded, beside its colors
+- layout: the color pickers say what each code means; the tag text is unchanged
+- layout: Reset region tag colors resets the twelve colors only, never the switch
+- layout: the Filters tab holds the extension's switch and says where the filters are
+- layout: the filters switch reads true on both surfaces
+- layout: the EllesmereUI switch points at the conditions below it
+- layout: the PGF skin link sits right under condition 4, before the gap and the state line
+- layout: the header Defaults describes the reset in Reset all settings' own words
 
 ### test_reset.lua (5)
 
@@ -551,7 +559,7 @@ Total.
 | test_euiskin.lua | 32 |
 | test_layers.lua | 8 |
 | test_euisettings.lua | 19 |
-| test_settings_layout.lua | 1 |
+| test_settings_layout.lua | 9 |
 | test_reset.lua | 5 |
 | test_diagnostics.lua | 6 |
 | test_vendor_sync.lua | 3 |
@@ -561,4 +569,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **431** |
+| **Total** | **439** |

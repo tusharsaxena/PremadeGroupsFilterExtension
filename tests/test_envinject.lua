@@ -93,7 +93,7 @@ test("envinject: stood down → hook is a no-op", function()
     assertNil(env.region); assertFalse(env.oce)
 end)
 
-test("envinject: the block's guard is off while Toggle PGF Extension Filters is off", function()
+test("envinject: the block's guard is off while Use the extension's filters is off", function()
     local NS, _, m = T.enableAddon{}
     local env = runHook(m, {}, "Leader-Barthilas")
     assertTrue(env.pgfe_on)

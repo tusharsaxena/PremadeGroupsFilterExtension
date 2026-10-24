@@ -101,7 +101,7 @@ test("regiontags: every region bucket has a default color and a color row", func
         -- red under: drop a key from REGION_ROWS in settings/Panel.lua
         local row = H.FindSchema("regionColors." .. key)
         assertTrue(row ~= nil, key .. " row")
-        assertEqual(row.type, "color"); assertEqual(row.group, "Region colors"); assertEqual(row.page, "general")
+        assertEqual(row.type, "color"); assertEqual(row.group, "Region tags"); assertEqual(row.page, "general")
         assertEqual(row.hasAlpha, false, "a |c escape has no alpha")
         assertEqual(NS.RegionTags.Hex(key), NS.C.REGION_HEX[key], key .. " default round-trips to its hex")
     end
@@ -134,13 +134,13 @@ test("regiontags: /pgfe set takes a color in 0-255", function()
     assertEqual(NS.RegionTags.Hex("rus"), "ff8000")
 end)
 
-test("regiontags: the Region colors tab shows each portal's tags and a picker per region", function()
+test("regiontags: the Region tags tab shows each portal's tags and a picker per region", function()
     local NS, _, m = T.enableAddon{}
     local H = NS.addon.Settings.Helpers
     local p = m.__subcategories["General"]
     p:Show(); p:__fire("OnShow")
     local ctx = H.__panelFor("general")
-    H.SelectTab("general", "Region colors")
+    H.SelectTab("general", "Region tags")
     local pickers, labels, buttons = 0, {}, 0
     local function walk(w)
         if w.type == "ColorPicker" then pickers = pickers + 1 end

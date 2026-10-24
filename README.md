@@ -4,7 +4,7 @@
 ![CurseForge Version](https://img.shields.io/curseforge/v/1736636)
 ![License](https://img.shields.io/badge/License-MIT-orange)
 ![Standard](https://img.shields.io/badge/Ka0s-WoW_Addon_Standard-yellow)
-![Tests](https://img.shields.io/badge/Tests-431%2F431_passing-green)
+![Tests](https://img.shields.io/badge/Tests-439%2F439_passing-green)
 
 A small companion to [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter)
 for Mythic+. You type the key level you want to push (or let Smart pick it), and it ticks every
@@ -49,8 +49,8 @@ Addons can't type into the Group Finder's search box, so the panel shows the key
 in **Copy into search box**. Click it, press Ctrl+C, then Enter to jump to the search box, then Ctrl+V
 and Enter.
 
-Filter choices are saved per character, and presets load on any character. **Toggle PGF Extension
-Filters** switches the filtering off without turning the addon off. If you use EllesmereUI with
+Filter choices are saved per character, and presets load on any character. **Use the extension's
+filters** switches the filtering off without turning the addon off. If you use EllesmereUI with
 Premade Groups Filter's EllesmereUI
 [skin](https://www.curseforge.com/wow/addons/premade-groups-filter-ellesmereui), the panel matches
 it once EllesmereUI's third-party skinning is on for both addons; the EllesmereUI skin tab in the
@@ -70,7 +70,7 @@ settings shows what's missing. `/pgfe` opens the settings and `/pgfe help` lists
 |----------|--------|
 | Can it fill in the search box for me? | No. The game blocks addons from typing into it, and a listing's title is hidden from addons, so the key level can't be filtered any other way. Click the Copy into search box field, then Ctrl+C, Enter, Ctrl+V, Enter. |
 | Can it filter on the leader's item level? | No. The game only tells addons the item level a group *requires*, not the leader's. For the leader's M+ rating, use Premade Groups Filter's own M+ Rating row. |
-| Do I need PremadeRegions? | No, this addon replaces it. It shows each listing's server region in front of the dungeon name (and each applicant's in front of their name), and the region filter uses its own realm list. You can uninstall PremadeRegions; while it is still installed, this addon leaves the tags to it so you don't see two. Turn the tags off with **Show server regions in the Group Finder** under Settings → AddOns → Ka0s Premade Groups Filter Extension → General → Filters, and pick each region's color under General → Region colors. |
+| Do I need PremadeRegions? | No, this addon replaces it. It shows each listing's server region in front of the dungeon name (and each applicant's in front of their name), and the region filter uses its own realm list. You can uninstall PremadeRegions; while it is still installed, this addon leaves the tags to it so you don't see two. Turn the tags off with **Show region tags in the Group Finder** under Settings → AddOns → Ka0s Premade Groups Filter Extension → General → Region tags, and pick each region's color on the same tab. |
 | Why does it need Premade Groups Filter? | It works through Premade Groups Filter's own checkboxes and advanced filter, so there is nothing for it to do on its own. |
 | Does it change anything I typed in the advanced filter? | No. Apply adds its own marked block around your text, and Clear removes only that block. |
 | Are my settings shared between characters? | Filter choices are per character. Presets are shared by all your characters. |
@@ -84,7 +84,7 @@ settings shows what's missing. `/pgfe` opens the settings and `/pgfe help` lists
 | Apply says it can't run in combat | Wait until combat ends and press it again. |
 | Apply asks you to open Premade Groups Filter on the Dungeons category | Switch Premade Groups Filter's dialog to Dungeons, then press Apply again. |
 | `/pgfe apply` asks you to maximize Premade Groups Filter | Maximize Premade Groups Filter's dialog, then run it again. |
-| The Apply button is grayed out, or `/pgfe apply` says PGF Extension filters are toggled off | Apply stays off while the filters are toggled off. Tick **Toggle PGF Extension Filters** (the panel's first box), then apply again. |
+| The Apply button is grayed out, or `/pgfe apply` says the extension's filters are off | Apply stays off while the filters are off. Tick **Use the extension's filters** (the panel's first box), then apply again. |
 | Apply says the advanced filter would exceed 2000 characters | Shorten your own text in Premade Groups Filter's advanced filter, then press Apply again. |
 | The panel says season data is loading | The game sends it a few seconds after login. Wait, then look again. |
 | Apply says the [pgfe] block is damaged | The lines between the `-- [pgfe]` markers in the advanced filter were changed by hand. Delete the block, markers included, and press Apply again. |

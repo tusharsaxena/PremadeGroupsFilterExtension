@@ -16,8 +16,8 @@ L["Slash Commands"] = "Slash Commands"
 L["Profiles"]       = "Profiles"
 L["Filters"]        = "Filters"        -- the General page's second tab (settings/Panel.lua)
 L["General"]        = "General"        -- the settings page's name (settings/Panel.lua)
-L["Reset every %s setting to its default. Asks for confirmation."] =
-    "Reset every %s setting to its default. Asks for confirmation."
+L["The filter options are on the panel under Premade Groups Filter's window: open the Group Finder, choose Dungeons, and it appears below PGF's filters."] =
+    "The filter options are on the panel under Premade Groups Filter's window: open the Group Finder, choose Dungeons, and it appears below PGF's filters."
 L["Reset this profile to the addon's defaults? Everything you have configured or added in it is discarded \226\128\148 your other profiles are not affected."] =
     "Reset this profile to the addon's defaults? Everything you have configured or added in it is discarded \226\128\148 your other profiles are not affected."
 L["all settings reset to defaults"] = "all settings reset to defaults"
@@ -62,16 +62,16 @@ L.MSG_TOOLONG      = "The Advanced Filter Expression would exceed 2000 character
 L.MSG_APPLIED      = "Applied: %d dungeon(s) targeted, key range %s."
 L.MSG_APPLIED_NO_TARGETING = "Applied (dungeon checkboxes left as they were)."
 L.MSG_CLEARED      = "Removed this addon's block from the Advanced Filter Expression."
-L.MSG_INACTIVE     = "PGF Extension filters are toggled off; tick Toggle PGF Extension Filters first."
+L.MSG_INACTIVE     = "The extension's filters are off; tick Use the extension's filters first."
 
 -- The attached panel (modules/Panel.lua; the key is a widget id, the value its text)
 L.PANEL_TITLE           = "Ka0s Premade Groups Filter Extension"
 L.PGF_UNSUPPORTED       = "This Premade Groups Filter version is not supported (%s not found)."
-L.FILTERS_ACTIVE        = "Toggle PGF Extension Filters"
-L.FILTERS_ACTIVE_TOOLTIP = "Off: removes this addon's block from Premade Groups Filter's advanced filter, and Apply does nothing until you tick it again. Your own filter text and the dungeon ticks are left as they are. On: writes the block back from the options below. Also on the settings page; separate from Enable, which turns the whole addon off."
+L.FILTERS_ACTIVE        = "Use the extension's filters"
+L.FILTERS_ACTIVE_TOOLTIP = "Off: removes this addon's block from Premade Groups Filter's advanced filter, and Apply does nothing until you tick it again. Your own filter text and the dungeon ticks are left as they are. On: writes the block back from the filter panel's options. The same switch is on the filter panel and in Settings (General > Filters). Separate from Enable, which turns the whole addon off."
 L.COMPOSITION           = "Composition"
-L.SHOW_REGION_TAGS      = "Show server regions in the Group Finder"
-L.SHOW_REGION_TAGS_TOOLTIP = "Put the group leader's server region (OCE, LA, CHI, ENG, GER, ...) in front of each Group Finder listing, and each applicant's region in front of their name. Does nothing while PremadeRegions is loaded, which shows the same tag."
+L.SHOW_REGION_TAGS      = "Show region tags in the Group Finder"
+L.SHOW_REGION_TAGS_TOOLTIP = "Put the group leader's region tag (OCE, LA, CHI, ENG, GER, ...) in front of each Group Finder listing, and each applicant's tag in front of their name. Does nothing while PremadeRegions is loaded, which shows the same tag."
 L.COMPOSITION_TOOLTIP   = "Hide groups that already have someone like you. Pick which from the dropdown; with Any, no group is hidden for its composition."
 L.COMPOSITION_SELECT_TOOLTIP = "Tick one or both. Each one hides more groups. Any: no composition filter."
 L.KEY_TARGETING         = "Untimed dungeons at key level"
@@ -107,12 +107,26 @@ L.REGION_TIP_SPA        = "Spanish-language realms."
 L.REGION_TIP_POR        = "Portuguese-language realms."
 L.REGION_TIP_RUS        = "Russian-language realms."
 
--- The General page's Region colors tab (settings/Panel.lua)
-L["Region colors"] = "Region colors"
-L["US realms (by data center)"] = "US realms (by data center)"
-L["EU realms (by language)"] = "EU realms (by language)"
+-- The General page's Region tags tab (settings/Panel.lua)
+L["Region tags"] = "Region tags"
+L["Americas and Oceania (US realms)"] = "Americas and Oceania (US realms)"
+L["Europe (EU realms)"] = "Europe (EU realms)"
+-- One color picker label per region bucket (keyed by region key); the tag text itself is
+-- NS.Regions.LABELS, unchanged, which the Group Finder and the attached panel draw.
+L.REGION_PICKER_OCE = "OCE \226\128\148 Oceanic"
+L.REGION_PICKER_LA = "LA \226\128\148 Los Angeles"
+L.REGION_PICKER_CHI = "CHI \226\128\148 Chicago"
+L.REGION_PICKER_MEX = "MEX \226\128\148 Latin America"
+L.REGION_PICKER_BZL = "BZL \226\128\148 Brazil"
+L.REGION_PICKER_ENG = "ENG \226\128\148 English"
+L.REGION_PICKER_GER = "GER \226\128\148 German"
+L.REGION_PICKER_FRA = "FRA \226\128\148 French"
+L.REGION_PICKER_ITA = "ITA \226\128\148 Italian"
+L.REGION_PICKER_SPA = "SPA \226\128\148 Spanish"
+L.REGION_PICKER_POR = "POR \226\128\148 Portuguese"
+L.REGION_PICKER_RUS = "RUS \226\128\148 Russian"
 L.REGION_COLOR_TOOLTIP  = "The color of this region's tag in the Group Finder. Click the swatch to change it."
-L["Reset region colors"] = "Reset region colors"
+L["Reset region tag colors"] = "Reset region tag colors"
 L["Put every region tag back to its default color. Your other settings are not touched."] =
     "Put every region tag back to its default color. Your other settings are not touched."
 -- One line per playstyle (the playstyle menu's entries; keyed by PGF's playstyle keyword)
@@ -216,8 +230,8 @@ L["Later"]  = "Later"
 -- EllesmereUI skin: the settings tab (settings/Panel.lua)
 L["EllesmereUI skin"] = "EllesmereUI skin"
 L["Use the EllesmereUI skin"] = "Use the EllesmereUI skin"
-L["Paint the attached filter panel in your EllesmereUI theme, matching Premade Groups Filter's own EllesmereUI skin. Needs every condition listed above. Turning it off takes effect after a reload."] =
-    "Paint the attached filter panel in your EllesmereUI theme, matching Premade Groups Filter's own EllesmereUI skin. Needs every condition listed above. Turning it off takes effect after a reload."
+L["Paint the attached filter panel in your EllesmereUI theme, matching Premade Groups Filter's own EllesmereUI skin. Needs every condition listed below. Turning it off takes effect after a reload."] =
+    "Paint the attached filter panel in your EllesmereUI theme, matching Premade Groups Filter's own EllesmereUI skin. Needs every condition listed below. Turning it off takes effect after a reload."
 L["The EllesmereUI skin cannot be turned on until every condition is met:"] =
     "The EllesmereUI skin cannot be turned on until every condition is met:"
 L["Disabled until every condition is met:"] = "Disabled until every condition is met:"

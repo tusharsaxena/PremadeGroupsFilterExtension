@@ -20,7 +20,7 @@ Mythic+ conveniences on top of Premade Groups Filter (PGF), applied through PGF'
 - **Presets** — named snapshots of the options (Smart included), shared by every character; the
   live options are per character.
 - **Tooltips** — every option, dropdown entry and button explains itself on hover.
-- **Toggle PGF Extension Filters** — one switch (panel and settings page) that takes the addon's
+- **Use the extension's filters** — one switch (panel and settings page) that takes the addon's
   block out of PGF's expression without turning the addon off, and puts it back.
 - **Region tags** — the leader's colored server region in front of every Group Finder listing, and
   each applicant's in front of their name: the display half of PremadeRegions, which this addon

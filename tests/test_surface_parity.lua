@@ -131,9 +131,9 @@ end)
 -- literal keys: `NS.L["…"]` and `NS.L.IDENT` anywhere, and bare `L["…"]` / `L.IDENT` only in a file
 -- that binds `local L = NS.L` (modules/Diagnostics.lua's `L` is the launcher). Each literal is
 -- evaluated as Lua, so `\"`, `\n` and decimal escapes read the same on both sides. The `MSG_*`,
--- `REGION_TIP_*` and `PLAYSTYLE_*` families are read through computed keys, so they are exempt from
--- the "is read" direction.
-local DYNAMIC = { "^MSG_", "^REGION_TIP_", "^PLAYSTYLE_" }
+-- `REGION_TIP_*`, `REGION_PICKER_*` and `PLAYSTYLE_*` families are read through computed keys, so
+-- they are exempt from the "is read" direction.
+local DYNAMIC = { "^MSG_", "^REGION_TIP_", "^REGION_PICKER_", "^PLAYSTYLE_" }
 
 -- The index of the closing quote of the string literal that opens at src[start - 1].
 local function closingQuote(src, start)

@@ -9,7 +9,7 @@ A companion addon to **Premade Groups Filter** (PGF) that adds Mythic+ convenien
 have: target every dungeon the player has not timed at a chosen key level (or let Smart pick the
 level), filter by the leader's server region and the listing's playstyle, exclude groups that already
 hold the player's spec or class-and-role, ask for an experienced leader,
-cap the listing age, and keep named presets; a Toggle PGF Extension Filters switch takes it all out
+cap the listing age, and keep named presets; a *Use the extension's filters* switch takes it all out
 of PGF again. It also replaces PremadeRegions: the leader's server region is tagged on every Group
 Finder row and applicant. It does **not** filter on its own: it writes PGF's dungeon checkboxes and
 PGF's Advanced Filter Expression, and injects its `pgfe_*` variables (and, without PremadeRegions,
@@ -98,13 +98,15 @@ Three AceDB scopes on `PremadeGroupsFilterExtensionDB`; full shape and defaults 
 [`schema.md`](schema.md).
 
 - **Schema rows (the write seam).** The Master controls block (`enabled`, `state.debugConsole`,
-  `global.minimap.shown`, composed by `LibKa0s-Options-1.0`) and the General Filters tab's two rows
-  (`filtersActive` and `showRegionTags`, `FILTER_ROWS`), both in `settings/Panel.lua` and written only
+  `global.minimap.shown`, composed by `LibKa0s-Options-1.0`) and the General page's two feature
+  switches (`filtersActive` on the Filters tab, `FILTER_ROWS`; `showRegionTags` leading the Region
+  tags tab, `TAG_SWITCH_ROWS`), both in `settings/Panel.lua` and written only
   through `NS.SchemaRuntime.Set` (panel, CLI, resets and launcher alike).
 - **`regionColors.<key>`** (profile, one `type = "color"` row per region bucket, `REGION_ROWS` in
   `settings/Panel.lua`; defaults from `REGION_HEX` in `defaults/Profile.lua`): the General page's
-  *Region colors* tab, a host tab drawing per portal a heading, a preview line of every tag in its
-  current color and the portal's pickers, then *Reset region colors*. No alpha. `RegionTags.Hex`
+  *Region tags* tab, a host tab drawing the `showRegionTags` switch first, then per portal a heading,
+  a preview line of every tag in its current color and the portal's pickers, then *Reset region tag
+  colors* (the twelve colors only). No alpha. `RegionTags.Hex`
   turns the stored color into the tag's hex, cached per stored table (every write stores a new one).
 - **`euiSkin`** (profile, default `true`, in `defaults/Profile.lua`): the *Use the EllesmereUI skin*
   row on the General page's *EllesmereUI skin* tab (`settings/Panel.lua`). `disabledIf` while any
@@ -332,7 +334,7 @@ The env post-hook (`modules/EnvInject.lua`, installed at file load through
 
 | Variable | Value | When |
 |---|---|---|
-| `pgfe_on` | `true` — the managed block's guard (`not pgfe_on or ( … )`); `false` while *Toggle PGF Extension Filters* (`filtersActive`) is off | Always (while not stood down) |
+| `pgfe_on` | `true` — the managed block's guard (`not pgfe_on or ( … )`); `false` while *Use the extension's filters* (`filtersActive`) is off | Always (while not stood down) |
 | `pgfe_samespec` | `env[<player spec keyword>]` or 0 — members with the player's spec | Always (while not stood down) |
 | `pgfe_sameclassrole` | `env[<role prefix>_<class>s]` or 0 — members of the player's class in the player's role | Always (while not stood down) |
 | `region` | The leader's region key, or nil | Only when `PremadeRegions` is not loaded |

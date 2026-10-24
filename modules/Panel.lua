@@ -258,7 +258,7 @@ local function buildSmart(f, body, after)
     f.smartLabel = fs
 end
 
--- The first row: "Toggle PGF Extension Filters", the panel face of the `filtersActive` setting
+-- The first row: "Use the extension's filters", the panel face of the `filtersActive` setting
 -- (settings/Panel.lua; the same row is on the settings page). The click writes through the schema
 -- seam, whose onChange (Apply.OnFiltersToggled) removes or rewrites the managed block and refreshes
 -- this panel. Separate from the addon's master Enable, which hides the panel altogether.

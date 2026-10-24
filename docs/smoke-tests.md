@@ -12,7 +12,7 @@ takes the next free number in its theme and a retired number is never reused.
 |---|---|---|
 | INSTALL-1..3 | Install | Load with and without PGF, reload, first run |
 | SLASH-1..3 | Slash | `/pgfe` verbs, help, the long alias |
-| PANEL-1..3 | Settings panel | Landing page, General page, Defaults |
+| PANEL-1..4 | Settings panel | Landing page, General page, Defaults, the General page's layout after item 020 |
 | PROFILE-1..2 | Profiles | The Profiles page and `/pgfe profile` |
 | STATE-1..2 | Enable / disable | Stand-down and stand-up |
 | COMBAT-1..2 | Combat | Apply refusal, settings panel in combat |
@@ -52,12 +52,30 @@ season. Know your best timed level per dungeon (the Mythic+ tab) before the APPL
 - **PANEL-1. Landing page.** Settings → AddOns → Ka0s Premade Groups Filter Extension → the logo,
   the notes line and one row per slash command; no tab strip. Result: pass (owner-marked 2026-10-10)
 - **PANEL-2. General page.** General → four tabs. `Master controls`: Enable, Debug console,
-  Minimap button and a *Reset all settings* button. `Filters`: *Toggle PGF Extension Filters* and
-  *Show server regions in the Group Finder*. `Region colors`: see APPLY-26. `EllesmereUI skin`: the
+  Minimap button and a *Reset all settings* button. `Filters`: *Use the extension's filters* and a
+  line saying where the filter options are. `Region tags`: see APPLY-26. `EllesmereUI skin`: the
   skin's switch and status lines. No scale, alpha, lock, visibility or test-mode rows.
-  Result: pass with three tabs (owner-marked 2026-10-10); Region colors tab re-check pass (owner-marked 2026-10-23)
+  Result: pass with three tabs (owner-marked 2026-10-10); Region colors tab re-check pass (owner-marked 2026-10-23). Labels and placement changed by item 020 (2026-10-24): re-check under PANEL-4.
 - **PANEL-3. Defaults button.** Header **Defaults** → a confirmation popup; Yes → `/pgfe list` back
   at defaults; the minimap button keeps its shown/hidden state. Result: pass (owner-marked 2026-10-10)
+- **PANEL-4. General page layout (item 020).** Note `/pgfe list` first. Settings → General:
+  - *Filters* holds *Use the extension's filters* alone, then the line "The filter options are on
+    the panel under Premade Groups Filter's window: open the Group Finder, choose Dungeons, and it
+    appears below PGF's filters." Its tooltip says the same switch is on the filter panel and in
+    Settings (General > Filters). The attached panel's first box carries the same label.
+  - *Region tags* (renamed from *Region colors*) opens with *Show region tags in the Group Finder*,
+    with no heading over it, then *Americas and Oceania (US realms)* and *Europe (EU realms)*, each
+    with its preview line and pickers labeled *OCE — Oceanic* ... *RUS — Russian* (three to a
+    line), then *Reset region tag colors*. Untick the switch, press *Reset region tag colors* → the
+    switch stays unticked; the colors go back. The Group Finder tags and the attached panel's
+    *Server regions* menu still read OCE, LA, ... .
+  - *EllesmereUI skin*: the switch's tooltip says "listed below". With Premade Groups Filter -
+    EllesmereUI Skin not installed, the link box sits right under condition 4, before the gap and
+    the state line.
+  - Hover the header **Defaults** → the same words as *Reset all settings*' tooltip.
+  - `/pgfe list` lists the same settings in the same order with the same values as before; `/reload`
+    → every value survives. No setting lost, no moved key, no changed default.
+  Result: not yet run
 
 ## Profiles
 
@@ -201,12 +219,12 @@ substitute its numbers.
   the level moves up by itself. `/pgfe apply` with Smart on uses the same level. Untick *Smart* →
   the box is editable again and keeps the last level. Save a preset with Smart on, load another
   without it, load the first → Smart is ticked again. Result: pass (owner-marked 2026-10-10)
-- **APPLY-21. Toggle PGF Extension Filters.** It is the first row, ticked on a new profile, with a
+- **APPLY-21. Use the extension's filters.** It is the first row, ticked on a new profile, with a
   wider gap under it. Apply, then untick it → chat says the block was removed; PGF's advanced filter
   holds only your own text, the dungeon ticks are unchanged, Apply is grayed out and `/pgfe apply`
-  refuses. Settings → General → Filters shows *Toggle PGF Extension Filters* unticked as well (and *Enable*
+  refuses. Settings → General → Filters shows *Use the extension's filters* unticked as well (and *Enable*
   still ticked). Load a preset → it stays unticked. Tick it on the settings page → the panel's box
-  ticks and the block is written back (no search runs). Result: pass (owner-marked 2026-10-10)
+  ticks and the block is written back (no search runs). Result: pass (owner-marked 2026-10-10). Labels and placement changed by item 020 (2026-10-24): re-check under PANEL-4.
 - **APPLY-23. Row spacing.** Every row, from Untimed dungeons to Presets (the dungeon readout
   included), is the same distance from the next as the Server regions and Playstyle rows are; only
   the gaps under the toggle row, around the Presets row and above Apply are wider, and the dungeon
@@ -219,9 +237,9 @@ substitute its numbers.
 - **APPLY-24. Region tags.** With PremadeRegions disabled, search Mythic+ → every listing's dungeon
   name starts with the leader's colored region (OCE, LA, CHI, MEX, BZL on US; ENG, GER, ... on EU),
   matching what PremadeRegions showed; list your own group → each applicant's name starts with
-  their region. Settings → General → Filters → untick *Show server regions in the Group Finder*, refresh →
+  their region. Settings → General → Region tags → untick *Show region tags in the Group Finder*, refresh →
   no tags. Enable PremadeRegions again → exactly one tag per row (its own). No Lua error and no
-  "action blocked" with `/console taintLog 1`. Result: pass (owner-marked 2026-10-10)
+  "action blocked" with `/console taintLog 1`. Result: pass (owner-marked 2026-10-10). Labels and placement changed by item 020 (2026-10-24): re-check under PANEL-4.
 - **APPLY-25. Season-data request, off-season and fresh login.** With `/etrace` (or an event trace
   addon) filtered to `CHALLENGE_MODE_MAPS_UPDATE`, log in fresh and open PGF on Dungeons → the
   readout says loading, then fills in; the trace shows a handful of updates, not a steady stream.
@@ -229,14 +247,15 @@ substitute its numbers.
   loading and the trace stays quiet: exactly one `C_MythicPlus.RequestMapInfo` per loading screen,
   no request/reply loop. Zone through a loading screen → one more request, then quiet again.
   Headless stand-in: the `panel:` request-count cases (`m.mapInfoRequests`). Result: pass (owner-marked 2026-10-10)
-- **APPLY-26. Region colors.** Settings → General → *Region colors* → a *US realms (by data center)*
-  heading with OCE LA CHI MEX BZL in their colors, the five pickers under it, then *EU realms (by
-  language)* with ENG ... RUS and seven pickers, then *Reset region colors*. Hover a picker → the
+- **APPLY-26. Region colors.** Settings → General → *Region tags* → *Show region tags in the Group
+  Finder*, then an *Americas and Oceania (US realms)* heading with OCE LA CHI MEX BZL in their
+  colors, the five pickers under it, then *Europe (EU realms)* with ENG ... RUS and seven pickers,
+  then *Reset region tag colors*. Hover a picker → the
   region's description. Change OCE's color (drag in the color wheel, then Okay) → the preview line
   follows; search Mythic+ on a US character → OCE listings show the new color, others unchanged.
   Open the color wheel and Cancel → the old color stays. `/pgfe set regionColors.oce 255 0 128` →
-  pink; *Reset region colors* → every tag back to its default, other settings untouched. The color
-  wheel shows no opacity slider. Result: pass (owner-marked 2026-10-23)
+  pink; *Reset region tag colors* → every tag back to its default, other settings untouched. The color
+  wheel shows no opacity slider. Result: pass (owner-marked 2026-10-23). Labels and placement changed by item 020 (2026-10-24): re-check under PANEL-4.
 
 ## EllesmereUI skin
 
@@ -270,11 +289,11 @@ settings tab and record any difference.
   EllesmereUI Skin), `/reload` → both windows stock; our pgf line red, box disabled. Re-tick it
   without a reload, then reopen PGF on Dungeons → our panel is painted on that show. Result: pass (owner-marked 2026-10-10)
 - **SKIN-10. PGF's skin missing or disabled.** Remove the Premade Groups Filter - EllesmereUI Skin
-  folder, restart → the pgf line reads *not installed* and a box below the lines holds
+  folder, restart → the pgf line reads *not installed* and a box right under it holds
   `https://www.curseforge.com/wow/addons/premade-groups-filter-ellesmereui`; click it → the link is
   selected, Ctrl+C copies it, typing puts it back. Reinstall it but disable it in the AddOns list →
   the line reads *installed but disabled*, no link box. Enable it and untick *PremadeGroupsFilter*
-  in EllesmereUI → *turned off in EllesmereUI*. Result: pass (owner-marked 2026-10-10)
+  in EllesmereUI → *turned off in EllesmereUI*. Result: pass (owner-marked 2026-10-10). The link box's place changed by item 020 (2026-10-24): re-check under PANEL-4.
 - **SKIN-7. Our switch.** Everything on, untick *Use the EllesmereUI skin*, `/reload` → stock panel,
   "The skin is off." Tick it → the panel is painted at once, no reload. Untick it again → a popup
   asks to reload; *Later* leaves the panel painted, *Reload* reloads into the stock panel. Result: pass (owner-marked 2026-10-10)
@@ -336,6 +355,8 @@ or wrong. These are the addon's locale seams.
 ## Pending sign-off
 
 - LAYER-1, LAYER-2, LAYER-3 (added 2026-10-24, item 030 frame layering)
+- PANEL-4 (added 2026-10-24, item 020 settings layout; it re-checks the relabeled PANEL-2,
+  APPLY-21, APPLY-24, APPLY-26 and SKIN-10)
 
 Before them, none: on 2026-10-10 the owner marked every check in this file as passed, recorded on its
 `Result:` line as `pass (owner-marked 2026-10-10)`; a check that already carried a dated owner pass
