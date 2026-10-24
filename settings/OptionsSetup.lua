@@ -60,6 +60,10 @@ if not lib then
     H.IdList               = function() end
     H.ResolveId            = function() return nil end
     H.UnnamedCandidates    = function() return nil end
+    H.KeybindingsTab       = function() return nil end
+    H.KeybindRows          = function() return nil end
+    H.KEYBINDS_UNCHANGED   = "Key bindings are not changed."
+    H.StrataTooltip        = function() return "" end
     H.ID_NAME_HINT         = {}
     H.SelectTab            = function() end
     H.NavRail              = function() end

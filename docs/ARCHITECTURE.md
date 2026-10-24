@@ -24,7 +24,7 @@ on, and the *Use the EllesmereUI skin* switch (default on) is too: see
 [EllesmereUI seams](#ellesmereui-seams). Plan:
 [`superpowers/plans/2026-10-09-eui-skin.md`](superpowers/plans/2026-10-09-eui-skin.md).
 
-Built to the Ka0s WoW Addon Standard: Ace3, vendored `LibKa0s` v1.76.0 (one setup file per adopted
+Built to the Ka0s WoW Addon Standard: Ace3, vendored `LibKa0s` v1.77.0 (one setup file per adopted
 major), schema-driven master settings, the launcher, one stand-down latch, headless tests and
 luacheck. Retail only (`## Interface: 120105`). The design is
 [`superpowers/specs/2026-10-09-m-plus-v0.1-design.md`](superpowers/specs/2026-10-09-m-plus-v0.1-design.md)
