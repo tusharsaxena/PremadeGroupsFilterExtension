@@ -55,7 +55,7 @@ season. Know your best timed level per dungeon (the Mythic+ tab) before the APPL
   Minimap button and a *Reset all settings* button. `Filters`: *Use the extension's filters* and a
   line saying where the filter options are. `Region tags`: see APPLY-26. `EllesmereUI skin`: the
   skin's switch and status lines. No scale, alpha, lock, visibility or test-mode rows.
-  Result: pass with three tabs (owner-marked 2026-10-10); Region colors tab re-check pass (owner-marked 2026-10-23). Labels and placement changed by item 020 (2026-10-24): re-check under PANEL-4.
+  Result: pass with three tabs (owner-marked 2026-10-10); Region colors tab re-check pass (owner-marked 2026-10-23). Labels and placement changed by item 020 (2026-10-24): re-checked under PANEL-4, pass (owner-marked 2026-10-24).
 - **PANEL-3. Defaults button.** Header **Defaults** → a confirmation popup; Yes → `/pgfe list` back
   at defaults; the minimap button keeps its shown/hidden state. Result: pass (owner-marked 2026-10-10)
 - **PANEL-4. General page layout (item 020).** Note `/pgfe list` first. Settings → General:
@@ -75,7 +75,7 @@ season. Know your best timed level per dungeon (the Mythic+ tab) before the APPL
   - Hover the header **Defaults** → the same words as *Reset all settings*' tooltip.
   - `/pgfe list` lists the same settings in the same order with the same values as before; `/reload`
     → every value survives. No setting lost, no moved key, no changed default.
-  Result: not yet run
+  Result: pass (owner-marked 2026-10-24)
 
 ## Profiles
 
@@ -224,7 +224,7 @@ substitute its numbers.
   holds only your own text, the dungeon ticks are unchanged, Apply is grayed out and `/pgfe apply`
   refuses. Settings → General → Filters shows *Use the extension's filters* unticked as well (and *Enable*
   still ticked). Load a preset → it stays unticked. Tick it on the settings page → the panel's box
-  ticks and the block is written back (no search runs). Result: pass (owner-marked 2026-10-10). Labels and placement changed by item 020 (2026-10-24): re-check under PANEL-4.
+  ticks and the block is written back (no search runs). Result: pass (owner-marked 2026-10-10). Labels and placement changed by item 020 (2026-10-24): re-checked under PANEL-4, pass (owner-marked 2026-10-24).
 - **APPLY-23. Row spacing.** Every row, from Untimed dungeons to Presets (the dungeon readout
   included), is the same distance from the next as the Server regions and Playstyle rows are; only
   the gaps under the toggle row, around the Presets row and above Apply are wider, and the dungeon
@@ -239,7 +239,7 @@ substitute its numbers.
   matching what PremadeRegions showed; list your own group → each applicant's name starts with
   their region. Settings → General → Region tags → untick *Show region tags in the Group Finder*, refresh →
   no tags. Enable PremadeRegions again → exactly one tag per row (its own). No Lua error and no
-  "action blocked" with `/console taintLog 1`. Result: pass (owner-marked 2026-10-10). Labels and placement changed by item 020 (2026-10-24): re-check under PANEL-4.
+  "action blocked" with `/console taintLog 1`. Result: pass (owner-marked 2026-10-10). Labels and placement changed by item 020 (2026-10-24): re-checked under PANEL-4, pass (owner-marked 2026-10-24).
 - **APPLY-25. Season-data request, off-season and fresh login.** With `/etrace` (or an event trace
   addon) filtered to `CHALLENGE_MODE_MAPS_UPDATE`, log in fresh and open PGF on Dungeons → the
   readout says loading, then fills in; the trace shows a handful of updates, not a steady stream.
@@ -255,7 +255,7 @@ substitute its numbers.
   follows; search Mythic+ on a US character → OCE listings show the new color, others unchanged.
   Open the color wheel and Cancel → the old color stays. `/pgfe set regionColors.oce 255 0 128` →
   pink; *Reset region tag colors* → every tag back to its default, other settings untouched. The color
-  wheel shows no opacity slider. Result: pass (owner-marked 2026-10-23). Labels and placement changed by item 020 (2026-10-24): re-check under PANEL-4.
+  wheel shows no opacity slider. Result: pass (owner-marked 2026-10-23). Labels and placement changed by item 020 (2026-10-24): re-checked under PANEL-4, pass (owner-marked 2026-10-24).
 
 ## EllesmereUI skin
 
@@ -293,7 +293,7 @@ settings tab and record any difference.
   `https://www.curseforge.com/wow/addons/premade-groups-filter-ellesmereui`; click it → the link is
   selected, Ctrl+C copies it, typing puts it back. Reinstall it but disable it in the AddOns list →
   the line reads *installed but disabled*, no link box. Enable it and untick *PremadeGroupsFilter*
-  in EllesmereUI → *turned off in EllesmereUI*. Result: pass (owner-marked 2026-10-10). The link box's place changed by item 020 (2026-10-24): re-check under PANEL-4.
+  in EllesmereUI → *turned off in EllesmereUI*. Result: pass (owner-marked 2026-10-10). The link box's place changed by item 020 (2026-10-24): re-checked under PANEL-4, pass (owner-marked 2026-10-24).
 - **SKIN-7. Our switch.** Everything on, untick *Use the EllesmereUI skin*, `/reload` → stock panel,
   "The skin is off." Tick it → the panel is painted at once, no reload. Untick it again → a popup
   asks to reload; *Later* leaves the panel painted, *Reload* reloads into the stock panel. Result: pass (owner-marked 2026-10-10)
@@ -316,20 +316,20 @@ visible is lifted one strata above it, then put back on hide (`core/Constants.lu
   → the same value twice (FULLSCREEN today). `/dump PremadeGroupsFilterExtensionPanel:GetFrameLevel() - PremadeGroupsFilterDialog:GetFrameLevel()`
   → 5. The panel's title strip draws over PGF's bottom metal border, never under it, on several
   opens and with the panel collapsed. **Failure looks like:** PGF's border across the panel's title
-  strip, or two different strata. Result: not yet run
+  strip, or two different strata. Result: pass (owner-marked 2026-10-24)
 - **LAYER-2. Preset popups over the panel.** Move PGF's dialog (PGF's *dialogMovable*) so it sits at
   the top center of the screen, under where StaticPopup1 opens. *Save as* → the popup draws over
   PGF's dialog and the panel, its edit box visible and typing into it works; Save. Select the new
   preset, *Delete* → the confirm draws over them too; No. Then, with the Group Finder closed, trigger
   any Blizzard popup (for example `/pgfe resetall`, then No) and `/dump StaticPopup1:GetFrameStrata()`
   → DIALOG: the lift did not stick to the shared frame. **Failure looks like:** a popup under the
-  panel, or StaticPopup1 left at FULLSCREEN_DIALOG after the panel's popup closed. Result: not yet run
+  panel, or StaticPopup1 left at FULLSCREEN_DIALOG after the panel's popup closed. Result: pass (owner-marked 2026-10-24)
 - **LAYER-3. Reset and reload prompts.** With PGF open on Dungeons, `/pgfe resetall` from chat → the
   confirm draws over the panel; No. Close the Group Finder, `/pgfe config` → General → *Reset all
   settings* → the confirm draws over the Settings window as before; No. With EllesmereUI's skin
   applied, untick *Use the EllesmereUI skin* while the Group Finder is open → the reload prompt is
   over the panel; *Later*. **Failure looks like:** any of the three under PGF's dialog or the panel,
-  or a Lua error on show or hide. Result: not yet run
+  or a Lua error on show or hide. Result: pass (owner-marked 2026-10-24)
 
 ## Non-English client
 
@@ -354,11 +354,9 @@ or wrong. These are the addon's locale seams.
 
 ## Pending sign-off
 
-- LAYER-1, LAYER-2, LAYER-3 (added 2026-10-24, item 030 frame layering)
-- PANEL-4 (added 2026-10-24, item 020 settings layout; it re-checks the relabeled PANEL-2,
-  APPLY-21, APPLY-24, APPLY-26 and SKIN-10)
-
-Before them, none: on 2026-10-10 the owner marked every check in this file as passed, recorded on its
+None is owed. On 2026-10-10 the owner marked every check in this file as passed, recorded on its
 `Result:` line as `pass (owner-marked 2026-10-10)`; a check that already carried a dated owner pass
-keeps it. A check added or rewritten after that date is listed here until its `Result:` line records
-a pass.
+keeps it. On 2026-10-24 the owner reported that every check of the keybindings, settings layout and
+frame layering run passed (LAYER-1..3 and PANEL-4, with PANEL-4's re-check of PANEL-2, APPLY-21,
+APPLY-24, APPLY-26 and SKIN-10), recorded on each `Result:` line as `pass (owner-marked 2026-10-24)`.
+A check added or rewritten after that date is listed here until its `Result:` line records a pass.
