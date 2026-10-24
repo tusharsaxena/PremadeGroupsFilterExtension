@@ -64,6 +64,7 @@ if not lib then
     H.KeybindRows          = function() return nil end
     H.KEYBINDS_UNCHANGED   = "Key bindings are not changed."
     H.StrataTooltip        = function() return "" end
+    H.ResetAllTooltip      = function() return "" end
     H.ID_NAME_HINT         = {}
     H.SelectTab            = function() end
     H.NavRail              = function() end

@@ -47,3 +47,33 @@
   0 failed, 1 skipped, 423 total (`tests/test_vendor_sync.lua` green at v1.77.0); largest authored
   `.lua` file 1,215 lines (`tests/test_panel.lua`), under the 1,500 cap.
 - **Owner smoke owed:** none new from this item.
+
+## Re-vendor after the tag moved (M3)
+
+- **Why:** LK-95 moved the local annotated tag `v1.77.0` in `../LibKa0s` to carry the M3
+  settings-layout surface. Item PG-RV2 re-vendors it exactly as PG-RV did; no new bundle, no
+  adoption (PG-LY adopts).
+- **Old tag:** tag object `7380d3662be0568acf9a0d224a6aef8ac6df93ce`, commit
+  `78240f7b2d69df27b74fc9280cbfbf7b95dd4f1f`.
+- **New tag:** tag object `b2b8ee25c5f9fa26db146254bf786b366dec986b`, commit
+  `afae2f75cb7ff61c57156d9a3d8a6b2b9f4c5e10` (`git -C ../LibKa0s rev-parse v1.77.0^{}`), never
+  checked out; extracted with `git archive v1.77.0 LibKa0s testkit` into a scratch dir.
+- **Minors moved:** OptionsCompose 8 -> 11 (minor 9: `MasterControls` takes `notes`,
+  `resetPositionTooltip` and `lockIsPreview`, the alpha row reads Master opacity, the frameless
+  packing; minor 10: the group composers take `tooltips`; minor 11: `O.ResetAllTooltip(tail)`).
+  Every other `libs/LibKa0s/` file and the whole `tests/_kit/` are byte-identical to the previous
+  vendoring (kit revision unchanged at 42). `LibKa0s.xml` is unchanged, so `tests/loader.lua` is too.
+- **Provenance line:** unchanged, `Bundles LibKa0s v1.77.0 (MIT).`; it records no sha or kit
+  revision, so nothing rolls. Icon line kept, `LibKa0s icons: clear, close, copy.`; the tag's
+  `tools/prune-icons.lua` kept 4 files and removed the 5,836 the copy brought back, so the
+  committed icon folder is unchanged.
+- **Contract blocker (fixed here):** the Options degradation stub owed the new public
+  `ResetAllTooltip` (parity red: "ResetAllTooltip is missing (live: function)"), so
+  `settings/OptionsSetup.lua` gains it, inert (returns `""`).
+- **Standards half:** nothing. Since PG-RV, the standard's `documentation.md` and `toc-file.md`
+  did not change (WS-30..WS-38, WS-95 touch options-ui, library-stack and the ripple sites), so the
+  three-place reference still matches; the `§N.M` sweep finds 0.
+- **Gates:** `luacheck .` 0 warnings / 0 errors in 63 files; `lua tests/run.lua` 430 passed,
+  0 failed, 1 skipped, 431 total; largest authored `.lua` file 1,215 lines
+  (`tests/test_panel.lua`), under the 1,500 cap.
+- **Owner smoke owed:** none new from this item.
