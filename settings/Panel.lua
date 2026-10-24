@@ -1,12 +1,13 @@
 local addonName, NS = ...
 -- settings/Panel.lua — the landing page body and the General page (Master controls, Filters,
--- Region colors, EllesmereUI skin).
+-- Region tags, EllesmereUI skin).
 --
 -- The landing page is the host's own buildMain (logo, notes, slash command list) and draws no tab
 -- strip (options-ui-§5/§13). The General page renders through the tabbed renderer, in four
 -- tabs: `Master controls`, composed from one declaration and holding only its mandated rows
--- (options-ui-§15); `Filters`, the attached panel's two switches; `Region colors`, the region
--- tags' colors; and `EllesmereUI skin` (the optional skin's status and switch, below). The addon draws no
+-- (options-ui-§15); `Filters`, the extension's filters switch and a line saying where the filter
+-- options are (the attached panel); `Region tags`, the region-tag switch leading the tags'
+-- colors; and `EllesmereUI skin` (the optional skin's switch and status, below). The addon draws no
 -- positionable frame of its own -- the filter panel is anchored to PGF's dialog -- so the block is
 -- frameless (no scale, alpha, lock or reset position) and carries no visibility row: when the panel
 -- shows is decided by PGF's dialog and category, not by a setting (ratified: docs/ARCHITECTURE.md
@@ -43,7 +44,7 @@ end
 
 local function showResetPopup()
     Settings.EnsureResetPopup()
-    StaticPopup_Show("PREMADEGROUPSFILTEREXTENSION_RESET_ALL")
+    NS.ShowPopup("PREMADEGROUPSFILTEREXTENSION_RESET_ALL")
 end
 
 local MASTER_ROWS, MASTER_TAIL = Helpers.MasterControls{
@@ -74,10 +75,13 @@ NS.SchemaRuntime.AddRows(MASTER_ROWS, 1)
 
 -- ── Filters (the General page's second tab) ─────────────────────────────────────────────────────
 --
--- The attached panel's two switches, in their own group so their own tab (options-ui-§13): they
--- are feature switches, not Master controls rows (options-ui-§15). Added after MASTER_ROWS and
--- before EUI_ROWS, so the tab sits between the two.
-local FILTER_GROUP = NS.L["Filters"]
+-- The extension's filters switch, in its own group so its own tab (options-ui-§13): a feature
+-- switch, not a Master controls row (options-ui-§15). Added after MASTER_ROWS and before
+-- EUI_ROWS, so the tab sits between the two. The filter options themselves are on the attached
+-- panel, not in the schema (settings/Schema.lua), so the tab ends with a line saying where.
+local L = NS.L
+local FILTER_GROUP = L["Filters"]
+local REGION_GROUP = L["Region tags"]
 local FILTER_ROWS = {
     -- The attached panel's first box. Separate from Enable: this one leaves the panel up and only
     -- takes the filters out of PGF.
@@ -85,28 +89,38 @@ local FILTER_ROWS = {
       page = "general", section = "general", group = FILTER_GROUP,
       label = NS.L.FILTERS_ACTIVE, tooltip = NS.L.FILTERS_ACTIVE_TOOLTIP,
       onChange = function(v) NS.Apply.OnFiltersToggled(v and true or false) end },
-    -- The region tag on Group Finder rows and applicants (modules/RegionTags.lua); read on every
-    -- row paint, so it needs no onChange: the next search or list refresh shows the change.
-    { path = "showRegionTags", type = "bool", default = C.PROFILE.showRegionTags,
-      page = "general", section = "general", group = FILTER_GROUP,
-      label = NS.L.SHOW_REGION_TAGS, tooltip = NS.L.SHOW_REGION_TAGS_TOOLTIP },
 }
 Settings.StampClosureRows(FILTER_ROWS)
 NS.SchemaRuntime.AddRows(FILTER_ROWS)
 
--- ── Region colors (the General page's third tab) ────────────────────────────────────────────────
+-- ── Region tags (the General page's third tab) ──────────────────────────────────────────────────
 --
+-- The region tag on Group Finder rows and applicants (modules/RegionTags.lua), switched on or off
+-- by the tab's leading row, drawn unheaded above the portals (options-ui-§7). Read on every row
+-- paint, so it needs no onChange: the next search or list refresh shows the change. Its OWN row
+-- list, added before REGION_ROWS and never inside it: Settings.ResetRegionColors walks
+-- REGION_ROWS, and Reset region tag colors resets the twelve colors, not this switch. Added
+-- right after FILTER_ROWS, so its place in `/pgfe list` stays where it was.
+local TAG_SWITCH_PATH = "showRegionTags"
+local TAG_SWITCH_ROWS = {
+    { path = TAG_SWITCH_PATH, type = "bool", default = C.PROFILE.showRegionTags,
+      page = "general", section = "general", group = REGION_GROUP,
+      label = L.SHOW_REGION_TAGS, tooltip = L.SHOW_REGION_TAGS_TOOLTIP },
+}
+Settings.StampClosureRows(TAG_SWITCH_ROWS)
+NS.SchemaRuntime.AddRows(TAG_SWITCH_ROWS)
+
 -- One color row per region bucket, `regionColors.<key>` (profile), so the tag colors go through
 -- the schema like every other setting: the panel's picker, `/pgfe get|set|reset regionColors.oce`
 -- and both resets. No alpha: a |c escape has none. Read on every row paint (modules/RegionTags.lua
 -- caches the hex per stored table), so no onChange: the next search or list refresh shows it.
 -- The tab is a host tab: per portal a heading, a line of every tag in its current color, then the
--- portal's pickers three to a line; a button under both puts the twelve defaults back.
-local L = NS.L
-local REGION_GROUP = L["Region colors"]
+-- portal's pickers three to a line; a button under both puts the twelve defaults back. A
+-- picker's label spells its code out (the REGION_PICKER_ locale keys); NS.Regions.LABELS stays
+-- the tag text the Group Finder and the attached panel draw.
 local PORTAL_HEADINGS = {
-    US = L["US realms (by data center)"],
-    EU = L["EU realms (by language)"],
+    US = L["Americas and Oceania (US realms)"],
+    EU = L["Europe (EU realms)"],
 }
 local PICKERS_PER_LINE = 3
 
@@ -116,7 +130,7 @@ for _, key in ipairs(NS.Regions.ALL_KEYS) do
         path = "regionColors." .. key, type = "color", hasAlpha = false,
         default = C.PROFILE.regionColors[key],
         page = "general", section = "general", group = REGION_GROUP,
-        label = NS.Regions.LABELS[key],
+        label = L["REGION_PICKER_" .. key:upper()],
         tooltip = L["REGION_TIP_" .. key:upper()] .. "\n\n" .. L.REGION_COLOR_TOOLTIP,
         regionKey = key,
     }
@@ -141,8 +155,14 @@ end
 local function renderRegionTab(ctx, rows)
     local AceGUI, scroll = Helpers.AceGUI, Helpers.EnsureScroll(ctx)
     if not (AceGUI and scroll) then return end
+    -- The switch is picked out by path, never indexed by regionKey (it has none), and drawn first.
     local byKey = {}
-    for _, row in ipairs(rows or {}) do byKey[row.regionKey] = row end
+    for _, row in ipairs(rows or {}) do
+        if row.path == TAG_SWITCH_PATH then
+            Helpers.RenderField(ctx, row)
+            ctx.lastGroup = TAG_SWITCH_PATH   -- so the first portal heading takes its top gap
+        elseif row.regionKey then byKey[row.regionKey] = row end
+    end
     for _, portal in ipairs({ "US", "EU" }) do
         Helpers.Section(ctx, PORTAL_HEADINGS[portal])
         local preview = Helpers.TextRow(ctx, Settings.RegionPreviewText(portal), { fontObject = "GameFontHighlightLarge" })
@@ -161,7 +181,7 @@ local function renderRegionTab(ctx, rows)
     end
     Helpers.AddSpacer(scroll, 12)
     Helpers.InlineButtonPair(ctx, {
-        text    = L["Reset region colors"],
+        text    = L["Reset region tag colors"],
         tooltip = L["Put every region tag back to its default color. Your other settings are not touched."],
         onClick = Settings.ResetRegionColors,
     })
@@ -185,7 +205,7 @@ local EUI_ROWS = {
     { path = "euiSkin", type = "bool", default = C.PROFILE.euiSkin,
       page = "general", section = "general", group = EUI_GROUP,
       label = L["Use the EllesmereUI skin"],
-      tooltip = L["Paint the attached filter panel in your EllesmereUI theme, matching Premade Groups Filter's own EllesmereUI skin. Needs every condition listed above. Turning it off takes effect after a reload."],
+      tooltip = L["Paint the attached filter panel in your EllesmereUI theme, matching Premade Groups Filter's own EllesmereUI skin. Needs every condition listed below. Turning it off takes effect after a reload."],
       disabledIf = function() return not euiGateOpen() end,
       validate = function(v)
           local S = NS.SchemaRuntime
@@ -313,7 +333,8 @@ local CONDITION_TIPS = {
 }
 local STATE_TIP = L["What the skin is doing this session. EllesmereUI applies a skin once per session: turning the skin on paints the panel at once, turning it off takes effect after a reload. It is never applied while a condition above is not met, whatever the switch says."]
 
--- The switch first (owner request), a gap, then the four condition lines, a gap, and the state line.
+-- The switch first (owner request), a gap, the four condition lines, the PGF skin's link right
+-- under condition 4 (which points at it) when that skin is missing, a gap, and the state line.
 local function renderEuiTab(ctx, rows)
     local B = NS.EUIBridge
     local scroll = Helpers.EnsureScroll(ctx)
@@ -329,12 +350,12 @@ local function renderEuiTab(ctx, rows)
             return c.label, CONDITION_TIPS[c.key] or ""
         end)
     end
-    if scroll then Helpers.AddSpacer(scroll, STATUS_GAP) end
-    statusRow(ctx, function() return ICON_BLANK .. " " .. Settings.EUISkinStateText() end,
-        function() return Settings.EUISkinStateText(), STATE_TIP end)
     -- Not installed: a box holding the CurseForge link to copy (the game cannot open a browser).
     -- Decided at render time: installing an addon needs a game restart, so it cannot change live.
     if scroll and B.PGFSkinState() == "missing" then addPGFSkinLink(scroll) end
+    if scroll then Helpers.AddSpacer(scroll, STATUS_GAP) end
+    statusRow(ctx, function() return ICON_BLANK .. " " .. Settings.EUISkinStateText() end,
+        function() return Settings.EUISkinStateText(), STATE_TIP end)
 end
 
 local GENERAL_OPTS = { tabs = {
@@ -344,13 +365,18 @@ local GENERAL_OPTS = { tabs = {
 
 local AFTER_GROUP = {}
 if Helpers.MASTER_GROUP then AFTER_GROUP[Helpers.MASTER_GROUP] = MASTER_TAIL end
+-- The Filters tab's closing line: a static pointer to the filter options, drawn, not a schema row,
+-- so `/pgfe list` does not list it.
+AFTER_GROUP[FILTER_GROUP] = function(ctx)
+    Helpers.TextRow(ctx, L["The filter options are on the panel under Premade Groups Filter's window: open the Group Finder, choose Dungeons, and it appears below PGF's filters."])
+end
 
 local function buildGeneralPage(parentCategory)
     local ctx = Helpers.CreatePanel("PremadeGroupsFilterExtensionGeneralPanel", L["General"], {
         pageKey         = "general",
         defaultsButton  = true,
-        defaultsTooltip = L["Reset every %s setting to its default. Asks for confirmation."]
-            :format("Ka0s Premade Groups Filter Extension"),
+        -- The global reset: the library's words for Reset all settings (options-ui-§12).
+        defaultsTooltip = Helpers.ResetAllTooltip(),
     })
     ctx.panel.defaultsOnClick = showResetPopup
     Helpers.SetRenderer(ctx, function(c)

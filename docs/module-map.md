@@ -1,7 +1,7 @@
 # Module map — Ka0s Premade Groups Filter Extension
 
 Every non-vendored file, in TOC load order, with its one responsibility. Vendored: `libs/` (Ace3,
-LibStub, CallbackHandler, LibSharedMedia, LibDataBroker, LibDBIcon, LibKa0s v1.76.0) and
+LibStub, CallbackHandler, LibSharedMedia, LibDataBroker, LibDBIcon, LibKa0s v1.77.0) and
 `tests/_kit/` (the LibKa0s test kit) — never edited here.
 
 ## Load order and why
@@ -13,6 +13,8 @@ needs at load, `# Conventional` says it reads its neighbors at call time only, a
 Profiles page. The constraints that fix the order:
 
 - `core/CoreSetup.lua` first in core: every later file captures `NS.Print` / `NS.Util.print`.
+- `core/Constants.lua` before `modules/`: `modules/Panel.lua` and `modules/EUISkin.lua` take
+  `NS.Constants.LAYERS` as a file-scope upvalue.
 - `core/MediaSetup.lua` before `core/PGFE.lua`: `NS.FONT_MONO` is resolved from `NS.MediaFont` at load.
 - `core/PGFE.lua` before every other addon file below it: it promotes `NS` to the AceAddon object
   and publishes `NS.PREFIX`, `NS.State`, `NS.FONT_MONO`, `NS.FEATURE_EVENTS`, `NS.STAND_DOWN` and
@@ -39,6 +41,7 @@ Profiles page. The constraints that fix the order:
 | `PremadeGroupsFilterExtension.toc` | Metadata and the load order |
 | `locales/enUS.lua` | `NS.L` with the key-is-English metatable fallback |
 | `core/CoreSetup.lua` | `LibKa0s-Core-1.0`: the `[PGFE]` printer, `SafeRegister*`, skin, close-button wrapper |
+| `core/Constants.lua` | `NS.Constants.LAYERS`: the one layers table, every strata and level offset the addon sets, with the whole stack in its header comment (frame-layering-§5) |
 | `core/MediaSetup.lua` | `LibKa0s-Media-1.0`: `NS.Icon`, `NS.MediaFont`, the LSM registration |
 | `core/Compat.lua` | `LibKa0s-Compat-1.0`: the spec readers |
 | `core/EnvSetup.lua` | `LibKa0s-Env-1.0`: `NS.Meta`, `NS.Version` |
@@ -47,6 +50,7 @@ Profiles page. The constraints that fix the order:
 | `core/DebugLogSetup.lua` | `LibKa0s-DebugLog-1.0`: the console, `NS.Debug` and its gates, the diagnostics hook-up |
 | `core/LauncherSetup.lua` | `LibKa0s-Launcher-1.0`: the LDB launcher and minimap button |
 | `core/LifecycleSetup.lua` | `LibKa0s-Lifecycle-1.0`: the stand-down latch, `NS.IsStoodDown()` |
+| `core/Popup.lua` | `NS.ShowPopup` / `NS.RestorePopupStrata`: every PGFE StaticPopup, lifted over the attached panel while it is visible and put back on hide |
 | `core/PGFBridge.lua` | The only file that touches PGF internals: seam check, dungeon state and expression read/write, commit, search, the env and dialog hooks |
 | `core/EUIBridge.lua` | The only file that reads EllesmereUI state: the skin's four gate conditions (`Conditions`, `GateOpen`, `WhyClosed`) and the per-condition readers behind them (`IsSuiteReady`, `IsMasterOn`, `IsEntryOn`, `PGFSkinState` / `IsPGFSkinOn`), plus `SKIN_NAME` |
 | `defaults/Profile.lua` | `NS.C`: profile, char and global default values |
@@ -66,7 +70,7 @@ Profiles page. The constraints that fix the order:
 | `settings/SchemaSetup.lua` | `LibKa0s-Schema-1.0` or its host stub |
 | `settings/Schema.lua` | The write seam (`NS.SchemaRuntime`), the closure stamping for session and global rows (`Settings.StampClosureRows`), schema validation, defaults assembly and the reset. Declares no rows: `settings/Panel.lua` adds every row at load |
 | `settings/OptionsSetup.lua` | `LibKa0s-Options-1.0`: the settings panel descriptor |
-| `settings/Panel.lua` | Landing page body and the General page, in four tabs: Master controls, Filters (`filtersActive`, `showRegionTags`), Region colors (`regionColors.<key>`, `REGION_ROWS`) and EllesmereUI skin (its `euiSkin` row and status lines) |
+| `settings/Panel.lua` | Landing page body and the General page, in four tabs: Master controls, Filters (`filtersActive` and a line pointing at the attached panel), Region tags (`showRegionTags`, then `regionColors.<key>`, `REGION_ROWS`) and EllesmereUI skin (its `euiSkin` row and status lines) |
 | `settings/Slash.lua` | `NS.COMMANDS` and `LibKa0s-Slash-1.0` |
 | `settings/Profiles.lua` | The Profiles page |
 | `tests/run.lua` | Suite list, factories, surface source, diagnostics facts |

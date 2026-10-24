@@ -1061,9 +1061,9 @@ test("panel: Composition is one dropdown; Any clears, both ticked stays both (no
     assertEqual(dd:GetText(), NS.L.SELECT_ANY)
 end)
 
--- Owner request: a "Toggle PGF Extension Filters" box as the first option, on by default; unticked it
+-- Owner request: a "Use the extension's filters" box as the first option, on by default; unticked it
 -- removes the managed block, ticked it writes it back.
-test("panel: Toggle PGF Extension Filters is the first row, on by default", function()
+test("panel: Use the extension's filters is the first row, on by default", function()
     local NS = T.enableAddon{}
     local f = NS.Panel.Create(); NS.Panel.Refresh()
     local _, _, _, _, y = f.activeCheck:GetPoint(1)
@@ -1073,7 +1073,7 @@ test("panel: Toggle PGF Extension Filters is the first row, on by default", func
     assertTrue(NS.Filters.IsActive())
 end)
 
-test("panel: unticking Toggle PGF Extension Filters removes the block; ticking writes it back", function()
+test("panel: unticking Use the extension's filters removes the block; ticking writes it back", function()
     local NS, _, m = T.enableAddon{}
     seasonFromScreenshot(m)
     local filters = NS.Filters.Get(); filters.maxAgeEnabled = true; filters.maxAge = 20

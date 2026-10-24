@@ -60,6 +60,11 @@ if not lib then
     H.IdList               = function() end
     H.ResolveId            = function() return nil end
     H.UnnamedCandidates    = function() return nil end
+    H.KeybindingsTab       = function() return nil end
+    H.KeybindRows          = function() return nil end
+    H.KEYBINDS_UNCHANGED   = "Key bindings are not changed."
+    H.StrataTooltip        = function() return "" end
+    H.ResetAllTooltip      = function() return "" end
     H.ID_NAME_HINT         = {}
     H.SelectTab            = function() end
     H.NavRail              = function() end
@@ -92,7 +97,7 @@ local O = lib:New({
     allRows     = function() return Settings.Schema end,
     validate = function() host.ValidateSchema() end,
     buildMain = function(ctx) Settings.Helpers.BuildMainContent(ctx) end,
-    -- Backs the color picker's 50 ms drag throttle (the Region colors tab). The addon embeds no
+    -- Backs the color picker's 50 ms drag throttle (the Region tags tab). The addon embeds no
     -- AceTimer, so the client's C_Timer.After; without it the drag commits every frame.
     scheduleTimer = function(fn, delay)
         if C_Timer and C_Timer.After then return C_Timer.After(delay, fn) end

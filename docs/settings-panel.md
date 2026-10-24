@@ -8,7 +8,7 @@ they live on the panel attached under PGF's dialog (`modules/Panel.lua`, describ
 | Page | Covers |
 |---|---|
 | Ka0s Premade Groups Filter Extension (landing) | Logo, the TOC notes, and the slash command list from `NS.COMMANDS` |
-| General | Master controls: enable, debug console, minimap button, reset all settings. Filters: Toggle PGF Extension Filters, Show server regions in the Group Finder. Region colors: every region tag's color, with a picker each. EllesmereUI skin: the skin's conditions and switch |
+| General | Master controls: enable, debug console, minimap button, reset all settings. Filters: Use the extension's filters, and a line saying where the filter options are. Region tags: Show region tags in the Group Finder, then every region tag's color, with a picker each. EllesmereUI skin: the skin's switch and conditions |
 | Profiles | AceDB profiles: switch, copy, delete, reset |
 
 ## Page → tab → row
@@ -31,25 +31,32 @@ re-render.
     Vetoed out of both resets (launcher-§3).
   - *Reset all settings* (button) → confirmation popup → profile reset.
 
-  Master controls holds only those mandated rows (options-ui-§15); the two filter switches have their
-  own tab.
+  Master controls holds only those mandated rows (options-ui-§15); the two feature switches lead
+  their own tabs.
 
 - **Filters** (the second tab; its own group, `FILTER_ROWS` in `settings/Panel.lua`, rendered by the
   library's default tab body):
-  - *Toggle PGF Extension Filters* → `filtersActive` (profile). The attached panel's first box
+  - *Use the extension's filters* → `filtersActive` (profile). The attached panel's first box
     writes the same path. Off removes the managed block from PGF's expression; on writes it back.
     Separate from *Enable*: the addon stays up and the panel stays shown.
-  - *Show server regions in the Group Finder* → `showRegionTags` (profile): the colored region tag
-    on Group Finder rows and applicants (`modules/RegionTags.lua`).
+  - A static line, drawn by the tab's after-group hook (`AFTER_GROUP[FILTER_GROUP]`), not a schema
+    row, so `/pgfe list` does not list it: "The filter options are on the panel under Premade Groups
+    Filter's window: open the Group Finder, choose Dungeons, and it appears below PGF's filters."
 
-- **Region colors** (the third tab; its own group, `REGION_ROWS`, drawn by a host tab in
-  `settings/Panel.lua`):
-  - Per portal, *US realms (by data center)* then *EU realms (by language)*: a heading, a preview
+- **Region tags** (the third tab; one group, drawn by a host tab in `settings/Panel.lua`):
+  - *Show region tags in the Group Finder* → `showRegionTags` (profile), first and unheaded, as the
+    tab's leading switch (options-ui-§7): the colored region tag on Group Finder rows and applicants
+    (`modules/RegionTags.lua`). Its own row list (`TAG_SWITCH_ROWS`), added before `REGION_ROWS` and
+    never inside it, so *Reset region tag colors* does not reset it and `/pgfe list` keeps it
+    between `filtersActive` and the colors.
+  - Per portal, *Americas and Oceania (US realms)* then *Europe (EU realms)*: a heading, a preview
     line with every region tag of that portal in its current color (re-read on every write), then
-    one color picker per region (`regionColors.<key>`, profile, no alpha), three to a line, labeled
-    with the tag and tooltipped with the region's description.
-  - *Reset region colors* (button): every region color back to its default, as one bulk act. The
-    page's Defaults button and Reset all settings reset them too, as profile rows.
+    one color picker per region (`regionColors.<key>`, profile, no alpha, `REGION_ROWS`), three to
+    a line, labeled with the tag and what it stands for (*OCE — Oceanic* ... *RUS — Russian*, the
+    `REGION_PICKER_*` locale keys) and tooltipped with the region's description. The tag text the
+    Group Finder and the attached panel draw (`NS.Regions.LABELS`) is unchanged.
+  - *Reset region tag colors* (button): the twelve region colors back to their defaults, as one bulk
+    act. The page's Defaults button and Reset all settings reset them too, as profile rows.
   - A change shows on the Group Finder's next search or list refresh.
 
 - **EllesmereUI skin** (the fourth tab; its own group, drawn by a host tab in `settings/Panel.lua`):
@@ -57,7 +64,7 @@ re-render.
     Disabled while any condition fails (never forced on); its tooltip adds what is missing, live.
     Off after a paint asks for a reload, whether from the switch or from a profile switch, copy or
     reset.
-  - Four status lines, one per gate condition (`core/EUIBridge.lua`): a green ready mark or a red
+  - After a 12px gap, four status lines, one per gate condition (`core/EUIBridge.lua`): a green ready mark or a red
     not-ready mark, the condition, and under a failing one what to do about it (indented by an empty
     icon slot the size of the marks). Hovering a line shows what the condition is, why it matters
     and how to turn it on:
@@ -68,14 +75,17 @@ re-render.
     4. Premade Groups Filter's own EllesmereUI skin is on. When it is not, the line says which: not
        installed (and a read-only box holds its CurseForge link to copy), installed but disabled in
        the AddOns list, or turned off in EllesmereUI's Third-Party Addons list
-       (`EUIBridge.PGFSkinState`).
+       (`EUIBridge.PGFSkinState`). The link box is drawn right under this line, only when the skin
+       is not installed (decided at render time).
   - After an 8px gap, a state line in the same empty icon slot (so its text lines up under the
     conditions'), with its own tooltip: applied; applied until a reload; not applied (stood down / a condition not met);
     off; applied after a reload; applied when the panel next shows.
   - Every line and the box are re-read each time the page is shown (an `OnShow` hook running the
     page's refreshers), since EllesmereUI's options change them outside this addon's write seam.
 
-The header **Defaults** button runs the same confirmation.
+The header **Defaults** button runs the same confirmation, and its tooltip is the library's
+`Helpers.ResetAllTooltip()`, the same words *Reset all settings* carries (options-ui-§12); the addon
+has no key bindings, so no tail.
 
 ### Profiles
 

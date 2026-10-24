@@ -151,7 +151,9 @@ test("slash: player-facing lines go through NS.L (LibKa0s present)", function()
     allLocalized(m, "bare /pgfe reset", function() addon:OnSlashCommand("reset") end)
     local page = m.__subcategories["<<General>>"]
     assertTrue(page ~= nil, "the General page is registered under its localized name")
-    assertTrue(localized(page.defaultsTooltip), tostring(page.defaultsTooltip))
+    -- The header Defaults carries the library's own Reset all settings words (options-ui-§12), so
+    -- the host prints none of its own there.
+    assertEqual(page.defaultsTooltip, H.ResetAllTooltip())
     H.OpenOptionsPanel = nil
     allLocalized(m, "OpenSettings without the helper", function() addon:OpenSettings() end)
     NS.DebugLog = nil

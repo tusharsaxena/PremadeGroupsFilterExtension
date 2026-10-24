@@ -61,8 +61,8 @@ end
 --- The hook body. Returns at once while stood down (hooksecurefunc has no un-hook).
 function EnvInject.Apply(env, leaderName)
     if NS.IsStoodDown() then return end
-    -- The managed block's guard (modules/Expression.lua Merge). False while "Toggle PGF Extension
-    -- Filters" (`filtersActive`) is off, so a block that Clear could not remove (combat) passes every group.
+    -- The managed block's guard (modules/Expression.lua Merge). False while "Use the extension's
+    -- filters" (`filtersActive`) is off, so a block that Clear could not remove (combat) passes every group.
     env.pgfe_on = NS.Filters.IsActive()
     if not PremadeRegions then injectRegions(env, leaderName) end
     env.pgfe_samespec = player.spec and tonumber(env[player.spec]) or 0

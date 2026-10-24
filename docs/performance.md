@@ -40,15 +40,15 @@ There is one registration site, and every hook runs on a player UI action.
 |---|---|---|---|
 | `core/PGFE.lua:42` | `registerFeatureEvents`, through `NS.SafeRegisterEvent` (`core/CoreSetup.lua:56-80`) | The only registration site. It registers the 8 `NS.FEATURE_EVENTS` rows below on enable and stand-up, and unregisters them on stand-down | — |
 | `modules/EnvInject.lua:85-86` | `ACTIVE_PLAYER_SPECIALIZATION_CHANGED`, `PLAYER_SPECIALIZATION_CHANGED` | `RefreshPlayer`: 3 calls (spec index, spec info, `UnitClass`) | Rare (a spec change) |
-| `modules/Panel.lua:886-888` | `CHALLENGE_MODE_MAPS_UPDATE`, `CHALLENGE_MODE_COMPLETED`, `MYTHIC_PLUS_CURRENT_AFFIX_UPDATE` | `OnPanelSeasonData`: Smart level, then the readout rebuilt over 8 dungeons. 34 calls, about 7 KB | Rare (a season-data reply, a completed key, an affix change) |
-| `modules/Panel.lua:889` | `PLAYER_ENTERING_WORLD` | Re-arms the season request, then `Panel.UpdateVisibility` (the readout as above). 35 calls | At a loading screen |
-| `modules/EUISkin.lua:382-383` | `UI_SCALE_CHANGED`, `DISPLAY_SIZE_CHANGED` | Re-lays out the skin's checkbox marks; returns before a paint. 0 calls | Rare (a scale change) |
+| `modules/Panel.lua:894-896` | `CHALLENGE_MODE_MAPS_UPDATE`, `CHALLENGE_MODE_COMPLETED`, `MYTHIC_PLUS_CURRENT_AFFIX_UPDATE` | `OnPanelSeasonData`: Smart level, then the readout rebuilt over 8 dungeons. 34 calls, about 7 KB | Rare (a season-data reply, a completed key, an affix change) |
+| `modules/Panel.lua:897` | `PLAYER_ENTERING_WORLD` | Re-arms the season request, then `Panel.UpdateVisibility` (the readout as above). 35 calls | At a loading screen |
+| `modules/EUISkin.lua:392-393` | `UI_SCALE_CHANGED`, `DISPLAY_SIZE_CHANGED` | Re-lays out the skin's checkbox marks; returns before a paint. 0 calls | Rare (a scale change) |
 | `core/PGFE.lua:105-108` | AceDB `OnProfileChanged` / `Copied` / `Reset` | Migrations, panel refresh, the latch re-read | Player action |
 | `core/PGFBridge.lua:173` | `hooksecurefunc(PGF, "PutPremadeRegionInfo")` | `EnvInject.Apply`, above: 1.2 calls and 80 bytes per result, 0 while stood down | Only while PGF filters a search the player started |
 | `core/PGFBridge.lua:184-186` | `SwitchToPanel`, dialog `OnShow` / `OnHide` | `Panel.UpdateVisibility` | Player action |
 | `modules/RegionTags.lua:74` | `LFGListSearchEntry_Update`, `LFGListApplicationViewer_UpdateApplicantMember` | One row tag: 5.2 calls, 160 bytes | Only while the Group Finder repaints |
-| `modules/EUISkin.lua:176-177`, `:236-240` | Skin checkbox `OnClick` / `SetChecked`; min/max glyph `OnEnter` / `OnLeave` | One accent repaint; one vertex color | Player action |
-| `modules/Panel.lua:91-97` | Tooltip `OnEnter` / `OnLeave` | Fill and show `GameTooltip`; hide it | Player action |
+| `modules/EUISkin.lua:178-179`, `:238-242` | Skin checkbox `OnClick` / `SetChecked`; min/max glyph `OnEnter` / `OnLeave` | One accent repaint; one vertex color | Player action |
+| `modules/Panel.lua:87-93` | Tooltip `OnEnter` / `OnLeave` | Fill and show `GameTooltip`; hide it | Player action |
 | `modules/Panel.lua`, `settings/Panel.lua` | `SetScript` / `HookScript` on the addon's own widgets (click, edit box, focus, settings `OnShow`) | One handler per player action | Player action |
 | `modules/Apply.lua:37` | `InCombatLockdown()` in `precheck` | Apply refuses in combat | Refused |
 

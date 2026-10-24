@@ -11,7 +11,7 @@ function Filters.Get() return NS.addon.db.char.filters end
 
 function Filters.Set(key, value) Filters.Get()[key] = value end
 
--- "Toggle PGF Extension Filters": the `filtersActive` profile setting (a schema row,
+-- "Use the extension's filters": the `filtersActive` profile setting (a schema row,
 -- settings/Panel.lua), not a filter option, so presets never carry it.
 function Filters.IsActive()
     local p = NS.addon.db and NS.addon.db.profile

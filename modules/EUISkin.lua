@@ -27,7 +27,9 @@ local TAG = "Skin"
 local SHELL_HEADER_H = 25   -- WSkin.Shell's top bar: collapsed, the panel is that bar alone
 local SHELL_GAP      = 0    -- flat shells sit exactly on their frame rects: 0 is flush with PGF's dialog
 local CHECKBOX_SIZE, CHECKBOX_BORDER_INSET = 24, 4
-local ACCENT_BORDER_SIZE, ACCENT_MARK_GAP, ACCENT_BORDER_LEVEL = 1, 2, 3
+local ACCENT_BORDER_SIZE, ACCENT_MARK_GAP = 1, 2
+-- The ring's level over its check button, from the one layers table (core/Constants.lua).
+local ACCENT_BORDER_LEVEL = NS.Constants.LAYERS.LEVEL.ACCENT_RING
 local ACCENT_BOX_SIZE  = CHECKBOX_SIZE - 2 * CHECKBOX_BORDER_INSET
 local ACCENT_MARK_SIZE = ACCENT_BOX_SIZE - 2 * (ACCENT_BORDER_SIZE + ACCENT_MARK_GAP)
 local COLLAPSE_ATLAS = "UI-QuestTrackerButton-Secondary-Collapse"   -- a minus
@@ -362,7 +364,7 @@ function EUISkin.OnSwitch(on)
     if on then
         EUISkin.TryApply()
     elseif applied or paintFailed then
-        StaticPopup_Show(POPUP_RELOAD)
+        NS.ShowPopup(POPUP_RELOAD)
     end
 end
 
@@ -411,6 +413,7 @@ StaticPopupDialogs[POPUP_RELOAD] = {
     text = L["The EllesmereUI skin comes off after a reload. Reload the UI now?"],
     button1 = L["Reload"], button2 = L["Later"],
     OnAccept = function() C_UI.Reload() end,
+    OnHide = NS.RestorePopupStrata,   -- puts back a lift over the panel (core/Popup.lua)
     timeout = 0, whileDead = true, hideOnEscape = true, preferredIndex = 3,
 }
 

@@ -82,7 +82,8 @@ end)
 
 -- C-17/C-18/C-26/C-09: the owner-ratified rows stay in the register, and the architecture-§5 row
 -- names every char.filters writer modules/Filters.lua defines (a new writer must be listed there).
-local REGISTER_RULES = { "architecture-§5", "architecture-§4", "standalone-windows", "`performance-§12`" }
+local REGISTER_RULES = { "architecture-§5", "architecture-§4", "standalone-windows", "`performance-§12`",
+    "frame-layering-§1" }
 
 local function registerRows()
     local fh = assert(io.open(T.root .. "/docs/ARCHITECTURE.md", "rb"))
@@ -130,9 +131,9 @@ end)
 -- literal keys: `NS.L["…"]` and `NS.L.IDENT` anywhere, and bare `L["…"]` / `L.IDENT` only in a file
 -- that binds `local L = NS.L` (modules/Diagnostics.lua's `L` is the launcher). Each literal is
 -- evaluated as Lua, so `\"`, `\n` and decimal escapes read the same on both sides. The `MSG_*`,
--- `REGION_TIP_*` and `PLAYSTYLE_*` families are read through computed keys, so they are exempt from
--- the "is read" direction.
-local DYNAMIC = { "^MSG_", "^REGION_TIP_", "^PLAYSTYLE_" }
+-- `REGION_TIP_*`, `REGION_PICKER_*` and `PLAYSTYLE_*` families are read through computed keys, so
+-- they are exempt from the "is read" direction.
+local DYNAMIC = { "^MSG_", "^REGION_TIP_", "^REGION_PICKER_", "^PLAYSTYLE_" }
 
 -- The index of the closing quote of the string literal that opens at src[start - 1].
 local function closingQuote(src, start)

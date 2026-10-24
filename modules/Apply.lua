@@ -98,8 +98,8 @@ function Apply.Clear()
     return done("Clear", true, "MSG_CLEARED")
 end
 
---- The `filtersActive` row's onChange (settings/Panel.lua): every write of "Toggle PGF Extension
---- Filters" lands here, from the panel, the settings page or `/pgfe set`. Off removes the managed block;
+--- The `filtersActive` row's onChange (settings/Panel.lua): every write of "Use the extension's
+--- filters" lands here, from the panel, the settings page or `/pgfe set`. Off removes the managed block;
 --- on writes it back without a search. Only while PGF's dungeon panel is up: otherwise (PGF closed,
 --- a profile reset from the settings page) nothing is written or printed, and the block's guard
 --- (`pgfe_on`, modules/EnvInject.lua) keeps a block left in PGF's state neutral while it is off.
