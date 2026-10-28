@@ -63,6 +63,12 @@ if not lib then
     H.KeybindingsTab       = function() return nil end
     H.KeybindRows          = function() return nil end
     H.KEYBINDS_UNCHANGED   = "Key bindings are not changed."
+    -- LibKa0s v1.78.0 (OptionsAppearance) and v1.79.0 (OptionsSkinPicker): no Skin tab and no
+    -- first-run picker without the library; a tab built from AppearanceTab's nil is never listed.
+    H.AppearanceTab        = function() return nil end
+    H.AppearanceRows       = function() return nil end
+    H.SkinPicker           = function() return nil end
+    H.HideSkinPicker       = function() end
     H.StrataTooltip        = function() return "" end
     H.ResetAllTooltip      = function() return "" end
     H.ID_NAME_HINT         = {}
