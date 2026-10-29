@@ -1,0 +1,12 @@
+Independent review of the PremadeGroupsFilterExtension skinning adoption (PG-RV..PG-06): APPROVE, five minor findings, no blocker or major.
+
+Fixed:
+1. NS.SkinDrawsDefault called the library-internal Skin:__DrawsKey, and its fallback was wrong for an unpainted eui source and for unknown skin keys. Fixed in 0d3fe5c (PG-02): built from public API only (GetChoice, the eui provider's painted status via GetEUIStatus, GetSkin). False while EllesmereUI paints; otherwise true on Ka0s Default or a key the library does not know. Note: the library's real answer on an unpainted eui source is the stored skin (baseOf uses effectiveKey(o.skin)), not always Ka0s Default, so the fix matches that rather than the review's literal 'not painted'. A test holds the answer to __DrawsKey in every state, and another pins that core/SkinSetup.lua no longer names it. No library_gap is needed.
+2. The picker's combat-retry frame was kept after the deferral dropped. Fixed in 71eecde (PG-04): dropPickerDeferral clears pickerTarget, as LootHistory does, and the D11 comment says so. A test proves the next held start makes a fresh frame.
+3. The PGF skin link box left a permanent, gated HookScript and __pgfe* fields on AceGUI's pooled editbox. Fixed in 484c48d (PG-06): a reversible SetScript wrapper that runs AceGUI's own OnEditFocusGained and then HighlightText, and the release restores AceGUI's script. A pooled-frame test covers it.
+
+Not fixed in this repo:
+4. PG-03 needs an exceptions.tsv row. That file is in Ka0sAddonsCommonTasks, so the lead adds it. Proof (exits 0): ! git -C ../PremadeGroupsFilterExtension grep -nE 'StatusBar|BorderGroup|BarGroup|FontGroup|ResetToSkin|S\.Resolve' -- core modules settings defaults ':!core/SkinSetup.lua' ':!settings/OptionsSetup.lua'
+5. Declined: 44ccc1d and f211ab5 carry the interrupted session's Claude-Session trailer. This is information only, and rewriting history costs more than it is worth (the reviewer agrees).
+
+Gate at 484c48d: ka0s-bounded lua tests/run.lua 432 passed, 0 failed, 1 skipped; ka0s-bounded luacheck . 0 warnings / 0 errors in 64 files.
