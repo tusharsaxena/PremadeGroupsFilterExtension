@@ -120,6 +120,7 @@ Kit.run{
         "test_euisettings",
         "test_settings_layout",
         "test_skinsetup",
+        "test_skin",
         "test_reset",
         "test_diagnostics",
         "test_vendor_sync",

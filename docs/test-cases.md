@@ -472,6 +472,21 @@ Total.
 - skin seam: the degraded facade answers every name the live facade carries
 - skin seam: each host-copy skin token is the live library's Ka0s Default value
 
+### test_skin.lua (12)
+
+- skin: under Ka0s Default the panel is the metal instance, and no primitive ever touched it
+- skin: the colors the metal panel writes are Ka0s Default's exact pixels
+- skin: the panel's tooltip lines are the skin's tooltip colors, Ka0s Default's white over gold
+- skin: another skin shows the twin, painted through the facade; the metal instance hides
+- skin: back to Ka0s Default shows the untouched metal instance again
+- skin: a swap carries the filter state, and a hidden panel stays hidden
+- skin: a pick before the panel exists builds only the instance the skin wants
+- skin: the twin's geometry: 24px check buttons on the rows' centers, flush under the dialog
+- skin: collapsed, the twin folds to the skin's title band
+- skin: the twin writes the skin's colors: locked boxes, the dimmed label, the readout
+- skin: a pick while stood down builds nothing; the stand-up shows the skin's instance
+- skin: modules/Panel.lua types no color: no literal SetTextColor, tooltip color or markup
+
 ### test_reset.lua (5)
 
 - reset: Reset all settings resets only the active profile
@@ -583,6 +598,7 @@ Total.
 | test_euisettings.lua | 19 |
 | test_settings_layout.lua | 9 |
 | test_skinsetup.lua | 19 |
+| test_skin.lua | 12 |
 | test_reset.lua | 5 |
 | test_diagnostics.lua | 6 |
 | test_vendor_sync.lua | 3 |
@@ -592,4 +608,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **458** |
+| **Total** | **470** |

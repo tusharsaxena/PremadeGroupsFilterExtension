@@ -20,6 +20,28 @@ local _, NS = ...
 -- No code here calls SetText on a Blizzard frame: every SetText below lands on a frame or font
 -- string this file created. Searching goes through Apply.Run{ search = true }, called only from the
 -- Apply button's OnClick (a hardware event).
+--
+-- ── THE SKIN: TWO INSTANCES OF ONE BUILDER (skinning-§1, §2; the rollout's PG-02) ──────────────
+--
+-- Under Ka0s Default the panel is PGF's metal chrome, exactly as above (the ratified deviation). Under
+-- every other skin, and under the eui source once EllesmereUI paints this owner, it follows the skin.
+-- Since LibKa0s-Skin-1.0's SkinPaint minor 6 every primitive paints Ka0s Default too, and v1.80.0's
+-- `opts.stockDefault` covers the window and some controls but not Checkbox, PageButton, FadeRegions or
+-- Text, so one frame cannot be both. The panel is therefore built twice from the same BUILDERS:
+--
+--   Panel.stockFrame  the metal instance, named FRAME_NAME, NEVER handed to any NS.Skin primitive, so
+--                     no repaint ever touches it: Ka0s Default is today's pixels by construction.
+--   Panel.skinFrame   the skinned twin, built lazily the first time the owner draws another skin,
+--                     painted once through NS.Skin (paintSkinned) and recorded, so the library
+--                     replays every later switch onto it.
+--   Panel.frame       the instance on show, the one every other function here reads.
+--
+-- NS.SkinDrawsDefault() (core/SkinSetup.lua) picks the instance at build, on every show and on
+-- NS.Skin.OnLooksChanged, which the library fires after it repainted the recorded frames. A swap hides
+-- the other instance, clears its edit-box focus and refreshes the one it shows from NS.Filters, the
+-- one store both read. The colors this file writes (the locked boxes, the dimmed copy label, the
+-- readout markup, the tooltip lines) are tokens read at write time, Ka0s Default's exact values on the
+-- metal instance, so no look value is typed here (anti-pattern #107).
 
 local Panel = NS.Panel or {}
 NS.Panel = Panel
@@ -43,6 +65,11 @@ local ATTACH_RAISE  = 3
 local BODY_BOTTOM   = 12
 local LABEL_X       = 35
 local CHECK_SIZE    = 32          -- UICheckButtonTemplate's size; the label starts LABEL_X - 32 past it
+-- The skinned twin's check button: Checkbox draws its box `CHECK_INSET` inside the frame, so 24 gives a
+-- 16px box (PGF's EllesmereUI skin's). Rows keep their centers and labels; the hit rect still
+-- reaches the label.
+local SKIN_CHECK_SIZE = 24
+local CHECK_INSET   = 4
 local INPUT_GAP     = 10
 -- The level box to the Smart box's frame. Both skins draw the box ~4px inside its frame (EllesmereUI's
 -- borderInset; Blizzard's art margin) and keep its left edge, so the visible gap is SMART_GAP + 4:
@@ -56,8 +83,9 @@ local DROPDOWN_H    = 26          -- WowStyle1DropdownTemplate's height when the
 local ACTION_W      = 88          -- Apply and Clear, at least
 local SELECT_W      = 225         -- the regions, playstyle and composition dropdowns
 local PRESET_BUTTON_MIN_W = 64     -- Save / Save as / Delete never narrower than this
-local TARGETED      = "|cffffd100%s %d|r"
-local NOT_TARGETED  = "|cff808080%s %d|r"
+-- The readout's two colors: a dungeon still to time in the accent, a timed one disabled. Read from
+-- the skin at write time (ffd100 and 808080 on Ka0s Default, NS.SkinEscape's byte rounding).
+local TARGETED_TOKEN, NOT_TARGETED_TOKEN = "text.accent", "text.disabled"
 local POPUP_SAVE_AS = "PGFE_PRESET_SAVE_AS"
 local POPUP_DELETE  = "PGFE_PRESET_DELETE"
 
@@ -76,10 +104,17 @@ end
 
 -- ── tooltips ────────────────────────────────────────────────────────────────────────────────────
 
--- The option's name in white, then what it does, wrapped.
+-- The option's name in white, then what it does, wrapped, in gold: the Blizzard settings convention.
+-- The lines take the skin's tooltip colors (skinning-§7; the frame stays GameTooltip's). The names
+-- read crossed on purpose: the name is `gtip.value` (white) and the body `gtip.title` (gold), the
+-- exact pixels of Ka0s Default.
 local function fillTooltip(tip, title, text)
-    tip:SetText(title, 1, 1, 1)
-    if text then tip:AddLine(text, nil, nil, nil, true) end
+    local tr, tg, tb = NS.SkinColor("gtip.value")
+    tip:SetText(title, tr, tg, tb)
+    if text then
+        local r, g, b = NS.SkinColor("gtip.title")
+        tip:AddLine(text, r, g, b, true)
+    end
 end
 
 -- A hover tooltip on a widget this file built. HookScript, not SetScript: UIPanelButtonTemplate
@@ -167,8 +202,9 @@ local function updateReadout(f)
         return
     end
     local level, parts = NS.Filters.Get().keyLevel, {}
+    local on, off = NS.SkinEscape(TARGETED_TOKEN) or "", NS.SkinEscape(NOT_TARGETED_TOKEN) or ""
     for i, d in ipairs(dungeons) do
-        parts[i] = ((d.bestTimed < level) and TARGETED or NOT_TARGETED):format(d.short, d.bestTimed)
+        parts[i] = ("%s%s %d|r"):format((d.bestTimed < level) and on or off, d.short, d.bestTimed)
     end
     f.readout:SetText(table.concat(parts, "  "))
     -- One line, no wrap: when a season's names do not fit with two spaces, close them to one.
@@ -189,17 +225,23 @@ end
 local function isSmart() return NS.Filters.Get().smartKeyLevel == true end
 
 -- With Smart on the level box is locked: no focus, no typing, grayed text. The mouse stays on so
--- its tooltip still says why.
+-- its tooltip still says why. The two colors are the skin's (white and 0.5 gray on Ka0s Default),
+-- written after S.EditBox's own text color, and again on every Refresh, which a skin switch runs.
+local function dimText(fs, dim)
+    fs:SetTextColor(NS.SkinColor(dim and "text.disabled" or "text.highlight"))
+end
+
 local function setLocked(box, on)
     if on then box:ClearFocus() end
     box:SetEnabled(not on)
-    if on then box:SetTextColor(0.5, 0.5, 0.5) else box:SetTextColor(1, 1, 1) end
+    dimText(box, on)
 end
 
 -- ── row builders (each returns the next row's y) ────────────────────────────────────────────────
 
 local function checkButton(f, parent, key)
     local cb = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
+    if f.checkSize ~= CHECK_SIZE then cb:SetSize(f.checkSize, f.checkSize) end
     cb:SetScript("OnClick", function(self)
         if stoodDown() then return end
         NS.Filters.Set(key, self:GetChecked() and true or false)
@@ -209,11 +251,15 @@ local function checkButton(f, parent, key)
     return cb
 end
 
+-- A row's check button sits 4 above its row top at the template's 32px; a smaller (skinned) one moves
+-- down by half the difference, so both are centered on the row.
+local function checkTop(f, y) return y + 4 - (CHECK_SIZE - f.checkSize) / 2 end
+
 local function checkRow(f, parent, key, text, y, tip)
     local cb = checkButton(f, parent, key)
-    cb:SetPoint("TOPLEFT", 0, y + 4)
+    cb:SetPoint("TOPLEFT", 0, checkTop(f, y))
     local fs = label(parent, text, LABEL_X, y)
-    stretchHitRect(cb, fs, LABEL_X - CHECK_SIZE)
+    stretchHitRect(cb, fs, LABEL_X - f.checkSize)
     tooltip(cb, text, tip)
     return cb, fs
 end
@@ -251,9 +297,9 @@ local function buildSmart(f, body, after)
     local cb = checkButton(f, body, "smartKeyLevel")
     cb:SetPoint("LEFT", after, "RIGHT", SMART_GAP, 0)
     local fs = body:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-    fs:SetPoint("LEFT", cb, "RIGHT", LABEL_X - CHECK_SIZE, 0)
+    fs:SetPoint("LEFT", cb, "RIGHT", LABEL_X - f.checkSize, 0)
     fs:SetText(L.SMART)
-    stretchHitRect(cb, fs, LABEL_X - CHECK_SIZE)
+    stretchHitRect(cb, fs, LABEL_X - f.checkSize)
     tooltip(cb, L.SMART, L.SMART_TOOLTIP)
     f.smartLabel = fs
 end
@@ -264,13 +310,14 @@ end
 -- this panel. Separate from the addon's master Enable, which hides the panel altogether.
 local function buildActiveRow(f, body, y)
     local cb = CreateFrame("CheckButton", nil, body, "UICheckButtonTemplate")
-    cb:SetPoint("TOPLEFT", 0, y + 4)
+    if f.checkSize ~= CHECK_SIZE then cb:SetSize(f.checkSize, f.checkSize) end
+    cb:SetPoint("TOPLEFT", 0, checkTop(f, y))
     cb:SetScript("OnClick", function(self)
         if stoodDown() then return end
         NS.Filters.SetActive(self:GetChecked() and true or false)
     end)
     local fs = label(body, L.FILTERS_ACTIVE, LABEL_X, y)
-    stretchHitRect(cb, fs, LABEL_X - CHECK_SIZE)
+    stretchHitRect(cb, fs, LABEL_X - f.checkSize)
     tooltip(cb, L.FILTERS_ACTIVE, L.FILTERS_ACTIVE_TOOLTIP)
     f.activeCheck = cb
     return y - ROW_H - ACTION_GAP
@@ -590,7 +637,7 @@ end
 -- Their tooltips still show.
 local function setCopyEnabled(f, on)
     setLocked(f.rangeBox, not on)
-    if on then f.copyLabel:SetTextColor(1, 1, 1) else f.copyLabel:SetTextColor(0.5, 0.5, 0.5) end
+    dimText(f.copyLabel, not on)
 end
 
 -- Apply leaves keyboard focus alone: taking it into the copy box held the keyboard (movement, chat)
@@ -695,11 +742,21 @@ local function syncMinMax(f, collapsed)
     if collapsed then mm:SetMaximizedLook() else mm:SetMinimizedLook() end
 end
 
+-- The collapsed height. The skinned twin folds to the skin's title band (`title.height`, read live,
+-- so a switch to a skin with another band refolds); the metal instance to HEADER_H, or to the
+-- EllesmereUI shell's bar once modules/EUISkin.lua painted it (f.headerHeight).
+local function collapsedHeight(f)
+    if f.skinned then
+        local h = NS.Skin.Token("title.height")
+        return type(h) == "number" and h or HEADER_H
+    end
+    return f.headerHeight or HEADER_H
+end
+
 local function applyLayout(f)
     local collapsed = NS.addon.db.profile.panelCollapsed == true
     local ok, missing = NS.Bridge.Check()
-    -- headerHeight: set by modules/EUISkin.lua when the EllesmereUI shell replaces the metal one.
-    f:SetHeight(collapsed and (f.headerHeight or HEADER_H) or f.expandedHeight)
+    f:SetHeight(collapsed and collapsedHeight(f) or f.expandedHeight)
     setHeaderOnly(f, collapsed)
     syncMinMax(f, collapsed)
     f.body:SetShown(ok and not collapsed)
@@ -723,8 +780,11 @@ local function buildMinMax(f)
     if f.CloseButton then mm:SetPoint("RIGHT", f.CloseButton, "RIGHT", 0, 0) end
     mm:SetOnMaximizedCallback(function() setCollapsed(false) end)
     mm:SetOnMinimizedCallback(function() setCollapsed(true) end)
-    setArrowArt(mm.MinimizeButton, "RedButton-Expand", "-Disabled")
-    setArrowArt(mm.MaximizeButton, "RedButton-Condense", "-disabled")
+    -- The skinned twin's arrows are the skin's (paintSkinned); only the metal one swaps the art.
+    if not f.skinned then
+        setArrowArt(mm.MinimizeButton, "RedButton-Expand", "-Disabled")
+        setArrowArt(mm.MaximizeButton, "RedButton-Condense", "-disabled")
+    end
     f.MaximizeMinimizeFrame = mm -- which arrow shows is set by applyLayout
 end
 
@@ -775,17 +835,64 @@ local function layerWithDialog(f, dialog)
     if type(dialogLevel) == "number" then f:SetFrameLevel(dialogLevel + LEVEL.ABOVE_HOST) end
 end
 
-local function buildFrame(dialog)
-    local f = CreateFrame("Frame", FRAME_NAME, dialog, "PortraitFrameTemplateMinimizable")
+-- ── the skinned twin's paint ────────────────────────────────────────────────────────────────────
+
+-- Every font string of `frame`, the role each takes: the dimmed notes `disabled`, the copy label its
+-- face only (its color is dimText's), every other label and the readout `body`.
+local function paintTexts(S, f, frame)
+    for _, r in ipairs({ frame:GetRegions() }) do
+        if type(r) == "table" and r.IsObjectType and r:IsObjectType("FontString") then
+            if r == f.copyLabel then S.Font(r)
+            elseif r == f.unsupported or r == f.regionsUnsupported then S.Text(r, "disabled")
+            else S.Text(r, "body") end
+        end
+    end
+end
+
+-- The twin through the owner's facade, once, at build: each call is recorded, so the library replays
+-- it on every later switch (and hands it to EllesmereUI's facade under the eui source). The metal
+-- border, its Bg and the title streaks fade under the skin's window; the template's title takes the
+-- title role; the arrows are paging arrows (expanded shows the collapse button: up). The panel's own
+-- SetScript calls all ran in the builders, before any primitive hooked a script.
+local function paintSkinned(f)
+    local S = NS.Skin
+    S.Shell(f, { stock = { f.Bg, f.TopTileStreaks } })
+    local title = type(f.TitleContainer) == "table" and f.TitleContainer.TitleText
+    if title then S.Text(title, "title") end
+    local mm = f.MaximizeMinimizeFrame
+    if mm then
+        S.PageButton(mm.MinimizeButton, "up")
+        S.PageButton(mm.MaximizeButton, "down")
+    end
+    S.Checkbox(f.activeCheck, { borderInset = CHECK_INSET })
+    for _, cb in pairs(f.checks) do S.Checkbox(cb, { borderInset = CHECK_INSET }) end
+    for _, box in ipairs({ f.levelBox, f.ageBox, f.rangeBox }) do S.EditBox(box) end
+    for _, dd in ipairs({ f.regionSelect, f.playstyleSelect, f.compositionSelect, f.presetDropdown }) do
+        S.Dropdown(dd)
+    end
+    for _, b in ipairs({ f.saveButton, f.saveAsButton, f.deleteButton, f.applyButton, f.clearButton }) do
+        S.Button(b)
+    end
+    paintTexts(S, f, f)
+    paintTexts(S, f, f.body)
+end
+
+-- `skinned` builds the twin: no name, no metal header copies, 24px check buttons, flush under the
+-- dialog (a flat window sits on its rect; the metal border overhung it, hence ATTACH_RAISE), painted.
+local function buildFrame(dialog, skinned)
+    local f = CreateFrame("Frame", not skinned and FRAME_NAME or nil, dialog, "PortraitFrameTemplateMinimizable")
+    f.skinned = skinned and true or false
+    f.checkSize = skinned and SKIN_CHECK_SIZE or CHECK_SIZE
     layerWithDialog(f, dialog)
     f:SetBorder(BORDER_LAYOUT)
-    buildHeaderArt(f)
+    if not skinned then buildHeaderArt(f) end
     f:SetPortraitShown(false)
     f:SetTitle(L.PANEL_TITLE)
     centerTitle(f)
     f:EnableMouse(true)
-    f:SetPoint("TOPLEFT", dialog, "BOTTOMLEFT", 0, ATTACH_RAISE)
-    f:SetPoint("TOPRIGHT", dialog, "BOTTOMRIGHT", 0, ATTACH_RAISE)
+    local raise = skinned and 0 or ATTACH_RAISE
+    f:SetPoint("TOPLEFT", dialog, "BOTTOMLEFT", 0, raise)
+    f:SetPoint("TOPRIGHT", dialog, "BOTTOMRIGHT", 0, raise)
     f.checks = {}
     local body = CreateFrame("Frame", nil, f)
     body:SetPoint("TOPLEFT", 12, BODY_TOP)
@@ -797,7 +904,51 @@ local function buildFrame(dialog)
     f.unsupported = label(f, "", 14, BODY_TOP, "GameFontDisable")
     buildMinMax(f)
     buildHeaderClick(f)
+    if skinned then paintSkinned(f) end
     return f
+end
+
+-- ── which instance shows ────────────────────────────────────────────────────────────────────────
+
+local function wantSkinned() return not NS.SkinDrawsDefault() end
+
+-- The instance the skin wants, built on first want, hidden until a show.
+local function instance(dialog, skinned)
+    local key = skinned and "skinFrame" or "stockFrame"
+    if not Panel[key] then
+        Panel[key] = buildFrame(dialog, skinned)
+        Panel[key]:Hide()
+    end
+    return Panel[key]
+end
+
+local function clearFocus(f)
+    for _, box in ipairs({ f.levelBox, f.ageBox, f.rangeBox }) do box:ClearFocus() end
+end
+
+-- Point Panel.frame at the instance the skin wants. The one it leaves is hidden, its focus dropped,
+-- and the one it takes shown when the other was. Answers true on a swap.
+local function choose(dialog)
+    local f = instance(dialog, wantSkinned())
+    local was = Panel.frame
+    Panel.frame = f
+    if not was or was == f then return false end
+    local shown = was:IsShown()
+    clearFocus(was)
+    was:Hide()
+    if shown then f:Show() end
+    return true
+end
+
+-- A skin change (the library fires it after the repaint): the instance follows, and the shown one is
+-- refreshed, which re-writes the colors read from tokens. Nothing is built while stood down; the
+-- stand-up's UpdateVisibility chooses again.
+local function onLooksChanged()
+    if not Panel.frame or stoodDown() then return end
+    local dialog = NS.Bridge.GetDialog()
+    if not dialog then return end
+    choose(dialog)
+    Panel.Refresh()
 end
 
 -- ── public surface ──────────────────────────────────────────────────────────────────────────────
@@ -809,8 +960,9 @@ function Panel.Create()
     local dialog = NS.Bridge.GetDialog()
     if not dialog then return nil end
     definePopups()
-    Panel.frame = buildFrame(dialog)
-    Panel.frame:Hide()
+    -- The skin's listener goes in with the first instance (no panel, nothing to follow before it).
+    NS.Skin.OnLooksChanged(onLooksChanged)
+    choose(dialog)
     Panel.Refresh()
     -- The optional EllesmereUI skin paints once the panel exists (it refuses unless every
     -- condition holds).
@@ -850,8 +1002,11 @@ function Panel.UpdateVisibility()
     local want = not stoodDown() and NS.Bridge.IsDialogShown() and NS.Bridge.IsDungeonCategory()
         and NS.Bridge.IsDungeonPanelActive()
     if want and not Panel.frame then Panel.Create() end
+    if not Panel.frame then return end
+    -- A skin change made while stood down (or before the panel's listener existed) takes effect here.
+    local dialog = want and NS.Bridge.GetDialog()
+    if dialog then choose(dialog) end
     local f = Panel.frame
-    if not f then return end
     -- A gate condition EllesmereUI's options turned on since the last show paints now.
     if want and NS.EUISkin then NS.EUISkin.TryApply() end
     f:SetShown(want and true or false)

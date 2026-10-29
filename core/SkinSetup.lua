@@ -27,6 +27,8 @@ local addonName, NS = ...
 --   NS.SKIN_SOURCE_OPTIONS  the source row's values, and NS.SKIN_OPTIONS the skin row's (every
 --   NS.SKIN_OPTIONS         registered skin, in the library's order). settings/Panel.lua reads both.
 --   NS.SKIN_FALLBACK        the host copy of the Ka0s Default tokens the degraded facade answers.
+--   NS.SkinDrawsDefault()   true while this owner draws Ka0s Default (and always without the
+--                           library): modules/Panel.lua shows its never-painted metal instance then.
 --   NS.SkinColor(name)      a color token as a call site writes it (three components when opaque).
 --   NS.SkinEscape(name)     a color token as a "|cffrrggbb" escape, rounded to the byte, so markup
 --                           written as a literal keeps its bytes on Ka0s Default (|cff808080).
@@ -214,6 +216,7 @@ if not Skin then
     S.BarStyle = function() return {} end
 
     NS.Skin = S
+    function NS.SkinDrawsDefault() return true end
     function NS.ApplySkinChoice() return false, false end
     function NS.ApplySkinIgnore() return false, false end
     function NS.ApplySkinOverride() return false end
@@ -228,6 +231,17 @@ Skin:RegisterOwner(addonName, {
     get = NS.SkinChoice,
     set = NS.WriteSkinChoice,
 })
+
+--- True while the owner draws Ka0s Default: the key the library paints it by is Ka0s Default's. That
+--- is `Skin:__DrawsKey`, the question `opts.stockDefault` asks, so an `eui` source before EllesmereUI
+--- paints (the live Ka0s Default fallback) answers true, and an EllesmereUI that paints false. The
+--- library documents it as internal and publishes no public form (reported upstream), so a copy
+--- without it is read from the applied choice: Ka0s Default on the Ka0s source.
+function NS.SkinDrawsDefault()
+    if type(Skin.__DrawsKey) == "function" then return Skin:__DrawsKey(addonName) == Skin.DEFAULT end
+    local source, skin = Skin:GetChoice(addonName)
+    return source ~= "eui" and skin == DEFAULT
+end
 
 -- The one line a reload request earns on the path that has no popup of its own (a profile event
 -- leaving an EllesmereUI that painted this session). The Skin tab raises the library's popup for

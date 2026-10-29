@@ -326,7 +326,7 @@ local function blocked()
     if not switchOn() then return "switch off" end
     local open, failing = NS.EUIBridge.GateOpen()
     if not open then return "condition '" .. tostring(failing) .. "' not met" end
-    if not (NS.Panel and NS.Panel.frame) then return "panel not built yet" end
+    if not (NS.Panel and NS.Panel.stockFrame) then return "panel not built yet" end
     return nil
 end
 
@@ -343,7 +343,7 @@ function EUISkin.TryApply()
         NS.DebugChanged("euiskin.skip", TAG, "skipped: %s", why)
         return false
     end
-    local f = NS.Panel.frame
+    local f = NS.Panel.stockFrame   -- the metal instance only: the skinned twin is the library's (Panel.lua)
     -- Fail closed: a primitive that raises leaves what it painted (only a reload removes a skin)
     -- and latches paintFailed, so the next show never paints the same widgets twice.
     local ok, res = pcall(function() return paintShell(f) + paintBody(f) end)
@@ -394,7 +394,7 @@ NS.FEATURE_EVENTS[#NS.FEATURE_EVENTS + 1] = { "DISPLAY_SIZE_CHANGED", "OnEUISkin
 -- On the way down: a min/max glyph brightened by a hover would stay bright, because its OnLeave
 -- hook returns while stood down. Put both back to the resting alpha.
 NS.STAND_DOWN[#NS.STAND_DOWN + 1] = function()
-    local f = NS.Panel and NS.Panel.frame
+    local f = NS.Panel and NS.Panel.stockFrame
     local mm = f and f.MaximizeMinimizeFrame
     if not isTable(mm) then return end
     for _, b in ipairs({ mm.MinimizeButton, mm.MaximizeButton }) do
