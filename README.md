@@ -50,8 +50,12 @@ in **Copy into search box**. Click it, press Ctrl+C, then Enter to jump to the s
 and Enter.
 
 Filter choices are saved per character, and presets load on any character. **Use the extension's
-filters** switches the filtering off without turning the addon off. If you use EllesmereUI, pick
-it as the skin source on the Skin tab and the panel takes your EllesmereUI theme once EllesmereUI's
+filters** switches the filtering off without turning the addon off.
+
+The panel and the debug console wear one of nine Ka0s skins, picked when you first log in or later on
+Settings → General → **Skin**. Ka0s Default, where every profile starts, keeps the panel in Premade
+Groups Filter's own metal look; the settings pages stay in the game's look unless you untick
+**Ignore settings panel** there. If you use EllesmereUI, pick it as the skin source on the Skin tab and the panel takes your EllesmereUI theme once EllesmereUI's
 third-party skinning is on for this addon (the tab shows what's missing); Premade Groups Filter's own
 EllesmereUI [skin](https://www.curseforge.com/wow/addons/premade-groups-filter-ellesmereui) makes
 PGF's window match. `/pgfe` opens the settings and `/pgfe help` lists the commands.

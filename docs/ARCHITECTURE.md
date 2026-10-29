@@ -16,13 +16,17 @@ PGF's Advanced Filter Expression, and injects its `pgfe_*` variables (and, witho
 the region variables) into PGF's per-result filter environment through one `hooksecurefunc`. Apply
 then clicks PGF's search button inside the hardware event.
 
-Optionally (`## OptionalDeps: EllesmereUI`), the attached panel is painted in the user's
-EllesmereUI theme, the way `PremadeGroupsFilter_EllesmereUI` paints PGF's own dialog, through
-EllesmereUI's public skinning API. Only when EllesmereUI (with its Blizzard Skin child), its
-third-party skinning, this addon's Third-Party Addons entry and PGF's own EllesmereUI skin are all
-on, and the *Use the EllesmereUI skin* switch (default on) is too: see
-[EllesmereUI seams](#ellesmereui-seams). Plan:
-[`superpowers/plans/2026-10-09-eui-skin.md`](superpowers/plans/2026-10-09-eui-skin.md).
+The attached panel, the debug console and (with *Ignore settings panel* off) the settings pages wear
+the LibKa0s-Skin-1.0 skin the player picks per profile on the General page's Skin tab or in the
+first-run picker (`core/SkinSetup.lua`). Under Ka0s Default the panel keeps PGF's metal look (a
+ratified deviation, [Documented deviations](#documented-deviations)); under the other eight skins it
+shows a skinned twin. Optionally (`## OptionalDeps: EllesmereUI`), EllesmereUI is the skin source:
+the library's `eui` provider paints the twin in the user's EllesmereUI theme, the way
+`PremadeGroupsFilter_EllesmereUI` paints PGF's own dialog, once EllesmereUI (with its Blizzard Skin
+child), its third-party skinning and this addon's Third-Party Addons entry are on: see
+[EllesmereUI seams](#ellesmereui-seams). The addon's own EllesmereUI bridge
+([`superpowers/plans/2026-10-09-eui-skin.md`](superpowers/plans/2026-10-09-eui-skin.md)) was
+retired by the skinning rollout (2026-10-29).
 
 Built to the Ka0s WoW Addon Standard: Ace3, vendored `LibKa0s` v1.80.0 (one setup file per adopted
 major), schema-driven master settings, the launcher, one stand-down latch, headless tests and
@@ -399,15 +403,14 @@ is kept line for line, blank edge lines included. No clauses means no block. Ove
   `pgfe_*` directly compares nil and should be cleared first.
 - PGF internals are not a public API: every touch is in `core/PGFBridge.lua`, nil-guarded, and a
   missing seam is reported as "PGF version not supported" rather than raising.
-- The EllesmereUI skin is one-way per session: EllesmereUI dispatches each skin once, and painted
-  art cannot be taken off live. Turning *Use the EllesmereUI skin* off after a paint asks for a
-  `/reload`, and so does a profile switch, copy or reset onto a profile with it off; a condition turned off in EllesmereUI's options (including PGF's own skin) leaves the
-  panel painted until a reload, while the status lines already show it off.
-- A condition turned on in EllesmereUI's options while the panel is built paints on the panel's next
-  show (EllesmereUI does not tell this addon when PGF's entry changes).
-- The skinned header-only collapse (EllesmereUI's 25px shell bar with its stretched atlas border),
-  the shell border's layering over the body, and the dropdowns' look are checked in game only
-  ([`smoke-tests.md`](smoke-tests.md), SKIN-*).
+- The EllesmereUI source is one-way per session: EllesmereUI dispatches each skin once, and painted
+  art cannot be taken off live. Leaving the `eui` source after a paint asks for a `/reload` (the
+  library's popup from the Skin tab, one chat line from a profile switch, copy or reset onto a
+  Ka0s-source profile), and a condition turned off in EllesmereUI's options leaves the panel painted
+  until a reload, while the Skin tab already shows it off.
+- The skinned twin's look under each skin and under EllesmereUI (its folded title band, the shell's
+  layering over the body, the dropdowns) is checked in game only
+  ([`smoke-tests.md`](smoke-tests.md), SKIN-11 to SKIN-32).
 - Best timed levels read 0 until the server answers the season-data request
   (`C_MythicPlus.RequestMapInfo`, sent once per episode by `Season.GetDungeons`). The client cannot
   tell a dungeon never timed from one whose best has not loaded yet: both answer no in-time level.

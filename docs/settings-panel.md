@@ -69,7 +69,10 @@ re-render.
 - **Skin** (the last tab): the library's `O.AppearanceTab`, drawn over the skip-render `skin.*` rows
   (`core/SkinSetup.lua` is the write seam): the source (Ka0s skins or EllesmereUI, with EllesmereUI's
   four conditions and their fixes), the nine skins, the font and texture overrides, the scope and
-  *Copy to every Ka0s addon*.
+  *Copy to every Ka0s addon*. *Ignore settings panel* is on in a new profile, so these pages stay
+  the client's until the player unticks it; the attached panel and the debug console follow the
+  skin either way. The first-run skin picker (`NS.MaybeShowSkinPicker`, once per profile while
+  `skin.pickerSeen` is false) offers the same choice at login, and its gear opens this tab.
 
 The header **Defaults** button runs the same confirmation, and its tooltip is the library's
 `Helpers.ResetAllTooltip()`, the same words *Reset all settings* carries (options-ui-§12); the addon
@@ -77,4 +80,6 @@ has no key bindings, so no tail.
 
 ### Profiles
 
-Untabbed by rule: AceConfigDialog draws AceDBOptions' table (`settings/Profiles.lua`).
+Untabbed by rule: AceConfigDialog draws AceDBOptions' table (`settings/Profiles.lua`). The
+renderer paints that tree for the skin owner after each `Open` (`NS.SkinPaintAceTree`), so it follows
+the skin like the other pages, unless *Ignore settings panel* is on.
