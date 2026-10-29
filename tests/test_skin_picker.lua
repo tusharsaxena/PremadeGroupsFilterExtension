@@ -115,6 +115,20 @@ test("skin picker: a held start is dropped by the stand-down", function()
     assertEqual(#calls, 0, "the stand-down dropped the held start")
 end)
 
+test("skin picker: a dropped held start lets go of its frame, and the next one makes its own", function()
+    -- red under: a retry frame the addon keeps for the session once the deferral drops (D11).
+    local NS, m, calls = spiedEnable({ inCombat = true })
+    local made, base = 0, m.CreateFrame   -- the mock is the addon's _G
+    m.CreateFrame = function(...) made = made + 1; return base(...) end
+    NS.HideSkinPicker()                       -- drops the held start (a stand-down step)
+    NS.MaybeShowSkinPicker()                  -- still in combat: held again
+    m.CreateFrame = base
+    assertEqual(made, 1, "the dropped deferral kept its frame, so no fresh one was made")
+    m.inCombat = false
+    m.__fire("PLAYER_REGEN_ENABLED")
+    assertEqual(#calls, 1, "the fresh frame shows it on the combat edge")
+end)
+
 test("skin picker: never while the addon is switched off", function()
     local NS, _, m = T.bootAddon()
     NS.addon.db.profile.enabled = false

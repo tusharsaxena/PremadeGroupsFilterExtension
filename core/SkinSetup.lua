@@ -205,8 +205,9 @@ end
 -- THE COMBAT RETRY IS A ONE-SHOT PRIVATE FRAME, NOT A FEATURE EVENT (D11). Every event the addon
 -- reacts to lives in NS.FEATURE_EVENTS (core/PGFE.lua), registered for as long as the addon stands
 -- up. This one is not a reaction the addon has while it runs: it exists only while a start is held,
--- is unregistered when it fires, and NS.HideSkinPicker (a stand-down step) drops it, so a stood-down
--- addon is registered for nothing (tests/test_disabled.lua).
+-- is unregistered and let go of when it fires, and NS.HideSkinPicker (a stand-down step) drops it
+-- the same way, so a stood-down addon is registered for nothing and keeps no retry frame
+-- (tests/test_disabled.lua, tests/test_skin_picker.lua); the next held start makes its own.
 --
 -- SEEN. The library calls `onClose` once per showing, by any route the player takes (Apply, its
 -- close control, the gear, Escape), and once for a picker still queued behind another Ka0s addon's
@@ -248,7 +249,7 @@ function NS.SkinPickerSpec()
 end
 
 local function dropPickerDeferral()
-    if pickerTarget then pickerTarget:UnregisterAllEvents() end
+    if pickerTarget then pickerTarget:UnregisterAllEvents(); pickerTarget = nil end
 end
 
 --- True while this profile has not closed the picker and the addon stands up.
