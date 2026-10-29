@@ -487,6 +487,24 @@ Total.
 - skin: a pick while stood down builds nothing; the stand-up shows the skin's instance
 - skin: modules/Panel.lua types no color: no literal SetTextColor, tooltip color or markup
 
+### test_skin_picker.lua (15)
+
+- skin picker: skin.pickerSeen defaults to false, a skip-render row on the Skin tab
+- skin picker: the spec names this owner, its seams, the General page's Skin tab, and no eye
+- skin picker: it shows once at login on an unseen profile, scheduling nothing
+- skin picker: a profile that has seen it shows nothing at login
+- skin picker: in combat a start waits for PLAYER_REGEN_ENABLED, once, on a private frame
+- skin picker: a held start is dropped by the stand-down
+- skin picker: never while the addon is switched off
+- skin picker: a new profile and a reset profile show it again; a seen one does not
+- skin picker: the player's close marks it seen; this addon's own hide does not
+- skin picker: the stand-down takes it down unmarked
+- skin picker: a profile that has seen it takes a shown picker down, unmarked
+- skin tools: the Options instance acquires through the library's owner proxy
+- skin tools: the Profiles page paints AceConfigDialog's tree for this owner
+- skin tools: a host release is chained onto the skin's restore, both run
+- skin tools: the debug console is painted for this owner
+
 ### test_reset.lua (5)
 
 - reset: Reset all settings resets only the active profile
@@ -599,6 +617,7 @@ Total.
 | test_settings_layout.lua | 9 |
 | test_skinsetup.lua | 19 |
 | test_skin.lua | 12 |
+| test_skin_picker.lua | 15 |
 | test_reset.lua | 5 |
 | test_diagnostics.lua | 6 |
 | test_vendor_sync.lua | 3 |
@@ -608,4 +627,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **470** |
+| **Total** | **485** |

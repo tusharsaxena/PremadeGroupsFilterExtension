@@ -289,7 +289,8 @@ local function addPGFSkinLink(scroll)
         end)
     end
     if eb then eb.__pgfeLinkActive = true end
-    box:SetCallback("OnRelease", function(w)
+    -- Chained onto the skin's own release restore (AceGUI keeps one callback per event name).
+    NS.SkinOnRelease(box, function(w)
         if w.editbox then w.editbox.__pgfeLinkActive = nil end
         if Settings.PGFSkinLinkBox == w then Settings.PGFSkinLinkBox = nil end
     end)

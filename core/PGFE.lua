@@ -50,6 +50,11 @@ end
 -- The three profile events share one reaction: migrations, the skin, panel refresh, and the latch re-read,
 -- because an incoming profile carries its own answer to `enabled`.
 local function reloadProfile(self)
+    -- FIRST, the first-run skin picker down, quietly (core/SkinSetup.lua): a showing belongs to the
+    -- profile it opened on, and taking it down puts back a pending preview (the stored skin, through
+    -- the library's revert), so it lands before NS.ApplySkinChoice below and the new profile's whole
+    -- pair is the last skin written. A new or reset profile still shows it, fresh, below.
+    if NS.HideSkinPicker then NS.HideSkinPicker() end
     self:RunMigrations()
     -- The incoming profile's skin (core/SkinSetup.lua), right after its migrations and before
     -- anything refreshes: Skin:SetChoice repaints every recorded frame and fires OnLooksChanged,
@@ -65,6 +70,10 @@ local function reloadProfile(self)
         NS.Lifecycle:Set(NS.HOLD_DISABLED, not (self.db and self.db.profile and self.db.profile.enabled))
         NS.Lifecycle:Reevaluate()
     end
+    -- The first-run skin picker (core/SkinSetup.lua): a new or reset profile starts from the
+    -- defaults, `skin.pickerSeen` false, so it shows; one that has seen it stays down. After the
+    -- latch, so a profile with the addon switched off shows nothing.
+    if NS.MaybeShowSkinPicker then NS.MaybeShowSkinPicker() end
     -- The incoming profile's EllesmereUI skin switch, through the switch's own handler: on paints
     -- (refused while stood down, so a disabled profile never gets the one-way paint), off after a
     -- paint asks for the reload. After the latch re-read, so the paint sees the final state.
@@ -172,6 +181,11 @@ function PGFE:OnEnable()
     if NS.Lifecycle then
         NS.Lifecycle:Set(NS.HOLD_DISABLED, not (self.db and self.db.profile and self.db.profile.enabled))
     end
+
+    -- The first-run skin picker (core/SkinSetup.lua), once at login on a profile that has not closed
+    -- it. After the latch, so a disabled addon shows nothing; in combat it holds for
+    -- PLAYER_REGEN_ENABLED. No timer: the addon schedules nothing at rest (tests/test_disabled.lua).
+    if NS.MaybeShowSkinPicker then NS.MaybeShowSkinPicker() end
 end
 
 -- The [Init] session summary (debug-logging-§5): name, version, schema, profile, then state.
