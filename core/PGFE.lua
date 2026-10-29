@@ -47,10 +47,19 @@ local function runAll(list)
     for _, fn in ipairs(list) do fn() end
 end
 
--- The three profile events share one reaction: migrations, panel refresh, and the latch re-read,
+-- The three profile events share one reaction: migrations, the skin, panel refresh, and the latch re-read,
 -- because an incoming profile carries its own answer to `enabled`.
 local function reloadProfile(self)
+    -- FIRST, the first-run skin picker down, quietly (core/SkinSetup.lua): a showing belongs to the
+    -- profile it opened on, and taking it down puts back a pending preview (the stored skin, through
+    -- the library's revert), so it lands before NS.ApplySkinChoice below and the new profile's whole
+    -- pair is the last skin written. A new or reset profile still shows it, fresh, below.
+    if NS.HideSkinPicker then NS.HideSkinPicker() end
     self:RunMigrations()
+    -- The incoming profile's skin (core/SkinSetup.lua), right after its migrations and before
+    -- anything refreshes: Skin:SetChoice repaints every recorded frame and fires OnLooksChanged,
+    -- whether or not the attached panel was ever built, so the skin cannot ride Panel.Refresh.
+    if NS.ApplySkinChoice then NS.ApplySkinChoice() end
     local S = self.Settings
     local H = S and S.Helpers
     if H and H.RefreshAll then H.RefreshAll() end
@@ -61,13 +70,10 @@ local function reloadProfile(self)
         NS.Lifecycle:Set(NS.HOLD_DISABLED, not (self.db and self.db.profile and self.db.profile.enabled))
         NS.Lifecycle:Reevaluate()
     end
-    -- The incoming profile's EllesmereUI skin switch, through the switch's own handler: on paints
-    -- (refused while stood down, so a disabled profile never gets the one-way paint), off after a
-    -- paint asks for the reload. After the latch re-read, so the paint sees the final state.
-    if NS.EUISkin then
-        local p = self.db and self.db.profile
-        NS.EUISkin.OnSwitch(p ~= nil and p.euiSkin == true)
-    end
+    -- The first-run skin picker (core/SkinSetup.lua): a new or reset profile starts from the
+    -- defaults, `skin.pickerSeen` false, so it shows; one that has seen it stays down. After the
+    -- latch, so a profile with the addon switched off shows nothing.
+    if NS.MaybeShowSkinPicker then NS.MaybeShowSkinPicker() end
 end
 
 -- Logged here, once (debug-logging-§10): a profile switch rewrites no row through the write seam.
@@ -101,6 +107,11 @@ function PGFE:OnInitialize()
 
     -- Before anything reads the profile (savedvariables-§1).
     self:RunMigrations()
+
+    -- The skin the active profile names (core/SkinSetup.lua), right after the store and its
+    -- migrations exist: the owner registered at file load, before AceDB, and has worn Ka0s Default
+    -- since. Before any page or the attached panel is built, so the first paint is the profile's.
+    if NS.ApplySkinChoice then NS.ApplySkinChoice() end
 
     if self.db.RegisterCallback then
         self.db.RegisterCallback(self, "OnProfileChanged", function(...) self:OnProfileChanged(...) end)
@@ -163,6 +174,11 @@ function PGFE:OnEnable()
     if NS.Lifecycle then
         NS.Lifecycle:Set(NS.HOLD_DISABLED, not (self.db and self.db.profile and self.db.profile.enabled))
     end
+
+    -- The first-run skin picker (core/SkinSetup.lua), once at login on a profile that has not closed
+    -- it. After the latch, so a disabled addon shows nothing; in combat it holds for
+    -- PLAYER_REGEN_ENABLED. No timer: the addon schedules nothing at rest (tests/test_disabled.lua).
+    if NS.MaybeShowSkinPicker then NS.MaybeShowSkinPicker() end
 end
 
 -- The [Init] session summary (debug-logging-§5): name, version, schema, profile, then state.

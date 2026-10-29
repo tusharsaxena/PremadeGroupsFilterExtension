@@ -28,7 +28,7 @@ local function readSource(rel)
 end
 
 local SOURCES = {
-    "core/Constants.lua", "core/Popup.lua", "modules/Panel.lua", "modules/EUISkin.lua",
+    "core/Constants.lua", "core/Popup.lua", "modules/Panel.lua",
     "settings/Panel.lua", "settings/Slash.lua", "settings/Schema.lua",
 }
 
@@ -40,7 +40,8 @@ test("layers: one table names the strata and every level offset", function()
     assertEqual(LAYERS.STRATA.POPUP, "FULLSCREEN_DIALOG", "a borrowed confirmation lifted while shown (T8)")
     assertEqual(LAYERS.LEVEL.ABOVE_HOST, 5)
     assertEqual(LAYERS.LEVEL.HEADER_ART, 0, "sunk to the panel's own level")
-    assertEqual(LAYERS.LEVEL.ACCENT_RING, 3)
+    -- red under: an offset left behind by the retired EllesmereUI bridge (PG-06)
+    assertEqual(LAYERS.LEVEL.ACCENT_RING, nil)
 end)
 
 -- PRE-Z01: the panel reads its host's strata; a PGF release that moves its dialog takes the panel along.
@@ -64,7 +65,7 @@ test("layers: a host that cannot answer its strata leaves the panel inheriting i
 end)
 
 -- PRE-Z06: the band the panel's frames sit in, in one place.
-test("layers: the panel's level band (L, header art L, chrome L+1, widgets L+2, ring +3)", function()
+test("layers: the panel's level band (L, header art L, chrome L+1, widgets L+2)", function()
     local NS, m, restore = layered("FULLSCREEN", 20)
     local f = NS.Panel.Create()
     local L = m.__layers(f).level
@@ -136,7 +137,7 @@ test("layers: every PGFE popup spec restores on hide", function()
     NS.addon.Settings.EnsureResetPopup()
     -- red under: no NS.RestorePopupStrata (nil == nil would pass the loop below)
     assertEqual(type(NS.RestorePopupStrata), "function")
-    for _, which in ipairs({ "PGFE_PRESET_SAVE_AS", "PGFE_PRESET_DELETE", NS.EUISkin.POPUP_RELOAD,
+    for _, which in ipairs({ "PGFE_PRESET_SAVE_AS", "PGFE_PRESET_DELETE",
             "PREMADEGROUPSFILTEREXTENSION_RESET_ALL" }) do
         local spec = m.StaticPopupDialogs[which]
         assertTrue(spec ~= nil, which .. " defined")

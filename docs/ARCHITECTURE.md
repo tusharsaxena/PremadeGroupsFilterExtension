@@ -16,15 +16,19 @@ PGF's Advanced Filter Expression, and injects its `pgfe_*` variables (and, witho
 the region variables) into PGF's per-result filter environment through one `hooksecurefunc`. Apply
 then clicks PGF's search button inside the hardware event.
 
-Optionally (`## OptionalDeps: EllesmereUI`), the attached panel is painted in the user's
-EllesmereUI theme, the way `PremadeGroupsFilter_EllesmereUI` paints PGF's own dialog, through
-EllesmereUI's public skinning API. Only when EllesmereUI (with its Blizzard Skin child), its
-third-party skinning, this addon's Third-Party Addons entry and PGF's own EllesmereUI skin are all
-on, and the *Use the EllesmereUI skin* switch (default on) is too: see
-[EllesmereUI seams](#ellesmereui-seams). Plan:
-[`superpowers/plans/2026-10-09-eui-skin.md`](superpowers/plans/2026-10-09-eui-skin.md).
+The attached panel, the debug console and (with *Ignore settings panel* off) the settings pages wear
+the LibKa0s-Skin-1.0 skin the player picks per profile on the General page's Skin tab or in the
+first-run picker (`core/SkinSetup.lua`). Under Ka0s Default the panel keeps PGF's metal look (a
+ratified deviation, [Documented deviations](#documented-deviations)); under the other eight skins it
+shows a skinned twin. Optionally (`## OptionalDeps: EllesmereUI`), EllesmereUI is the skin source:
+the library's `eui` provider paints the twin in the user's EllesmereUI theme, the way
+`PremadeGroupsFilter_EllesmereUI` paints PGF's own dialog, once EllesmereUI (with its Blizzard Skin
+child), its third-party skinning and this addon's Third-Party Addons entry are on: see
+[EllesmereUI seams](#ellesmereui-seams). The addon's own EllesmereUI bridge
+([`superpowers/plans/2026-10-09-eui-skin.md`](superpowers/plans/2026-10-09-eui-skin.md)) was
+retired by the skinning rollout (2026-10-29).
 
-Built to the Ka0s WoW Addon Standard: Ace3, vendored `LibKa0s` v1.77.0 (one setup file per adopted
+Built to the Ka0s WoW Addon Standard: Ace3, vendored `LibKa0s` v1.80.0 (one setup file per adopted
 major), schema-driven master settings, the launcher, one stand-down latch, headless tests and
 luacheck. Retail only (`## Interface: 120105`). The design is
 [`superpowers/specs/2026-10-09-m-plus-v0.1-design.md`](superpowers/specs/2026-10-09-m-plus-v0.1-design.md)
@@ -60,7 +64,7 @@ Recorded here because the plan names them provisionally.
 ## Module Map
 
 Single modular layout (`core/ defaults/ locales/ modules/ settings/`). Load order is the TOC's:
-libraries → `locales/enUS.lua` → the `core/` setup files → `core/PGFBridge.lua` → `core/EUIBridge.lua` → `defaults/` →
+libraries → `locales/enUS.lua` → the `core/` setup files (the skin seam `core/SkinSetup.lua` right under `core/CoreSetup.lua`) → `core/PGFBridge.lua` → `defaults/` →
 `modules/` → `settings/`, with every addon file's TOC line annotated. Full per-file
 table and the load-order reasoning: [`module-map.md`](module-map.md).
 
@@ -77,7 +81,7 @@ The feature modules, one purpose each:
 | Unit | File | Purpose |
 |---|---|---|
 | PGF bridge | `core/PGFBridge.lua` | The only file that touches PGF internals (see [PGF seams](#pgf-seams)) |
-| EllesmereUI bridge | `core/EUIBridge.lua` | The only file that reads EllesmereUI state: the skin's four gate conditions, with a label and a hint each (see [EllesmereUI seams](#ellesmereui-seams)) |
+| Skin seam | `core/SkinSetup.lua` | The LibKa0s-Skin-1.0 owner (the folder), the `skin.*` write seam, the first-run skin picker, and EllesmereUI as the library's `eui` provider reports it (see [EllesmereUI seams](#ellesmereui-seams)) |
 | Realm data | `defaults/Realms.lua` | `NS.RealmLists`: realm display names per portal and region bucket ([`realm-map-maintenance.md`](realm-map-maintenance.md)) |
 | Regions | `modules/Regions.lua` | Portal detection, realm normalization, leader name → region key |
 | Season | `modules/Season.lua` | Current-season dungeons: cmID, name, short keyword, best timed level |
@@ -89,8 +93,7 @@ The feature modules, one purpose each:
 | Apply | `modules/Apply.lua` | Apply and Clear: refusals first, then the bridge writes, then the search |
 | Region tags | `modules/RegionTags.lua` | The leader's / applicant's colored server region on Group Finder rows (replaces PremadeRegions' display) |
 | Panel | `modules/Panel.lua` | The frame attached under PGF's dialog |
-| EllesmereUI skin | `modules/EUISkin.lua` | Registers with EllesmereUI at load, keeps the facade `S`, and paints the panel once every condition and the switch hold |
-| Diagnostics | `modules/Diagnostics.lua` | The addon's sections of `/pgfe diagnostics` (identity, settings, filters, dependencies with the seam check and hook installs, registration, launcher); reads only, safe while stood down and in combat |
+| Diagnostics | `modules/Diagnostics.lua` | The addon's sections of `/pgfe diagnostics` (identity, settings, filters, dependencies with the seam check and hook installs, skin with the library's EllesmereUI gate, registration, launcher); reads only, safe while stood down and in combat |
 
 ## Settings Schema
 
@@ -108,12 +111,11 @@ Three AceDB scopes on `PremadeGroupsFilterExtensionDB`; full shape and defaults 
   a preview line of every tag in its current color and the portal's pickers, then *Reset region tag
   colors* (the twelve colors only). No alpha. `RegionTags.Hex`
   turns the stored color into the tag's hex, cached per stored table (every write stores a new one).
-- **`euiSkin`** (profile, default `true`, in `defaults/Profile.lua`): the *Use the EllesmereUI skin*
-  row on the General page's *EllesmereUI skin* tab (`settings/Panel.lua`). `disabledIf` while any
-  gate condition fails; its `validate` refuses `true` while one fails (off always passes, a bulk
-  reset never refused); `onChange` is `NS.EUISkin.OnSwitch` (on paints live, off after a paint asks
-  for a reload). A profile switch, copy or reset runs the same `OnSwitch` with the incoming value,
-  after the `enabled` latch re-read, so a disabled incoming profile is never painted.
+- **`skin.*`** (profile, `source`, `skin`, `ignorePanel`, `ignoreFonts`, `font`, `texture`,
+  `pickerSeen`): the skin this addon wears, skip-render rows the library's Skin tab draws (the
+  General page's last tab), written through the same seam (`core/SkinSetup.lua`). The old `euiSkin`
+  switch (the retired EllesmereUI bridge) was carried to `skin.source = "eui"` by schema step 2
+  (`core/Database.lua`) and deleted.
 - **Registries outside the seam** (architecture-§5), each written by one owner:
   - `global.presets` — a **structural registry** of named filter snapshots shared by every
     character. One registry writer, `modules/Presets.lua` (`Presets.Save`, `Presets.Delete`); no
@@ -131,22 +133,25 @@ Three AceDB scopes on `PremadeGroupsFilterExtensionDB`; full shape and defaults 
 
 None, by a ratified deviation from architecture-§4
 ([Documented deviations](#documented-deviations)). The two-feature-module threshold is crossed:
-`modules/Apply.lua`, `Panel.lua`, `EUISkin.lua`, `Filters.lua`, `Presets.lua`, `RegionTags.lua`,
+`modules/Apply.lua`, `Panel.lua`, `Filters.lua`, `Presets.lua`, `RegionTags.lua`,
 `Targeting.lua` and `EnvInject.lua`. The addon still defines no AceEvent messages, and modules call
 each other directly through `NS`, because each cross-module reaction has one sender and a required
 order that CallbackHandler's fan-out does not promise. There are three reaction sites:
 
 - **`reloadProfile`** (`core/PGFE.lua`, on the three AceDB profile callbacks) runs, in order,
-  `RunMigrations`, `Settings.Helpers.RefreshAll` / `RefreshProfilesPage`, `Panel.Refresh`, the
-  `enabled` latch re-read (`Lifecycle:Set` + `Reevaluate`) and `EUISkin.OnSwitch`. The latch is
-  re-read before the one-way EllesmereUI paint, so a disabled incoming profile is never painted. That order is pinned
-  by `tests/test_euiskin.lua` ("a profile switch to a disabled profile with the switch on paints
-  nothing").
+  `HideSkinPicker`, `RunMigrations`, `ApplySkinChoice` (the incoming profile's skin, which the
+  library repaints and announces itself), `Settings.Helpers.RefreshAll` / `RefreshProfilesPage`,
+  `Panel.Refresh`, the `enabled` latch re-read (`Lifecycle:Set` + `Reevaluate`) and
+  `MaybeShowSkinPicker`. The picker goes down before the incoming skin is applied (a pending preview
+  is put back first) and is offered again only after the latch re-read, so a disabled incoming
+  profile shows nothing (`tests/test_skin_picker.lua`).
 - **`Apply.OnFiltersToggled`** (`modules/Apply.lua`, the `filtersActive` onChange) returns at once
   while stood down; otherwise it runs `Apply.Run` / `Apply.Clear` when the dungeon panel is the
   active one, and then `Panel.Refresh`, so the PGF block is written or cleared before the panel
   readout refreshes.
-- **`Panel.Create` / `Panel.UpdateVisibility`** (`modules/Panel.lua`) call `EUISkin.TryApply`.
+- **`NS.Skin.OnLooksChanged`** (`modules/Panel.lua`, registered with the first panel instance): the
+  library fires it after a skin change repainted the recorded frames, and the panel swaps between its
+  metal instance and its skinned twin.
 
 ## Slash Commands
 
@@ -185,12 +190,17 @@ are setup and stay up while disabled.
 | `CHALLENGE_MODE_COMPLETED` | `OnPanelSeasonData` | `modules/Panel.lua` | Same, after a key finishes |
 | `MYTHIC_PLUS_CURRENT_AFFIX_UPDATE` | `OnPanelSeasonData` | `modules/Panel.lua` | Same, when the season's affix data arrives (it can land after the map table) |
 | `PLAYER_ENTERING_WORLD` | `OnPanelEnteringWorld` | `modules/Panel.lua` | Re-arms the season-data request (`Season.ResetRequest()`), then `Panel.UpdateVisibility()` |
-| `UI_SCALE_CHANGED` | `OnEUISkinScale` | `modules/EUISkin.lua` | Re-lays the skinned checkboxes' accent ring and block in whole pixels (nothing to do unless skinned) |
-| `DISPLAY_SIZE_CHANGED` | `OnEUISkinScale` | `modules/EUISkin.lua` | Same |
 
-EllesmereUI's skin callback is not an event: `modules/EUISkin.lua` registers it at file load with
-`EllesmereUI.RegisterSkin`, and EllesmereUI calls it once per session (PLAYER_LOGIN, or live from
-its options). The skin's own hooks are on this addon's frames (see [Taint Notes](#taint-notes)).
+The first-run skin picker's combat retry is not a feature event either: when `NS.MaybeShowSkinPicker`
+(`core/SkinSetup.lua`) is asked to show in combat, it registers `PLAYER_REGEN_ENABLED` on a one-shot
+private frame, unregistered and let go of when it fires and by the stand-down (`NS.HideSkinPicker`),
+so a stood-down addon is registered for nothing and keeps no retry frame; the next held start makes its
+own. The picker itself shows from `OnEnable` and after every profile
+event, on a profile whose `skin.pickerSeen` is false, never while stood down.
+
+EllesmereUI's skin callback is not this addon's: LibKa0s-Skin-1.0 registers the owner with
+`EllesmereUI.RegisterSkin` when `core/SkinSetup.lua` calls `RegisterOwner` at file load, and takes
+the facade when EllesmereUI calls back (see [EllesmereUI seams](#ellesmereui-seams)).
 
 Besides events, four `hooksecurefunc` hooks run (see [Taint Notes](#taint-notes)): the env post-hook;
 the dialog hook (`SwitchToPanel`, plus `OnShow`/`OnHide` script hooks), which calls
@@ -225,16 +235,12 @@ hook went in is kept on the module that installed it (`EnvInject.hooked`, `Panel
   `PremadeGroupsFilterDialog.RefreshButton:Click()` inside the Apply button's `OnClick` or a typed
   `/pgfe apply`.
 - Apply refuses under `InCombatLockdown()`. The settings panel's combat lock is the library's.
-- The EllesmereUI skin (`modules/EUISkin.lua`) touches only frames `modules/Panel.lua` created,
-  through EllesmereUI's facade primitives: art removal is alpha-only and overlays are added, never
-  `Hide` or `SetParent`. Its hooks (`OnClick` / `OnEnter` / `OnLeave` `HookScript`s and a
-  `hooksecurefunc` on each skinned checkbox's own `SetChecked`) return at once while stood down, and
-  the paint itself refuses while stood down (the stand-up retries). The `EllesmereUI.RegisterSkin`
-  callback cannot be unregistered, so it survives a stand-down and gates itself: `onFacade` keeps
-  the facade, registers `repaintLooks` with `S.OnLooksChanged` (it returns at once while stood
-  down) and calls `TryApply`, which refuses while stood down, and the `NS.STAND_UP` row
-  retries (`modules/EUISkin.lua:396-425`; upstream WowAddonStandards #10). It never touches PGF's dialog;
-  that is `PremadeGroupsFilter_EllesmereUI`'s job.
+- Under the `eui` source the library's provider hands this addon's own frames to EllesmereUI's
+  facade (the panel's skinned twin, the library's windows it draws for the owner); it never hands
+  over an AceGUI widget or a shared frame, and it never touches PGF's dialog, which is
+  `PremadeGroupsFilter_EllesmereUI`'s job. EllesmereUI's callback cannot be unregistered; arriving
+  while the addon is stood down it repaints only frames already recorded (no panel is built while
+  stood down; DECISIONS D10 of the skinning rollout, pinned by `tests/test_disabled.lua`).
 - `core/Popup.lua` lifts a shown Blizzard `StaticPopupN` frame's strata while the panel is visible
   and puts back, on the popup's `OnHide`, the strata it found (frame-layering-§4's lift-and-restore of a
   borrowed shared frame). StaticPopups are not protected; the recorded strata lives in a weak-keyed
@@ -272,37 +278,39 @@ When the dialog is minimized the dungeon panel is not the active panel (`SwitchT
 
 ## EllesmereUI seams
 
-Every read of EllesmereUI state is in `core/EUIBridge.lua`, read at call time and nil-guarded; the
-only EllesmereUI call is `EllesmereUI.RegisterSkin` in `modules/EUISkin.lua`, presence-guarded.
-Read against EllesmereUI **9.4** (`EllesmereUI_SharedHelpers.lua`,
-`EllesmereUIBlizzardSkin/EllesmereUIBlizzardSkin_SkinAPI.lua`, `SKINNING_API.md`) and
-`PremadeGroupsFilter_EllesmereUI` 1.1.0 (`Skin.lua`). Nothing is ever written.
+Since the skinning rollout (PG-06, owner ruling O4, 2026-10-29) the addon has no EllesmereUI code of
+its own: `core/EUIBridge.lua` and `modules/EUISkin.lua` are retired. EllesmereUI is one **source** of
+LibKa0s-Skin-1.0 (`skin.source = "eui"`, skinning-§5), and everything the old bridge did is the
+library's:
 
-| Condition (status line) | Read | Notes |
-|---|---|---|
-| EllesmereUI and its Blizzard Skin module are loaded | `EllesmereUI.RegisterSkin` is a function and `C_AddOns.IsAddOnLoaded("EllesmereUIBlizzardSkin")` | The child holds the dispatcher; without it `RegisterSkin` only queues. Every condition below also needs this one |
-| EllesmereUI third-party skinning is on | `EllesmereUIDB.thirdPartySkinsOff` not truthy | Mirrors the dispatcher's `MasterOn` (SkinAPI.lua:32-35) exactly: nil = on, any truthy value (a `1` from an import too) = off |
-| This addon's Third-Party Addons entry is on | `EllesmereUIDB.thirdPartySkinAddons["PremadeGroupsFilterExtension"]` not false | Mirrors `AddonOn` (SkinAPI.lua:37-41); the entry is listed because we register under the folder name |
-| PGF's own EllesmereUI skin is on | `C_AddOns.IsAddOnLoaded("PremadeGroupsFilter_EllesmereUI")` and `thirdPartySkinAddons["PremadeGroupsFilter"]` not false | `Skin.lua` registers as `PremadeGroupsFilter`; keeps PGF's window and this panel matched |
+- **Registration.** `Skin:RegisterOwner` (`core/SkinSetup.lua`, at file load) registers the folder
+  name with `EllesmereUI.RegisterSkin`, so the player's existing entry in EllesmereUI's Third-Party
+  Addons list carries over. `## OptionalDeps: EllesmereUI` stays.
+- **The gate.** `Skin:GetEUIStatus(owner)` answers the four conditions (`eui`, `master`, `own`,
+  `facade`), which the Skin tab draws with their fixes; `NS.SkinEUIStatus()` publishes it. The
+  library's `SkinEUI.lua` is the one file that reads EllesmereUI's saved variables
+  (library-stack-§6); this addon never does (anti-pattern #107, pinned by
+  `tests/test_skin_eui.lua`).
+- **The paint.** Once EllesmereUI paints the owner (`NS.SkinEUIPainted()`), `NS.SkinDrawsDefault()`
+  answers false and the panel shows its skinned twin, whose recorded primitives go to EllesmereUI's
+  facade; the metal instance is never handed to it. The twin keeps the host geometry: 24px check
+  buttons, flush under the dialog, and a collapsed height of EllesmereUI's 25px shell bar
+  (`EUI_SHELL_HEADER_H`, `modules/Panel.lua`). Before EllesmereUI paints, the `eui` source draws the
+  stored skin (the library's live fallback): the metal instance on Ka0s Default, the twin on any other.
+  The answer is built from public API (`GetChoice`, `GetEUIStatus`, `GetSkin`), never the library's
+  internal draws-key. Leaving `eui` after a paint asks for a reload (the library's popup from the
+  Skin tab; one chat line from a profile event).
+- **The migration.** Schema step 2 (`core/Database.lua`) carried `profile.euiSkin` to
+  `skin.source = "eui"` on every profile, where EllesmereUI is present and the old switch was not an
+  explicit `false` (DECISIONS D3).
+- **Premade Groups Filter's own EllesmereUI skin** is no longer a gate condition (the library's gate
+  has exactly four). While EllesmereUI is loaded, the Filters tab says whether
+  `PremadeGroupsFilter_EllesmereUI` is loaded, installed but disabled, or missing (with its
+  CurseForge link), from `C_AddOns` only (`settings/Panel.lua`, DECISIONS D2).
 
-The facade `S` (apiVersion 3) is kept from the callback; the paint uses `Shell`, `FadeNineSlice`,
-`FadeRegions`, `Checkbox`, `EditBox`, `Dropdown`, `Button`, `StateButtonLabel`, `Font`, `White`,
-`GetAccentColor`, `GetFont` and `OnLooksChanged`. The paint checks the facade's shape first: a
-facade missing any of those primitives or getters except `OnLooksChanged` (optional: without it
-the paint just does not follow live theme changes) is refused before anything is painted, and the
-panel stays stock. The paint itself is pcall'd and fails closed: a primitive that raises logs
-`paint failed`, latches, and is never retried (a retry would skin the same widgets twice); turning
-the switch off then offers the reload that drops the partial paint. EllesmereUI skins the Blizzard
-menus the dropdowns open and the preset StaticPopups globally, under its own *popups and menus*
-switch.
-
-**Standards note (ratified deviation).** Reading `EllesmereUIDB` departs from library-stack-§6 /
-anti-pattern #29 ("MUST NOT read a suite's ... SavedVariables"). EllesmereUI has no public query
-that works before it dispatches (`S.IsEnabled()` exists only after the callback, and covers only the
-master switch and our own entry, never PGF's), and the owner's gate (plan, owner decision 1) needs
-all three switch reads. The reads are read-only, call-time, nil-guarded and confined to
-`core/EUIBridge.lua`. Ratified by the owner on 2026-10-09: see
-[Documented deviations](#documented-deviations).
+The old bridge's own decorations (the accent ring on checked boxes, the pixel-snapped mark and its
+scale re-layout, the minus and plus glyphs on the arrows, the 12pt box font) are gone: under `eui`
+the controls are EllesmereUI's own (DECISIONS D4).
 
 ## Frame layering
 
@@ -316,8 +324,7 @@ first:
   menus (FULLSCREEN_DIALOG), tooltips (TOOLTIP).
 - **The attached panel, a host-matched surface:** PGF's dialog strata, read from the dialog
   (FULLSCREEN today), at the dialog's level + `LEVEL.ABOVE_HOST` = L. Inside it: header art at L
-  (`LEVEL.HEADER_ART`), body, min/max and header click at L+1, widgets at L+2, the EllesmereUI accent
-  ring at check button + `LEVEL.ACCENT_RING`.
+  (`LEVEL.HEADER_ART`), body, min/max and header click at L+1, widgets at L+2.
 - **PGFE popups while the panel is visible:** every PGFE `StaticPopup_Show` goes through
   `NS.ShowPopup` (`core/Popup.lua`), which lifts the shared popup frame to `STRATA.POPUP` while the
   panel is visible, and each PGFE popup spec's `OnHide` (`NS.RestorePopupStrata`) puts back the strata
@@ -399,15 +406,14 @@ is kept line for line, blank edge lines included. No clauses means no block. Ove
   `pgfe_*` directly compares nil and should be cleared first.
 - PGF internals are not a public API: every touch is in `core/PGFBridge.lua`, nil-guarded, and a
   missing seam is reported as "PGF version not supported" rather than raising.
-- The EllesmereUI skin is one-way per session: EllesmereUI dispatches each skin once, and painted
-  art cannot be taken off live. Turning *Use the EllesmereUI skin* off after a paint asks for a
-  `/reload`, and so does a profile switch, copy or reset onto a profile with it off; a condition turned off in EllesmereUI's options (including PGF's own skin) leaves the
-  panel painted until a reload, while the status lines already show it off.
-- A condition turned on in EllesmereUI's options while the panel is built paints on the panel's next
-  show (EllesmereUI does not tell this addon when PGF's entry changes).
-- The skinned header-only collapse (EllesmereUI's 25px shell bar with its stretched atlas border),
-  the shell border's layering over the body, and the dropdowns' look are checked in game only
-  ([`smoke-tests.md`](smoke-tests.md), SKIN-*).
+- The EllesmereUI source is one-way per session: EllesmereUI dispatches each skin once, and painted
+  art cannot be taken off live. Leaving the `eui` source after a paint asks for a `/reload` (the
+  library's popup from the Skin tab, one chat line from a profile switch, copy or reset onto a
+  Ka0s-source profile), and a condition turned off in EllesmereUI's options leaves the panel painted
+  until a reload, while the Skin tab already shows it off.
+- The skinned twin's look under each skin and under EllesmereUI (its folded title band, the shell's
+  layering over the body, the dropdowns) is checked in game only
+  ([`smoke-tests.md`](smoke-tests.md), SKIN-11 to SKIN-32).
 - Best timed levels read 0 until the server answers the season-data request
   (`C_MythicPlus.RequestMapInfo`, sent once per episode by `Season.GetDungeons`). The client cannot
   tell a dungeon never timed from one whose best has not loaded yet: both answer no in-time level.
@@ -466,11 +472,10 @@ deviation not in this table is not ratified.
 
 | Rule | What differs | Why | Decided | Re-check trigger |
 |---|---|---|---|---|
-| library-stack-§6, anti-patterns #29 | `core/EUIBridge.lua` reads EllesmereUI's SavedVariables: `EllesmereUIDB.thirdPartySkinsOff` and `EllesmereUIDB.thirdPartySkinAddons[...]` (our entry and PGF's skin's). Read-only, at call time, nil-guarded, in that one file; never written | The optional EllesmereUI skin's gate and its settings status lines must show the master Third-Party switch, our own entry and PGF's skin's entry separately (owner decision 1 in [`superpowers/plans/2026-10-09-eui-skin.md`](superpowers/plans/2026-10-09-eui-skin.md#owner-decisions-2026-10-09) -> `## Owner decisions (2026-10-09)`, ratified at that plan's step 6a; and the "turned off in EllesmereUI" state). EllesmereUI exposes no API for them before it dispatches: `S.IsEnabled()` arrives only with the skin callback, merges the master switch with our entry, and cannot see PGF's entry | 2026-10-09 | EllesmereUI ships a public query for its third-party switches, or the standard gains a carve-out for an optional integration reading the suite's own on/off switches |
 | library-stack-§6, toc-file-§1 | Hard `## Dependencies: PremadeGroupsFilter`; the addon reads/writes PGF state and hooks PGF's env builder | It is an extension of PGF and has no function without it (owner requirement, [`superpowers/specs/2026-10-09-m-plus-v0.1-design.md`](superpowers/specs/2026-10-09-m-plus-v0.1-design.md) §1 item 5 (the requirement) and §2 (recorded as a user-requirement deviation)) | 2026-10-09 | PGF ships a public API, or the standard gains an extension-addon rule |
 | architecture-§5 | The attached panel's per-character filter options (`char.filters`) and `profile.panelCollapsed` are set by the panel's own controls, outside the schema write seam, and no settings-page row or CLI path addresses them. Writers of `char.filters`: `Filters.Set`, `Filters.ToggleRegion` / `ClearRegions`, `Filters.TogglePlaystyle` / `ClearPlaystyles`, `Filters.ToggleComposition` / `ClearComposition` and `Filters.ApplySmartLevel` (`modules/Filters.lua`), reached from the panel controls and from `/pgfe apply` (`modules/Apply.lua` -> `ApplySmartLevel`), plus `Presets.Load` (`modules/Presets.lua`), which refills the table in place. Writer of `profile.panelCollapsed`: `setCollapsed` (`modules/Panel.lua`), from the min/max arrow and the header-strip click | Per-character scope is an owner requirement that the schema seam (profile and global roots only) cannot hold; presets snapshot and refill `char.filters` whole, keeping its identity; the panel is a feature surface attached to PGF's dialog, not a settings page (issue #10; audit `docs/audits/2026-10-10/` PGE-02) | 2026-10-10 (owner) | A filter option or `panelCollapsed` gains a settings-page row or a get/set CLI path, or LibKa0s-Schema gains a char root |
-| architecture-§4, anti-patterns #19 | No AceEvent message bus, although the two-feature-module threshold is crossed (Apply, Panel, EUISkin, Filters, Presets, RegionTags, Targeting, EnvInject). Modules call each other through `NS`. The cross-module reactions: the shell's `reloadProfile` (`core/PGFE.lua`, on the three AceDB profile callbacks) fans out, in order, to `RunMigrations`, `Settings.Helpers.RefreshAll` / `RefreshProfilesPage`, `Panel.Refresh`, the `enabled` latch re-read (`Lifecycle:Set` + `Reevaluate`) and `EUISkin.OnSwitch`; `Apply.OnFiltersToggled` (the `filtersActive` onChange) returns at once while stood down; otherwise it runs `Apply.Run` / `Apply.Clear` only while the dungeon panel is the active one, and then calls `Panel.Refresh`; `Panel.Create` / `Panel.UpdateVisibility` call `EUISkin.TryApply` | Every reaction has one sender and a required order that CallbackHandler's fan-out does not promise: `reloadProfile` must re-read the latch before the one-way EllesmereUI paint so a disabled incoming profile is never painted, and `Apply.OnFiltersToggled` must write or clear the PGF block before the panel readout refreshes. `reloadProfile` has several receivers, but none its sender should not know about, and with no messages defined the CallbackHandler clobber §4 guards against cannot occur (issue #10; audit `docs/audits/2026-10-10/` PGE-03) | 2026-10-10 (owner) | A reaction gains an order-independent receiver the sender should not name, a module outside the shell and Apply needs to hear profile-changed or filters-toggled, or the standard adds an ordered-dispatch carve-out |
-| standalone-windows; library-stack-§8; options-ui-§15 | The attached panel (`modules/Panel.lua` `buildFrame`) takes PGF's dialog chrome when unskinned (`PortraitFrameTemplateMinimizable` with the `ButtonFrameTemplateNoPortraitMinimizable` border layout) and EllesmereUI's shell when skinned (`modules/EUISkin.lua`), not the Ka0s window edge. The skinned min/max control draws the Blizzard atlases `UI-QuestTrackerButton-Secondary-Collapse` and `UI-QuestTrackerButton-Secondary-Expand` (`EUISkin.lua` `COLLAPSE_ATLAS` / `EXPAND_ATLAS`) to match EllesmereUI's own minus and plus, not the LibKa0s catalog's minimize / expand glyphs (`libs/LibKa0s/Media.lua:94`). The panel is parented and anchored to PGF's dialog, is not movable and persists no geometry. The General page has no General visibility row (`settings/Panel.lua` `omit = { visibility = true }`): the panel shows only with PGF's dialog on the dungeon category, and the addon holds no visibility state | An extension surface must read as part of the host window it attaches to; its visibility is the host's, so a visibility setting would only duplicate Enable and `filtersActive` (issue #18; audit `docs/audits/2026-10-10/` PGE-17, PGE-19, PGE-26) | 2026-10-10 (owner) | The panel becomes independently shown or movable, or the standard gains an attached-panel or extension-surface rule |
+| architecture-§4, anti-patterns #19 | No AceEvent message bus, although the two-feature-module threshold is crossed (Apply, Panel, Filters, Presets, RegionTags, Targeting, EnvInject). Modules call each other through `NS`. The cross-module reactions: the shell's `reloadProfile` (`core/PGFE.lua`, on the three AceDB profile callbacks) fans out, in order, to `HideSkinPicker`, `RunMigrations`, `ApplySkinChoice`, `Settings.Helpers.RefreshAll` / `RefreshProfilesPage`, `Panel.Refresh`, the `enabled` latch re-read (`Lifecycle:Set` + `Reevaluate`) and `MaybeShowSkinPicker`; `Apply.OnFiltersToggled` (the `filtersActive` onChange) returns at once while stood down; otherwise it runs `Apply.Run` / `Apply.Clear` only while the dungeon panel is the active one, and then calls `Panel.Refresh` | Every reaction has one sender and a required order that CallbackHandler's fan-out does not promise: `reloadProfile` must take the first-run skin picker down before the incoming skin is applied and offer it again only after the latch re-read, so a disabled incoming profile shows nothing, and `Apply.OnFiltersToggled` must write or clear the PGF block before the panel readout refreshes. `reloadProfile` has several receivers, but none its sender should not know about, and with no messages defined the CallbackHandler clobber §4 guards against cannot occur (issue #10; audit `docs/audits/2026-10-10/` PGE-03) | 2026-10-10 (owner) | A reaction gains an order-independent receiver the sender should not name, a module outside the shell and Apply needs to hear profile-changed or filters-toggled, or the standard adds an ordered-dispatch carve-out |
+| standalone-windows; library-stack-§8; options-ui-§15 | The attached panel (`modules/Panel.lua` `buildFrame`) takes PGF's dialog chrome under Ka0s Default (`PortraitFrameTemplateMinimizable` with the `ButtonFrameTemplateNoPortraitMinimizable` border layout, the metal instance no skin primitive touches), not the Ka0s window edge; under every other skin and under EllesmereUI once it paints, its skinned twin follows the skin (the skinning rollout's PG-02 and PG-06). The panel is parented and anchored to PGF's dialog, is not movable and persists no geometry. The General page has no General visibility row (`settings/Panel.lua` `omit = { visibility = true }`): the panel shows only with PGF's dialog on the dungeon category, and the addon holds no visibility state | An extension surface must read as part of the host window it attaches to; its visibility is the host's, so a visibility setting would only duplicate Enable and `filtersActive` (issue #18; audit `docs/audits/2026-10-10/` PGE-17, PGE-19, PGE-26) | 2026-10-10 (owner) | The panel becomes independently shown or movable, or the standard gains an attached-panel or extension-surface rule |
 | frame-layering-§1 | The attached panel takes PGF's dialog strata (FULLSCREEN today, read from the dialog in `modules/Panel.lua` `layerWithDialog`), so when the Group Finder stays open under `/pgfe config` it, and PGF's dialog, draw over the Blizzard Settings panel (HIGH). For the same reason the LibKa0s debug console (DIALOG) can sit under the panel while both are open; its descriptor takes no strata (LibKa0s v1.77.0) | The panel must layer with the host window it is part of (the host-matched surface of frame-layering-§1), and PGF's own dialog covers the Settings panel the same way; lowering the panel would let PGF's FULLSCREEN dialog draw over the panel's title strip. The console case is developer-facing only (item 030 analysis PRE-S05, PRE-S09; change PRE-Z08) | 2026-10-24 (owner, item 030) | PGF moves its dialog off FULLSCREEN, opening the Settings panel is found to close the Group Finder, or the LibKa0s DebugLog descriptor gains a `strata` field |
 | `performance-§12` | No performance harness is wired: no `core/PerfSetup.lua`, no `PremadeGroupsFilterExtensionPerfDB` (the TOC declares one SavedVariables global), no `perf` verb registration (`perf` stays reserved; `/pgfe perf` answers with the library's unknown-command line and the index), no suspend/resume contract (production takes only the `disabled` hold), and no `docs/perf-analysis/`. `libs/LibKa0s/` stays vendored whole apart from `media/icons`, pruned to the declaration, `Perf.lua` included, and `docs/performance.md` stays as the one-screen page. The offline `tests/perf.lua` is shipped anyway (it suspends nothing, ships nothing to the client and adds no SavedVariable), so the runner's `perf` suite reads `pass` rather than this exemption's skip | **Criterion (a) plus (b).** (a): the committed whole-repo sweep of `RegisterEvent` / `SetScript("OnUpdate"` / `C_Timer`, with every `hooksecurefunc` / `HookScript` site, in [`performance.md`](./performance.md), sweep at `2c86d49`: no `OnUpdate` handler, no timer of any kind (AceTimer removed, C-35), one registration site over eight `NS.FEATURE_EVENTS` rows that each do one small refresh, hooks that run on the player's own Group Finder actions, and `Apply` refusing in combat; `tests/perf.lua`'s `combatEvents` scenario measures the per-event cost. (b): the capture windows open on the player's combat state (performance-§7), so every declared bucket would read `0.000` by construction. Owner checkpoint D1 (C-09, issue #5; audit `docs/audits/2026-10-10/` PGE-09) | 2026-10-10 (owner) | The first `OnUpdate` handler, repeating ticker, or in-combat event handler doing real work re-arms the full wiring MUST (performance-§12): wire `core/PerfSetup.lua`, `PremadeGroupsFilterExtensionPerfDB`, the `perf` verb and the suspend contract, and retire this row |
 

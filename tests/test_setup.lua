@@ -46,7 +46,7 @@ end)
 test("setup: migrations stamp the schema version", function()
     local NS = T.bootAddon()
     assertEqual(NS.addon.db.global.schemaVersion, NS.SCHEMA_VERSION)
-    assertEqual(NS.SCHEMA_VERSION, 1)
+    assertEqual(NS.SCHEMA_VERSION, 2, "2: profile.euiSkin carried to skin.source (PG-06)")
 end)
 
 test("setup: the Master controls rows are in the schema, frameless", function()

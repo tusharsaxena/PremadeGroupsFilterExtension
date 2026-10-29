@@ -29,7 +29,14 @@ local PINNED = {
     { "regionColors.spa",     "color", "3399ff" },
     { "regionColors.por",     "color", "8788ee" },
     { "regionColors.rus",     "color", "a330c9" },
-    { "euiSkin",              "bool",  "true" },
+    -- PG-01 (the skinning rollout): the Skin tab's seven rows, appended last (settings/Panel.lua).
+    { "skin.source",          "string", "ka0s" },
+    { "skin.skin",            "string", "ka0s" },
+    { "skin.ignorePanel",     "bool",  "true" },
+    { "skin.ignoreFonts",     "bool",  "false" },
+    { "skin.font",            "string", "" },
+    { "skin.texture",         "string", "" },
+    { "skin.pickerSeen",      "bool",  "false" },
 }
 
 local function defaultText(row)
@@ -164,25 +171,73 @@ test("layout: the filters switch reads true on both surfaces", function()
     assertEqual(L.REGIONS, "Server regions", "the panel's filter keeps its name")
 end)
 
-test("layout: the EllesmereUI switch points at the conditions below it", function()
-    local NS = T.newAddon()
-    local row = NS.addon.Settings.Helpers.FindSchema("euiSkin")
-    -- red under: "listed above"
-    assertTrue(row.tooltip:find("Needs every condition listed below.", 1, true) ~= nil, row.tooltip)
+-- The Filters tab's pointer to Premade Groups Filter's own EllesmereUI skin (PG-06, DECISIONS D2):
+-- advice, not a gate, and only while EllesmereUI is loaded.
+local function filtersTexts(NS, m)
+    local texts, boxes = {}, {}
+    for _, w in ipairs(flatten(openTab(NS, m, "Filters"))) do
+        if w.type == "Label" and type(w.text) == "string" and w.text ~= "" then texts[#texts + 1] = w.text end
+        if w.type == "EditBox" then boxes[#boxes + 1] = w end
+    end
+    return texts, boxes
+end
+
+test("layout: without EllesmereUI the Filters tab carries no PGF skin pointer", function()
+    local NS, _, m = T.enableAddon{}
+    local texts, boxes = filtersTexts(NS, m)
+    assertEqual(#boxes, 0)
+    for _, t in ipairs(texts) do assertTrue(t:find("EllesmereUI", 1, true) == nil, t) end
 end)
 
-test("layout: the PGF skin link sits right under condition 4, before the gap and the state line", function()
+test("layout: under EllesmereUI a missing PGF skin is named, with its link right under it", function()
     local NS, _, m = T.enableAddon{ mock = function(mm) mm.installEUI{ pgfSkin = "missing" } end }
-    local kids = openTab(NS, m, "EllesmereUI skin").scroll.children
-    local boxAt = firstIndex(kids, function(w) return w.type == "EditBox" end)
-    local stateAt = firstIndex(kids, function(w)
-        return w.type == "InteractiveLabel" and type(w.text) == "string" and w.text:find("The skin is", 1, true) ~= nil
-    end)
-    assertTrue(boxAt ~= nil and stateAt ~= nil, "the link box and the state line")
-    -- red under: addPGFSkinLink called after the state line
-    assertEqual(kids[boxAt - 1].type, "InteractiveLabel", "condition 4 is right above the link")
-    assertEqual(kids[boxAt + 1].type, "SimpleGroup"); assertEqual(kids[boxAt + 1].height, 8)
-    assertEqual(stateAt, boxAt + 2)
+    local texts, boxes = filtersTexts(NS, m)
+    -- red under: renderPGFSkinAdvice dropped from AFTER_GROUP[FILTER_GROUP]
+    assertTrue(texts[#texts]:find("Premade Groups Filter - EllesmereUI Skin is not installed", 1, true) ~= nil,
+        texts[#texts])
+    assertEqual(#boxes, 1, "the CurseForge link box")
+    assertEqual(boxes[1].text, "https://www.curseforge.com/wow/addons/premade-groups-filter-ellesmereui")
+end)
+
+test("layout: the link box selects on focus and leaves the pooled editbox frame as it found it", function()
+    -- red under: a HookScript (it cannot be undone) or a field left on AceGUI's pooled frame.
+    local NS, _, m = T.enableAddon{ mock = function(mm) mm.installEUI{ pgfSkin = "missing" } end }
+    local AceGUI = m.LibStub("AceGUI-3.0")
+    -- One inner editbox frame for every EditBox, as AceGUI's pool hands it back, with AceGUI's own
+    -- focus script on it.
+    local pooled, highlights = m.CreateFrame("EditBox"), 0
+    pooled.HighlightText = function() highlights = highlights + 1 end
+    local aceFocus = function() end
+    pooled:SetScript("OnEditFocusGained", aceFocus)
+    local function ctor()
+        AceGUI.WidgetRegistry.EditBox = nil
+        local w = AceGUI:Create("EditBox")
+        AceGUI.WidgetRegistry.EditBox = ctor
+        w.editbox = pooled
+        return w
+    end
+    AceGUI.WidgetRegistry.EditBox = ctor
+    local _, boxes = filtersTexts(NS, m)
+    AceGUI.WidgetRegistry.EditBox = nil
+    assertEqual(#boxes, 1)
+    pooled:__fire("OnEditFocusGained")
+    assertEqual(highlights, 1, "focus selects the link")
+    boxes[1]:Release()
+    assertTrue(rawequal(pooled:GetScript("OnEditFocusGained"), aceFocus), "AceGUI's focus script is back")
+    pooled:__fire("OnEditFocusGained")
+    assertEqual(highlights, 1, "the next owner of the frame inherits nothing")
+    for k in pairs(pooled) do
+        assertTrue(type(k) ~= "string" or k:find("pgfe", 1, true) == nil, "field left on the frame: " .. tostring(k))
+    end
+end)
+
+test("layout: under EllesmereUI a disabled or loaded PGF skin is named, with no link", function()
+    for state, words in pairs({ [false] = "is installed but disabled", [true] = "is loaded" }) do
+        local NS, _, m = T.enableAddon{ mock = function(mm) mm.installEUI{ pgfSkin = state } end }
+        local texts, boxes = filtersTexts(NS, m)
+        assertTrue(texts[#texts]:find(words, 1, true) ~= nil, texts[#texts])
+        assertEqual(#boxes, 0)
+    end
 end)
 
 test("layout: the header Defaults describes the reset in Reset all settings' own words", function()

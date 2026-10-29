@@ -35,8 +35,21 @@ end
 
 -- ... plus OnEnable (PLAYER_LOGIN): events registered, settings category and launcher registered,
 -- and the latch taken from the stored `enabled` path.
+--
+-- AND THE SKIN LIBRARY'S LOGIN RETRY SETTLED. Since LibKa0s v1.78.0 the first RegisterOwner
+-- (core/SkinSetup.lua) makes LibKa0s-Skin-1.0's EllesmereUI retry frame, registered for ADDON_LOADED
+-- and PLAYER_LOGIN; the client fires PLAYER_LOGIN once, at this point, and the frame unregisters
+-- both. Delivering it here puts the frame where every real session has it, so the stand-down
+-- suites do not count the library's two events as this addon's (LootHistory's tests do the same).
+local function settleSkinLogin(m)
+    local skinLib = m.LibStub("LibKa0s-Skin-1.0", true)
+    local retry = skinLib and skinLib.__euiEventFrame
+    if retry and retry.__fire then retry:__fire("OnEvent", "PLAYER_LOGIN") end
+end
+
 local function enableAddon(opts)
     local NS, env, m = bootAddon(opts)
+    settleSkinLogin(m)
     NS.addon:OnEnable()
     return NS, env, m
 end
@@ -61,6 +74,7 @@ _G.PGFE_TEST = Kit.expose{
     newAddon    = newAddon,
     bootAddon   = bootAddon,
     enableAddon = enableAddon,
+    settleSkinLogin = settleSkinLogin,   -- the client's one PLAYER_LOGIN, to the skin's retry frame
     loadAddon   = loadAddon,
     root        = root,
     LibStub     = surfaceMock.LibStub,
@@ -98,13 +112,14 @@ Kit.run{
         "test_envinject",
         "test_regiontags",
         "test_bridge",
-        "test_euibridge",
         "test_apply",
         "test_panel",
-        "test_euiskin",
         "test_layers",
-        "test_euisettings",
         "test_settings_layout",
+        "test_skinsetup",
+        "test_skin",
+        "test_skin_picker",
+        "test_skin_eui",
         "test_reset",
         "test_diagnostics",
         "test_vendor_sync",

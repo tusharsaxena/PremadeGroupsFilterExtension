@@ -18,11 +18,11 @@ local HOLD_PERF = (T.LibStub("LibKa0s-Lifecycle-1.0", true) or {}).HOLD_PERF or 
 
 local NAME = "PremadeGroupsFilterExtension"
 
--- The eight game events the addon owns, pinned as literals (sorted).
+-- The six game events the addon owns, pinned as literals (sorted). UI_SCALE_CHANGED and
+-- DISPLAY_SIZE_CHANGED left with modules/EUISkin.lua (PG-06).
 local PINNED = {
     "ACTIVE_PLAYER_SPECIALIZATION_CHANGED", "CHALLENGE_MODE_COMPLETED", "CHALLENGE_MODE_MAPS_UPDATE",
-    "DISPLAY_SIZE_CHANGED", "MYTHIC_PLUS_CURRENT_AFFIX_UPDATE", "PLAYER_ENTERING_WORLD",
-    "PLAYER_SPECIALIZATION_CHANGED", "UI_SCALE_CHANGED",
+    "MYTHIC_PLUS_CURRENT_AFFIX_UPDATE", "PLAYER_ENTERING_WORLD", "PLAYER_SPECIALIZATION_CHANGED",
 }
 
 -- ── helpers ─────────────────────────────────────────────────────────────────────────────────────
@@ -107,7 +107,7 @@ end
 
 -- ── step 1: the running snapshot ────────────────────────────────────────────────────────────────
 
-test("disabled 1: enabled, the addon registers exactly the eight events it declares", function()
+test("disabled 1: enabled, the addon registers exactly the six events it declares", function()
     local NS, m, on = running()
     assertEqual(on.R, declared(NS), "R_on is NS.FEATURE_EVENTS")
     assertEqual(on.R, table.concat(PINNED, ","))
@@ -203,35 +203,27 @@ test("disabled 6: survivors reached anyway write, say and show nothing", functio
 end)
 
 -- C-37's survivor: EllesmereUI's RegisterSkin cannot be undone, so its callback can arrive while
--- the addon is stood down, and an EUISkin SetChecked hook outlives the stand-down.
-test("disabled 6: the EllesmereUI callback and the skin's SetChecked hook paint nothing", function()
+-- the addon is stood down. The library's provider takes it (LibKa0s-Skin-1.0, SkinEUI) and repaints
+-- the frames recorded for the owner whatever the host's latch (DECISIONS D10): a stood-down addon
+-- builds no panel, and the library's own frames recorded for it (the first-run picker the login
+-- showed, hidden by the stand-down) repaint hidden, so nothing is written, said, put on screen or
+-- registered.
+test("disabled 6: the EllesmereUI callback, arriving while stood down, builds nothing and shows nothing", function()
     local opts = { mock = function(mm) mm.installEUI() end }
-    -- The callback, first fired while stood down.
-    local NS, m = running(opts)
+    local NS, m = T.enableAddon(opts)
+    NS.SchemaRuntime.Set("skin.source", "eui")
     NS.addon:OnSlashCommand("disable")
-    local before = shownSet(m)
     quiet(m)
     m.eui.dispatch(NAME)
-    -- red under: remove the stoodDown() check from EUISkin blocked() (modules/EUISkin.lua:312)
-    assertEqual(#m.eui.calls, 0, "nothing painted")
-    assertFalse(NS.EUISkin.IsApplied())
+    for _, c in ipairs(m.eui.calls) do
+        if c.fn == "Shell" then assertFalse(c.target:IsShown(), "EllesmereUI painted a window on screen") end
+    end
+    assertEqual(NS.Panel.frame, nil, "no panel built while stood down")
     assertEqual(#m.__svWrites(), 0)
     assertEqual(said(m), 0)
-    assertEqual(newlyShown(m, before), 0)
-
-    -- The hook on a skinned box, after a paint while enabled.
-    local NS2, m2 = running(opts)
-    m2.eui.dispatch(NAME)
-    assertTrue(NS2.EUISkin.IsApplied())
-    local cb = NS2.Panel.frame.checks.experiencedLeader
-    local ring = cb.__children[#cb.__children]
-    cb:SetChecked(false)
-    NS2.addon:OnSlashCommand("disable")
-    quiet(m2)
-    cb:SetChecked(true)
-    assertFalse(ring:IsShown(), "the accent ring did not follow")
-    assertEqual(#m2.__svWrites(), 0)
-    assertEqual(said(m2), 0)
+    -- The library's give-back of its own Ka0s paint on those frames (stock art put back) happens
+    -- inside the picker window, which the stand-down hid: the window is the one Shell above.
+    assertEqual(registered(m), "", "nothing registered")
 end)
 
 -- ── step 7: every verb keeps answering ──────────────────────────────────────────────────────────
@@ -471,6 +463,7 @@ end)
 test("disabled: a profile stored disabled stands down at the next enable", function()
     local NS, _, m = T.bootAddon()
     NS.addon.db.profile.enabled = false
+    T.settleSkinLogin(m)   -- the client's PLAYER_LOGIN, as enableAddon delivers it (tests/run.lua)
     NS.addon:OnEnable()
     assertTrue(NS.IsStoodDown())
     assertEqual(registered(m), "", "registered at enable, then unregistered by the latch")

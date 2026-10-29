@@ -14,7 +14,6 @@ local _, NS = ...
 --     header art clips and their NineSlice copies   L + LEVEL.HEADER_ART (sunk to the panel)
 --     body, min/max arrow, header click, template   L + 1 (child default)
 --     body widgets (checks, edit boxes, dropdowns, buttons, hover frame)   L + 2
---     EllesmereUI accent ring                       check button + LEVEL.ACCENT_RING
 --   PGFE StaticPopups shown while the panel is visible   STRATA.POPUP, lifted and put back
 --                           (core/Popup.lua; a borrowed confirmation, T8)
 --   dropdown menus          FULLSCREEN_DIALOG (Blizzard_Menu)
@@ -41,8 +40,5 @@ NS.Constants.LAYERS = {
         -- The two clipped header-art copies sit AT the panel's level: a child default (+1) ties
         -- with the min/max arrow and the close button and leaves their draw order to chance.
         HEADER_ART  = 0,
-        -- Over the check button: clears EllesmereUI's own checkbox border, whose level is
-        -- EllesmereUI's choice (owner-verified look).
-        ACCENT_RING = 3,
     },
 }

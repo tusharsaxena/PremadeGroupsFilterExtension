@@ -39,8 +39,14 @@ locales\enUS.lua
 # Core -- dependency-correct order (layout-§1)
 # LOAD-BEARING: publishes NS.Util.print / NS.Print and NS.LIBKA0S_MISSING, read at load below.
 core\CoreSetup.lua
-# LOAD-BEARING: publishes NS.Constants.LAYERS, which modules\Panel.lua and modules\EUISkin.lua take as
-# file-scope upvalues.
+# LOAD-BEARING: the LibKa0s-Skin-1.0 seam (skinning-§1). Registers the owner at FILE LOAD, so the
+# EllesmereUI provider offers it to EllesmereUI (an OptionalDep, loaded first) before EllesmereUI
+# dispatches, and publishes NS.Skin, NS.SKIN_OPTIONS and NS.SKIN_SOURCE_OPTIONS, which
+# settings\Panel.lua reads at load. Below core\CoreSetup.lua, whose NS.ApplySkin the degraded
+# facade's Shell routes to; every other NS.* it reads (NS.addon, NS.SchemaRuntime, NS.IsStoodDown)
+# is read at call time.
+core\SkinSetup.lua
+# LOAD-BEARING: publishes NS.Constants.LAYERS, which modules\Panel.lua takes as a file-scope upvalue.
 core\Constants.lua
 # LOAD-BEARING: publishes NS.MediaFont, which core\PGFE.lua resolves NS.FONT_MONO from at load.
 core\MediaSetup.lua
@@ -50,7 +56,7 @@ core\Compat.lua
 core\EnvSetup.lua
 # LOAD-BEARING: promotes NS to the AceAddon object (NS.addon) and publishes NS.PREFIX, NS.State,
 # NS.FONT_MONO, NS.FEATURE_EVENTS, NS.STAND_DOWN and NS.STAND_UP; modules\EnvInject.lua,
-# modules\Panel.lua, modules\EUISkin.lua and every settings\ file read NS.addon at load.
+# modules\Panel.lua and every settings\ file read NS.addon at load.
 core\PGFE.lua
 # Conventional: NS:RunMigrations is called from OnInitialize.
 core\Database.lua
@@ -66,8 +72,6 @@ core\LifecycleSetup.lua
 core\Popup.lua
 # Conventional: the PGF bridge; every PGF read happens at call time.
 core\PGFBridge.lua
-# Conventional: the EllesmereUI bridge; every EllesmereUI read happens at call time.
-core\EUIBridge.lua
 
 # Defaults
 # LOAD-BEARING: publishes NS.C, which settings\Schema.lua takes as a file-scope upvalue.
@@ -99,10 +103,6 @@ modules\Apply.lua
 # NS.FEATURE_EVENTS/NS.STAND_DOWN/NS.STAND_UP (core\PGFE.lua), calls NS.Bridge.HookDialog
 # (core\PGFBridge.lua) at load.
 modules\Panel.lua
-# LOAD-BEARING: registers with EllesmereUI at file load (EllesmereUI is an OptionalDep, so it is
-# loaded first when present) and reads NS.EUIBridge, published by core\EUIBridge.lua above. It also
-# reads NS.L and NS.addon, and appends NS.FEATURE_EVENTS/NS.STAND_DOWN/NS.STAND_UP (core\PGFE.lua).
-modules\EUISkin.lua
 # Conventional: core\DebugLogSetup.lua's descriptor reads NS.Diagnostics at RUN time.
 modules\Diagnostics.lua
 

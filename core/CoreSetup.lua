@@ -79,8 +79,13 @@ NS.SafeRegisterEvent     = lib.SafeRegisterEvent
 NS.SafeRegisterUnitEvent = lib.SafeRegisterUnitEvent
 NS.SafeRegisterEvents    = lib.SafeRegisterEvents
 
-NS.SKIN      = lib.SKIN
-NS.ApplySkin = lib.ApplySkin
+NS.SKIN = lib.SKIN
+
+-- WRAPPED, TO SAY WHO IS ASKING (skinning-§1): with no `skin` table the window edge is the owner's
+-- skin (core/SkinSetup.lua registers it), and a frame shelled here repaints with it.
+NS.ApplySkin = function(frame, skin)
+    return lib.ApplySkin(frame, skin, addonName)
+end
 
 -- WRAPPED, TO SAY WHO IS ASKING (standalone-windows, a MUST). Every close control in the addon is
 -- built through here, because a two-argument call to the factory silently draws the fallback glyph.

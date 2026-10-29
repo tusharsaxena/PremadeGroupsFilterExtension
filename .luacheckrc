@@ -30,9 +30,8 @@ read_globals = {
   -- modules/Diagnostics.lua.
   "PremadeGroupsFilter", "PremadeGroupsFilterDialog", "PremadeGroupsFilterDungeonPanel",
   "PremadeGroupsFilterState", "PremadeRegions",
-  -- EllesmereUI (## OptionalDeps), read only by core/EUIBridge.lua and modules/EUISkin.lua.
-  "EllesmereUI", "EllesmereUIDB",
-  "PixelUtil", "Round", "C_Texture", "C_UI",   -- the skin's pixel snapping, atlas check and reload
+  -- EllesmereUI (## OptionalDeps) is not declared: no shipped file reads it since PG-06 retired the
+  -- addon's own bridge; LibKa0s-Skin-1.0's provider (libs/, not linted here) is its one reader.
 }
 
 -- The harness global, declared for tests/ only so no shipped file can reach for it. The

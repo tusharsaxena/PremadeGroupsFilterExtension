@@ -4,7 +4,7 @@
 ![CurseForge Version](https://img.shields.io/curseforge/v/1736636)
 ![License](https://img.shields.io/badge/License-MIT-orange)
 ![Standard](https://img.shields.io/badge/Ka0s-WoW_Addon_Standard-yellow)
-![Tests](https://img.shields.io/badge/Tests-439%2F439_passing-green)
+![Tests](https://img.shields.io/badge/Tests-432%2F432_passing-green)
 
 A small companion to [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter)
 for Mythic+. You type the key level you want to push (or let Smart pick it), and it ticks every
@@ -50,11 +50,15 @@ in **Copy into search box**. Click it, press Ctrl+C, then Enter to jump to the s
 and Enter.
 
 Filter choices are saved per character, and presets load on any character. **Use the extension's
-filters** switches the filtering off without turning the addon off. If you use EllesmereUI with
-Premade Groups Filter's EllesmereUI
-[skin](https://www.curseforge.com/wow/addons/premade-groups-filter-ellesmereui), the panel matches
-it once EllesmereUI's third-party skinning is on for both addons; the EllesmereUI skin tab in the
-settings shows what's missing. `/pgfe` opens the settings and `/pgfe help` lists the commands.
+filters** switches the filtering off without turning the addon off.
+
+The panel and the debug console wear one of nine Ka0s skins, picked when you first log in or later on
+Settings → General → **Skin**. Ka0s Default, where every profile starts, keeps the panel in Premade
+Groups Filter's own metal look; the settings pages stay in the game's look unless you untick
+**Ignore settings panel** there. If you use EllesmereUI, pick it as the skin source on the Skin tab and the panel takes your EllesmereUI theme once EllesmereUI's
+third-party skinning is on for this addon (the tab shows what's missing); Premade Groups Filter's own
+EllesmereUI [skin](https://www.curseforge.com/wow/addons/premade-groups-filter-ellesmereui) makes
+PGF's window match. `/pgfe` opens the settings and `/pgfe help` lists the commands.
 
 ## How the filtering works
 
@@ -116,6 +120,23 @@ The addon extends [Premade Groups Filter](https://www.curseforge.com/wow/addons/
 by Bernhard Saumweber. PremadeRegions was the reference for the realm-to-region list.
 
 The debug console uses [JetBrains Mono](https://www.jetbrains.com/lp/mono/), licensed under the SIL
-Open Font License 1.1. Its three buttons (clear, copy and close) are from
-[Open Iconic](https://github.com/iconic/open-iconic) by Waybury, under the MIT license. Both ship
-inside the addon, with their license text beside them.
+Open Font License 1.1.
+
+Ka0s Default, the skin every profile starts on, draws [Oxanium](https://github.com/sevmeyer/oxanium)
+by The Oxanium Project Authors, also SIL Open Font License 1.1.
+
+The other skins draw on seven more SIL Open Font License 1.1 faces, one family per skin:
+[Inter](https://github.com/rsms/inter) by The Inter Project Authors,
+[Nunito](https://github.com/googlefonts/nunito) by The Nunito Project Authors,
+[Vollkorn](https://github.com/FAlthausen/Vollkorn-Typeface) by The Vollkorn Project Authors,
+[Bitter](https://github.com/solmatas/BitterPro) by The Bitter Project Authors,
+[Philosopher](https://github.com/alexeiva/philosopher) by The Philosopher Project Authors,
+[Fira Sans](https://github.com/mozilla/Fira) by The Mozilla Foundation and Telefonica S.A., and
+[Atkinson Hyperlegible](https://www.brailleinstitute.org/freefont/) by the Braille Institute of
+America. Inter, Nunito, Vollkorn, Bitter and Oxanium are static weights cut from upstream's
+variable fonts.
+
+The addon's own icons come from [Open Iconic](https://github.com/iconic/open-iconic) by Waybury
+(MIT): the debug console's clear, copy and close buttons, and the skin picker's settings gear. Only
+the icons the addon draws are shipped. The fonts and the icons are bundled inside the LibKa0s
+payload, with their license text beside them.

@@ -3,7 +3,7 @@
 ## Add a setting (a schema row)
 
 1. Add the default value to `NS.C.PROFILE` in `defaults/Profile.lua`.
-2. Declare the row in `settings/Panel.lua` beside `FILTER_ROWS` / `EUI_ROWS`: `page = "general"`,
+2. Declare the row in `settings/Panel.lua` beside `FILTER_ROWS` / `TAG_SWITCH_ROWS`: `page = "general"`,
    `section = "general"`, a `group` (its own tab, never Master controls, which holds only the
    mandated rows, options-ui-§15), `label`, `tooltip` and any `onChange`. Run
    `Settings.StampClosureRows` on it when it is a session or global row, then add it with

@@ -4,7 +4,7 @@ local _, NS = ...
 -- One row per setting drives the panel widget, `/pgfe list|get|set|reset` and the defaults reset
 -- (architecture-§5). Today every row is a General page row declared in settings/Panel.lua and
 -- spliced in at load: the Master controls rows (composed by LibKa0s-Options-1.0), the Filters
--- rows and the EllesmereUI skin row. The filter options are NOT schema rows: they are the
+-- rows, the EllesmereUI skin row and the Skin tab's skin.* rows. The filter options are NOT schema rows: they are the
 -- attached panel's per-character state, written by modules/Filters.lua (docs/ARCHITECTURE.md ->
 -- Settings Schema names every store and its one owner).
 
