@@ -6,9 +6,9 @@
 `/pgfe debug on|off` toggles logging. The logging flag is session-only (`NS.State.debug`, off after
 every `/reload`) and independent of the window, so a bug can be reproduced with the window closed.
 Lines are written with `NS.Debug(tag, fmt, ...)`; the library writes its own `[Cmd]`, `[Cfg]`,
-`[Launcher]` and `[Lifecycle]` lines. The EllesmereUI skin writes `[Skin]` lines: `EllesmereUI called back (apiVersion <n>)`,
-one `applied: N widgets` summary, `paint failed: <error>` when a paint raises (latched, never retried), and a
-`skipped: <reason>` line each time the reason changes. The `[Init]` summary (name, version, schema, profile, enabled,
+`[Launcher]` and `[Lifecycle]` lines. The skin, EllesmereUI's
+included, is LibKa0s-Skin-1.0's and writes nothing here of its own; `/pgfe diagnostics`' `skin`
+section reports it. The `[Init]` summary (name, version, schema, profile, enabled,
 PremadeRegions) lands when logging is turned on.
 
 ## Tag vocabulary
@@ -42,7 +42,8 @@ library half and a `pcall` per section. The addon's sections (`modules/Diagnosti
 | `identity` | Stored and code schema version, profile, `enabled`, stood down, the latch's holds |
 | `settings` | Every schema row that differs from its default (`enabled` always) |
 | `filters` | The character's filter options: the scalars as one sorted `key=value` list, then each set (`regions`, `playstyles`) as its sorted keys, an empty set reading `Any` |
-| `dependencies` | Whether PGF's namespace, dialog and dungeon panel exist; the PGF seams `Bridge.Check` reads (`ok`, and the first one `missing`); which hooks went in (`env`, `dialog`, `searchRow`, `applicantRow`); whether PremadeRegions is loaded; the EllesmereUI skin's four gate conditions and its state (registered, facade held, wanted, applied) |
+| `dependencies` | Whether PGF's namespace, dialog and dungeon panel exist; the PGF seams `Bridge.Check` reads (`ok`, and the first one `missing`); which hooks went in (`env`, `dialog`, `searchRow`, `applicantRow`); whether PremadeRegions is loaded |
+| `skin` | The skin applied (`source:skin`) and stored, whether the owner draws Ka0s Default, a pending reload, and EllesmereUI as LibKa0s's provider sees it: its four conditions (`eui`, `master`, `own`, `facade`), `ok`, `painted` and the reason it was refused |
 | `registration` | The feature events this build declares (`feature events (declared)`, printed even while stood down), whether they are registered right now (`registered=false` while stood down), and any the client rejected |
 | `launcher` | Whether the launcher is registered and the minimap button shown |
 

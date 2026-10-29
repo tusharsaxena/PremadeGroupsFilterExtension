@@ -72,11 +72,11 @@ Total.
 
 ### test_disabled.lua (14)
 
-- disabled 1: enabled, the addon registers exactly the eight events it declares
+- disabled 1: enabled, the addon registers exactly the six events it declares
 - disabled 2-5: through /pgfe disable, nothing is registered, scheduled or shown
 - disabled 2-5: through the write seam, nothing is registered, scheduled or shown
 - disabled 6: survivors reached anyway write, say and show nothing
-- disabled 6: the EllesmereUI callback and the skin's SetChecked hook paint nothing
+- disabled 6: the EllesmereUI callback, arriving while stood down, builds nothing and shows nothing
 - disabled 7: every verb answers while disabled; apply and clear refuse with one line
 - disabled 7: bare /pgfe and /pgfe debug diagnostics answer while disabled
 - disabled 7: /pgfe perf answers as an unknown command, the same as when enabled
@@ -227,26 +227,6 @@ Total.
 - bridge: env hook refuses when the seam is missing
 - bridge: HookDialog wires SwitchToPanel and both scripts
 
-### test_euibridge.lua (17)
-
-- euibridge: the module publishes its namespace table and the skin name
-- euibridge: four conditions, in display order, each with a label and a hint
-- euibridge: everything on opens the gate, and there is no why
-- euibridge: EllesmereUI absent closes every condition, without raising
-- euibridge: the window-skin child not loaded closes the gate at eui
-- euibridge: an EllesmereUI without RegisterSkin is not ready
-- euibridge: a truthy non-boolean master value reads as off, as the dispatcher reads it
-- euibridge: the master switch off closes the gate at master, and only master
-- euibridge: our own entry off closes the gate at own
-- euibridge: PGF's skin entry off closes the gate at pgf
-- euibridge: PGF's skin addon not loaded closes the gate at pgf
-- euibridge: nil switches read as on (EllesmereUI's own nil = on)
-- euibridge: WhyClosed lists every failing hint, one per line
-- euibridge: the reads are live, at call time
-- euibridge: a raising or absent C_AddOns reads as not loaded
-- euibridge: nothing is ever written to EllesmereUI's saved variables
-- euibridge: the PGF skin's state is missing / disabled / off / on, and its line says which
-
 ### test_apply.lua (33)
 
 - apply: the module publishes its namespace table
@@ -370,75 +350,18 @@ Total.
 - panel: a click on the header strip collapses and expands, like the arrow
 - panel: visibility logs on change only, and again after a stand-down
 
-### test_euiskin.lua (32)
-
-- euiskin: the module publishes its namespace table
-- euiskin: registers once, at file load, under the folder name
-- euiskin: EllesmereUI absent registers nothing and leaves the panel stock
-- euiskin: every condition on, the login dispatch paints the built panel
-- euiskin: a dispatch before the panel exists keeps S, and Panel.Create paints
-- euiskin: TryApply is idempotent
-- euiskin: any one failing condition keeps the panel stock
-- euiskin: a condition turned off mid-session refuses a later paint
-- euiskin: our switch off keeps S and paints nothing; turning it on paints live
-- euiskin: turning the switch off after a paint asks for a reload and does not unpaint
-- euiskin: turning the switch off before any paint asks for nothing
-- euiskin: master off at login, turned on in EllesmereUI later, paints live
-- euiskin: stood down, the callback paints nothing; the stand-up paints
-- euiskin: a profile switch to one with the switch on paints
-- euiskin: a profile switch to one with the switch off, after a paint, asks for a reload
-- euiskin: a profile switch to a disabled profile with the switch on paints nothing
-- euiskin: a facade missing a primitive is refused before any paint
-- euiskin: a primitive that raises fails closed, once
-- euiskin: a skip is logged again after a console Clear
-- euiskin: a skip with logging off is logged once logging turns on
-- euiskin: skinned, the collapsed panel is the shell's 25px bar and the metal copies are hidden
-- euiskin: skinned, the panel sits flush under PGF's dialog, both edges
-- euiskin: the min/max buttons get the minus (collapse) and the plus (expand)
-- euiskin: a stand-down restores the min/max glyph alpha
-- euiskin: checkboxes shrink to 24, row boxes stay on their row, hit rects follow the label
-- euiskin: the accent ring follows the check, and not while stood down
-- euiskin: only the title is whitened; readout, copy label and number boxes keep their color
-- euiskin: a live looks change recolors the accent block and ring
-- euiskin: a scale change re-lays out the accent block in whole pixels
-- euiskin: scale events before a paint are inert
-- euiskin: theme and scale changes while stood down catch up at the stand-up
-- euiskin: the diagnostics dependencies section reports the gate and the skin
-
 ### test_layers.lua (8)
 
 - layers: one table names the strata and every level offset
 - layers: the panel takes PGF's dialog strata by reading it, never a literal
 - layers: a host that cannot answer its strata leaves the panel inheriting it
-- layers: the panel's level band (L, header art L, chrome L+1, widgets L+2, ring +3)
+- layers: the panel's level band (L, header art L, chrome L+1, widgets L+2)
 - layers: a popup shown over the visible panel is lifted, and put back to what it was
 - layers: with the panel not visible the popup keeps the client's strata
 - layers: every PGFE popup spec restores on hide
 - layers: no strata literal, no absolute level, no direct StaticPopup_Show
 
-### test_euisettings.lua (19)
-
-- euisettings: euiSkin is a schema row, default on, in its own group on the General page
-- euisettings: the General page has five tabs: Master controls, Filters, Region tags, EllesmereUI skin, Skin
-- euisettings: the tab draws the switch, a line per condition, then a state line
-- euisettings: each failing condition disables the switch and is named on its line
-- euisettings: a re-show re-reads the lines and the switch after EllesmereUI changed
-- euisettings: the switch's tooltip says why it is disabled, live
-- euisettings: /pgfe set euiSkin true is refused, with the reason, while a condition fails
-- euisettings: a bulk reset is never refused
-- euisettings: the switch on paints live through the write seam; off asks for a reload
-- euisettings: the state line names what is waiting
-- euisettings: a gate opened in EllesmereUI's options paints on the panel's next show
-- euisettings: LibKa0s absent with EllesmereUI present loads, registers and keeps the row
-- euisettings: a missing PGF skin gets a box with its CurseForge link; installed, no box
-- euisettings: focusing the PGF-skin link box selects the link
-- euisettings: a released PGF-skin link box no longer selects, and is forgotten
-- euisettings: a re-rendered PGF-skin link box hooks its pooled frame once
-- euisettings: the state line sits below a gap, in an empty icon slot like the hints
-- euisettings: the switch comes first, then a gap, then the condition lines
-- euisettings: each condition line and the state line have a what / why / how tooltip
-
-### test_settings_layout.lua (9)
+### test_settings_layout.lua (10)
 
 - layout: every stored path, its type and its default are unchanged by item 020
 - layout: the region-tag switch leads the Region tags tab, unheaded, beside its colors
@@ -446,8 +369,9 @@ Total.
 - layout: Reset region tag colors resets the twelve colors only, never the switch
 - layout: the Filters tab holds the extension's switch and says where the filters are
 - layout: the filters switch reads true on both surfaces
-- layout: the EllesmereUI switch points at the conditions below it
-- layout: the PGF skin link sits right under condition 4, before the gap and the state line
+- layout: without EllesmereUI the Filters tab carries no PGF skin pointer
+- layout: under EllesmereUI a missing PGF skin is named, with its link right under it
+- layout: under EllesmereUI a disabled or loaded PGF skin is named, with no link
 - layout: the header Defaults describes the reset in Reset all settings' own words
 
 ### test_skinsetup.lua (19)
@@ -504,6 +428,19 @@ Total.
 - skin tools: the Profiles page paints AceConfigDialog's tree for this owner
 - skin tools: a host release is chained onto the skin's restore, both run
 - skin tools: the debug console is painted for this owner
+
+### test_skin_eui.lua (10)
+
+- eui migration: with EllesmereUI, every profile but an explicit false moves to skin.source eui
+- eui migration: without EllesmereUI every profile keeps the Ka0s source
+- eui migration: EllesmereUI without its Blizzard Skin child is not present
+- eui migration: the store is applied as migrated, and the step runs once
+- eui: the folder is registered with EllesmereUI once, by the library
+- eui: no addon file reads EllesmereUIDB or registers with EllesmereUI itself
+- eui: once EllesmereUI paints the owner, the skinned twin shows and goes to its facade
+- eui: before EllesmereUI paints, the eui source wears the metal instance (Ka0s Default)
+- eui: the twin folds to EllesmereUI's 25px shell bar
+- eui diagnostics: the skin section reports the choice and the library's EllesmereUI gate
 
 ### test_reset.lua (5)
 
@@ -608,16 +545,14 @@ Total.
 | test_envinject.lua | 14 |
 | test_regiontags.lua | 13 |
 | test_bridge.lua | 18 |
-| test_euibridge.lua | 17 |
 | test_apply.lua | 33 |
 | test_panel.lua | 84 |
-| test_euiskin.lua | 32 |
 | test_layers.lua | 8 |
-| test_euisettings.lua | 19 |
-| test_settings_layout.lua | 9 |
+| test_settings_layout.lua | 10 |
 | test_skinsetup.lua | 19 |
 | test_skin.lua | 12 |
 | test_skin_picker.lua | 15 |
+| test_skin_eui.lua | 10 |
 | test_reset.lua | 5 |
 | test_diagnostics.lua | 6 |
 | test_vendor_sync.lua | 3 |
@@ -627,4 +562,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **485** |
+| **Total** | **428** |

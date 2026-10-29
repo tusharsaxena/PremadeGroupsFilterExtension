@@ -664,6 +664,9 @@ end
 
 -- Collapsed, the panel shows only its title strip: the title, the arrow and the closing metal bar.
 local HEADER_H    = 32   -- collapsed height: the title band plus the closing bar
+-- The skinned twin's collapsed height while EllesmereUI paints it: EllesmereUI's Shell draws a 25px
+-- top bar whatever the Ka0s `title.height` token says (host geometry, DECISIONS D4).
+local EUI_SHELL_HEADER_H = 25
 local HEADER_SEAM = 24   -- below the frame top: the top art is cut here and the bottom art starts here
 local ART_SPAN    = 128  -- each border copy's laid-out height; more than the top and bottom corners stacked (~75+32)
 local CLIP_PAD    = 24   -- clip margin past the border overhangs (corners: x -12/+4, y +16/-3)
@@ -743,14 +746,13 @@ local function syncMinMax(f, collapsed)
 end
 
 -- The collapsed height. The skinned twin folds to the skin's title band (`title.height`, read live,
--- so a switch to a skin with another band refolds); the metal instance to HEADER_H, or to the
--- EllesmereUI shell's bar once modules/EUISkin.lua painted it (f.headerHeight).
+-- so a switch to a skin with another band refolds), or to EllesmereUI's shell bar once EllesmereUI
+-- paints this owner; the metal instance to HEADER_H.
 local function collapsedHeight(f)
-    if f.skinned then
-        local h = NS.Skin.Token("title.height")
-        return type(h) == "number" and h or HEADER_H
-    end
-    return f.headerHeight or HEADER_H
+    if not f.skinned then return HEADER_H end
+    if NS.SkinEUIPainted() then return EUI_SHELL_HEADER_H end
+    local h = NS.Skin.Token("title.height")
+    return type(h) == "number" and h or HEADER_H
 end
 
 local function applyLayout(f)
@@ -964,9 +966,6 @@ function Panel.Create()
     NS.Skin.OnLooksChanged(onLooksChanged)
     choose(dialog)
     Panel.Refresh()
-    -- The optional EllesmereUI skin paints once the panel exists (it refuses unless every
-    -- condition holds).
-    if NS.EUISkin then NS.EUISkin.TryApply() end
     return Panel.frame
 end
 
@@ -1007,8 +1006,6 @@ function Panel.UpdateVisibility()
     local dialog = want and NS.Bridge.GetDialog()
     if dialog then choose(dialog) end
     local f = Panel.frame
-    -- A gate condition EllesmereUI's options turned on since the last show paints now.
-    if want and NS.EUISkin then NS.EUISkin.TryApply() end
     f:SetShown(want and true or false)
     -- Written on a change only: the dialog hook and PLAYER_ENTERING_WORLD re-run this often.
     NS.DebugChanged("panel.vis", "Panel", want and "shown" or "hidden")

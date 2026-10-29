@@ -1,13 +1,14 @@
 local addonName, NS = ...
 -- settings/Panel.lua — the landing page body and the General page (Master controls, Filters,
--- Region tags, EllesmereUI skin, Skin).
+-- Region tags, Skin).
 --
 -- The landing page is the host's own buildMain (logo, notes, slash command list) and draws no tab
--- strip (options-ui-§5/§13). The General page renders through the tabbed renderer, in five
+-- strip (options-ui-§5/§13). The General page renders through the tabbed renderer, in four
 -- tabs: `Master controls`, composed from one declaration and holding only its mandated rows
 -- (options-ui-§15); `Filters`, the extension's filters switch and a line saying where the filter
--- options are (the attached panel); `Region tags`, the region-tag switch leading the tags'
--- colors; `EllesmereUI skin` (the optional skin's switch and status, below); and `Skin`, the
+-- options are (the attached panel), and while EllesmereUI is loaded a pointer to Premade Groups
+-- Filter's own EllesmereUI skin; `Region tags`, the region-tag switch leading the tags'
+-- colors; and `Skin`, the
 -- library's Skin tab over the skin.* rows (core/SkinSetup.lua), last. The addon draws no
 -- positionable frame of its own -- the filter panel is anchored to PGF's dialog -- so the block is
 -- frameless (no scale, alpha, lock or reset position) and carries no visibility row: when the panel
@@ -77,8 +78,8 @@ NS.SchemaRuntime.AddRows(MASTER_ROWS, 1)
 -- ── Filters (the General page's second tab) ─────────────────────────────────────────────────────
 --
 -- The extension's filters switch, in its own group so its own tab (options-ui-§13): a feature
--- switch, not a Master controls row (options-ui-§15). Added after MASTER_ROWS and before
--- EUI_ROWS, so the tab sits between the two. The filter options themselves are on the attached
+-- switch, not a Master controls row (options-ui-§15). Added right after MASTER_ROWS, so the tab
+-- sits second. The filter options themselves are on the attached
 -- panel, not in the schema (settings/Schema.lua), so the tab ends with a line saying where.
 local L = NS.L
 local FILTER_GROUP = L["Filters"]
@@ -188,99 +189,78 @@ local function renderRegionTab(ctx, rows)
     })
 end
 
--- ── EllesmereUI skin (the General page's fourth tab) ────────────────────────────────────────────
+-- ── Premade Groups Filter's own EllesmereUI skin (an advisory on the Filters tab) ───────────────
 --
--- Its own group, so its own tab (options-ui-§13): a feature switch with live status lines is not a
--- Master controls row (options-ui-§15). The tab is a host tab keyed by the group: a status line per
--- gate condition (core/EUIBridge.lua), a line saying what the skin is doing, then the one schema
--- row. The switch is drawn disabled while any condition fails and can never turn the skin on by
--- itself: modules/EUISkin.lua paints only when every condition AND the switch hold. The CLI keeps
--- parity with the disabled box: `/pgfe set euiSkin true` is refused, with the reason, while a
--- condition fails (slash-commands-§6); off is always accepted, and a bulk reset never refused.
+-- Under the `eui` source the attached panel is EllesmereUI's (LibKa0s's provider paints it), but PGF's
+-- dialog above it is skinned by a separate addon, Premade Groups Filter - EllesmereUI Skin. The
+-- addon's own bridge gated its paint on that addon; the library's gate has exactly four conditions
+-- (skinning-§5), so the pointer is kept as ADVICE, not a gate (PG-G2, DECISIONS D2): while
+-- EllesmereUI is loaded, the Filters tab says whether that addon is loaded, installed but disabled,
+-- or missing, and offers its CurseForge link when missing. It reads only C_AddOns: whether its entry
+-- is on in EllesmereUI's own list would take a read of EllesmereUI's saved variables, which only the
+-- library's provider may make (library-stack-§6).
 
-local EUI_GROUP = L["EllesmereUI skin"]
+local PGF_SKIN_ADDON = "PremadeGroupsFilter_EllesmereUI"
+local PGF_SKIN_URL = "https://www.curseforge.com/wow/addons/premade-groups-filter-ellesmereui"
 
-local function euiGateOpen() return NS.EUIBridge ~= nil and (NS.EUIBridge.GateOpen()) end
+-- C_AddOns.IsAddOnLoaded's second answer (loaded, not merely loading), the first on a client that
+-- answers one.
+local function loaded(name)
+    local api = C_AddOns
+    if type(api) ~= "table" or type(api.IsAddOnLoaded) ~= "function" then return false end
+    local ok, first, second = pcall(api.IsAddOnLoaded, name)
+    if not ok then return false end
+    if second ~= nil then return second == true end
+    return first == true
+end
 
-local EUI_ROWS = {
-    { path = "euiSkin", type = "bool", default = C.PROFILE.euiSkin,
-      page = "general", section = "general", group = EUI_GROUP,
-      label = L["Use the EllesmereUI skin"],
-      tooltip = L["Paint the attached filter panel in your EllesmereUI theme, matching Premade Groups Filter's own EllesmereUI skin. Needs every condition listed below. Turning it off takes effect after a reload."],
-      disabledIf = function() return not euiGateOpen() end,
-      validate = function(v)
-          local S = NS.SchemaRuntime
-          if v ~= true or euiGateOpen() or S.InBulk() or S.Get("euiSkin") == true then return true end
-          local why = NS.EUIBridge and NS.EUIBridge.WhyClosed() or ""
-          return false, L["The EllesmereUI skin cannot be turned on until every condition is met:"] .. "\n" .. why
-      end,
-      onChange = function(v) if NS.EUISkin then NS.EUISkin.OnSwitch(v == true) end end,
-    },
+-- Installed at all: C_AddOns.DoesAddOnExist, else GetAddOnInfo's reason ("MISSING" when it is not in
+-- the AddOns folder). A client without either reads as installed, so it never claims one missing.
+local function installed(name)
+    local api = C_AddOns
+    if type(api) ~= "table" then return true end
+    if type(api.DoesAddOnExist) == "function" then
+        local ok, exists = pcall(api.DoesAddOnExist, name)
+        if ok then return exists == true end
+    end
+    if type(api.GetAddOnInfo) == "function" then
+        local ok, _, _, _, _, reason = pcall(api.GetAddOnInfo, name)
+        if ok then return reason ~= "MISSING" end
+    end
+    return true
+end
+
+--- Premade Groups Filter's own EllesmereUI skin: "loaded", "disabled" (installed, not loaded) or
+--- "missing"; nil while EllesmereUI itself is not loaded (nothing to advise).
+function Settings.PGFSkinState()
+    if not loaded("EllesmereUI") then return nil end
+    if loaded(PGF_SKIN_ADDON) then return "loaded" end
+    return installed(PGF_SKIN_ADDON) and "disabled" or "missing"
+end
+
+local PGF_SKIN_TEXT = {
+    loaded   = L["Premade Groups Filter - EllesmereUI Skin is loaded, so Premade Groups Filter's window can match this panel under the EllesmereUI skin source."],
+    disabled = L["Premade Groups Filter - EllesmereUI Skin is installed but disabled"] .. ". "
+        .. L["Enable it in the AddOns list, then reload."],
+    missing  = L["Premade Groups Filter - EllesmereUI Skin is not installed"] .. ". "
+        .. L["Install it from CurseForge (copy the link below), then restart the game."],
 }
-NS.SchemaRuntime.AddRows(EUI_ROWS)
-
-local ICON_OK  = "|TInterface\\RaidFrame\\ReadyCheck-Ready:14|t"
-local ICON_BAD = "|TInterface\\RaidFrame\\ReadyCheck-NotReady:14|t"
--- An empty icon slot, the same 14x14 as the two above, so a line that carries no icon still starts
--- its text exactly under theirs (owner request: pixel-perfect, no space padding). It draws one
--- texel of the ready-check texture's fully transparent corner (texcoords 0..1 of 64), stretched
--- to the slot: nothing visible, the icon's exact footprint.
-local ICON_BLANK = "|TInterface\\RaidFrame\\ReadyCheck-Ready:14:14:0:0:64:64:0:1:0:1|t"
-local STATUS_GAP = 8   -- the space above the line saying what the skin is doing
-local SWITCH_GAP = 12  -- the space between the switch (first) and the status lines below it
-
-local function conditionText(c)
-    if c.ok then return ICON_OK .. " " .. c.label end
-    return ICON_BAD .. " " .. c.label .. "\n" .. ICON_BLANK .. " |cff999999" .. c.hint .. "|r"
-end
-
---- What the skin is doing this session, in words: the line under the conditions.
-function Settings.EUISkinStateText()
-    local K = NS.EUISkin
-    if not K then return "" end
-    local on = NS.addon.db and NS.addon.db.profile and NS.addon.db.profile.euiSkin == true
-    if K.IsApplied() then
-        if on then return "|cff33ff33" .. L["The skin is applied."] .. "|r" end
-        return L["The skin is applied until you reload the UI."]
-    end
-    if NS.IsStoodDown() then return L["The skin is not applied while the addon is disabled."] end
-    if not euiGateOpen() then return L["The skin is not applied: a condition above is not met."] end
-    if not on then return L["The skin is off."] end
-    if not K.HasFacade() then return L["The skin is applied after a reload."] end
-    return L["The skin is applied when the panel next shows."]
-end
-
--- The checkbox's tooltip, live: the row's own text, then why it is disabled when it is.
-local function euiTooltip(cb, row)
-    return function()
-        if not GameTooltip then return end
-        GameTooltip:SetOwner(cb.frame, "ANCHOR_RIGHT")
-        GameTooltip:SetText(row.label, 1, 1, 1)
-        GameTooltip:AddLine(row.tooltip, nil, nil, nil, true)
-        local why = NS.EUIBridge and NS.EUIBridge.WhyClosed()
-        if why then
-            GameTooltip:AddLine(L["Disabled until every condition is met:"] .. "\n" .. why, 1, 0.25, 0.25, true)
-        end
-        GameTooltip:Show()
-    end
-end
 
 -- The PGF skin's CurseForge link in a read-only edit box: anything typed puts the link back, and
 -- focus selects it, ready for Ctrl+C. AceGUI pools the inner editbox frame, and HookScript cannot
 -- be undone, so the frame is hooked once (`__pgfeLinkHook`) and the hook selects only while this
--- box owns the frame (`__pgfeLinkActive`). The box's OnRelease clears that flag before the frame
+-- box owns the frame (`__pgfeLinkActive`). The box's release clears that flag before the frame
 -- goes back to the pool, and forgets the box.
 local function addPGFSkinLink(scroll)
     local AceGUI = Helpers.AceGUI
     if not AceGUI then return end
-    local url = NS.EUIBridge.PGF_SKIN_URL
     local box = AceGUI:Create("EditBox")
     box:SetLabel(L["Get Premade Groups Filter - EllesmereUI Skin (select, then Ctrl+C):"])
-    box:SetText(url)
+    box:SetText(PGF_SKIN_URL)
     box:SetFullWidth(true)
     box:DisableButton(true)
-    box:SetCallback("OnTextChanged", function(widget) widget:SetText(url) end)
-    box:SetCallback("OnEnterPressed", function(widget) widget:SetText(url) end)
+    box:SetCallback("OnTextChanged", function(widget) widget:SetText(PGF_SKIN_URL) end)
+    box:SetCallback("OnEnterPressed", function(widget) widget:SetText(PGF_SKIN_URL) end)
     local eb = box.editbox
     if eb and eb.HookScript and not eb.__pgfeLinkHook then
         eb.__pgfeLinkHook = true
@@ -298,66 +278,15 @@ local function addPGFSkinLink(scroll)
     Settings.PGFSkinLinkBox = box
 end
 
--- A status line: a TextRow re-read by its own refresher (options-ui-§11), so it follows changes
--- made in EllesmereUI's options, which never pass through our write seam.
--- An InteractiveLabel rather than the toolkit's TextRow (a plain Label takes no mouse): it carries
--- OnEnter/OnLeave as AceGUI callbacks, which AceGUI clears when the widget is released, so a pooled
--- frame never keeps a stale tooltip. `tipFn` answers title, body at hover time.
-local function statusRow(ctx, textFn, tipFn)
-    local AceGUI, scroll = Helpers.AceGUI, Helpers.EnsureScroll(ctx)
-    if not (AceGUI and scroll) then return end
-    local w = AceGUI:Create("InteractiveLabel")
-    w:SetFullWidth(true)
-    if w.SetFontObject and _G.GameFontHighlight then w:SetFontObject(_G.GameFontHighlight) end
-    w:SetText(textFn())
-    if tipFn then
-        w:SetCallback("OnEnter", function(widget)
-            if not GameTooltip then return end
-            local title, body = tipFn()
-            GameTooltip:SetOwner(widget.frame, "ANCHOR_TOPLEFT")
-            GameTooltip:SetText(title, 1, 1, 1, 1, true)
-            GameTooltip:AddLine(body, nil, nil, nil, true)
-            GameTooltip:Show()
-        end)
-        w:SetCallback("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
-    end
-    scroll:AddChild(w)
-    ctx.refreshers[#ctx.refreshers + 1] = function() w:SetText(textFn()) end
-    return w
-end
-
--- What / why / how for each condition line (owner request), and for the state line.
-local CONDITION_TIPS = {
-    eui = L["EllesmereUI paints windows through its Blizzard Skin module (EllesmereUIBlizzardSkin), which holds its skinning engine. Without both there is nothing to paint this panel with.\n\nHow: install EllesmereUI and keep EllesmereUI Blizzard Skin enabled in the AddOns list."],
-    master = L["EllesmereUI's master switch for skinning other addons' windows. While it is off, EllesmereUI skins no third-party addon, this one included.\n\nHow: EllesmereUI options > Blizz UI Enhanced > Blizzard Window Skins > Third-Party Addons > Skin Third-Party Addons."],
-    own = L["EllesmereUI lists every addon that registers a skin with it, each with its own switch. This is this addon's entry.\n\nHow: in the same Third-Party Addons list, tick PremadeGroupsFilterExtension. EllesmereUI applies a skin it turns on at once; one it turns off goes after a reload."],
-    pgf = L["This panel sits under Premade Groups Filter's window, so the skin is only used while that window is skinned too: the two always match. That is Premade Groups Filter - EllesmereUI Skin, a separate addon.\n\nHow: install it from CurseForge (the link appears below when it is missing), enable it in the AddOns list, and tick PremadeGroupsFilter in EllesmereUI's Third-Party Addons list."],
-}
-local STATE_TIP = L["What the skin is doing this session. EllesmereUI applies a skin once per session: turning the skin on paints the panel at once, turning it off takes effect after a reload. It is never applied while a condition above is not met, whatever the switch says."]
-
--- The switch first (owner request), a gap, the four condition lines, the PGF skin's link right
--- under condition 4 (which points at it) when that skin is missing, a gap, and the state line.
-local function renderEuiTab(ctx, rows)
-    local B = NS.EUIBridge
+-- Decided at render time: installing or enabling an addon needs a restart or a reload, so the
+-- state cannot change live.
+local function renderPGFSkinAdvice(ctx)
+    local state = Settings.PGFSkinState()
+    if not state then return end
     local scroll = Helpers.EnsureScroll(ctx)
-    local row = rows and rows[1]
-    if row then
-        local cb = Helpers.RenderField(ctx, row)      -- binds the refresher and the disabledIf
-        if cb and cb.SetCallback then cb:SetCallback("OnEnter", euiTooltip(cb, row)) end
-        if scroll then Helpers.AddSpacer(scroll, SWITCH_GAP) end
-    end
-    for i = 1, #B.Conditions() do
-        statusRow(ctx, function() return conditionText(B.Conditions()[i]) end, function()
-            local c = B.Conditions()[i]
-            return c.label, CONDITION_TIPS[c.key] or ""
-        end)
-    end
-    -- Not installed: a box holding the CurseForge link to copy (the game cannot open a browser).
-    -- Decided at render time: installing an addon needs a game restart, so it cannot change live.
-    if scroll and B.PGFSkinState() == "missing" then addPGFSkinLink(scroll) end
-    if scroll then Helpers.AddSpacer(scroll, STATUS_GAP) end
-    statusRow(ctx, function() return ICON_BLANK .. " " .. Settings.EUISkinStateText() end,
-        function() return Settings.EUISkinStateText(), STATE_TIP end)
+    if scroll then Helpers.AddSpacer(scroll, 12) end
+    Helpers.TextRow(ctx, PGF_SKIN_TEXT[state])
+    if scroll and state == "missing" then addPGFSkinLink(scroll) end
 end
 
 -- ── Skin (the General page's last tab; skinning-§2, §3) ─────────────────────────────────────────
@@ -430,7 +359,6 @@ local SKIN_TAB = Helpers.AppearanceTab({
 
 local GENERAL_OPTS = { tabs = {
     { key = REGION_GROUP, render = renderRegionTab },
-    { key = EUI_GROUP,    render = renderEuiTab },
 } }
 if type(SKIN_TAB) == "table" then GENERAL_OPTS.tabs[#GENERAL_OPTS.tabs + 1] = SKIN_TAB end
 
@@ -440,6 +368,7 @@ if Helpers.MASTER_GROUP then AFTER_GROUP[Helpers.MASTER_GROUP] = MASTER_TAIL end
 -- so `/pgfe list` does not list it.
 AFTER_GROUP[FILTER_GROUP] = function(ctx)
     Helpers.TextRow(ctx, L["The filter options are on the panel under Premade Groups Filter's window: open the Group Finder, choose Dungeons, and it appears below PGF's filters."])
+    renderPGFSkinAdvice(ctx)
 end
 
 local function buildGeneralPage(parentCategory)
@@ -454,9 +383,8 @@ local function buildGeneralPage(parentCategory)
         Helpers.ClearScroll(c)
         Helpers.RenderTabbedSchema(c, "general", AFTER_GROUP, nil, GENERAL_OPTS)
     end)
-    -- AFTER SetRenderer, whose SetScript would drop an earlier hook: a re-show re-reads the
-    -- EllesmereUI status lines and the switch's disabled state (the renderer only draws on the
-    -- first show).
+    -- AFTER SetRenderer, whose SetScript would drop an earlier hook: a re-show re-reads every row's
+    -- refresher and disabled state (the renderer only draws on the first show).
     ctx.panel:HookScript("OnShow", function() Helpers.RefreshPanel(ctx, false) end)
     return _G.Settings.RegisterCanvasLayoutSubcategory(parentCategory, ctx.panel, L["General"])
 end

@@ -21,7 +21,7 @@ takes the next free number in its theme and a retired number is never reused.
 | APPLY-1..26 | Attached panel and Apply | The panel under PGF, targeting, regions, playstyle, composition, leader, age, presets, Clear, PGF minimized, collapse, layout, tooltips, Smart key level, filters toggle, row spacing, region tags, the season-data request, region colors |
 | LAYER-1..3 | Frame layering | The panel layered with PGF's dialog, PGFE popups lifted over the panel and put back |
 | LOC-1..2 | Non-English client | Realm-name and dungeon-name seams on a deDE/frFR client |
-| SKIN-1..10 | EllesmereUI skin | The gate's four conditions, the PGF skin's install states and link, the settings tab, the painted panel, live on, reload off |
+| SKIN-1..10 | EllesmereUI skin (retired) | The record of the addon's own EllesmereUI bridge, retired by the skinning rollout's PG-06 (2026-10-29); EllesmereUI is now the library's `eui` skin source |
 
 ## Before you start
 
@@ -258,6 +258,14 @@ substitute its numbers.
   wheel shows no opacity slider. Result: pass (owner-marked 2026-10-23). Labels and placement changed by item 020 (2026-10-24): re-checked under PANEL-4, pass (owner-marked 2026-10-24).
 
 ## EllesmereUI skin
+
+**Retired 2026-10-29 (the skinning rollout's PG-06, owner ruling O4).** `core/EUIBridge.lua`,
+`modules/EUISkin.lua` and the *EllesmereUI skin* settings tab are gone: EllesmereUI is the Skin
+tab's `eui` source, painted by LibKa0s's provider, and the stored `euiSkin` switch was migrated to
+`skin.source`. The checks below are the record of the old bridge and are not re-run; the
+EllesmereUI checks under the library's source replace them in the skinning section. PANEL-2 and
+PANEL-4's *EllesmereUI skin* bullets are superseded the same way: the tab is now *Skin*, and the PGF
+skin's link box is on the *Filters* tab while EllesmereUI is loaded.
 
 Needs EllesmereUI (with EllesmereUI Blizzard Skin) and Premade Groups Filter - EllesmereUI Skin
 installed, unless a check says otherwise. EllesmereUI's switches are under *Blizz UI Enhanced >

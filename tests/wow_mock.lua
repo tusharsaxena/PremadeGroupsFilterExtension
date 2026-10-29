@@ -248,8 +248,8 @@ local function build()
             self.__regions[#self.__regions + 1] = fs
             return fs
         end
-        -- What the EllesmereUI skin (modules/EUISkin.lua) reads back and writes: regions, alpha,
-        -- frame level, hit-rect insets, the button state textures, and a texture's color.
+        -- What the skin's primitives read back and write on the panel: regions, alpha, frame
+        -- level, hit-rect insets, the button state textures, and a texture's color.
         f.__regions = {}
         f.CreateTexture = function(self)
             local t = decorate(M.__stubFrame())
@@ -292,8 +292,8 @@ local function build()
         f.GetDisabledTexture = stateTexture("disabled")
         return f
     end
-    -- Client helpers the EllesmereUI skin (modules/EUISkin.lua) uses: pixel snapping at a 1:1 scale,
-    -- Round, an atlas lookup that knows every atlas, and C_UI.Reload, recorded.
+    -- Client helpers: pixel snapping at a 1:1 scale, Round, an atlas lookup that knows every atlas,
+    -- and C_UI.Reload, recorded.
     M.reloads = 0
     M.C_UI = { Reload = function() M.reloads = M.reloads + 1 end }
     M.Round = function(x) return math.floor(x + 0.5) end
@@ -387,9 +387,12 @@ local function build()
             local t = M.EllesmereUIDB and M.EllesmereUIDB.thirdPartySkinAddons
             return not (t and t[name] == false)
         end
+        -- EllesmereUI's whole facade as LibKa0s-Skin-1.0's provider requires it (SkinEUI.lua's
+        -- NATIVE_LIST and its three getters): a facade missing one is refused on arrival.
         local PRIMITIVES = { "Shell", "Panel", "Inset", "FadeRegions", "FadeNineSlice", "Button",
             "WhiteButtonLabel", "StateButtonLabel", "EditBox", "Checkbox", "Dropdown", "ScrollBar",
-            "CloseButton", "Font", "White" }
+            "Tab", "SetTabSelection", "CloseButton", "PageButton", "SquareIcon", "SortHeaderBar",
+            "Font", "White", "ApplyBarFill" }
         local function facade(name)
             local S = { apiVersion = 3 }
             for _, fname in ipairs(PRIMITIVES) do
@@ -400,6 +403,7 @@ local function build()
             -- The theme's accent: tests change eui.accent to drive a live looks change.
             S.GetAccentColor = function() local a = eui.accent; return a[1], a[2], a[3] end
             S.GetFont = function() return "Fonts\\EUI.ttf", "" end
+            S.GetPanelColor = function() return 0.05, 0.05, 0.06, 0.95 end
             S.GetStyle = function() return "eui" end
             S.OnLooksChanged = function(fn) eui.looks[#eui.looks + 1] = fn end
             S.IsEnabled = function() return masterOn() and addonOn(name) end

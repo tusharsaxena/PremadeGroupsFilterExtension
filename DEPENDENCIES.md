@@ -22,11 +22,12 @@ such rather than listed as a requirement.
   sees it at load and steps aside (PGF's variables come from it, and this addon paints no second
   tag).
 - **EllesmereUI, EllesmereUI Blizzard Skin and Premade Groups Filter - EllesmereUI Skin —
-  optional.** `## OptionalDeps: EllesmereUI`, presence-guarded (library-stack-§6): without them the
-  panel keeps its Blizzard look and nothing else changes. With all three (EllesmereUI's third-party
-  skinning and both addons' Third-Party Addons entries on) the attached panel is painted in the
-  EllesmereUI theme (`modules/EUISkin.lua`). Read against EllesmereUI 9.4 and
-  PremadeGroupsFilter_EllesmereUI 1.1.0.
+  optional.** `## OptionalDeps: EllesmereUI` (skinning-§5): with EllesmereUI and its Blizzard Skin
+  module, the Skin tab offers EllesmereUI as the skin source, and LibKa0s-Skin-1.0's `eui` provider
+  paints the attached panel in the EllesmereUI theme once EllesmereUI's third-party skinning and this
+  addon's Third-Party Addons entry are on. The addon carries no EllesmereUI code of its own.
+  Premade Groups Filter - EllesmereUI Skin skins PGF's own window to match; the Filters tab points
+  at it while EllesmereUI is loaded. Without them nothing changes.
 - **Nothing else.** Every library is vendored under `libs/` and committed (library-stack), so the
   player installs no separate library addon. The rest of `## OptionalDeps:` names the vendored libs
   for load ordering, not as things to download.

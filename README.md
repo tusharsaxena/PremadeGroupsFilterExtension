@@ -4,7 +4,7 @@
 ![CurseForge Version](https://img.shields.io/curseforge/v/1736636)
 ![License](https://img.shields.io/badge/License-MIT-orange)
 ![Standard](https://img.shields.io/badge/Ka0s-WoW_Addon_Standard-yellow)
-![Tests](https://img.shields.io/badge/Tests-485%2F485_passing-green)
+![Tests](https://img.shields.io/badge/Tests-428%2F428_passing-green)
 
 A small companion to [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter)
 for Mythic+. You type the key level you want to push (or let Smart pick it), and it ticks every
@@ -50,11 +50,11 @@ in **Copy into search box**. Click it, press Ctrl+C, then Enter to jump to the s
 and Enter.
 
 Filter choices are saved per character, and presets load on any character. **Use the extension's
-filters** switches the filtering off without turning the addon off. If you use EllesmereUI with
-Premade Groups Filter's EllesmereUI
-[skin](https://www.curseforge.com/wow/addons/premade-groups-filter-ellesmereui), the panel matches
-it once EllesmereUI's third-party skinning is on for both addons; the EllesmereUI skin tab in the
-settings shows what's missing. `/pgfe` opens the settings and `/pgfe help` lists the commands.
+filters** switches the filtering off without turning the addon off. If you use EllesmereUI, pick
+it as the skin source on the Skin tab and the panel takes your EllesmereUI theme once EllesmereUI's
+third-party skinning is on for this addon (the tab shows what's missing); Premade Groups Filter's own
+EllesmereUI [skin](https://www.curseforge.com/wow/addons/premade-groups-filter-ellesmereui) makes
+PGF's window match. `/pgfe` opens the settings and `/pgfe help` lists the commands.
 
 ## How the filtering works
 

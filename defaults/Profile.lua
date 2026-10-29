@@ -42,7 +42,6 @@ NS.C = {
         filtersActive  = true,    -- Use the extension's filters (General > Filters)
         showRegionTags = true,    -- the region tag on Group Finder rows (General > Region tags)
         panelCollapsed = false,   -- the attached panel folded to its title bar (modules/Panel.lua)
-        euiSkin        = true,    -- the EllesmereUI skin switch (modules/EUISkin.lua); gated, never forced
         regionColors   = regionColors(), -- the region tags' colors (General > Region tags)
         -- The skin this addon wears (core/SkinSetup.lua; General > Skin, skinning-§2): Ka0s Default,
         -- the settings panel left the client's (the owner's call of 2026-10-27, as LootHistory), the

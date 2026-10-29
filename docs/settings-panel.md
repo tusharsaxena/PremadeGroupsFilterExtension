@@ -8,7 +8,7 @@ they live on the panel attached under PGF's dialog (`modules/Panel.lua`, describ
 | Page | Covers |
 |---|---|
 | Ka0s Premade Groups Filter Extension (landing) | Logo, the TOC notes, and the slash command list from `NS.COMMANDS` |
-| General | Master controls: enable, debug console, minimap button, reset all settings. Filters: Use the extension's filters, and a line saying where the filter options are. Region tags: Show region tags in the Group Finder, then every region tag's color, with a picker each. EllesmereUI skin: the skin's switch and conditions |
+| General | Master controls: enable, debug console, minimap button, reset all settings. Filters: Use the extension's filters, and a line saying where the filter options are. Region tags: Show region tags in the Group Finder, then every region tag's color, with a picker each. Skin: the library's Skin tab (source, skin, font and texture, scope, copy to every Ka0s addon) |
 | Profiles | AceDB profiles: switch, copy, delete, reset |
 
 ## Page → tab → row
@@ -59,29 +59,17 @@ re-render.
     act. The page's Defaults button and Reset all settings reset them too, as profile rows.
   - A change shows on the Group Finder's next search or list refresh.
 
-- **EllesmereUI skin** (the fourth tab; its own group, drawn by a host tab in `settings/Panel.lua`):
-  - *Use the EllesmereUI skin* → `euiSkin` (profile, default on), first, with a 12px gap below.
-    Disabled while any condition fails (never forced on); its tooltip adds what is missing, live.
-    Off after a paint asks for a reload, whether from the switch or from a profile switch, copy or
-    reset.
-  - After a 12px gap, four status lines, one per gate condition (`core/EUIBridge.lua`): a green ready mark or a red
-    not-ready mark, the condition, and under a failing one what to do about it (indented by an empty
-    icon slot the size of the marks). Hovering a line shows what the condition is, why it matters
-    and how to turn it on:
-    1. EllesmereUI and its Blizzard Skin module are loaded;
-    2. EllesmereUI third-party skinning is on (*Blizz UI Enhanced > Blizzard Window Skins >
-       Third-Party Addons > Skin Third-Party Addons*);
-    3. PremadeGroupsFilterExtension is on in EllesmereUI's Third-Party Addons list;
-    4. Premade Groups Filter's own EllesmereUI skin is on. When it is not, the line says which: not
-       installed (and a read-only box holds its CurseForge link to copy), installed but disabled in
-       the AddOns list, or turned off in EllesmereUI's Third-Party Addons list
-       (`EUIBridge.PGFSkinState`). The link box is drawn right under this line, only when the skin
-       is not installed (decided at render time).
-  - After an 8px gap, a state line in the same empty icon slot (so its text lines up under the
-    conditions'), with its own tooltip: applied; applied until a reload; not applied (stood down / a condition not met);
-    off; applied after a reload; applied when the panel next shows.
-  - Every line and the box are re-read each time the page is shown (an `OnShow` hook running the
-    page's refreshers), since EllesmereUI's options change them outside this addon's write seam.
+- **Filters**, while EllesmereUI is loaded, ends with a pointer to Premade Groups Filter's own
+  EllesmereUI skin (`settings/Panel.lua` `renderPGFSkinAdvice`, after a 12px gap): it is loaded, or
+  installed but disabled (enable it and reload), or not installed (a read-only box holds its
+  CurseForge link to copy). Advice only, read from `C_AddOns` at render time; the EllesmereUI
+  skin's own conditions are the Skin tab's (the retired *EllesmereUI skin* tab's `euiSkin` switch
+  was carried to the Skin tab's source by schema step 2, PG-06).
+
+- **Skin** (the last tab): the library's `O.AppearanceTab`, drawn over the skip-render `skin.*` rows
+  (`core/SkinSetup.lua` is the write seam): the source (Ka0s skins or EllesmereUI, with EllesmereUI's
+  four conditions and their fixes), the nine skins, the font and texture overrides, the scope and
+  *Copy to every Ka0s addon*.
 
 The header **Defaults** button runs the same confirmation, and its tooltip is the library's
 `Helpers.ResetAllTooltip()`, the same words *Reset all settings* carries (options-ui-§12); the addon

@@ -13,7 +13,6 @@ assembled by `Settings.BuildDefaults` in `settings/Schema.lua`.
 | `filtersActive` | `true` | The write seam: *Use the extension's filters* on the General page's *Filters* tab, the panel's first box, `/pgfe set filtersActive`. Its onChange (`Apply.OnFiltersToggled`) removes or rewrites the managed block. Off: Apply refuses (`MSG_INACTIVE`) and `pgfe_on` is false. Separate from `enabled`; not in presets |
 | `showRegionTags` | `true` | The write seam: *Show region tags in the Group Finder*, leading the General page's *Region tags* tab, `/pgfe set showRegionTags`. Read by `modules/RegionTags.lua` on every row paint |
 | `regionColors.<key>` | per key, `defaults/Profile.lua` `REGION_HEX` | The write seam: one color picker per region (`oce`, `la`, `chi`, `mex`, `bzl`, `eng`, `ger`, `fra`, `ita`, `spa`, `por`, `rus`) on the General page's *Region tags* tab, its *Reset region tag colors* button (`Settings.ResetRegionColors`, one bulk act), `/pgfe set regionColors.<key> r g b` (0–1 or 0–255). Stored `{ r, g, b, a }` (0–1; alpha unused). Read by `modules/RegionTags.lua` `Hex`, cached per stored table. Additive key: no migration |
-| `euiSkin` | `true` | The write seam: *Use the EllesmereUI skin* on the General page's *EllesmereUI skin* tab, `/pgfe set euiSkin`. `true` is refused while any EllesmereUI gate condition fails (off always accepted, a bulk reset never refused); onChange `NS.EUISkin.OnSwitch` (a profile switch, copy or reset runs it too, with the incoming value). Read by `modules/EUISkin.lua`: the skin applies only when this AND every condition hold. Additive key: no migration |
 
 ## `char` (per character)
 
@@ -55,9 +54,10 @@ Session-only, never stored: `NS.State.debug` (the console's logging flag).
 
 ## Migrations
 
-`NS.SCHEMA_VERSION = 1`. Steps in `core/Database.lua`'s `NS.MIGRATIONS`, run by `NS:RunMigrations()`
+`NS.SCHEMA_VERSION = 2`. Steps in `core/Database.lua`'s `NS.MIGRATIONS`, run by `NS:RunMigrations()`
 right after `AceDB:New` and on every profile event.
 
 | Step | What it does |
 |---|---|
 | 0 → 1 | The stamp itself; nothing to reshape |
+| 1 → 2 | The skinning rollout's PG-06: every profile's `euiSkin` (the retired EllesmereUI bridge's switch, default `true`) is carried to `skin.source = "eui"` when it was not an explicit `false` and EllesmereUI is present (the library provider's `eui` condition at `OnInitialize`), then deleted. Walks `db.sv.profiles` raw, so an absent key reads as the old default |

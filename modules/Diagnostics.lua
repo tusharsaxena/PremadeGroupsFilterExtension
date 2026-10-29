@@ -82,16 +82,34 @@ local function dependencies(out)
     out:add(TAG, "PGF seams ok=%s missing=%s", ok, missing or "none")
     hooks(out)
     out:add(TAG, "PremadeRegions loaded=%s", _G.PremadeRegions ~= nil)
-    -- The optional EllesmereUI skin: its four gate conditions, our switch, and what happened.
-    local B, K = NS.EUIBridge, NS.EUISkin
-    if B then
-        out:add(TAG, "EllesmereUI suite=%s master=%s ownEntry=%s pgfSkin=%s", read(B.IsSuiteReady),
-            read(B.IsMasterOn), read(B.IsEntryOn, B.SKIN_NAME), read(B.IsPGFSkinOn))
+end
+
+-- The skin this addon wears, as the library applied it (core/SkinSetup.lua), and EllesmereUI as the
+-- library's provider sees it: the gate's four conditions, whether it painted, and why not. Read
+-- through LibKa0s-Skin-1.0 only; this addon never reads EllesmereUI's own state.
+local function skin(out)
+    local Skin = LibStub and LibStub("LibKa0s-Skin-1.0", true)
+    if not Skin then
+        out:add(TAG, "skin library=%s", "absent")
+        return
     end
-    if K then
-        out:add(TAG, "EllesmereUI skin: registered=%s facade=%s wanted=%s applied=%s", K.registered == true,
-            read(K.HasFacade), read(K.IsWanted), read(K.IsApplied))
+    local owner = NS.Skin and NS.Skin.owner
+    local ok, source, key = pcall(Skin.GetChoice, Skin, owner)
+    local storedSource, storedSkin = NS.SkinChoice()
+    out:add(TAG, "skin applied=%s:%s stored=%s:%s", ok and source or "unreadable", ok and key or "unreadable",
+        storedSource, storedSkin)
+    out:add(TAG, "skin drawsDefault=%s pendingReload=%s", read(NS.SkinDrawsDefault),
+        read(Skin.PendingReload, Skin, owner))
+    local status = NS.SkinEUIStatus and NS.SkinEUIStatus()
+    if type(status) ~= "table" then
+        out:add(TAG, "EllesmereUI provider=%s", "absent")
+        return
     end
+    local conds = {}
+    for _, c in ipairs(status.conditions or {}) do conds[#conds + 1] = ("%s=%s"):format(c.key, tostring(c.ok)) end
+    out:joined(TAG, "EllesmereUI conditions", conds)
+    out:add(TAG, "EllesmereUI ok=%s painted=%s refused=%s", status.ok == true, status.painted == true,
+        status.refused or "none")
 end
 
 local function registration(out)
@@ -115,6 +133,7 @@ function NS.Diagnostics.Sections()
         { "settings",     settings },
         { "filters",      filters },
         { "dependencies", dependencies },
+        { "skin",         skin },
         { "registration", registration },
         { "launcher",     launcher },
     }

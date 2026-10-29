@@ -47,6 +47,11 @@ local addonName, NS = ...
 --                           queue WITHOUT marking it seen: the stand-down, a profile that has seen
 --                           it, and first on every profile event; drops a held combat deferral.
 --   NS.SkinPickerSpec()     the spec MaybeShowSkinPicker hands O.SkinPicker.
+--   NS.SkinEUIStatus()      `Skin:GetEUIStatus(owner)` ({ ok, painted, refused, conditions }), the
+--                           one way this addon learns what EllesmereUI does (anti-pattern #107: it
+--                           never reads EllesmereUI's saved variables); nil without the library.
+--   NS.SkinEUIPainted()     true once EllesmereUI painted this owner this session: modules/Panel.lua
+--                           folds the skinned twin to EllesmereUI's shell bar then.
 --
 -- No owner tokens (skinning-§1): every color the addon draws under Ka0s Default is a library token's
 -- exact value (the M0 inventory's PG-G1..G3 were refuted, 01_INVENTORY.md), so RegisterOwner carries
@@ -55,11 +60,11 @@ local addonName, NS = ...
 --
 -- ── WHERE IT LOADS ───────────────────────────────────────────────────────────────────────────
 --
--- Below core/CoreSetup.lua, whose NS.ApplySkin the degraded facade's Shell routes to, and above
--- settings/Panel.lua, which reads NS.SKIN_OPTIONS at file load. For now it sits BELOW
--- modules/EUISkin.lua (the TOC says why: EllesmereUI keeps the first registration of the folder
--- name, which stays the old bridge's until PG-06 retires it and moves this file up under
--- core/CoreSetup.lua); no file above it reads NS.Skin. AT FILE LOAD, never PLAYER_LOGIN (skinning-§1):
+-- Right under core/CoreSetup.lua, whose NS.ApplySkin the degraded facade's Shell routes to, and so
+-- above settings/Panel.lua, which reads NS.SKIN_OPTIONS at file load; every other NS.* it reads
+-- (NS.addon, NS.SchemaRuntime, NS.IsStoodDown, NS.SafeRegisterEvent's target) is read at call time.
+-- Since PG-06 retired the addon's own EllesmereUI bridge (modules/EUISkin.lua, core/EUIBridge.lua),
+-- this is the only registration of the folder name with EllesmereUI. AT FILE LOAD, never PLAYER_LOGIN (skinning-§1):
 -- the EllesmereUI provider has to offer the owner to EllesmereUI before EllesmereUI dispatches its
 -- skins, which `## OptionalDeps: EllesmereUI` makes it do after this file. Nothing here reads the
 -- profile at load: RegisterOwner calls `get` once, before AceDB exists, and it answers Ka0s
@@ -293,7 +298,8 @@ function NS.MaybeShowSkinPicker()
 end
 
 -- The picker goes down unmarked with the addon, so it comes back on the next login the addon stands
--- up for. core/PGFE.lua publishes the list above this file.
+-- up for. This file loads above core/PGFE.lua, which keeps the list it finds.
+NS.STAND_DOWN = NS.STAND_DOWN or {}
 NS.STAND_DOWN[#NS.STAND_DOWN + 1] = function() NS.HideSkinPicker() end
 
 -- AceGUI keeps ONE callback per event name (options-ui-§19). Without the library's chain there is
@@ -357,6 +363,8 @@ if not Skin then
     function NS.SkinPaintAce() return false end
     function NS.SkinPaintAceTree() return 0 end
     NS.SkinOnRelease = releaseByCallback
+    function NS.SkinEUIStatus() return nil end
+    function NS.SkinEUIPainted() return false end
     return
 end
 
@@ -403,6 +411,18 @@ end
 function NS.SkinOnRelease(widget, fn)
     if type(Skin.OnRelease) ~= "function" then return releaseByCallback(widget, fn) end
     return Skin:OnRelease(widget, fn)
+end
+
+-- EllesmereUI, through the library's provider only (SkinEUI.lua is the one file that may read
+-- EllesmereUI's saved variables, library-stack-§6). A copy without the provider answers nil / false.
+function NS.SkinEUIStatus()
+    if type(Skin.GetEUIStatus) ~= "function" then return nil end
+    return Skin:GetEUIStatus(addonName)
+end
+
+function NS.SkinEUIPainted()
+    local status = NS.SkinEUIStatus()
+    return type(status) == "table" and status.painted == true
 end
 
 function NS.ApplySkinIgnore(panel, fonts)

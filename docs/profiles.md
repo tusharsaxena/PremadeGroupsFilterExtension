@@ -1,8 +1,8 @@
 # Profiles — Ka0s Premade Groups Filter Extension
 
 AceDB profiles hold only the **profile** scope: the master switch (`enabled`), *Use the extension's
-filters* (`filtersActive`), *Show region tags in the Group Finder* (`showRegionTags`), the region tag colors (`regionColors`), *Use the
-EllesmereUI skin* (`euiSkin`) and the attached panel's collapsed state (`panelCollapsed`). The filter options are per **character** (`char.filters`) and presets are
+filters* (`filtersActive`), *Show region tags in the Group Finder* (`showRegionTags`), the region tag colors (`regionColors`), the skin
+this addon wears (`skin.*`, the Skin tab) and the attached panel's collapsed state (`panelCollapsed`). The filter options are per **character** (`char.filters`) and presets are
 **global**, so switching profiles never changes a character's filters.
 
 - **Where:** Settings → AddOns → Ka0s Premade Groups Filter Extension → Profiles (AceDBOptions), or

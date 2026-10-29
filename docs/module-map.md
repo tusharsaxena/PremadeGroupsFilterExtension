@@ -7,20 +7,23 @@ LibStub, CallbackHandler, LibSharedMedia, LibDataBroker, LibDBIcon, LibKa0s v1.8
 ## Load order and why
 
 Libraries load first (the `# Libraries` block, LibKa0s last after Ace3). Then `locales/enUS.lua`
-(publishes `NS.L`), the `core/` setup files, `core/PGFBridge.lua`, `core/EUIBridge.lua`, `defaults/`, `modules/`, and
+(publishes `NS.L`), the `core/` setup files, `core/PGFBridge.lua`, `defaults/`, `modules/`, and
 `settings/` last. Every addon file's TOC line is annotated: `# LOAD-BEARING:` names what the file
 needs at load, `# Conventional` says it reads its neighbors at call time only, and `# LAST` marks the
 Profiles page. The constraints that fix the order:
 
 - `core/CoreSetup.lua` first in core: every later file captures `NS.Print` / `NS.Util.print`.
-- `core/Constants.lua` before `modules/`: `modules/Panel.lua` and `modules/EUISkin.lua` take
-  `NS.Constants.LAYERS` as a file-scope upvalue.
+- `core/SkinSetup.lua` right under it: it registers the skin owner at file load (so LibKa0s's
+  EllesmereUI provider offers it before EllesmereUI dispatches; `## OptionalDeps: EllesmereUI` loads
+  EllesmereUI first when present) and publishes `NS.SKIN_OPTIONS`, which `settings/Panel.lua` reads
+  at load; its degraded facade routes `Shell` to CoreSetup's `NS.ApplySkin`.
+- `core/Constants.lua` before `modules/`: `modules/Panel.lua` takes `NS.Constants.LAYERS` as a
+  file-scope upvalue.
 - `core/MediaSetup.lua` before `core/PGFE.lua`: `NS.FONT_MONO` is resolved from `NS.MediaFont` at load.
 - `core/PGFE.lua` before every other addon file below it: it promotes `NS` to the AceAddon object
   and publishes `NS.PREFIX`, `NS.State`, `NS.FONT_MONO`, `NS.FEATURE_EVENTS`, `NS.STAND_DOWN` and
   `NS.STAND_UP`.
-  `modules/EnvInject.lua`, `modules/Panel.lua`, `modules/EUISkin.lua` and every `settings/` file
-  read `NS.addon` at load.
+  `modules/EnvInject.lua`, `modules/Panel.lua` and every `settings/` file read `NS.addon` at load.
 - `core/PGFE.lua` and `core/PGFBridge.lua` before `modules/EnvInject.lua` and `modules/Panel.lua`:
   both append to `NS.FEATURE_EVENTS` / `NS.STAND_UP` (Panel also to `NS.STAND_DOWN`) and install
   their hook through the bridge (`NS.Bridge.InstallEnvHook`, `NS.Bridge.HookDialog`) at file load.
@@ -30,8 +33,6 @@ Profiles page. The constraints that fix the order:
   `settings/Panel.lua`: each consumes what the previous publishes at file scope.
 - `settings/Schema.lua` before `settings/Slash.lua`: Slash captures `NS.SchemaRuntime.Get` / `Set`
   / `FindRow` / `ApplyDefault` into its descriptor at load.
-- `core/EUIBridge.lua` before `modules/EUISkin.lua`, which registers with EllesmereUI at file load
-  under `NS.EUIBridge.SKIN_NAME`; `## OptionalDeps: EllesmereUI` loads EllesmereUI first when present.
 - `settings/Profiles.lua` last, so the Profiles page is the last subcategory.
 
 ## Files
@@ -52,7 +53,6 @@ Profiles page. The constraints that fix the order:
 | `core/LifecycleSetup.lua` | `LibKa0s-Lifecycle-1.0`: the stand-down latch, `NS.IsStoodDown()` |
 | `core/Popup.lua` | `NS.ShowPopup` / `NS.RestorePopupStrata`: every PGFE StaticPopup, lifted over the attached panel while it is visible and put back on hide |
 | `core/PGFBridge.lua` | The only file that touches PGF internals: seam check, dungeon state and expression read/write, commit, search, the env and dialog hooks |
-| `core/EUIBridge.lua` | The only file that reads EllesmereUI state: the skin's four gate conditions (`Conditions`, `GateOpen`, `WhyClosed`) and the per-condition readers behind them (`IsSuiteReady`, `IsMasterOn`, `IsEntryOn`, `PGFSkinState` / `IsPGFSkinOn`), plus `SKIN_NAME` |
 | `defaults/Profile.lua` | `NS.C`: profile, char and global default values |
 | `defaults/Realms.lua` | `NS.RealmLists`: realm display names per portal and region bucket |
 | `modules/Regions.lua` | Portal detection, realm normalization, leader name → region key |
@@ -65,12 +65,11 @@ Profiles page. The constraints that fix the order:
 | `modules/Apply.lua` | Apply / Clear orchestration: prechecks, validation, targeting, expression merge, bridge writes, search |
 | `modules/RegionTags.lua` | The region tag on Group Finder rows and applicants; installs its two Blizzard hooks at load |
 | `modules/Panel.lua` | The panel attached under PGF's dialog; installs the dialog hook at load |
-| `modules/EUISkin.lua` | The optional EllesmereUI skin of that panel: registers at load, keeps the facade, paints when every condition and the switch hold, the reload prompt |
 | `modules/Diagnostics.lua` | The sections of `/pgfe diagnostics` (`NS.Diagnostics.Sections()`, wired as the DebugLog descriptor's `diagnostics` hook in `core/DebugLogSetup.lua`) |
 | `settings/SchemaSetup.lua` | `LibKa0s-Schema-1.0` or its host stub |
 | `settings/Schema.lua` | The write seam (`NS.SchemaRuntime`), the closure stamping for session and global rows (`Settings.StampClosureRows`), schema validation, defaults assembly and the reset. Declares no rows: `settings/Panel.lua` adds every row at load |
 | `settings/OptionsSetup.lua` | `LibKa0s-Options-1.0`: the settings panel descriptor |
-| `settings/Panel.lua` | Landing page body and the General page, in four tabs: Master controls, Filters (`filtersActive` and a line pointing at the attached panel), Region tags (`showRegionTags`, then `regionColors.<key>`, `REGION_ROWS`) and EllesmereUI skin (its `euiSkin` row and status lines) |
+| `settings/Panel.lua` | Landing page body and the General page, in four tabs: Master controls, Filters (`filtersActive`, a line pointing at the attached panel and, while EllesmereUI is loaded, a pointer to Premade Groups Filter's own EllesmereUI skin), Region tags (`showRegionTags`, then `regionColors.<key>`, `REGION_ROWS`) and Skin (the library's tab over the `skin.*` rows) |
 | `settings/Slash.lua` | `NS.COMMANDS` and `LibKa0s-Slash-1.0` |
 | `settings/Profiles.lua` | The Profiles page |
 | `tests/run.lua` | Suite list, factories, surface source, diagnostics facts |
