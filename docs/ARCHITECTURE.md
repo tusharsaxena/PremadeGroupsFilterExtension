@@ -193,8 +193,9 @@ are setup and stay up while disabled.
 
 The first-run skin picker's combat retry is not a feature event either: when `NS.MaybeShowSkinPicker`
 (`core/SkinSetup.lua`) is asked to show in combat, it registers `PLAYER_REGEN_ENABLED` on a one-shot
-private frame, unregistered when it fires and by the stand-down (`NS.HideSkinPicker`), so a stood-down
-addon is registered for nothing. The picker itself shows from `OnEnable` and after every profile
+private frame, unregistered and let go of when it fires and by the stand-down (`NS.HideSkinPicker`),
+so a stood-down addon is registered for nothing and keeps no retry frame; the next held start makes its
+own. The picker itself shows from `OnEnable` and after every profile
 event, on a profile whose `skin.pickerSeen` is false, never while stood down.
 
 EllesmereUI's skin callback is not this addon's: LibKa0s-Skin-1.0 registers the owner with

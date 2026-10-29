@@ -361,7 +361,7 @@ Total.
 - layers: every PGFE popup spec restores on hide
 - layers: no strata literal, no absolute level, no direct StaticPopup_Show
 
-### test_settings_layout.lua (10)
+### test_settings_layout.lua (11)
 
 - layout: every stored path, its type and its default are unchanged by item 020
 - layout: the region-tag switch leads the Region tags tab, unheaded, beside its colors
@@ -371,6 +371,7 @@ Total.
 - layout: the filters switch reads true on both surfaces
 - layout: without EllesmereUI the Filters tab carries no PGF skin pointer
 - layout: under EllesmereUI a missing PGF skin is named, with its link right under it
+- layout: the link box selects on focus and leaves the pooled editbox frame as it found it
 - layout: under EllesmereUI a disabled or loaded PGF skin is named, with no link
 - layout: the header Defaults describes the reset in Reset all settings' own words
 
@@ -411,7 +412,7 @@ Total.
 - skin: a pick while stood down builds nothing; the stand-up shows the skin's instance
 - skin: modules/Panel.lua types no color: no literal SetTextColor, tooltip color or markup
 
-### test_skin_picker.lua (15)
+### test_skin_picker.lua (16)
 
 - skin picker: skin.pickerSeen defaults to false, a skip-render row on the Skin tab
 - skin picker: the spec names this owner, its seams, the General page's Skin tab, and no eye
@@ -419,6 +420,7 @@ Total.
 - skin picker: a profile that has seen it shows nothing at login
 - skin picker: in combat a start waits for PLAYER_REGEN_ENABLED, once, on a private frame
 - skin picker: a held start is dropped by the stand-down
+- skin picker: a dropped held start lets go of its frame, and the next one makes its own
 - skin picker: never while the addon is switched off
 - skin picker: a new profile and a reset profile show it again; a seen one does not
 - skin picker: the player's close marks it seen; this addon's own hide does not
@@ -429,7 +431,7 @@ Total.
 - skin tools: a host release is chained onto the skin's restore, both run
 - skin tools: the debug console is painted for this owner
 
-### test_skin_eui.lua (10)
+### test_skin_eui.lua (12)
 
 - eui migration: with EllesmereUI, every profile but an explicit false moves to skin.source eui
 - eui migration: without EllesmereUI every profile keeps the Ka0s source
@@ -439,6 +441,8 @@ Total.
 - eui: no addon file reads EllesmereUIDB or registers with EllesmereUI itself
 - eui: once EllesmereUI paints the owner, the skinned twin shows and goes to its facade
 - eui: before EllesmereUI paints, the eui source wears the metal instance (Ka0s Default)
+- eui: which instance shows is read from public API only, never the library's __DrawsKey
+- eui: the public answer matches the key the library draws by, in every state
 - eui: the twin folds to EllesmereUI's 25px shell bar
 - eui diagnostics: the skin section reports the choice and the library's EllesmereUI gate
 
@@ -548,11 +552,11 @@ Total.
 | test_apply.lua | 33 |
 | test_panel.lua | 84 |
 | test_layers.lua | 8 |
-| test_settings_layout.lua | 10 |
+| test_settings_layout.lua | 11 |
 | test_skinsetup.lua | 19 |
 | test_skin.lua | 12 |
-| test_skin_picker.lua | 15 |
-| test_skin_eui.lua | 10 |
+| test_skin_picker.lua | 16 |
+| test_skin_eui.lua | 12 |
 | test_reset.lua | 5 |
 | test_diagnostics.lua | 6 |
 | test_vendor_sync.lua | 3 |
@@ -562,4 +566,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **428** |
+| **Total** | **432** |

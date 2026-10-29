@@ -32,23 +32,27 @@ stays reserved and unregistered) and no suspend contract. `libs/LibKa0s/` stays 
 ## The combat-path sweep (criterion (a))
 
 Swept with `grep -rn -E 'RegisterEvent|RegisterUnitEvent|OnUpdate|C_Timer|NewTicker|ScheduleTimer|ScheduleRepeatingTimer|hooksecurefunc|HookScript|SetScript'`
-over every file outside `libs/`, `tests/` and `docs/`. The search found no `OnUpdate`, `C_Timer`
-call, ticker or AceTimer (removed, C-35), and nothing outside `libs/` reads `C_Timer`.
-There is one registration site, and every hook runs on a player UI action.
+over every file outside `libs/`, `tests/` and `docs/`. The search found no `OnUpdate`, ticker,
+repeating timer or AceTimer (removed, C-35). The one `C_Timer` read is `C_Timer.After` in
+`settings/OptionsSetup.lua:109`, the settings color picker's 50 ms drag throttle: one call per
+drag step, on a player action. There are two registration sites, and every hook runs on a player
+UI action.
 
 | Site | Hit | Work per event or call | Runs in combat? |
 |---|---|---|---|
-| `core/PGFE.lua:42` | `registerFeatureEvents`, through `NS.SafeRegisterEvent` (`core/CoreSetup.lua:56-80`) | The only registration site. It registers the 6 `NS.FEATURE_EVENTS` rows below on enable and stand-up, and unregisters them on stand-down | — |
+| `core/PGFE.lua:42` | `registerFeatureEvents`, through `NS.SafeRegisterEvent` (`core/CoreSetup.lua:56-80`) | The feature registration site. It registers the 6 `NS.FEATURE_EVENTS` rows below on enable and stand-up, and unregisters them on stand-down | — |
 | `modules/EnvInject.lua:85-86` | `ACTIVE_PLAYER_SPECIALIZATION_CHANGED`, `PLAYER_SPECIALIZATION_CHANGED` | `RefreshPlayer`: 3 calls (spec index, spec info, `UnitClass`) | Rare (a spec change) |
-| `modules/Panel.lua:894-896` | `CHALLENGE_MODE_MAPS_UPDATE`, `CHALLENGE_MODE_COMPLETED`, `MYTHIC_PLUS_CURRENT_AFFIX_UPDATE` | `OnPanelSeasonData`: Smart level, then the readout rebuilt over 8 dungeons. 34 calls, about 7 KB | Rare (a season-data reply, a completed key, an affix change) |
-| `modules/Panel.lua:897` | `PLAYER_ENTERING_WORLD` | Re-arms the season request, then `Panel.UpdateVisibility` (the readout as above). 35 calls | At a loading screen |
-| `core/PGFE.lua:105-108` | AceDB `OnProfileChanged` / `Copied` / `Reset` | Migrations, panel refresh, the latch re-read | Player action |
+| `modules/Panel.lua:1046-1048` | `CHALLENGE_MODE_MAPS_UPDATE`, `CHALLENGE_MODE_COMPLETED`, `MYTHIC_PLUS_CURRENT_AFFIX_UPDATE` | `OnPanelSeasonData`: Smart level, then the readout rebuilt over 8 dungeons. 34 calls, about 7 KB | Rare (a season-data reply, a completed key, an affix change) |
+| `modules/Panel.lua:1049` | `PLAYER_ENTERING_WORLD` | Re-arms the season request, then `Panel.UpdateVisibility` (the readout as above). 35 calls | At a loading screen |
+| `core/PGFE.lua:116-119` | AceDB `OnProfileChanged` / `Copied` / `Reset` | Migrations, panel refresh, the latch re-read | Player action |
 | `core/PGFBridge.lua:173` | `hooksecurefunc(PGF, "PutPremadeRegionInfo")` | `EnvInject.Apply`, above: 1.2 calls and 80 bytes per result, 0 while stood down | Only while PGF filters a search the player started |
 | `core/PGFBridge.lua:184-186` | `SwitchToPanel`, dialog `OnShow` / `OnHide` | `Panel.UpdateVisibility` | Player action |
-| `modules/RegionTags.lua:74` | `LFGListSearchEntry_Update`, `LFGListApplicationViewer_UpdateApplicantMember` | One row tag: 5.2 calls, 160 bytes | Only while the Group Finder repaints |
-| `modules/Panel.lua:87-93` | Tooltip `OnEnter` / `OnLeave` | Fill and show `GameTooltip`; hide it | Player action |
+| `modules/RegionTags.lua:102` | `LFGListSearchEntry_Update`, `LFGListApplicationViewer_UpdateApplicantMember` | One row tag: 5.2 calls, 160 bytes | Only while the Group Finder repaints |
+| `modules/Panel.lua:120-132` | Tooltip `OnEnter` / `OnLeave` | Fill and show `GameTooltip`; hide it | Player action |
 | `modules/Panel.lua`, `settings/Panel.lua` | `SetScript` / `HookScript` on the addon's own widgets (click, edit box, focus, settings `OnShow`) | One handler per player action | Player action |
+| `core/SkinSetup.lua:295` | `PLAYER_REGEN_ENABLED` on a private one-shot frame (D11) | Registered only while the first-run skin picker is held in combat; it unregisters and drops its frame when it fires, then shows the picker once. The stand-down drops it the same way | Once, as combat ends |
 | `modules/Apply.lua:37` | `InCombatLockdown()` in `precheck` | Apply refuses in combat | Refused |
 
-`PLAYER_REGEN_DISABLED` and every other combat event are unregistered. `combatEvents` fires them
+`PLAYER_REGEN_DISABLED` and every other combat event are unregistered (the picker's one-shot
+`PLAYER_REGEN_ENABLED` exists only while a held start waits). `combatEvents` fires them
 with `InCombatLockdown` true and finds no handler and no call.
