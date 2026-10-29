@@ -199,6 +199,38 @@ test("layout: under EllesmereUI a missing PGF skin is named, with its link right
     assertEqual(boxes[1].text, "https://www.curseforge.com/wow/addons/premade-groups-filter-ellesmereui")
 end)
 
+test("layout: the link box selects on focus and leaves the pooled editbox frame as it found it", function()
+    -- red under: a HookScript (it cannot be undone) or a field left on AceGUI's pooled frame.
+    local NS, _, m = T.enableAddon{ mock = function(mm) mm.installEUI{ pgfSkin = "missing" } end }
+    local AceGUI = m.LibStub("AceGUI-3.0")
+    -- One inner editbox frame for every EditBox, as AceGUI's pool hands it back, with AceGUI's own
+    -- focus script on it.
+    local pooled, highlights = m.CreateFrame("EditBox"), 0
+    pooled.HighlightText = function() highlights = highlights + 1 end
+    local aceFocus = function() end
+    pooled:SetScript("OnEditFocusGained", aceFocus)
+    local function ctor()
+        AceGUI.WidgetRegistry.EditBox = nil
+        local w = AceGUI:Create("EditBox")
+        AceGUI.WidgetRegistry.EditBox = ctor
+        w.editbox = pooled
+        return w
+    end
+    AceGUI.WidgetRegistry.EditBox = ctor
+    local _, boxes = filtersTexts(NS, m)
+    AceGUI.WidgetRegistry.EditBox = nil
+    assertEqual(#boxes, 1)
+    pooled:__fire("OnEditFocusGained")
+    assertEqual(highlights, 1, "focus selects the link")
+    boxes[1]:Release()
+    assertTrue(rawequal(pooled:GetScript("OnEditFocusGained"), aceFocus), "AceGUI's focus script is back")
+    pooled:__fire("OnEditFocusGained")
+    assertEqual(highlights, 1, "the next owner of the frame inherits nothing")
+    for k in pairs(pooled) do
+        assertTrue(type(k) ~= "string" or k:find("pgfe", 1, true) == nil, "field left on the frame: " .. tostring(k))
+    end
+end)
+
 test("layout: under EllesmereUI a disabled or loaded PGF skin is named, with no link", function()
     for state, words in pairs({ [false] = "is installed but disabled", [true] = "is loaded" }) do
         local NS, _, m = T.enableAddon{ mock = function(mm) mm.installEUI{ pgfSkin = state } end }

@@ -247,10 +247,10 @@ local PGF_SKIN_TEXT = {
 }
 
 -- The PGF skin's CurseForge link in a read-only edit box: anything typed puts the link back, and
--- focus selects it, ready for Ctrl+C. AceGUI pools the inner editbox frame, and HookScript cannot
--- be undone, so the frame is hooked once (`__pgfeLinkHook`) and the hook selects only while this
--- box owns the frame (`__pgfeLinkActive`). The box's release clears that flag before the frame
--- goes back to the pool, and forgets the box.
+-- focus selects it, ready for Ctrl+C. AceGUI pools the inner editbox frame, so nothing permanent
+-- goes on it: no HookScript (it cannot be undone) and no field. While this box owns the frame its
+-- OnEditFocusGained is a wrapper that runs AceGUI's own script and then selects; the box's release
+-- puts AceGUI's script back before the frame returns to the pool, and forgets the box.
 local function addPGFSkinLink(scroll)
     local AceGUI = Helpers.AceGUI
     if not AceGUI then return end
@@ -262,16 +262,17 @@ local function addPGFSkinLink(scroll)
     box:SetCallback("OnTextChanged", function(widget) widget:SetText(PGF_SKIN_URL) end)
     box:SetCallback("OnEnterPressed", function(widget) widget:SetText(PGF_SKIN_URL) end)
     local eb = box.editbox
-    if eb and eb.HookScript and not eb.__pgfeLinkHook then
-        eb.__pgfeLinkHook = true
-        eb:HookScript("OnEditFocusGained", function(self)
-            if self.__pgfeLinkActive then self:HighlightText() end
+    local aceFocus
+    if eb and eb.GetScript and eb.SetScript then
+        aceFocus = eb:GetScript("OnEditFocusGained")
+        eb:SetScript("OnEditFocusGained", function(self, ...)
+            if aceFocus then aceFocus(self, ...) end
+            if self.HighlightText then self:HighlightText() end
         end)
     end
-    if eb then eb.__pgfeLinkActive = true end
     -- Chained onto the skin's own release restore (AceGUI keeps one callback per event name).
     NS.SkinOnRelease(box, function(w)
-        if w.editbox then w.editbox.__pgfeLinkActive = nil end
+        if eb and eb.SetScript then eb:SetScript("OnEditFocusGained", aceFocus) end
         if Settings.PGFSkinLinkBox == w then Settings.PGFSkinLinkBox = nil end
     end)
     scroll:AddChild(box)
