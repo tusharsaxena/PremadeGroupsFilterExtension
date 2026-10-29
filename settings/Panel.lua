@@ -1,13 +1,14 @@
 local addonName, NS = ...
 -- settings/Panel.lua — the landing page body and the General page (Master controls, Filters,
--- Region tags, EllesmereUI skin).
+-- Region tags, EllesmereUI skin, Skin).
 --
 -- The landing page is the host's own buildMain (logo, notes, slash command list) and draws no tab
--- strip (options-ui-§5/§13). The General page renders through the tabbed renderer, in four
+-- strip (options-ui-§5/§13). The General page renders through the tabbed renderer, in five
 -- tabs: `Master controls`, composed from one declaration and holding only its mandated rows
 -- (options-ui-§15); `Filters`, the extension's filters switch and a line saying where the filter
 -- options are (the attached panel); `Region tags`, the region-tag switch leading the tags'
--- colors; and `EllesmereUI skin` (the optional skin's switch and status, below). The addon draws no
+-- colors; `EllesmereUI skin` (the optional skin's switch and status, below); and `Skin`, the
+-- library's Skin tab over the skin.* rows (core/SkinSetup.lua), last. The addon draws no
 -- positionable frame of its own -- the filter panel is anchored to PGF's dialog -- so the block is
 -- frameless (no scale, alpha, lock or reset position) and carries no visibility row: when the panel
 -- shows is decided by PGF's dialog and category, not by a setting (ratified: docs/ARCHITECTURE.md
@@ -358,10 +359,79 @@ local function renderEuiTab(ctx, rows)
         function() return Settings.EUISkinStateText(), STATE_TIP end)
 end
 
+-- ── Skin (the General page's last tab; skinning-§2, §3) ─────────────────────────────────────────
+--
+-- The skin this addon wears, per profile (core/SkinSetup.lua). The tab is the library's
+-- O.AppearanceTab (key "Appearance", labeled "Skin"), which draws every row below as its own
+-- controls, so each carries `skipRender`; they stay schema rows so the defaults resolve, both resets
+-- reach them, and `/pgfe get|set skin.skin` validates against `values`. Declared last, so the
+-- group, and with it the tab, is last: the page has no Keybindings tab (skinning-§3).
+--
+-- Each onChange applies ONLY its own half (core/SkinSetup.lua says why): the tab and another addon's
+-- "Copy to every Ka0s addon" call Skin:SetChoice before they write, so the write is a no-op, and a
+-- bare `/pgfe set` still repaints. Nothing skin-related keys off the announce refresh.
+local SKIN_GROUP = "Appearance"
+local SKIN_DEFAULTS = C.PROFILE.skin
+local function skinRow(leaf, row)
+    row.path, row.default = "skin." .. leaf, SKIN_DEFAULTS[leaf]
+    row.page, row.section, row.group, row.skipRender = "general", "general", SKIN_GROUP, true
+    return row
+end
+local SKIN_ROWS = {
+    skinRow("source", { type = "string", widget = "Dropdown", values = NS.SKIN_SOURCE_OPTIONS,
+        label = L["Skin source"],
+        tooltip = L["Where this addon's look comes from: the Ka0s skin chosen below, or EllesmereUI."],
+        onChange = function(v) NS.ApplySkinChoice(v, nil) end }),
+    skinRow("skin", { type = "string", widget = "Dropdown", values = NS.SKIN_OPTIONS,
+        label = L["Skin"],
+        tooltip = L["The Ka0s skin this addon wears. Changes every window and panel right away."],
+        onChange = function(v) NS.ApplySkinChoice(nil, v) end }),
+    -- The Scope's two exceptions, drawn by the same tab as check boxes.
+    skinRow("ignorePanel", { type = "bool", widget = "CheckBox",
+        label = L["Ignore settings panel"],
+        tooltip = L["Keep this addon's settings panel in the game's own look. Its windows still wear the skin."],
+        onChange = function(v) NS.ApplySkinIgnore(v, nil) end }),
+    skinRow("ignoreFonts", { type = "bool", widget = "CheckBox",
+        label = L["Ignore fonts"],
+        tooltip = L["Keep every font in this addon as the game draws it. The skin still colors the text."],
+        onChange = function(v) NS.ApplySkinIgnore(nil, v) end }),
+    -- The Font and texture section's two overrides, LibSharedMedia keys, "" for the skin's own.
+    -- Free text, not a Dropdown with `values`: a media pack may register its keys after this file
+    -- loads, and `/pgfe set` takes any key.
+    skinRow("font", { type = "string", widget = "EditBox",
+        label = L["Font"],
+        tooltip = L["The font this addon's text uses, over the skin's own. Empty keeps the skin's."],
+        onChange = function(v) NS.ApplySkinOverride(v, nil) end }),
+    skinRow("texture", { type = "string", widget = "EditBox",
+        label = L["Texture"],
+        tooltip = L["The texture this addon's bars use, over the skin's own. Empty keeps the skin's."],
+        onChange = function(v) NS.ApplySkinOverride(nil, v) end }),
+    -- The first-run skin picker's memory: set when the picker closes, so it shows once per
+    -- profile. Drawn by nothing; a reset puts it back to false.
+    skinRow("pickerSeen", { type = "bool", widget = "CheckBox",
+        label = L["Skin picker seen"],
+        tooltip = L["Whether the first-run skin picker was closed on this profile."] }),
+}
+NS.SchemaRuntime.AddRows(SKIN_ROWS)
+
+-- The library's tab entry: the source with EllesmereUI's four conditions, the nine skins, Font and
+-- texture, the Scope, "Copy to every Ka0s addon..." and the note, drawn for the owner
+-- core/SkinSetup.lua registered. `get` and `set` are that file's read and write seams. The own
+-- condition names the FOLDER, as EllesmereUI's Third-Party list shows it, not the brand the other
+-- lines print. The stub's AppearanceTab answers nil without the library: no tab is listed then.
+local SKIN_TAB = Helpers.AppearanceTab({
+    owner = addonName, get = NS.SkinChoice, set = NS.WriteSkinChoice,
+    strings = {
+        COND_own = L["PremadeGroupsFilterExtension is on in EllesmereUI's Third-Party Addons list"],
+        COND_own_HINT = L["In EllesmereUI's Third-Party Addons list, turn on PremadeGroupsFilterExtension."],
+    },
+})
+
 local GENERAL_OPTS = { tabs = {
     { key = REGION_GROUP, render = renderRegionTab },
     { key = EUI_GROUP,    render = renderEuiTab },
 } }
+if type(SKIN_TAB) == "table" then GENERAL_OPTS.tabs[#GENERAL_OPTS.tabs + 1] = SKIN_TAB end
 
 local AFTER_GROUP = {}
 if Helpers.MASTER_GROUP then AFTER_GROUP[Helpers.MASTER_GROUP] = MASTER_TAIL end

@@ -103,6 +103,15 @@ modules\Panel.lua
 # loaded first when present) and reads NS.EUIBridge, published by core\EUIBridge.lua above. It also
 # reads NS.L and NS.addon, and appends NS.FEATURE_EVENTS/NS.STAND_DOWN/NS.STAND_UP (core\PGFE.lua).
 modules\EUISkin.lua
+# LOAD-BEARING: the LibKa0s-Skin-1.0 seam (skinning-§1). Registers the owner at FILE LOAD, so the
+# EllesmereUI provider offers it to EllesmereUI (an OptionalDep, loaded first) before EllesmereUI
+# dispatches, and publishes NS.Skin, NS.SKIN_OPTIONS and NS.SKIN_SOURCE_OPTIONS, which
+# settings\Panel.lua reads at load. Below core\CoreSetup.lua, whose NS.ApplySkin the degraded
+# facade's Shell routes to. BELOW modules\EUISkin.lua UNTIL PG-06 RETIRES IT: both register the
+# folder name with EllesmereUI, whose queue keeps the FIRST, so the old bridge keeps its entry and
+# paints as before; PG-06 deletes that module and moves this line up under core\CoreSetup.lua.
+# No file above reads NS.Skin.
+core\SkinSetup.lua
 # Conventional: core\DebugLogSetup.lua's descriptor reads NS.Diagnostics at RUN time.
 modules\Diagnostics.lua
 

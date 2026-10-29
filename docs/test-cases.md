@@ -419,7 +419,7 @@ Total.
 ### test_euisettings.lua (19)
 
 - euisettings: euiSkin is a schema row, default on, in its own group on the General page
-- euisettings: the General page has four tabs: Master controls, Filters, Region tags, EllesmereUI skin
+- euisettings: the General page has five tabs: Master controls, Filters, Region tags, EllesmereUI skin, Skin
 - euisettings: the tab draws the switch, a line per condition, then a state line
 - euisettings: each failing condition disables the switch and is named on its line
 - euisettings: a re-show re-reads the lines and the switch after EllesmereUI changed
@@ -449,6 +449,28 @@ Total.
 - layout: the EllesmereUI switch points at the conditions below it
 - layout: the PGF skin link sits right under condition 4, before the gap and the state line
 - layout: the header Defaults describes the reset in Reset all settings' own words
+
+### test_skinsetup.lua (19)
+
+- skin seam: the owner is the folder name, and NS.Skin is its facade
+- skin seam: the owner is registered at file load, before the profile store exists
+- skin seam: the read answers Ka0s Default before the profile store exists
+- skin seam: Core's window edge is handed the owner
+- skin seam: the seven skin keys default to Ka0s Default, the picker unseen
+- skin seam: every skin key is a skip-render schema row on the Skin tab
+- skin seam: the skin row's values are every registered skin, in the library's order
+- skin seam: /pgfe set refuses a skin that is not registered and applies one that is
+- skin seam: /pgfe set reaches an exception, and only its own half
+- skin seam: the Skin tab is the library's, last on the General page
+- skin seam: one tab pick is one effective SetChoice, one repaint and no reload
+- skin seam: the tab's Ignore fonts reaches the library and the profile, one repaint
+- skin seam: the own condition names the folder, as EllesmereUI's list shows it
+- skin seam: another addon's copy to every Ka0s addon repaints this one once
+- skin seam: login applies the stored skin, exceptions and overrides
+- skin seam: a profile switch applies the new profile's skin, panel built or not
+- skin seam: Reset all settings puts the skin back on Ka0s Default and applies it
+- skin seam: the degraded facade answers every name the live facade carries
+- skin seam: each host-copy skin token is the live library's Ka0s Default value
 
 ### test_reset.lua (5)
 
@@ -560,6 +582,7 @@ Total.
 | test_layers.lua | 8 |
 | test_euisettings.lua | 19 |
 | test_settings_layout.lua | 9 |
+| test_skinsetup.lua | 19 |
 | test_reset.lua | 5 |
 | test_diagnostics.lua | 6 |
 | test_vendor_sync.lua | 3 |
@@ -569,4 +592,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **439** |
+| **Total** | **458** |

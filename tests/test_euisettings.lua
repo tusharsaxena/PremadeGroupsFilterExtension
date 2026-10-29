@@ -52,8 +52,9 @@ test("euisettings: euiSkin is a schema row, default on, in its own group on the 
 end)
 
 -- options-ui-§15: Master controls stays the first tab; the filter switches have their own.
--- red under: AddRows(FILTER_ROWS) after EUI_ROWS
-test("euisettings: the General page has four tabs: Master controls, Filters, Region tags, EllesmereUI skin", function()
+-- red under: AddRows(FILTER_ROWS) after EUI_ROWS. The Skin tab's rows (PG-01, settings/Panel.lua
+-- SKIN_ROWS) are the fifth group, last, as the page has no Keybindings tab (skinning-§3).
+test("euisettings: the General page has five tabs: Master controls, Filters, Region tags, EllesmereUI skin, Skin", function()
     local NS = T.newAddon()
     local H, seen, order = NS.addon.Settings.Helpers, {}, {}
     for _, row in ipairs(NS.addon.Settings.Schema) do
@@ -62,7 +63,7 @@ test("euisettings: the General page has four tabs: Master controls, Filters, Reg
             order[#order + 1] = row.group
         end
     end
-    assertEqual(table.concat(order, " | "), H.MASTER_GROUP .. " | Filters | Region tags | " .. GROUP)
+    assertEqual(table.concat(order, " | "), H.MASTER_GROUP .. " | Filters | Region tags | " .. GROUP .. " | Appearance")
 end)
 
 test("euisettings: the tab draws the switch, a line per condition, then a state line", function()

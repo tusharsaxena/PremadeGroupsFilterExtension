@@ -30,6 +30,14 @@ local PINNED = {
     { "regionColors.por",     "color", "8788ee" },
     { "regionColors.rus",     "color", "a330c9" },
     { "euiSkin",              "bool",  "true" },
+    -- PG-01 (the skinning rollout): the Skin tab's seven rows, appended last (settings/Panel.lua).
+    { "skin.source",          "string", "ka0s" },
+    { "skin.skin",            "string", "ka0s" },
+    { "skin.ignorePanel",     "bool",  "true" },
+    { "skin.ignoreFonts",     "bool",  "false" },
+    { "skin.font",            "string", "" },
+    { "skin.texture",         "string", "" },
+    { "skin.pickerSeen",      "bool",  "false" },
 }
 
 local function defaultText(row)

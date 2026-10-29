@@ -471,6 +471,7 @@ end)
 test("disabled: a profile stored disabled stands down at the next enable", function()
     local NS, _, m = T.bootAddon()
     NS.addon.db.profile.enabled = false
+    T.settleSkinLogin(m)   -- the client's PLAYER_LOGIN, as enableAddon delivers it (tests/run.lua)
     NS.addon:OnEnable()
     assertTrue(NS.IsStoodDown())
     assertEqual(registered(m), "", "registered at enable, then unregistered by the latch")

@@ -47,10 +47,14 @@ local function runAll(list)
     for _, fn in ipairs(list) do fn() end
 end
 
--- The three profile events share one reaction: migrations, panel refresh, and the latch re-read,
+-- The three profile events share one reaction: migrations, the skin, panel refresh, and the latch re-read,
 -- because an incoming profile carries its own answer to `enabled`.
 local function reloadProfile(self)
     self:RunMigrations()
+    -- The incoming profile's skin (core/SkinSetup.lua), right after its migrations and before
+    -- anything refreshes: Skin:SetChoice repaints every recorded frame and fires OnLooksChanged,
+    -- whether or not the attached panel was ever built, so the skin cannot ride Panel.Refresh.
+    if NS.ApplySkinChoice then NS.ApplySkinChoice() end
     local S = self.Settings
     local H = S and S.Helpers
     if H and H.RefreshAll then H.RefreshAll() end
@@ -101,6 +105,11 @@ function PGFE:OnInitialize()
 
     -- Before anything reads the profile (savedvariables-§1).
     self:RunMigrations()
+
+    -- The skin the active profile names (core/SkinSetup.lua), right after the store and its
+    -- migrations exist: the owner registered at file load, before AceDB, and has worn Ka0s Default
+    -- since. Before any page or the attached panel is built, so the first paint is the profile's.
+    if NS.ApplySkinChoice then NS.ApplySkinChoice() end
 
     if self.db.RegisterCallback then
         self.db.RegisterCallback(self, "OnProfileChanged", function(...) self:OnProfileChanged(...) end)

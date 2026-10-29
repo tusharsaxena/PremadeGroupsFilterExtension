@@ -257,3 +257,31 @@ L["This panel sits under Premade Groups Filter's window, so the skin is only use
     "This panel sits under Premade Groups Filter's window, so the skin is only used while that window is skinned too: the two always match. That is Premade Groups Filter - EllesmereUI Skin, a separate addon.\n\nHow: install it from CurseForge (the link appears below when it is missing), enable it in the AddOns list, and tick PremadeGroupsFilter in EllesmereUI's Third-Party Addons list."
 L["What the skin is doing this session. EllesmereUI applies a skin once per session: turning the skin on paints the panel at once, turning it off takes effect after a reload. It is never applied while a condition above is not met, whatever the switch says."] =
     "What the skin is doing this session. EllesmereUI applies a skin once per session: turning the skin on paints the panel at once, turning it off takes effect after a reload. It is never applied while a condition above is not met, whatever the switch says."
+
+-- The skin seam (core/SkinSetup.lua): the source row's two values and the reload line, then the
+-- Skin tab's schema rows (settings/Panel.lua SKIN_ROWS), each label followed by its tooltip
+L["Ka0s skins"] = "Ka0s skins"
+L["EllesmereUI"] = "EllesmereUI"
+L["Reload your interface (/reload) to finish changing the skin."] =
+    "Reload your interface (/reload) to finish changing the skin."
+L["Skin source"] = "Skin source"
+L["Where this addon's look comes from: the Ka0s skin chosen below, or EllesmereUI."] =
+    "Where this addon's look comes from: the Ka0s skin chosen below, or EllesmereUI."
+L["Skin"] = "Skin"
+L["The Ka0s skin this addon wears. Changes every window and panel right away."] =
+    "The Ka0s skin this addon wears. Changes every window and panel right away."
+L["Ignore settings panel"] = "Ignore settings panel"
+L["Keep this addon's settings panel in the game's own look. Its windows still wear the skin."] =
+    "Keep this addon's settings panel in the game's own look. Its windows still wear the skin."
+L["Ignore fonts"] = "Ignore fonts"
+L["Keep every font in this addon as the game draws it. The skin still colors the text."] =
+    "Keep every font in this addon as the game draws it. The skin still colors the text."
+L["Font"] = "Font"
+L["The font this addon's text uses, over the skin's own. Empty keeps the skin's."] =
+    "The font this addon's text uses, over the skin's own. Empty keeps the skin's."
+L["Texture"] = "Texture"
+L["The texture this addon's bars use, over the skin's own. Empty keeps the skin's."] =
+    "The texture this addon's bars use, over the skin's own. Empty keeps the skin's."
+L["Skin picker seen"] = "Skin picker seen"
+L["Whether the first-run skin picker was closed on this profile."] =
+    "Whether the first-run skin picker was closed on this profile."
