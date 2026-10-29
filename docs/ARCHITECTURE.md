@@ -294,9 +294,11 @@ library's:
   answers false and the panel shows its skinned twin, whose recorded primitives go to EllesmereUI's
   facade; the metal instance is never handed to it. The twin keeps the host geometry: 24px check
   buttons, flush under the dialog, and a collapsed height of EllesmereUI's 25px shell bar
-  (`EUI_SHELL_HEADER_H`, `modules/Panel.lua`). Before EllesmereUI paints, the `eui` source wears the
-  metal instance (the library's live Ka0s Default fallback). Leaving `eui` after a paint asks for a
-  reload (the library's popup from the Skin tab; one chat line from a profile event).
+  (`EUI_SHELL_HEADER_H`, `modules/Panel.lua`). Before EllesmereUI paints, the `eui` source draws the
+  stored skin (the library's live fallback): the metal instance on Ka0s Default, the twin on any other.
+  The answer is built from public API (`GetChoice`, `GetEUIStatus`, `GetSkin`), never the library's
+  internal draws-key. Leaving `eui` after a paint asks for a reload (the library's popup from the
+  Skin tab; one chat line from a profile event).
 - **The migration.** Schema step 2 (`core/Database.lua`) carried `profile.euiSkin` to
   `skin.source = "eui"` on every profile, where EllesmereUI is present and the old switch was not an
   explicit `false` (DECISIONS D3).

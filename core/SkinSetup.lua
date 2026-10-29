@@ -377,15 +377,15 @@ Skin:RegisterOwner(addonName, {
     set = NS.WriteSkinChoice,
 })
 
---- True while the owner draws Ka0s Default: the key the library paints it by is Ka0s Default's. That
---- is `Skin:__DrawsKey`, the question `opts.stockDefault` asks, so an `eui` source before EllesmereUI
---- paints (the live Ka0s Default fallback) answers true, and an EllesmereUI that paints false. The
---- library documents it as internal and publishes no public form (reported upstream), so a copy
---- without it is read from the applied choice: Ka0s Default on the Ka0s source.
+--- True while the owner draws Ka0s Default: the same answer as the key the library draws the owner
+--- by (internal; the question `opts.stockDefault` asks), built from public API only. While
+--- EllesmereUI paints the owner it draws EllesmereUI's tokens; otherwise the applied skin, where a
+--- key the library does not know draws as Ka0s Default. So an `eui` source before EllesmereUI paints
+--- (the live fallback) answers by the stored skin, Ka0s Default unless the player chose another.
 function NS.SkinDrawsDefault()
-    if type(Skin.__DrawsKey) == "function" then return Skin:__DrawsKey(addonName) == Skin.DEFAULT end
     local source, skin = Skin:GetChoice(addonName)
-    return source ~= "eui" and skin == DEFAULT
+    if source == "eui" and NS.SkinEUIPainted() then return false end
+    return skin == DEFAULT or type(Skin.GetSkin) ~= "function" or Skin:GetSkin(skin) == nil
 end
 
 -- The one line a reload request earns on the path that has no popup of its own (a profile event

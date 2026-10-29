@@ -126,6 +126,37 @@ test("eui: before EllesmereUI paints, the eui source wears the metal instance (K
     assertTrue(NS.Panel.frame == NS.Panel.stockFrame, "the never-painted metal instance shows")
 end)
 
+test("eui: which instance shows is read from public API only, never the library's __DrawsKey", function()
+    local fh = assert(io.open(T.root .. "/core/SkinSetup.lua", "rb"))
+    local src = fh:read("*a")
+    fh:close()
+    assertTrue(src:find("Skin:__DrawsKey", 1, true) == nil and src:find("Skin.__DrawsKey", 1, true) == nil,
+        "core/SkinSetup.lua calls the library-internal __DrawsKey")
+end)
+
+test("eui: the public answer matches the key the library draws by, in every state", function()
+    -- The library's own answer (internal) is the oracle here, and only here.
+    local NS, m = painted({ masterOff = true })
+    local Skin = m.LibStub("LibKa0s-Skin-1.0")
+    local function agrees(label)
+        assertEqual(NS.SkinDrawsDefault(), Skin:__DrawsKey(OWNER) == Skin.DEFAULT, label)
+    end
+    agrees("eui source, EllesmereUI not painted")
+    assertTrue(NS.SkinDrawsDefault(), "an unpainted eui source wears Ka0s Default")
+    Skin:SetChoice(OWNER, "ka0s", "obsidian")
+    agrees("a registered skin")
+    assertFalse(NS.SkinDrawsDefault(), "a registered skin is not Ka0s Default")
+    Skin:SetChoice(OWNER, "ka0s", "no-such-skin")
+    agrees("a key the library does not know")
+    assertTrue(NS.SkinDrawsDefault(), "an unknown key draws as Ka0s Default")
+    Skin:SetChoice(OWNER, "eui", "obsidian")
+    agrees("eui source over a registered skin, EllesmereUI not painted")
+    local NS2, m2 = painted()
+    assertTrue(NS2.SkinEUIPainted())
+    assertEqual(NS2.SkinDrawsDefault(), m2.LibStub("LibKa0s-Skin-1.0"):__DrawsKey(OWNER) == "ka0s",
+        "eui source, EllesmereUI painted")
+end)
+
 test("eui: the twin folds to EllesmereUI's 25px shell bar", function()
     -- DECISIONS D4: EllesmereUI's Shell draws a 25px top bar whatever title.height says.
     local NS = painted()
