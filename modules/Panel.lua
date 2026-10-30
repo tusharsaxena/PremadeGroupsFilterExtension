@@ -656,7 +656,11 @@ end
 local EUI_SHELL_HEADER_H = 25
 -- Ka0s Default's title band, for a facade that names none (the degraded one, without the library).
 local HEADER_H    = 30
-local HEADER_CLICK_H = 24   -- the header strip's click band, below the frame top
+-- The min/max button (PG-02 of the skin fonts and feedback run, ruling D-20): one size in every
+-- skin, its chevron one size inside it, ARROW_PAD in from the band's right end.
+local ARROW_BTN   = 20
+local ARROW_ICON  = 12
+local ARROW_PAD   = 4
 
 -- PGF's wiring (UI/Dialog.lua MaximizeMinimize): expanded calls SetMinimizedLook, collapsed
 -- SetMaximizedLook. Set from the stored state on every layout, because the template's own buttons
@@ -669,18 +673,55 @@ local function syncMinMax(f, collapsed)
     if collapsed then mm:SetMaximizedLook() else mm:SetMinimizedLook() end
 end
 
--- The collapsed height: the skin's title band (`title.height`, read live, so a switch to a skin with
--- another band refolds), or EllesmereUI's shell bar once EllesmereUI paints this owner.
+-- The skin's title band as S.Shell draws it, read live so a switch moves what sits on it: its top
+-- inset (`win.borderSize` in from a flat edge, else 1: SkinPaint.lua's shellBands) and its height
+-- (`title.height`); EllesmereUI's 25px shell bar flush with the top once EllesmereUI paints this owner.
+local function titleBand()
+    if NS.SkinEUIPainted() then return 0, EUI_SHELL_HEADER_H end
+    local S = NS.Skin
+    local h = S.Token("title.height")
+    local inset = (S.Token("win.borderStyle") or "flat") == "flat" and S.Token("win.borderSize") or 1
+    return type(inset) == "number" and inset or 1, type(h) == "number" and h or HEADER_H
+end
+
+-- The collapsed height: the band's height (a switch to a skin with another band refolds).
 local function collapsedHeight()
-    if NS.SkinEUIPainted() then return EUI_SHELL_HEADER_H end
-    local h = NS.Skin.Token("title.height")
-    return type(h) == "number" and h or HEADER_H
+    local _, h = titleBand()
+    return h
+end
+
+-- The chevrons' color: the skin's `icon.arrow`, the color its own paging arrows take. A skin that
+-- leaves the token alone leaves the art's white.
+local function tintChevrons(mm)
+    local r, g, b, a = NS.SkinColor("icon.arrow")
+    if r == nil then return end
+    for _, btn in ipairs({ mm.MinimizeButton, mm.MaximizeButton }) do
+        if btn and btn.chevron then btn.chevron:SetVertexColor(r, g, b, a) end
+    end
+end
+
+-- The button centered on the band, ARROW_PAD in from its right end, the same box in every skin; the
+-- header's click band covers the band up to it.
+local function placeMinMax(f)
+    local mm = f.MaximizeMinimizeFrame
+    if not mm then return end
+    local inset, h = titleBand()
+    mm:ClearAllPoints()
+    mm:SetPoint("TOPRIGHT", f, "TOPRIGHT", -(inset + ARROW_PAD), -(inset + (h - ARROW_BTN) / 2))
+    tintChevrons(mm)
+    local hc = f.headerClick
+    if not hc then return end
+    hc:ClearAllPoints()
+    hc:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
+    hc:SetPoint("TOPRIGHT", f, "TOPRIGHT", -(inset + ARROW_PAD + ARROW_BTN), 0)
+    hc:SetHeight(inset + h)
 end
 
 local function applyLayout(f)
     local collapsed = NS.addon.db.profile.panelCollapsed == true
     local ok, missing = NS.Bridge.Check()
     f:SetHeight(collapsed and collapsedHeight() or f.expandedHeight)
+    placeMinMax(f)
     syncMinMax(f, collapsed)
     f.body:SetShown(ok and not collapsed)
     f.unsupported:SetShown(not ok and not collapsed)
@@ -694,29 +735,52 @@ local function setCollapsed(on)
     applyLayout(Panel.frame)
 end
 
+-- One arrow button: its explicit size, centered on its template frame, and the chevron from the
+-- shipped icon set (CLAUDE.md's `LibKa0s icons:` line keeps chevron-up and chevron-down) on a child
+-- frame two levels up, so it draws over the skin's button edge (one level up) and is not one of the
+-- button's own texture regions, which EllesmereUI's Button fades. No icon (the library absent): no
+-- chevron, and the template keeps its own arrow art.
+local function sizeArrow(mm, btn, icon)
+    if not btn then return end
+    btn:ClearAllPoints()
+    btn:SetPoint("CENTER", mm, "CENTER", 0, 0)
+    btn:SetSize(ARROW_BTN, ARROW_BTN)
+    local path = NS.Icon(icon)
+    if not path then return end
+    local holder = CreateFrame("Frame", nil, btn)
+    holder:SetAllPoints(btn)
+    holder:SetFrameLevel(btn:GetFrameLevel() + 2)
+    local t = holder:CreateTexture(nil, "OVERLAY")
+    t:SetTexture(path)
+    t:SetSize(ARROW_ICON, ARROW_ICON)
+    t:SetPoint("CENTER", btn, "CENTER", 0, 0)
+    btn.chevronHolder, btn.chevron = holder, t
+end
+
 -- PGF's MaximizeMinimize wiring (UI/Dialog.lua OnLoad and MaximizeMinimize), on our own frame. The
 -- template's close button would hide the panel under a dialog that stays open, so it is hidden and
--- the toggle takes its place.
+-- the toggle takes its place, sized and placed on the title band by placeMinMax (applyLayout), not
+-- on the close button's template anchor (image-48..51 had it off the band, differently per skin).
 local function buildMinMax(f)
     if f.CloseButton then f.CloseButton:Hide() end
     local mm = CreateFrame("Frame", nil, f, "MaximizeMinimizeButtonFrameTemplate")
-    if f.CloseButton then mm:SetPoint("RIGHT", f.CloseButton, "RIGHT", 0, 0) end
+    mm:SetSize(ARROW_BTN, ARROW_BTN)
+    -- Expanded shows the collapse button (up), collapsed the expand one (down).
+    sizeArrow(mm, mm.MinimizeButton, "chevron-up")
+    sizeArrow(mm, mm.MaximizeButton, "chevron-down")
     mm:SetOnMaximizedCallback(function() setCollapsed(false) end)
     mm:SetOnMinimizedCallback(function() setCollapsed(true) end)
-    -- The arrows are the skin's paging arrows (paint).
     f.MaximizeMinimizeFrame = mm -- which arrow shows is set by applyLayout
 end
 
 -- The header strip toggles too (owner request): a click anywhere on the title band does what the
--- arrow does. It spans the band from the left edge to just short of the arrow, so the arrow keeps
--- its own click; the title text above it takes no mouse, so clicks reach this button.
-local HEADER_CLICK_RT = 30   -- room left at the right for the arrow button
-
+-- arrow does. It spans the band from the left edge to just short of the arrow (placeMinMax), so the
+-- arrow keeps its own click; the title text above it takes no mouse, so clicks reach this button.
 local function buildHeaderClick(f)
     local b = CreateFrame("Button", nil, f)
     b:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
-    b:SetPoint("TOPRIGHT", f, "TOPRIGHT", -HEADER_CLICK_RT, 0)
-    b:SetHeight(HEADER_CLICK_H)
+    b:SetPoint("TOPRIGHT", f, "TOPRIGHT", -(1 + ARROW_PAD + ARROW_BTN), 0)
+    b:SetHeight(1 + HEADER_H)
     b:RegisterForClicks("LeftButtonUp")
     b:SetScript("OnClick", function()
         if stoodDown() then return end
@@ -772,18 +836,22 @@ end
 -- The panel through the owner's facade, once, at build: each call is recorded, so the library replays
 -- it on every later switch (and hands it to EllesmereUI's facade under the eui source). The template's
 -- border, its Bg and the title streaks fade under the skin's window (`stock` is the list of template
--- art to fade, under every skin); the template's title takes the title role; the arrows are paging
--- arrows (expanded shows the collapse button: up). The panel's own SetScript calls all ran in the
+-- art to fade, under every skin); the template's title takes the title role; the arrows are the
+-- skin's buttons under their chevrons (expanded shows the collapse button: up). The panel's own
+-- SetScript calls all ran in the
 -- builders, before any primitive hooked a script.
 local function paint(f)
     local S = NS.Skin
     S.Shell(f, { stock = { f.Bg, f.TopTileStreaks } })
     local title = type(f.TitleContainer) == "table" and f.TitleContainer.TitleText
     if title then S.Text(title, "title") end
+    -- The arrows: the skin's button box under the chevrons buildMinMax drew (tinted by placeMinMax).
+    -- Not S.PageButton: EllesmereUI's facade takes "<" or ">" only and draws "up" and "down" as the
+    -- words (image-33/34), and the in-client arrow it draws is rotated art, not the icon set's.
     local mm = f.MaximizeMinimizeFrame
     if mm then
-        S.PageButton(mm.MinimizeButton, "up")
-        S.PageButton(mm.MaximizeButton, "down")
+        S.Button(mm.MinimizeButton)
+        S.Button(mm.MaximizeButton)
     end
     S.Checkbox(f.activeCheck, { borderInset = CHECK_INSET })
     for _, cb in pairs(f.checks) do S.Checkbox(cb, { borderInset = CHECK_INSET }) end

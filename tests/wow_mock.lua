@@ -275,6 +275,9 @@ local function build()
         f.GetEffectiveScale = function() return 1 end
         f.SetColorTexture = function(self, r, g, b, a) self.__color = { r, g, b, a }; return self end
         f.SetVertexColor = function(self, r, g, b, a) self.__vertexColor = { r, g, b, a }; return self end
+        -- A texture's file (the min/max button's chevron, PG-02 of the skin fonts and feedback run).
+        f.SetTexture = function(self, path) self.__texture = path; return self end
+        f.GetTexture = function(self) return self.__texture end
         local function stateTexture(key)
             return function(self)
                 self.__tex = self.__tex or {}

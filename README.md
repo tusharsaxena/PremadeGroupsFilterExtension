@@ -4,7 +4,7 @@
 ![CurseForge Version](https://img.shields.io/curseforge/v/1736636)
 ![License](https://img.shields.io/badge/License-MIT-orange)
 ![Standard](https://img.shields.io/badge/Ka0s-WoW_Addon_Standard-yellow)
-![Tests](https://img.shields.io/badge/Tests-444%2F444_passing-green)
+![Tests](https://img.shields.io/badge/Tests-446%2F446_passing-green)
 
 A small companion to [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter)
 for Mythic+. You type the key level you want to push (or let Smart pick it), and it ticks every
@@ -144,6 +144,7 @@ Braille Institute of America. Nunito, Vollkorn and Bitter are static weights cut
 variable fonts.
 
 The addon's own icons come from [Open Iconic](https://github.com/iconic/open-iconic) by Waybury
-(MIT): the debug console's clear, copy and close buttons, and the skin picker's settings gear. Only
+(MIT): the debug console's clear, copy and close buttons, the skin picker's settings gear, and the
+attached panel's collapse and expand chevrons. Only
 the icons the addon draws are shipped. The fonts and the icons are bundled inside the LibKa0s
 payload, with their license text beside them.

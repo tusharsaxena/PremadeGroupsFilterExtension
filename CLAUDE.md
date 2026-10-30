@@ -50,4 +50,4 @@ Green gate before every commit: `lua tests/run.lua` and
 without an explicit instruction.
 
 Bundles [LibKa0s](https://github.com/tusharsaxena/LibKa0s) v1.82.0 (MIT).
-LibKa0s icons: clear, close, copy, settings.
+LibKa0s icons: chevron-down, chevron-up, clear, close, copy, settings.

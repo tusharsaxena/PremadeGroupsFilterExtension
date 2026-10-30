@@ -298,7 +298,9 @@ library's:
 - **The paint.** Once EllesmereUI paints the owner (`NS.SkinEUIPainted()`), the panel's recorded
   primitives go to EllesmereUI's facade. The panel keeps the host geometry: 24px check buttons, flush
   under the dialog, and a collapsed height of EllesmereUI's 25px shell bar (`EUI_SHELL_HEADER_H`,
-  `modules/Panel.lua`). Before EllesmereUI paints, the `eui` source draws the stored skin (the
+  `modules/Panel.lua`), with the min/max button centered on that bar. The min/max arrows are the
+  skin's `Button` box under the addon's own chevrons, never `PageButton`: EllesmereUI's facade takes
+  `"<"` or `">"` only and drew `"up"` / `"down"` as the words. Before EllesmereUI paints, the `eui` source draws the stored skin (the
   library's live fallback), Ka0s Default unless the player chose another. The diagnostics' skin
   section names the key the library draws the owner by from its public `Skin:DrawsKey(owner)`
   (LibKa0s v1.81.0), never the internal `__DrawsKey`. Leaving `eui` after a paint asks for a reload
@@ -327,7 +329,8 @@ first:
   menus (FULLSCREEN_DIALOG), tooltips (TOOLTIP).
 - **The attached panel, a host-matched surface:** PGF's dialog strata, read from the dialog
   (FULLSCREEN today), at the dialog's level + `LEVEL.ABOVE_HOST` = L. Inside it: body, min/max and
-  header click at L+1, widgets at L+2.
+  header click at L+1, widgets at L+2; each min/max arrow's chevron holder sits two levels over its
+  button, above the skin's button edge.
 - **PGFE popups while the panel is visible:** every PGFE `StaticPopup_Show` goes through
   `NS.ShowPopup` (`core/Popup.lua`), which lifts the shared popup frame to `STRATA.POPUP` while the
   panel is visible, and each PGFE popup spec's `OnHide` (`NS.RestorePopupStrata`) puts back the strata

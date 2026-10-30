@@ -23,7 +23,7 @@ takes the next free number in its theme and a retired number is never reused.
 | LOC-1..2 | Non-English client | Realm-name and dungeon-name seams on a deDE/frFR client |
 | SKIN-1..10 | EllesmereUI skin (retired) | The record of the addon's own EllesmereUI bridge, retired by the skinning rollout's PG-06 (2026-10-29); EllesmereUI is now the library's `eui` skin source |
 | SKIN-11..33 | Skins | The skinning rollout (2026-10-29) and its library follow-ups (2026-10-30): Ka0s Default's look, the Skin tab, the first-run picker, the attached panel, the settings pages and the debug console under every skin, fonts, profiles, the copy, stand-down, the `euiSkin` migration, EllesmereUI on and off, diagnostics, the launcher, a degraded install, the panel under the Scope switches |
-| SKIN-34..37 | Skins | The skin fonts and feedback run (2026-10-30, LibKa0s v1.82.0): the Font outline setting, text outlined from the skin by default, the new faces, the attached panel's width parity across skins |
+| SKIN-34..38 | Skins | The skin fonts and feedback run (2026-10-30, LibKa0s v1.82.0): the Font outline setting, text outlined from the skin by default, the new faces, the attached panel's width parity across skins, the collapse button's chevron and place |
 
 ## Before you start
 
@@ -499,6 +499,18 @@ one place to show: the panel's text, outlined from the skin's Font outline.
   label fit their places in every skin as they do in Ka0s Default, outlined: no label truncated, run
   into its control or wrapped where Ka0s Default's is not. Fail: any string clipped or overlapping
   in one skin and not in Ka0s Default. Result:
+- **SKIN-38. The collapse button: a chevron, on the band, in every skin (PG-02; ruling D-20,
+  image-33/34, image-48..51).** Open PGF on Dungeons. Under each of the nine skins, and under
+  EllesmereUI (source **EllesmereUI** with its four conditions met, after the reload): the button at
+  the panel's top right is a small square box (20px) holding a chevron (12px), pointing **up** while
+  the panel is expanded and **down** once folded, in the skin's arrow color (Ka0s Default gold).
+  Never the words "up" or "down", never the rotated chat arrow. The box sits inside the title band,
+  centered top to bottom on it, 4px in from its right end: not on the window edge, not overhanging
+  the frame's right or top, not over the nine-slice border art under Glass or WoW Default, and the
+  same size in every skin. Under EllesmereUI it sits on the 25px shell bar. Click it → the panel
+  folds; click again → it unfolds; click the title band left of it → the same toggle; the button's
+  own click still works at its left edge. Fail: text in the box, a chevron missing or pointing the
+  wrong way, a box off the band or a different size in one skin, or a Lua error. Result:
 
 ## Frame layering
 
@@ -567,4 +579,4 @@ APPLY-24, APPLY-26 and SKIN-10), recorded on each `Result:` line as `pass (owner
 A check added or rewritten after that date is listed here until its `Result:` line records a pass.
 
 Owed from the skin fonts and feedback run (`docs/2026-10-30-SKIN_FONTS_AND_FEEDBACK/`, LibKa0s
-v1.82.0): SLASH-4 and SKIN-34 to SKIN-37.
+v1.82.0): SLASH-4 and SKIN-34 to SKIN-38.

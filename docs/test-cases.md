@@ -313,7 +313,7 @@ Total.
 - panel: the min/max arrow follows the stored collapsed state
 - panel: collapsed shows only the skin's title band; no metal header copies are built
 - panel: Apply leaves focus alone; Enter in the copy box focuses the search box
-- panel: the min/max arrows are the skin's paging arrows, expanded up and collapsed down
+- panel: the min/max arrows are chevron icons on the skin's button, expanded up and collapsed down
 - panel: the regions and playstyle dropdowns are 225 wide, right-aligned in one column
 - panel: each menu opens with Any and a divider; Any is ticked with nothing ticked and clears
 - panel: ticking every option stores Any and the button reads Any
@@ -393,7 +393,7 @@ Total.
 - skin seam: the degraded facade answers every name the live facade carries
 - skin seam: each host-copy skin token is the live library's Ka0s Default value
 
-### test_skin.lua (13)
+### test_skin.lua (14)
 
 - skin: under Ka0s Default the one panel is painted through the facade, every widget and label
 - skin: the colors the panel writes under Ka0s Default are its exact pixels
@@ -403,6 +403,7 @@ Total.
 - skin: a pick before the panel exists builds the one panel, painted
 - skin: the panel's geometry: 24px check buttons on the rows' centers, flush under the dialog
 - skin: collapsed, the panel folds to the skin's title band, Ka0s Default's included
+- skin: the min/max button is one size and centered on the title band in every skin
 - skin: the panel writes the skin's colors: locked boxes, the dimmed label, the readout
 - skin: a pick after the panel is built rewrites the colors the panel reads from tokens
 - skin: with Ignore settings panel on, the panel's labels and title still wear the skin
@@ -428,7 +429,7 @@ Total.
 - skin tools: a host release is chained onto the skin's restore, both run
 - skin tools: the debug console is painted for this owner
 
-### test_skin_eui.lua (12)
+### test_skin_eui.lua (13)
 
 - eui migration: with EllesmereUI, every profile but an explicit false moves to skin.source eui
 - eui migration: without EllesmereUI every profile keeps the Ka0s source
@@ -440,6 +441,7 @@ Total.
 - eui: before EllesmereUI paints, the eui source wears Ka0s Default through the library
 - eui: no addon file reaches the library-internal __DrawsKey
 - eui: the collapsed panel folds to EllesmereUI's 25px shell bar
+- eui: the min/max button is EllesmereUI's box with the chevron, never a worded PageButton
 - eui diagnostics: the skin section names the key the library draws by, in every state
 - eui diagnostics: the skin section reports the choice and the library's EllesmereUI gate
 
@@ -572,9 +574,9 @@ Total.
 | test_layers.lua | 8 |
 | test_settings_layout.lua | 11 |
 | test_skinsetup.lua | 19 |
-| test_skin.lua | 13 |
+| test_skin.lua | 14 |
 | test_skin_picker.lua | 16 |
-| test_skin_eui.lua | 12 |
+| test_skin_eui.lua | 13 |
 | test_skin_outline.lua | 9 |
 | test_skin_verb.lua | 6 |
 | test_reset.lua | 5 |
@@ -586,4 +588,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **444** |
+| **Total** | **446** |
