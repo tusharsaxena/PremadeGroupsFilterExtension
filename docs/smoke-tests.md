@@ -179,7 +179,7 @@ substitute its numbers.
   on Ka0s Default, no empty body under it), and the button shows the skin's down arrow. The band's
   edge closes cleanly around it (no corner art past the band, no metal header pieces) and sits flush
   under PGF's dialog. `/reload` → it stays folded with the same arrow; press the arrow → the rows
-  return, the edge looks exactly as before folding, and the arrow flips back. Result: pending (the skin library follow-ups' PG-01).
+  return, the edge looks exactly as before folding, and the arrow flips back. Result: pass (owner-marked 2026-10-30)
   The metal-panel version passed, owner-marked 2026-10-10; expectation changed 2026-10-30 (the metal
   header strip and its arrows retired with the metal panel), re-check owed.
 - **APPLY-15. Layout.** Expanded, no label is covered by its input box (key level, min score, max
@@ -233,7 +233,7 @@ substitute its numbers.
   panel sits flush under PGF's dialog: its edge meets PGF's bottom border with no gap and no overlap
   of the panel's body, and PGF's border never draws over the panel's title strip, expanded or
   collapsed. The panel's title is centered on the whole header strip, expanded
-  and collapsed, and does not touch the arrow button. Result: pending (the skin library follow-ups' PG-01).
+  and collapsed, and does not touch the arrow button. Result: pass (owner-marked 2026-10-30)
   The metal-panel version passed, owner-marked 2026-10-10; expectation changed 2026-10-30 (the panel no
   longer rises 3px into PGF's border, the metal panel's overhang, retired), re-check owed.
 - **APPLY-24. Region tags.** With PremadeRegions disabled, search Mythic+ → every listing's dungeon
@@ -341,7 +341,7 @@ Default, and a player who wants the client's look picks **WoW Default** (SKIN-11
   look (its face Friz Quadrata), live. The settings pages are stock (*Ignore settings panel* is on in
   a new profile). The debug console (`/pgfe debug`) wears the library's Ka0s Default, the same look
   as every other Ka0s addon's console. Fail: the metal panel on Ka0s Default, a Lua error, a label
-  overlapping its box, or a settings page skinned while *Ignore settings panel* is on. Result:
+  overlapping its box, or a settings page skinned while *Ignore settings panel* is on. Result: pass (owner-marked 2026-10-30)
 - **SKIN-12. The Skin tab (PG-01).** Settings → General → the tabs read *Master controls*, *Filters*,
   *Region tags*, **Skin**, Skin last. It shows **Skin source** (*Ka0s skins*, *EllesmereUI*), the
   nine skins with their swatches under a **Look** heading, **Font and texture** (**Font** and
@@ -349,7 +349,7 @@ Default, and a player who wants the client's look picks **WoW Default** (SKIN-11
   **Ignore fonts** off), **Copy to every Ka0s addon…** and the note. With EllesmereUI loaded, its own
   condition line names *PremadeGroupsFilterExtension* (the folder, as EllesmereUI's Third-Party
   Addons list shows it). `/pgfe get skin.skin` → `ka0s`; `/pgfe set skin.skin nonsense` is refused;
-  `/pgfe set skin.skin obsidian` repaints the open panel at once. Result:
+  `/pgfe set skin.skin obsidian` repaints the open panel at once. Result: pass (owner-marked 2026-10-30)
 - **SKIN-13. The first-run picker (PG-04; owner ruling O3; the follow-ups' ruling R-11).** On a
   profile that has never closed it (any profile right after the upgrade, old or new) log in → the
   library's skin picker shows once, titled **Choose a skin**, with *Ka0s Premade Groups Filter
@@ -359,13 +359,13 @@ Default, and a player who wants the client's look picks **WoW Default** (SKIN-11
   it without applying → the stored skin is worn again and `/pgfe get skin.pickerSeen` is `true`;
   `/reload` → no picker. On another unseen profile, **Apply** → the pick is stored (`/pgfe get
   skin.skin`). The gear saves and opens General on its **Skin** tab. With several Ka0s addons on unseen profiles, their
-  pickers come one at a time. Result:
+  pickers come one at a time. Result: pass (owner-marked 2026-10-30)
 - **SKIN-14. The picker waits: combat and the off switch (PG-04).** On an unseen profile (`/pgfe set
   skin.pickerSeen false`), log in while in combat (on a target dummy, `/reload` mid-fight) → no
   picker until combat ends, then it shows once. `/pgfe disable`, `/pgfe set skin.pickerSeen false`,
   `/reload` → no picker while disabled; `/pgfe enable` → nothing shows until the next login or
   profile event. With the picker open, `/pgfe disable` → it goes away and `skin.pickerSeen` stays
-  `false`. Result:
+  `false`. Result: pass (owner-marked 2026-10-30)
 - **SKIN-15. The attached panel, each skin live (PG-02; the follow-ups' PG-01).** With the panel
   open and expanded, pick each skin in turn, then Ka0s Default again → with **no reload** the one
   panel repaints in place, flush under PGF's dialog at the same width: the skin's window edge and
@@ -375,90 +375,90 @@ Default, and a player who wants the client's look picks **WoW Default** (SKIN-11
   dropdowns and buttons, labels in the skin's body text. Back on Ka0s Default it is SKIN-11's Ka0s
   look, the same frame (no second panel). Fail: a surface on
   the old skin until `/reload`, metal art showing under any skin, or a label overlapping its box.
-  Result:
+  Result: pass (owner-marked 2026-10-30)
 - **SKIN-16. The panel folded under a skin (PG-02).** Under Ka0s Default, Azeroth and High Contrast fold the
   panel → only the skin's title band is left, closed cleanly with no metal header pieces; unfold →
-  the body is back. Switch skin while folded → it stays folded at the new skin's band height. Result:
+  the body is back. Switch skin while folded → it stays folded at the new skin's band height. Result: pass (owner-marked 2026-10-30)
 - **SKIN-17. The panel's states and the shared frames under a skin (PG-02).** Under a non-default
   skin: Smart on → the level box's text reads disabled gray; Smart off → normal; the copy box and its
   label dim when there is no range; Save and Delete gray when disabled; the readout's targeted
   dungeons in the skin's accent and the others gray; PGF minimized or unsupported shows the gray
   note. Hover any option → the tooltip's title and body take the skin's tooltip colors and the
   tooltip frame is Blizzard's. Open each dropdown → the menu is Blizzard's. *Save as* and *Delete* →
-  the popups are stock and draw over the panel (LAYER-2). Result:
+  the popups are stock and draw over the panel (LAYER-2). Result: pass (owner-marked 2026-10-30)
 - **SKIN-18. The settings pages under each skin (PG-01, PG-04).** Untick **Ignore settings panel**,
   then walk the landing page, every General tab (Region tags: its headings, preview lines, color
   pickers in their rows and the reset button; Filters: the switch and its lines) and the Profiles
   page under several skins → each follows the skin, live. Tick it again → the pages are stock again,
   no reload. Open another Ka0s addon's settings and a non-Ka0s AceGUI addon's, and flip between them →
-  only this addon's pages are skinned (the AceGUI pool leak check). Result:
+  only this addon's pages are skinned (the AceGUI pool leak check). Result: pass (owner-marked 2026-10-30)
 - **SKIN-19. The debug console under each skin (PG-04; the follow-ups' LK-06b).** With a non-default
   skin, `/pgfe debug`, then its **Copy** window and `/pgfe diagnostics` → each wears this addon's
   skin: edge, title, log lines, scroll bar, and the title bar's labels (the toggle and the
   *Diagnostics* link) in the skin's face; the resize grip in the corner takes the skin's icon tint
   (the client's art on Ka0s Default and WoW Default). On Ka0s Default those title-bar labels are
   Oxanium where LibKa0s v1.80.0 drew Friz Quadrata. Switch back to Ka0s Default with the console open
-  → it recolors with no reload. Result:
+  → it recolors with no reload. Result: pass (owner-marked 2026-10-30)
 - **SKIN-20. Fonts and the overrides (PG-01; the follow-ups' PG-01).** On an English client each skin
   draws its own family on the attached panel and the console, with no empty squares (Ka0s Default's
   Oxanium on the panel too). Tick **Ignore fonts** under Ember → every string on the panel and the
   console (its title-bar labels included) keeps the game's face and size and still takes the skin's
   colors. Untick it, set **Font** to another LibSharedMedia font → the panel's text takes it; clear it
-  → the skin's own. **Texture** changes nothing visible (the addon draws no bars). Result:
+  → the skin's own. **Texture** changes nothing visible (the addon draws no bars). Result: pass (owner-marked 2026-10-30)
 - **SKIN-21. Profiles (PG-01, PG-04).** Give two profiles different skins and switch between them on
   the Profiles page → the panel and console follow each time, no reload. Create a new profile → the
   picker shows for it; reset a profile → Ka0s Default and the picker again. A profile switch with the
-  picker open takes it down unmarked first. Result:
+  picker open takes it down unmarked first. Result: pass (owner-marked 2026-10-30)
 - **SKIN-22. Copy to every Ka0s addon (PG-01).** With another skin-adopting Ka0s addon loaded (for
   example LootHistory), **Copy to every Ka0s addon…** → its confirmation names this addon's brand;
   Yes → the other addon wears the same skin. With no other adopter loaded the button is disabled
-  with its hint. Result:
+  with its hint. Result: pass (owner-marked 2026-10-30)
 - **SKIN-23. Stand-down under a skin (PG-02, PG-06).** Under a non-default skin, `/pgfe disable` →
   the panel hides; switch skin while disabled → no error, nothing shows; `/pgfe enable` → the panel
-  comes back in the current skin. Result:
+  comes back in the current skin. Result: pass (owner-marked 2026-10-30)
 - **SKIN-24. The `euiSkin` migration (PG-06).** From a SavedVariables file saved before the run:
   with EllesmereUI loaded and the old *Use the EllesmereUI skin* left ticked, log in → `/pgfe get
   skin.source` is `eui` on every such profile; a profile that had it unticked → `ka0s`; without
-  EllesmereUI loaded → `ka0s`. `/pgfe get euiSkin` names no setting. Result:
+  EllesmereUI loaded → `ka0s`. `/pgfe get euiSkin` names no setting. Result: pass (owner-marked 2026-10-30)
 - **SKIN-25. EllesmereUI on (PG-06).** With EllesmereUI (and EllesmereUI Blizzard Skin) loaded, its
   third-party skinning on and *PremadeGroupsFilterExtension* ticked in its Third-Party Addons list →
   the Skin tab shows the four conditions met and **EllesmereUI** selectable; choosing it, then opening
   PGF on Dungeons → the panel in EllesmereUI's look, flush under PGF's dialog (which
   Premade Groups Filter - EllesmereUI Skin paints); folded, it is EllesmereUI's 25px bar. No accent
-  ring, pixel mark or plus/minus glyphs (the old bridge's, retired). Result:
+  ring, pixel mark or plus/minus glyphs (the old bridge's, retired). Result: pass (owner-marked 2026-10-30)
 - **SKIN-26. EllesmereUI off (PG-06).** Untick *PremadeGroupsFilterExtension* in EllesmereUI's
   Third-Party Addons list (or turn off its third-party skinning, or disable EllesmereUI) and
   `/reload` → the Skin tab lists the failing condition with its fix, the EllesmereUI choice is not
-  available, and the panel wears its Ka0s skin (SKIN-11's Ka0s look on Ka0s Default). Result:
+  available, and the panel wears its Ka0s skin (SKIN-11's Ka0s look on Ka0s Default). Result: pass (owner-marked 2026-10-30)
 - **SKIN-27. Back from EllesmereUI needs a reload (PG-06).** With EllesmereUI as the source and
   painted, pick **Ka0s skins** → a reload is offered; after it the Ka0s skin shows. A profile switch
-  to a Ka0s-source profile prints one line asking for `/reload`. Result:
+  to a Ka0s-source profile prints one line asking for `/reload`. Result: pass (owner-marked 2026-10-30)
 - **SKIN-28. Premade Groups Filter's own EllesmereUI skin (PG-06).** With EllesmereUI loaded, General
   → Filters ends with a line on Premade Groups Filter - EllesmereUI Skin: *loaded*; disabled in the
   AddOns list → *installed but disabled* with the fix; folder removed and the game restarted → *not
   installed* with a read-only box holding its CurseForge link (click selects it, Ctrl+C copies,
-  typing puts it back). Without EllesmereUI loaded the Filters tab has no such line. Result:
+  typing puts it back). Without EllesmereUI loaded the Filters tab has no such line. Result: pass (owner-marked 2026-10-30)
 - **SKIN-29. Diagnostics (PG-06; the follow-ups' PG-01).** `/pgfe diagnostics` → the skin section
   shows the applied and stored choice, `drawsKey` (the library's answer: `ka0s` on Ka0s Default, the
   skin's key on another skin, `eui` while EllesmereUI paints the addon), `pendingReload`, the four
-  EllesmereUI conditions, `ok`, `painted` and `refused`. Result:
+  EllesmereUI conditions, `ok`, `painted` and `refused`. Result: pass (owner-marked 2026-10-30)
 - **SKIN-30. The minimap button (PG-01).** Under every skin, hover and right-click the minimap button
-  → the button, its tooltip and menu look as before the run. Result:
+  → the button, its tooltip and menu look as before the run. Result: pass (owner-marked 2026-10-30)
 - **SKIN-31. Degraded install (PG-01, PG-02; the follow-ups' PG-01).** As DEGRADED-1 (rename
   `libs/LibKa0s`, `/reload`) → no picker, no Lua error, and the attached panel works in PGF's
   template art with nothing painted (its border and background, Blizzard check boxes and arrows).
   Folded, the template's border is not cut to the strip (the metal header copies retired with the
-  metal panel): record how it looks, it is not a failure. Restore the folder afterwards. Result:
+  metal panel): record how it looks, it is not a failure. Restore the folder afterwards. Result: pass (owner-marked 2026-10-30)
 - **SKIN-32. Other Ka0s addons unchanged.** With this addon on a non-default skin, open two other
   Ka0s addons' windows and settings pages → each wears its own choice, unchanged by this addon's.
-  Result:
+  Result: pass (owner-marked 2026-10-30)
 - **SKIN-33. The panel is a window under the Scope switches (the follow-ups' PG-01; decision D-01).**
   Under Obsidian with **Ignore settings panel** ticked (a new profile's default), open PGF on Dungeons
   → the attached panel still wears Obsidian: its edge, labels, readout and controls (the switch
   covers the settings pages only, SKIN-18). Untick and tick it again with the panel open → the panel
   does not change. Tick **Ignore fonts** → the panel's strings take the game's faces live, colors
   kept; untick → the skin's face back, no reload. Fail: the panel turning stock under *Ignore
-  settings panel*, or a reload needed. Result:
+  settings panel*, or a reload needed. Result: pass (owner-marked 2026-10-30)
 
 ## Frame layering
 
@@ -471,7 +471,7 @@ visible is lifted one strata above it, then put back on hide (`core/Constants.lu
   → the same value twice (FULLSCREEN today). `/dump PremadeGroupsFilterExtensionPanel:GetFrameLevel() - PremadeGroupsFilterDialog:GetFrameLevel()`
   → 5. The panel's title strip draws over PGF's bottom border, never under it, on several
   opens and with the panel collapsed. **Failure looks like:** PGF's border across the panel's title
-  strip, or two different strata. Result: pending (the skin library follow-ups' PG-01).
+  strip, or two different strata. Result: pass (owner-marked 2026-10-30)
   The metal-panel version passed, owner-marked 2026-10-24; expectation changed 2026-10-30 (the panel is
   the one skinned frame, the metal panel retired, still named `PremadeGroupsFilterExtensionPanel`),
   re-check owed.
@@ -512,24 +512,14 @@ or wrong. These are the addon's locale seams.
 
 ## Pending sign-off
 
-Owed from the skinning rollout (Ka0sAddonsCommonTasks `docs/2026-10-29-SKINNING_ROLLOUT/`, PG-01,
-PG-02, PG-04 and PG-06, 2026-10-29): SKIN-11 to SKIN-32 (new: Ka0s Default unchanged, the Skin tab,
-the first-run picker and its waits, the attached panel under each skin, folded and in its states,
-the settings pages and the debug console under each skin, fonts and overrides, profiles, the copy,
-the stand-down, the `euiSkin` migration, EllesmereUI on and off and back, Premade Groups Filter's own
-EllesmereUI skin advice, diagnostics, the launcher, a degraded install, other Ka0s addons). PANEL-2
-and PANEL-4's *EllesmereUI skin* bullets and LAYER-3's reload-prompt step are superseded by the
+On 2026-10-30 the owner reported that every check of the skinning rollout (Ka0sAddonsCommonTasks
+`docs/2026-10-29-SKINNING_ROLLOUT/`), the skin overrides and picker and the skin library follow-ups
+(`docs/2026-10-30-SKIN_LIBRARY_FOLLOWUPS/`, LibKa0s v1.81.0) passed: SKIN-11 to SKIN-33, with APPLY-14,
+APPLY-22 and LAYER-1 re-checked, each recorded on its `Result:` line as `pass (owner-marked 2026-10-30)`.
+PANEL-2 and PANEL-4's *EllesmereUI skin* bullets and LAYER-3's reload-prompt step are superseded by the
 retired bridge (see *EllesmereUI skin*); their other steps stand.
 
-Owed from the skin library follow-ups (Ka0sAddonsCommonTasks `docs/2026-10-30-SKIN_LIBRARY_FOLLOWUPS/`,
-PG-01 and PG-02, 2026-10-30; LibKa0s v1.81.0): SKIN-33 (new: the panel keeps its skin under *Ignore
-settings panel*, and *Ignore fonts* reaches it live); SKIN-11, SKIN-13, SKIN-15, SKIN-16, SKIN-19,
-SKIN-20, SKIN-25, SKIN-26, SKIN-29 and SKIN-31 rewritten (the metal panel retired under Ka0s Default,
-the picker's *Choose a skin* title and its name line, the console's title-bar labels and resize grip,
-`drawsKey` in the diagnostics); and APPLY-14, APPLY-22 and LAYER-1, whose recorded passes predate the
-change and now read *pending* until re-checked.
-
-Before that run none was owed. On 2026-10-10 the owner marked every check in this file as passed, recorded on its
+Before those runs none was owed. On 2026-10-10 the owner marked every check in this file as passed, recorded on its
 `Result:` line as `pass (owner-marked 2026-10-10)`; a check that already carried a dated owner pass
 keeps it. On 2026-10-24 the owner reported that every check of the keybindings, settings layout and
 frame layering run passed (LAYER-1..3 and PANEL-4, with PANEL-4's re-check of PANEL-2, APPLY-21,
