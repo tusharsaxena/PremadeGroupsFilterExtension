@@ -28,9 +28,9 @@ test("panel: anchored under PGF dialog, both edges", function()
     assertEqual(p1, "TOPLEFT"); assertEqual(rel1, m.PremadeGroupsFilterDialog); assertEqual(rp1, "BOTTOMLEFT")
     local p2, rel2, rp2, x2, y2 = f:GetPoint(2)
     assertEqual(p2, "TOPRIGHT"); assertEqual(rel2, m.PremadeGroupsFilterDialog); assertEqual(rp2, "BOTTOMRIGHT")
-    -- Owner request: a 1px gap between the two borders (0 left ~4 units, 5 closed it; 2 was 1px too wide).
-    -- red under: anchor at y = 0 or 5
-    assertEqual(x1, 0); assertEqual(x2, 0); assertEqual(y1, 3); assertEqual(y2, 3)
+    -- Flush: the skin's flat window sits on its rect (the retired metal border's 3px raise is gone).
+    -- red under: the metal panel's ATTACH_RAISE
+    assertEqual(x1, 0); assertEqual(x2, 0); assertEqual(y1, 0); assertEqual(y2, 0)
     assertEqual(f.__name, "PremadeGroupsFilterExtensionPanel")
     assertEqual(f.__template, "PortraitFrameTemplateMinimizable")
 end)
@@ -469,11 +469,11 @@ test("panel: collapse folds to the title bar and is remembered in the profile", 
     f.MaximizeMinimizeFrame.__onMinimized()
     assertTrue(NS.addon.db.profile.panelCollapsed)
     assertFalse(f.body:IsShown())
-    assertEqual(f.__height, 32)
+    assertEqual(f.__height, 30, "Ka0s Default's title band")
     f.MaximizeMinimizeFrame.__onMaximized()
     assertFalse(NS.addon.db.profile.panelCollapsed)
     assertTrue(f.body:IsShown())
-    assertTrue(f.__height > 32)
+    assertTrue(f.__height > 30)
 end)
 
 -- Review F-010: a profile switch carries its own panelCollapsed; the attached panel follows it.
@@ -484,7 +484,7 @@ test("panel: a profile switch refreshes the attached panel's layout", function()
     NS.addon.db.profile.panelCollapsed = true
     NS.addon:OnProfileChanged(nil, nil, "Other")
     -- red under: drop the Panel.Refresh call in PGFE's reloadProfile
-    assertFalse(f.body:IsShown()); assertEqual(f.__height, 32)
+    assertFalse(f.body:IsShown()); assertEqual(f.__height, 30)
 end)
 
 test("panel: preset Save as stores a named preset; Load refills the widgets", function()
@@ -581,78 +581,18 @@ test("panel: the min/max arrow follows the stored collapsed state", function()
     assertTrue(NS.addon.db.profile.panelCollapsed)
 end)
 
--- Owner request: collapsed shows only the header strip. NineSliceUtil is the client's; the stub
--- below stands in for it so the clipped border copies are built.
-local function stubNineSlice(m)
-    local applied = 0
-    m.NineSliceUtil = { GetLayout = function() return {} end, ApplyLayout = function() applied = applied + 1 end }
-    return function() return applied end
-end
-
-test("panel: collapsed shows only the header strip, drawn by two clipped border copies", function()
-    local NS, _, m = T.enableAddon{}
-    local applied = stubNineSlice(m)
-    local f = NS.Panel.Create()
-    assertEqual(applied(), 2, "a top copy and a foot copy")
-    assertEqual(#f.headerArt, 2)
-    f.MaximizeMinimizeFrame.__onMinimized()
-    -- red under: restore the corners-apart height (88) in Panel's applyLayout
-    assertEqual(f.__height, 32)
-    -- red under: drop setHeaderOnly from Panel's applyLayout
-    assertTrue(f.headerArt[1]:IsShown()); assertTrue(f.headerArt[2]:IsShown())
-    assertFalse(f.NineSlice:IsShown())
-    assertFalse(f.body:IsShown())
-end)
-
-test("panel: expanded keeps the template's own border; the header copies hide", function()
-    local NS, _, m = T.enableAddon{}
-    stubNineSlice(m)
-    local f = NS.Panel.Create()
-    f.MaximizeMinimizeFrame.__onMinimized()
-    f.MaximizeMinimizeFrame.__onMaximized()
-    assertEqual(f.__height, f.expandedHeight)
-    assertFalse(f.headerArt[1]:IsShown()); assertFalse(f.headerArt[2]:IsShown())
-    assertTrue(f.NineSlice:IsShown())
-    assertTrue(f.body:IsShown())
-end)
-
-test("panel: a saved collapsed state shows the header strip on the first Refresh", function()
-    local NS, _, m = T.enableAddon{}
-    stubNineSlice(m)
-    NS.addon.db.profile.panelCollapsed = true
-    local f = NS.Panel.Create()
-    assertEqual(f.__height, 32)
-    assertTrue(f.headerArt[1]:IsShown()); assertTrue(f.headerArt[2]:IsShown())
-    assertFalse(f.NineSlice:IsShown())
-end)
-
-test("panel: without NineSliceUtil the collapse still folds, with no header copies", function()
+test("panel: collapsed shows only the skin's title band; no metal header copies are built", function()
+    -- red under: the retired metal instance's clipped border copies (headerArt) and its 32px strip.
     local NS = T.enableAddon{}
     local f = NS.Panel.Create()
-    f.MaximizeMinimizeFrame.__onMinimized()
     assertEqual(f.headerArt, nil)
-    assertEqual(f.__height, 32)
-    assertTrue(f.NineSlice:IsShown(), "left alone when there is nothing to stand in for it")
-end)
-
--- Review: the header copies sat one level above the panel, tied with the arrow and close button.
-test("panel: the header copies sit at the panel's own level, under the arrow", function()
-    local NS, _, m = T.enableAddon{}
-    stubNineSlice(m)
-    local create, levels = m.CreateFrame, {}
-    m.CreateFrame = function(...)
-        local fr = create(...)
-        fr.GetFrameLevel = function() return 7 end
-        fr.SetFrameLevel = function(self, l) levels[self] = l end
-        return fr
-    end
-    local f = NS.Panel.Create()
-    m.CreateFrame = create
-    for i, clip in ipairs(f.headerArt) do
-        -- red under: drop sinkToParentLevel from Panel's buildHeaderHalf
-        assertEqual(levels[clip], 7, "clip " .. i)
-        assertEqual(levels[clip.__children[1]], 7, "slice " .. i)
-    end
+    f.MaximizeMinimizeFrame.__onMinimized()
+    assertEqual(f.__height, 30)
+    assertFalse(f.body:IsShown())
+    NS.addon.db.profile.panelCollapsed = false
+    NS.Panel.Refresh()
+    assertEqual(f.__height, f.expandedHeight)
+    assertTrue(f.body:IsShown())
 end)
 
 -- Owner request: Apply no longer takes keyboard focus into the copy box (it held movement and chat).
@@ -683,18 +623,16 @@ end)
 
 -- ── owner feedback round: arrow art, Any, widths, row pitch, tooltips, presets, copy box, Smart ────
 
--- Owner request (screenshots): expanded shows the up-right arrow, collapsed the down-left one. The
--- template pairs them the other way, so the art is swapped between its two buttons.
-test("panel: the arrow art is swapped between the min/max buttons", function()
-    local NS = T.enableAddon{}
+-- Owner request (screenshots): expanded shows the up arrow, collapsed the down one. The skin's paging
+-- arrows draw them (the retired metal instance swapped the template's RedButton art instead).
+test("panel: the min/max arrows are the skin's paging arrows, expanded up and collapsed down", function()
+    local NS, _, m = T.enableAddon{}
     local mm = NS.Panel.Create().MaximizeMinimizeFrame
-    -- red under: drop the setArrowArt calls from Panel's buildMinMax
-    assertEqual(mm.MinimizeButton.__normalAtlas, "RedButton-Expand")
-    assertEqual(mm.MinimizeButton.__pushedAtlas, "RedButton-Expand-Pressed")
-    assertEqual(mm.MinimizeButton.__disabledAtlas, "RedButton-Expand-Disabled")
-    assertEqual(mm.MaximizeButton.__normalAtlas, "RedButton-Condense")
-    assertEqual(mm.MaximizeButton.__pushedAtlas, "RedButton-Condense-Pressed")
-    assertEqual(mm.MaximizeButton.__disabledAtlas, "RedButton-Condense-disabled")
+    local Skin = m.LibStub("LibKa0s-Skin-1.0")
+    -- red under: the RedButton atlas swap left in Panel's buildMinMax, or no PageButton paint
+    assertEqual(mm.MinimizeButton.__normalAtlas ~= "RedButton-Expand", true)
+    assertEqual(Skin.painted[mm.MinimizeButton].calls.PageButton[1], "up")
+    assertEqual(Skin.painted[mm.MaximizeButton].calls.PageButton[1], "down")
 end)
 
 test("panel: the regions and playstyle dropdowns are 225 wide, right-aligned in one column", function()
@@ -801,8 +739,8 @@ test("panel: every checkbox has a tooltip, and its label hovers and clicks as th
         assertTrue(cb.__hitRect ~= nil and cb.__hitRect[2] < 0, key .. ": stretched over the label")
     end
     assertEqual(n, 7)
-    -- The label starts LABEL_X - 32 = 3px past the box; the rect reaches the label's far end.
-    assertEqual(f.checks.compositionEnabled.__hitRect[2], -(3 + #NS.L.COMPOSITION * 6))
+    -- The label starts LABEL_X - 24 = 11px past the box; the rect reaches the label's far end.
+    assertEqual(f.checks.compositionEnabled.__hitRect[2], -(11 + #NS.L.COMPOSITION * 6))
 end)
 
 test("panel: every number box, button and the copy box and its label have a tooltip", function()
@@ -916,11 +854,11 @@ test("panel: Smart sits right of the level box; ticked, it locks the box and set
     -- red under: the old BUTTON_GAP (4); then the owner asked for a 60px visible gap (56 + 4)
     assertEqual(x, 56)
     assertEqual(f.smartLabel:GetText(), NS.L.SMART)
-    -- Owner report (screenshot): the box-to-text gap matches the rows' (LABEL_X 35 - 32 box).
+    -- Owner report (screenshot): the box-to-text gap matches the rows' (LABEL_X 35 - 24 box).
     -- red under: the old LEFT-to-RIGHT, -2 anchor
     local lp, lrel, lrp, lx = f.smartLabel:GetPoint(1)
     assertEqual(lp, "LEFT"); assertTrue(lrel == cb); assertEqual(lrp, "RIGHT")
-    assertEqual(lx, 35 - 32)
+    assertEqual(lx, 35 - 24)
     assertTrue(f.levelBox:IsEnabled())
     cb:SetChecked(true); cb:__fire("OnClick")
     assertTrue(NS.Filters.Get().smartKeyLevel)
@@ -994,7 +932,7 @@ test("panel: the level row fits the body: label, box, Smart and its label", func
     local f = NS.Panel.Create()
     local _, _, _, gap = f.levelBox:GetPoint(1)
     local _, _, _, smartGap = f.checks.smartKeyLevel:GetPoint(1)
-    local right = 35 + #NS.L.KEY_TARGETING * 6 + gap + f.levelBox.__width + smartGap + 32 + 3
+    local right = 35 + #NS.L.KEY_TARGETING * 6 + gap + f.levelBox.__width + smartGap + 24 + 11
         + f.smartLabel:GetStringWidth()
     assertTrue(right < 398, "ends at " .. right)
 end)
@@ -1067,7 +1005,7 @@ test("panel: Use the extension's filters is the first row, on by default", funct
     local NS = T.enableAddon{}
     local f = NS.Panel.Create(); NS.Panel.Refresh()
     local _, _, _, _, y = f.activeCheck:GetPoint(1)
-    assertEqual(y, 4, "the first row")
+    assertEqual(y, 0, "the first row (its 24px box centered where the template's 32px sat at +4)")
     -- red under: filtersActive = false in defaults/Profile.lua
     assertTrue(f.activeCheck:GetChecked())
     assertTrue(NS.Filters.IsActive())

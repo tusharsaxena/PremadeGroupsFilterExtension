@@ -98,7 +98,9 @@ local function skin(out)
     local storedSource, storedSkin = NS.SkinChoice()
     out:add(TAG, "skin applied=%s:%s stored=%s:%s", ok and source or "unreadable", ok and key or "unreadable",
         storedSource, storedSkin)
-    out:add(TAG, "skin drawsDefault=%s pendingReload=%s", read(NS.SkinDrawsDefault),
+    -- The key the library draws the owner by (LibKa0s v1.81.0's public DrawsKey): eui while
+    -- EllesmereUI paints it, else the skin it wears, ka0s for Ka0s Default and an unknown key.
+    out:add(TAG, "skin drawsKey=%s pendingReload=%s", read(Skin.DrawsKey, Skin, owner),
         read(Skin.PendingReload, Skin, owner))
     local status = NS.SkinEUIStatus and NS.SkinEUIStatus()
     if type(status) ~= "table" then

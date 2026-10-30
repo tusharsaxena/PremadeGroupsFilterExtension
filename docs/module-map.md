@@ -1,7 +1,7 @@
 # Module map — Ka0s Premade Groups Filter Extension
 
 Every non-vendored file, in TOC load order, with its one responsibility. Vendored: `libs/` (Ace3,
-LibStub, CallbackHandler, LibSharedMedia, LibDataBroker, LibDBIcon, LibKa0s v1.80.0) and
+LibStub, CallbackHandler, LibSharedMedia, LibDataBroker, LibDBIcon, LibKa0s v1.81.0) and
 `tests/_kit/` (the LibKa0s test kit) — never edited here.
 
 ## Load order and why
@@ -42,7 +42,7 @@ Profiles page. The constraints that fix the order:
 | `PremadeGroupsFilterExtension.toc` | Metadata and the load order |
 | `locales/enUS.lua` | `NS.L` with the key-is-English metatable fallback |
 | `core/CoreSetup.lua` | `LibKa0s-Core-1.0`: the `[PGFE]` printer, `SafeRegister*`, skin, close-button wrapper |
-| `core/SkinSetup.lua` | `LibKa0s-Skin-1.0`: the skin owner (the folder) registered at file load, `NS.Skin` (the facade, or a degraded one answering Ka0s Default), the `skin.*` read and write seams and apply functions, `NS.SkinColor` / `NS.SkinEscape`, `NS.SkinDrawsDefault`, EllesmereUI's status as the `eui` provider sees it, the owner-bound AceGUI painters, and the first-run skin picker |
+| `core/SkinSetup.lua` | `LibKa0s-Skin-1.0`: the skin owner (the folder) registered at file load, `NS.Skin` (the facade, or a degraded one answering Ka0s Default), the `skin.*` read and write seams and apply functions, `NS.SkinColor` / `NS.SkinEscape`, EllesmereUI's status as the `eui` provider sees it, the owner-bound AceGUI painters, and the first-run skin picker |
 | `core/Constants.lua` | `NS.Constants.LAYERS`: the one layers table, every strata and level offset the addon sets, with the whole stack in its header comment (frame-layering-§5) |
 | `core/MediaSetup.lua` | `LibKa0s-Media-1.0`: `NS.Icon`, `NS.MediaFont`, the LSM registration |
 | `core/Compat.lua` | `LibKa0s-Compat-1.0`: the spec readers |
@@ -65,7 +65,7 @@ Profiles page. The constraints that fix the order:
 | `modules/EnvInject.lua` | The PGF env post-hook body and the player's cached spec keywords; installs the hook at load |
 | `modules/RegionTags.lua` | The region tag on Group Finder rows and applicants; installs its two Blizzard hooks at load |
 | `modules/Apply.lua` | Apply / Clear orchestration: prechecks, validation, targeting, expression merge, bridge writes, search |
-| `modules/Panel.lua` | The panel attached under PGF's dialog, built from one builder as the metal instance (Ka0s Default) and its skinned twin (every other skin and EllesmereUI); installs the dialog hook at load |
+| `modules/Panel.lua` | The panel attached under PGF's dialog, one frame painted through the skin under every skin and EllesmereUI; installs the dialog hook at load |
 | `modules/Diagnostics.lua` | The sections of `/pgfe diagnostics` (`NS.Diagnostics.Sections()`, wired as the DebugLog descriptor's `diagnostics` hook in `core/DebugLogSetup.lua`) |
 | `settings/SchemaSetup.lua` | `LibKa0s-Schema-1.0` or its host stub |
 | `settings/Schema.lua` | The write seam (`NS.SchemaRuntime`), the closure stamping for session and global rows (`Settings.StampClosureRows`), schema validation, defaults assembly and the reset. Declares no rows: `settings/Panel.lua` adds every row at load |

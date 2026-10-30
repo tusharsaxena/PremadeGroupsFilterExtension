@@ -4,10 +4,11 @@
 -- The addon's own bridge (core/EUIBridge.lua, modules/EUISkin.lua) is gone. What this suite pins is
 -- the host half of the swap: the one-time migration carries the stored `euiSkin` choice to
 -- `skin.source` on every profile (DECISIONS D3); the library is the one thing that registers the
--- folder with EllesmereUI; once EllesmereUI paints this owner the panel's skinned twin shows and is
--- handed to EllesmereUI's facade while the metal instance never is; the twin folds to EllesmereUI's
--- 25px shell bar (D4); the diagnostics read EllesmereUI through the library only; and no addon file
--- reads EllesmereUIDB (anti-pattern #107).
+-- folder with EllesmereUI; once EllesmereUI paints this owner the panel is handed to EllesmereUI's
+-- facade, and before it does the panel wears Ka0s Default through the library's own; the collapsed
+-- panel folds to EllesmereUI's 25px shell bar (D4); the diagnostics read EllesmereUI, and the key the
+-- owner draws by, through the library's public API only; and no addon file reads EllesmereUIDB
+-- (anti-pattern #107) or the library-internal __DrawsKey.
 --
 -- Every case builds its own instance.
 
@@ -104,60 +105,42 @@ local function painted(spec)
     return NS, m
 end
 
-test("eui: once EllesmereUI paints the owner, the skinned twin shows and goes to its facade", function()
+test("eui: once EllesmereUI paints the owner, the panel goes to its facade", function()
     local NS, m = painted()
     assertTrue(NS.SkinEUIPainted(), "EllesmereUI painted the owner")
-    assertFalse(NS.SkinDrawsDefault())
-    local P = NS.Panel
-    assertTrue(P.skinFrame ~= nil and P.frame == P.skinFrame, "the twin is the instance on show")
-    assertTrue(P.frame:IsShown())
-    assertEqual(#m.eui.callsFor("Shell", P.skinFrame), 1, "the twin's window went to EllesmereUI's Shell")
-    assertEqual(#m.eui.callsFor("Checkbox", P.skinFrame.activeCheck), 1, "and its check buttons")
-    for _, c in ipairs(m.eui.calls) do
-        assertTrue(P.stockFrame == nil or c.target ~= P.stockFrame, "the metal instance went to EllesmereUI")
-    end
+    assertEqual(m.LibStub("LibKa0s-Skin-1.0"):DrawsKey(OWNER), "eui")
+    local f = NS.Panel.frame
+    assertTrue(f ~= nil and f:IsShown())
+    assertEqual(#m.eui.callsFor("Shell", f), 1, "the panel's window went to EllesmereUI's Shell")
+    assertEqual(#m.eui.callsFor("Checkbox", f.activeCheck), 1, "and its check buttons")
 end)
 
-test("eui: before EllesmereUI paints, the eui source wears the metal instance (Ka0s Default)", function()
-    -- The library's live fallback while the gate is closed: the master switch off here.
-    local NS = painted({ masterOff = true })
-    assertFalse(NS.SkinEUIPainted())
-    assertTrue(NS.SkinDrawsDefault())
-    assertTrue(NS.Panel.frame == NS.Panel.stockFrame, "the never-painted metal instance shows")
-end)
-
-test("eui: which instance shows is read from public API only, never the library's __DrawsKey", function()
-    local fh = assert(io.open(T.root .. "/core/SkinSetup.lua", "rb"))
-    local src = fh:read("*a")
-    fh:close()
-    assertTrue(src:find("Skin:__DrawsKey", 1, true) == nil and src:find("Skin.__DrawsKey", 1, true) == nil,
-        "core/SkinSetup.lua calls the library-internal __DrawsKey")
-end)
-
-test("eui: the public answer matches the key the library draws by, in every state", function()
-    -- The library's own answer (internal) is the oracle here, and only here.
+test("eui: before EllesmereUI paints, the eui source wears Ka0s Default through the library", function()
+    -- The library's live fallback while the gate is closed: the master switch off here. red under:
+    -- the retired metal instance (no primitive under Ka0s Default), or a call handed to EllesmereUI.
     local NS, m = painted({ masterOff = true })
     local Skin = m.LibStub("LibKa0s-Skin-1.0")
-    local function agrees(label)
-        assertEqual(NS.SkinDrawsDefault(), Skin:__DrawsKey(OWNER) == Skin.DEFAULT, label)
-    end
-    agrees("eui source, EllesmereUI not painted")
-    assertTrue(NS.SkinDrawsDefault(), "an unpainted eui source wears Ka0s Default")
-    Skin:SetChoice(OWNER, "ka0s", "obsidian")
-    agrees("a registered skin")
-    assertFalse(NS.SkinDrawsDefault(), "a registered skin is not Ka0s Default")
-    Skin:SetChoice(OWNER, "ka0s", "no-such-skin")
-    agrees("a key the library does not know")
-    assertTrue(NS.SkinDrawsDefault(), "an unknown key draws as Ka0s Default")
-    Skin:SetChoice(OWNER, "eui", "obsidian")
-    agrees("eui source over a registered skin, EllesmereUI not painted")
-    local NS2, m2 = painted()
-    assertTrue(NS2.SkinEUIPainted())
-    assertEqual(NS2.SkinDrawsDefault(), m2.LibStub("LibKa0s-Skin-1.0"):__DrawsKey(OWNER) == "ka0s",
-        "eui source, EllesmereUI painted")
+    assertFalse(NS.SkinEUIPainted())
+    assertEqual(Skin:DrawsKey(OWNER), Skin.DEFAULT)
+    local f = NS.Panel.frame
+    assertEqual(#m.eui.callsFor("Shell", f), 0, "nothing went to EllesmereUI")
+    local rec = Skin.painted[f]
+    assertTrue(rec ~= nil and rec.owner == OWNER and rec.calls.Shell ~= nil, "the panel wears the library's Shell")
 end)
 
-test("eui: the twin folds to EllesmereUI's 25px shell bar", function()
+test("eui: no addon file reaches the library-internal __DrawsKey", function()
+    -- LibKa0s v1.81.0 made it public as Skin:DrawsKey (R-9); __DrawsKey is an alias for one release.
+    for _, rel in ipairs({ "core/SkinSetup.lua", "modules/Panel.lua", "modules/Diagnostics.lua",
+        "tests/test_skin_eui.lua" }) do
+        local fh = assert(io.open(T.root .. "/" .. rel, "rb"))
+        local src = fh:read("*a")
+        fh:close()
+        assertTrue(src:find(":" .. "__DrawsKey", 1, true) == nil and src:find("." .. "__DrawsKey", 1, true) == nil,
+            rel .. " calls the library-internal __DrawsKey")
+    end
+end)
+
+test("eui: the collapsed panel folds to EllesmereUI's 25px shell bar", function()
     -- DECISIONS D4: EllesmereUI's Shell draws a 25px top bar whatever title.height says.
     local NS = painted()
     NS.addon.db.profile.panelCollapsed = true
@@ -185,6 +168,22 @@ local function skinSection(NS)
     end
     return table.concat(lines, "\n")
 end
+
+test("eui diagnostics: the skin section names the key the library draws by, in every state", function()
+    -- red under: the retired drawsDefault line, or a host-built answer that drifts from the library's.
+    local NS, m = painted({ masterOff = true })
+    local Skin = m.LibStub("LibKa0s-Skin-1.0")
+    local function says(key, label)
+        assertTrue(skinSection(NS):find("skin drawsKey=" .. key .. " ", 1, true) ~= nil, label)
+    end
+    says("ka0s", "eui source, EllesmereUI not painted")
+    Skin:SetChoice(OWNER, "ka0s", "obsidian")
+    says("obsidian", "a registered skin")
+    Skin:SetChoice(OWNER, "ka0s", "no-such-skin")
+    says("ka0s", "a key the library does not know")
+    local NS2 = painted()
+    assertTrue(skinSection(NS2):find("skin drawsKey=eui ", 1, true) ~= nil, "eui source, EllesmereUI painted")
+end)
 
 test("eui diagnostics: the skin section reports the choice and the library's EllesmereUI gate", function()
     local NS = painted()

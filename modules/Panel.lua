@@ -5,11 +5,11 @@ local _, NS = ...
 -- own label, so a longer (or translated) label pushes its input along instead of under it, and the
 -- expanded height is measured from the stack. The dropdowns share one right-aligned column.
 --
--- Styled like PGF's own dialog (PGF UI/Dialog.xml: PortraitFrameTemplateMinimizable, the
+-- Built like PGF's own dialog (PGF UI/Dialog.xml: PortraitFrameTemplateMinimizable, the
 -- ButtonFrameTemplateNoPortraitMinimizable border, portrait hidden, the dialog's strata) and its
--- filter rows (PGF UI/Templates.xml PremadeGroupsFilterBasicTemplate: a UICheckButtonTemplate at
--- y+4 and a GameFontHighlight title at x+35, 23px rows) (ratified: docs/ARCHITECTURE.md ->
--- Documented deviations). Anchored across the dialog's bottom edge,
+-- filter rows (PGF UI/Templates.xml PremadeGroupsFilterBasicTemplate: a check button and a
+-- GameFontHighlight title at x+35) (ratified: docs/ARCHITECTURE.md -> Documented deviations), and
+-- painted by the skin (below). Anchored across the dialog's bottom edge,
 -- so its width follows PGF's. Shown only while the dialog is shown on the Dungeons category and the
 -- addon is not stood down; built lazily the first time it is wanted. Collapsed, only the title
 -- strip is left.
@@ -21,27 +21,18 @@ local _, NS = ...
 -- string this file created. Searching goes through Apply.Run{ search = true }, called only from the
 -- Apply button's OnClick (a hardware event).
 --
--- ── THE SKIN: TWO INSTANCES OF ONE BUILDER (skinning-§1, §2; the rollout's PG-02) ──────────────
+-- ── THE SKIN: ONE FRAME, PAINTED ONCE (skinning-§1, §2; the rollout's PG-02, the follow-ups' PG-01) ─
 --
--- Under Ka0s Default the panel is PGF's metal chrome, exactly as above (the ratified deviation). Under
--- every other skin, and under the eui source once EllesmereUI paints this owner, it follows the skin.
--- Since LibKa0s-Skin-1.0's SkinPaint minor 6 every primitive paints Ka0s Default too, and v1.80.0's
--- `opts.stockDefault` covers the window and some controls but not Checkbox, PageButton, FadeRegions or
--- Text, so one frame cannot be both. The panel is therefore built twice from the same BUILDERS:
---
---   Panel.stockFrame  the metal instance, named FRAME_NAME, NEVER handed to any NS.Skin primitive, so
---                     no repaint ever touches it: Ka0s Default is today's pixels by construction.
---   Panel.skinFrame   the skinned twin, built lazily the first time the owner draws another skin,
---                     painted once through NS.Skin (paintSkinned) and recorded, so the library
---                     replays every later switch onto it.
---   Panel.frame       the instance on show, the one every other function here reads.
---
--- NS.SkinDrawsDefault() (core/SkinSetup.lua) picks the instance at build, on every show and on
--- NS.Skin.OnLooksChanged, which the library fires after it repainted the recorded frames. A swap hides
--- the other instance, clears its edit-box focus and refreshes the one it shows from NS.Filters, the
--- one store both read. The colors this file writes (the locked boxes, the dimmed copy label, the
--- readout markup, the tooltip lines) are tokens read at write time, Ka0s Default's exact values on the
--- metal instance, so no look value is typed here (anti-pattern #107).
+-- Panel.frame, named FRAME_NAME, is painted once through NS.Skin at build (paint) and every call is
+-- recorded, so the library replays each later switch onto it, Ka0s Default included: LibKa0s v1.81.0
+-- retired the stock look under Ka0s Default (owner ruling R-2), and with it the never-painted metal
+-- instance this panel kept beside a skinned twin (decision D-05). A player who wants the client's look
+-- picks WoW Default. NS.Skin.OnLooksChanged, which the library fires after its repaint, refreshes the
+-- panel, which re-writes the colors read from tokens: the locked boxes, the dimmed copy label, the
+-- readout markup and the tooltip lines are read at write time, so no look value is typed here
+-- (anti-pattern #107). The panel is a window, not the settings panel, so "Ignore settings panel"
+-- leaves it skinned (D-01); "Ignore fonts" gives its strings their template faces, in the library.
+-- Without the library the facade's primitives do nothing and the frame keeps the template's art.
 
 local Panel = NS.Panel or {}
 NS.Panel = Panel
@@ -58,17 +49,14 @@ local ROW_H         = 26
 local SELECT_ROW_H  = ROW_H       -- a row holding a dropdown
 local BUTTON_ROW_H  = ROW_H
 local BODY_TOP      = -28
--- How far the panel sits up into PGF's dialog's bottom edge. At 0 the two metal borders left ~4 UI
--- units of world between them (owner screenshot, 5px at that UI scale); 5 made them meet. Raised 2
--- the owner asked for 1px less of a gap, so the panel is raised by 3.
-local ATTACH_RAISE  = 3
 local BODY_BOTTOM   = 12
 local LABEL_X       = 35
-local CHECK_SIZE    = 32          -- UICheckButtonTemplate's size; the label starts LABEL_X - 32 past it
--- The skinned twin's check button: Checkbox draws its box `CHECK_INSET` inside the frame, so 24 gives a
--- 16px box (PGF's EllesmereUI skin's). Rows keep their centers and labels; the hit rect still
--- reaches the label.
-local SKIN_CHECK_SIZE = 24
+-- The check button: the skin's Checkbox draws its box `CHECK_INSET` inside the frame, so 24 gives a
+-- 16px box (PGF's EllesmereUI skin's). It sits centered where UICheckButtonTemplate's 32px button sat
+-- (4 above the row top, TEMPLATE_CHECK_SIZE), so rows keep their centers and labels; the hit rect
+-- still reaches the label.
+local CHECK_SIZE    = 24
+local TEMPLATE_CHECK_SIZE = 32
 local CHECK_INSET   = 4
 local INPUT_GAP     = 10
 -- The level box to the Smart box's frame. Both skins draw the box ~4px inside its frame (EllesmereUI's
@@ -241,7 +229,7 @@ end
 
 local function checkButton(f, parent, key)
     local cb = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
-    if f.checkSize ~= CHECK_SIZE then cb:SetSize(f.checkSize, f.checkSize) end
+    cb:SetSize(CHECK_SIZE, CHECK_SIZE)
     cb:SetScript("OnClick", function(self)
         if stoodDown() then return end
         NS.Filters.Set(key, self:GetChecked() and true or false)
@@ -251,15 +239,15 @@ local function checkButton(f, parent, key)
     return cb
 end
 
--- A row's check button sits 4 above its row top at the template's 32px; a smaller (skinned) one moves
--- down by half the difference, so both are centered on the row.
-local function checkTop(f, y) return y + 4 - (CHECK_SIZE - f.checkSize) / 2 end
+-- A row's check button: 4 above its row top at the template's 32px, moved down by half the
+-- difference, so it is centered on the row.
+local function checkTop(y) return y + 4 - (TEMPLATE_CHECK_SIZE - CHECK_SIZE) / 2 end
 
 local function checkRow(f, parent, key, text, y, tip)
     local cb = checkButton(f, parent, key)
-    cb:SetPoint("TOPLEFT", 0, checkTop(f, y))
+    cb:SetPoint("TOPLEFT", 0, checkTop(y))
     local fs = label(parent, text, LABEL_X, y)
-    stretchHitRect(cb, fs, LABEL_X - f.checkSize)
+    stretchHitRect(cb, fs, LABEL_X - CHECK_SIZE)
     tooltip(cb, text, tip)
     return cb, fs
 end
@@ -297,9 +285,9 @@ local function buildSmart(f, body, after)
     local cb = checkButton(f, body, "smartKeyLevel")
     cb:SetPoint("LEFT", after, "RIGHT", SMART_GAP, 0)
     local fs = body:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-    fs:SetPoint("LEFT", cb, "RIGHT", LABEL_X - f.checkSize, 0)
+    fs:SetPoint("LEFT", cb, "RIGHT", LABEL_X - CHECK_SIZE, 0)
     fs:SetText(L.SMART)
-    stretchHitRect(cb, fs, LABEL_X - f.checkSize)
+    stretchHitRect(cb, fs, LABEL_X - CHECK_SIZE)
     tooltip(cb, L.SMART, L.SMART_TOOLTIP)
     f.smartLabel = fs
 end
@@ -310,14 +298,14 @@ end
 -- this panel. Separate from the addon's master Enable, which hides the panel altogether.
 local function buildActiveRow(f, body, y)
     local cb = CreateFrame("CheckButton", nil, body, "UICheckButtonTemplate")
-    if f.checkSize ~= CHECK_SIZE then cb:SetSize(f.checkSize, f.checkSize) end
-    cb:SetPoint("TOPLEFT", 0, checkTop(f, y))
+    cb:SetSize(CHECK_SIZE, CHECK_SIZE)
+    cb:SetPoint("TOPLEFT", 0, checkTop(y))
     cb:SetScript("OnClick", function(self)
         if stoodDown() then return end
         NS.Filters.SetActive(self:GetChecked() and true or false)
     end)
     local fs = label(body, L.FILTERS_ACTIVE, LABEL_X, y)
-    stretchHitRect(cb, fs, LABEL_X - f.checkSize)
+    stretchHitRect(cb, fs, LABEL_X - CHECK_SIZE)
     tooltip(cb, L.FILTERS_ACTIVE, L.FILTERS_ACTIVE_TOOLTIP)
     f.activeCheck = cb
     return y - ROW_H - ACTION_GAP
@@ -662,77 +650,13 @@ end
 
 -- ── layout and collapse ─────────────────────────────────────────────────────────────────────────
 
--- Collapsed, the panel shows only its title strip: the title, the arrow and the closing metal bar.
-local HEADER_H    = 32   -- collapsed height: the title band plus the closing bar
--- The skinned twin's collapsed height while EllesmereUI paints it: EllesmereUI's Shell draws a 25px
--- top bar whatever the Ka0s `title.height` token says (host geometry, DECISIONS D4).
+-- Collapsed, the panel shows only its title strip: the skin's title band and the arrow.
+-- The collapsed height while EllesmereUI paints this owner: EllesmereUI's Shell draws a 25px top bar
+-- whatever the Ka0s `title.height` token says (host geometry, the rollout's DECISIONS D4).
 local EUI_SHELL_HEADER_H = 25
-local HEADER_SEAM = 24   -- below the frame top: the top art is cut here and the bottom art starts here
-local ART_SPAN    = 128  -- each border copy's laid-out height; more than the top and bottom corners stacked (~75+32)
-local CLIP_PAD    = 24   -- clip margin past the border overhangs (corners: x -12/+4, y +16/-3)
-
--- Each metal corner is about as tall as a collapsed frame, so the template's NineSlice cannot be
--- shrunk to fit (its corners overlap). Two copies of the same layout are laid out full size instead,
--- each inside a clipping frame: the top copy is cut at HEADER_SEAM and the bottom copy shows only
--- what lies below it. The template's NineSlice is left untouched for the expanded look.
--- Both frames sit at the panel's own level (LEVEL.HEADER_ART): a child defaults to one above it,
--- which ties with the MaximizeMinimize frame and the close button and leaves their draw order to
--- chance. Set once, at build: anything that later re-levels the panel must re-sink them.
-local function sinkToParentLevel(frame, parent)
-    local level = parent:GetFrameLevel()
-    if type(level) == "number" then frame:SetFrameLevel(level + LEVEL.HEADER_ART) end
-end
-
-local function buildHeaderHalf(f, util, layout, top)
-    local clip = CreateFrame("Frame", nil, f)
-    clip:SetClipsChildren(true)
-    sinkToParentLevel(clip, f)
-    local slice = CreateFrame("Frame", nil, clip)
-    sinkToParentLevel(slice, f)
-    slice:SetHeight(ART_SPAN)
-    if top then
-        clip:SetPoint("TOPLEFT", f, "TOPLEFT", -CLIP_PAD, CLIP_PAD)
-        clip:SetPoint("BOTTOMRIGHT", f, "TOPRIGHT", CLIP_PAD, -HEADER_SEAM)
-        slice:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
-        slice:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, 0)
-    else
-        clip:SetPoint("TOPLEFT", f, "TOPLEFT", -CLIP_PAD, -HEADER_SEAM)
-        clip:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", CLIP_PAD, -CLIP_PAD)
-        slice:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 0, 0)
-        slice:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", 0, 0)
-    end
-    util.ApplyLayout(slice, layout)
-    clip:Hide()
-    return clip
-end
-
-local function buildHeaderArt(f)
-    local util = NineSliceUtil
-    if type(util) ~= "table" or type(util.ApplyLayout) ~= "function" or type(util.GetLayout) ~= "function" then return end
-    local layout = util.GetLayout(BORDER_LAYOUT)
-    if type(layout) ~= "table" then return end
-    f.headerArt = { buildHeaderHalf(f, util, layout, true), buildHeaderHalf(f, util, layout, false) }
-end
-
-local function setHeaderOnly(f, on)
-    if f.headerArt then
-        for _, clip in ipairs(f.headerArt) do clip:SetShown(on) end
-        if type(f.NineSlice) == "table" and f.NineSlice.SetShown then f.NineSlice:SetShown(not on) end
-    end
-    -- The streaks hang 21px below the title band, which a collapsed frame does not have.
-    if type(f.TopTileStreaks) == "table" and f.TopTileStreaks.SetShown then f.TopTileStreaks:SetShown(not on) end
-end
-
--- Owner request: expanded shows the up-right arrow, collapsed the down-left one. The template pairs
--- them the other way (MaximizeButton RedButton-Expand, MinimizeButton RedButton-Condense), so the art
--- is swapped between the two buttons once, at build; which button shows, and what a click does, stay
--- the template's.
-local function setArrowArt(b, base, disabledSuffix)
-    if type(b) ~= "table" or type(b.SetNormalAtlas) ~= "function" then return end
-    b:SetNormalAtlas(base)
-    b:SetPushedAtlas(base .. "-Pressed")
-    b:SetDisabledAtlas(base .. disabledSuffix)
-end
+-- Ka0s Default's title band, for a facade that names none (the degraded one, without the library).
+local HEADER_H    = 30
+local HEADER_CLICK_H = 24   -- the header strip's click band, below the frame top
 
 -- PGF's wiring (UI/Dialog.lua MaximizeMinimize): expanded calls SetMinimizedLook, collapsed
 -- SetMaximizedLook. Set from the stored state on every layout, because the template's own buttons
@@ -745,11 +669,9 @@ local function syncMinMax(f, collapsed)
     if collapsed then mm:SetMaximizedLook() else mm:SetMinimizedLook() end
 end
 
--- The collapsed height. The skinned twin folds to the skin's title band (`title.height`, read live,
--- so a switch to a skin with another band refolds), or to EllesmereUI's shell bar once EllesmereUI
--- paints this owner; the metal instance to HEADER_H.
-local function collapsedHeight(f)
-    if not f.skinned then return HEADER_H end
+-- The collapsed height: the skin's title band (`title.height`, read live, so a switch to a skin with
+-- another band refolds), or EllesmereUI's shell bar once EllesmereUI paints this owner.
+local function collapsedHeight()
     if NS.SkinEUIPainted() then return EUI_SHELL_HEADER_H end
     local h = NS.Skin.Token("title.height")
     return type(h) == "number" and h or HEADER_H
@@ -758,8 +680,7 @@ end
 local function applyLayout(f)
     local collapsed = NS.addon.db.profile.panelCollapsed == true
     local ok, missing = NS.Bridge.Check()
-    f:SetHeight(collapsed and collapsedHeight(f) or f.expandedHeight)
-    setHeaderOnly(f, collapsed)
+    f:SetHeight(collapsed and collapsedHeight() or f.expandedHeight)
     syncMinMax(f, collapsed)
     f.body:SetShown(ok and not collapsed)
     f.unsupported:SetShown(not ok and not collapsed)
@@ -782,11 +703,7 @@ local function buildMinMax(f)
     if f.CloseButton then mm:SetPoint("RIGHT", f.CloseButton, "RIGHT", 0, 0) end
     mm:SetOnMaximizedCallback(function() setCollapsed(false) end)
     mm:SetOnMinimizedCallback(function() setCollapsed(true) end)
-    -- The skinned twin's arrows are the skin's (paintSkinned); only the metal one swaps the art.
-    if not f.skinned then
-        setArrowArt(mm.MinimizeButton, "RedButton-Expand", "-Disabled")
-        setArrowArt(mm.MaximizeButton, "RedButton-Condense", "-disabled")
-    end
+    -- The arrows are the skin's paging arrows (paint).
     f.MaximizeMinimizeFrame = mm -- which arrow shows is set by applyLayout
 end
 
@@ -799,7 +716,7 @@ local function buildHeaderClick(f)
     local b = CreateFrame("Button", nil, f)
     b:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
     b:SetPoint("TOPRIGHT", f, "TOPRIGHT", -HEADER_CLICK_RT, 0)
-    b:SetHeight(HEADER_SEAM)   -- the title band (the skinned bar is 25)
+    b:SetHeight(HEADER_CLICK_H)
     b:RegisterForClicks("LeftButtonUp")
     b:SetScript("OnClick", function()
         if stoodDown() then return end
@@ -837,10 +754,11 @@ local function layerWithDialog(f, dialog)
     if type(dialogLevel) == "number" then f:SetFrameLevel(dialogLevel + LEVEL.ABOVE_HOST) end
 end
 
--- ── the skinned twin's paint ────────────────────────────────────────────────────────────────────
+-- ── the paint ───────────────────────────────────────────────────────────────────────────────────
 
 -- Every font string of `frame`, the role each takes: the dimmed notes `disabled`, the copy label its
--- face only (its color is dimText's), every other label and the readout `body`.
+-- face only (its color is dimText's), every other label and the readout `body`. Bare S.Text, never
+-- `{ panel = true }`: the panel is a window, so it keeps the skin under Ignore settings panel (D-01).
 local function paintTexts(S, f, frame)
     for _, r in ipairs({ frame:GetRegions() }) do
         if type(r) == "table" and r.IsObjectType and r:IsObjectType("FontString") then
@@ -851,12 +769,13 @@ local function paintTexts(S, f, frame)
     end
 end
 
--- The twin through the owner's facade, once, at build: each call is recorded, so the library replays
--- it on every later switch (and hands it to EllesmereUI's facade under the eui source). The metal
--- border, its Bg and the title streaks fade under the skin's window; the template's title takes the
--- title role; the arrows are paging arrows (expanded shows the collapse button: up). The panel's own
--- SetScript calls all ran in the builders, before any primitive hooked a script.
-local function paintSkinned(f)
+-- The panel through the owner's facade, once, at build: each call is recorded, so the library replays
+-- it on every later switch (and hands it to EllesmereUI's facade under the eui source). The template's
+-- border, its Bg and the title streaks fade under the skin's window (`stock` is the list of template
+-- art to fade, under every skin); the template's title takes the title role; the arrows are paging
+-- arrows (expanded shows the collapse button: up). The panel's own SetScript calls all ran in the
+-- builders, before any primitive hooked a script.
+local function paint(f)
     local S = NS.Skin
     S.Shell(f, { stock = { f.Bg, f.TopTileStreaks } })
     local title = type(f.TitleContainer) == "table" and f.TitleContainer.TitleText
@@ -879,22 +798,17 @@ local function paintSkinned(f)
     paintTexts(S, f, f.body)
 end
 
--- `skinned` builds the twin: no name, no metal header copies, 24px check buttons, flush under the
--- dialog (a flat window sits on its rect; the metal border overhung it, hence ATTACH_RAISE), painted.
-local function buildFrame(dialog, skinned)
-    local f = CreateFrame("Frame", not skinned and FRAME_NAME or nil, dialog, "PortraitFrameTemplateMinimizable")
-    f.skinned = skinned and true or false
-    f.checkSize = skinned and SKIN_CHECK_SIZE or CHECK_SIZE
+-- Flush under the dialog: a flat window sits on its rect.
+local function buildFrame(dialog)
+    local f = CreateFrame("Frame", FRAME_NAME, dialog, "PortraitFrameTemplateMinimizable")
     layerWithDialog(f, dialog)
     f:SetBorder(BORDER_LAYOUT)
-    if not skinned then buildHeaderArt(f) end
     f:SetPortraitShown(false)
     f:SetTitle(L.PANEL_TITLE)
     centerTitle(f)
     f:EnableMouse(true)
-    local raise = skinned and 0 or ATTACH_RAISE
-    f:SetPoint("TOPLEFT", dialog, "BOTTOMLEFT", 0, raise)
-    f:SetPoint("TOPRIGHT", dialog, "BOTTOMRIGHT", 0, raise)
+    f:SetPoint("TOPLEFT", dialog, "BOTTOMLEFT", 0, 0)
+    f:SetPoint("TOPRIGHT", dialog, "BOTTOMRIGHT", 0, 0)
     f.checks = {}
     local body = CreateFrame("Frame", nil, f)
     body:SetPoint("TOPLEFT", 12, BODY_TOP)
@@ -906,50 +820,15 @@ local function buildFrame(dialog, skinned)
     f.unsupported = label(f, "", 14, BODY_TOP, "GameFontDisable")
     buildMinMax(f)
     buildHeaderClick(f)
-    if skinned then paintSkinned(f) end
+    paint(f)
     return f
 end
 
--- ── which instance shows ────────────────────────────────────────────────────────────────────────
-
-local function wantSkinned() return not NS.SkinDrawsDefault() end
-
--- The instance the skin wants, built on first want, hidden until a show.
-local function instance(dialog, skinned)
-    local key = skinned and "skinFrame" or "stockFrame"
-    if not Panel[key] then
-        Panel[key] = buildFrame(dialog, skinned)
-        Panel[key]:Hide()
-    end
-    return Panel[key]
-end
-
-local function clearFocus(f)
-    for _, box in ipairs({ f.levelBox, f.ageBox, f.rangeBox }) do box:ClearFocus() end
-end
-
--- Point Panel.frame at the instance the skin wants. The one it leaves is hidden, its focus dropped,
--- and the one it takes shown when the other was. Answers true on a swap.
-local function choose(dialog)
-    local f = instance(dialog, wantSkinned())
-    local was = Panel.frame
-    Panel.frame = f
-    if not was or was == f then return false end
-    local shown = was:IsShown()
-    clearFocus(was)
-    was:Hide()
-    if shown then f:Show() end
-    return true
-end
-
--- A skin change (the library fires it after the repaint): the instance follows, and the shown one is
--- refreshed, which re-writes the colors read from tokens. Nothing is built while stood down; the
--- stand-up's UpdateVisibility chooses again.
+-- A skin change (the library fires it after the repaint): the panel is refreshed, which re-writes the
+-- colors read from tokens and refolds a collapsed panel to the new title band. Nothing while stood
+-- down; the stand-up's UpdateVisibility refreshes.
 local function onLooksChanged()
     if not Panel.frame or stoodDown() then return end
-    local dialog = NS.Bridge.GetDialog()
-    if not dialog then return end
-    choose(dialog)
     Panel.Refresh()
 end
 
@@ -962,9 +841,10 @@ function Panel.Create()
     local dialog = NS.Bridge.GetDialog()
     if not dialog then return nil end
     definePopups()
-    -- The skin's listener goes in with the first instance (no panel, nothing to follow before it).
+    -- The skin's listener goes in with the panel (no panel, nothing to follow before it).
     NS.Skin.OnLooksChanged(onLooksChanged)
-    choose(dialog)
+    Panel.frame = buildFrame(dialog)
+    Panel.frame:Hide()   -- UpdateVisibility shows it
     Panel.Refresh()
     return Panel.frame
 end
@@ -1002,9 +882,6 @@ function Panel.UpdateVisibility()
         and NS.Bridge.IsDungeonPanelActive()
     if want and not Panel.frame then Panel.Create() end
     if not Panel.frame then return end
-    -- A skin change made while stood down (or before the panel's listener existed) takes effect here.
-    local dialog = want and NS.Bridge.GetDialog()
-    if dialog then choose(dialog) end
     local f = Panel.frame
     f:SetShown(want and true or false)
     -- Written on a change only: the dialog hook and PLAYER_ENTERING_WORLD re-run this often.

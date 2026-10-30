@@ -60,6 +60,22 @@ local function newlyShown(m, before)
     return n
 end
 
+-- Every frame and region under `root`, `root` excluded (a panel frame's regions and the children
+-- tests/wow_mock.lua records on it).
+local function descendants(root, out)
+    out = out or {}
+    if root.GetRegions then
+        for _, r in ipairs({ root:GetRegions() }) do out[r] = true end
+    end
+    for _, c in ipairs(rawget(root, "__children") or {}) do -- tests/wow_mock.lua's child list
+        if not out[c] then
+            out[c] = true
+            descendants(c, out)
+        end
+    end
+    return out
+end
+
 -- Forget what has been written and said so far.
 local function quiet(m)
     m.__resetSvWrites()
@@ -197,6 +213,12 @@ test("disabled 6: survivors reached anyway write, say and show nothing", functio
 
     assertEqual(#m.__svWrites(), 0, "no SavedVariables write")
     assertEqual(said(m), 0, "nothing said")
+    -- The clicks above flip each box's checked state as the client does, and the skin's check mark
+    -- follows it (LibKa0s-Skin-1.0 paints the panel under every skin, Ka0s Default included, since
+    -- the follow-ups' PG-01). It does so inside the panel the stand-down hid, so it is not on screen;
+    -- the mock's IsShown does not walk parents, so the panel's own art is set aside here.
+    assertFalse(f:IsShown(), "the panel stays hidden")
+    for fr in pairs(descendants(f)) do before[fr] = true end
     assertEqual(newlyShown(m, before), 0, "nothing shown")
     assertEqual(registered(m), "", "nothing re-registered")
     assertEqual(#m.__timers(), 0, "nothing scheduled")
