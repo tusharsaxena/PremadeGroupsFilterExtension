@@ -224,6 +224,35 @@ test("skin: the panel writes the skin's colors: locked boxes, the dimmed label, 
         f.readout:GetText())
 end)
 
+test("skin: a pick after the panel is built rewrites the colors the panel reads from tokens", function()
+    -- With the twin retired, the panel's onLooksChanged Refresh is the only thing that rewrites the
+    -- host-written colors after a live pick: no manual Refresh between the pick and the asserts.
+    -- red under: Panel.Refresh() removed from onLooksChanged (the locked box and the readout keep
+    -- Ka0s Default's 0.5 gray and its escapes).
+    local NS, m, Skin = setup()
+    local f = NS.Panel.frame
+    m.mapTable = { 586, 587 }
+    m.mapUIInfo[586] = { name = "D586", mapID = 586 }; m.seasonBest[586] = { intime = { level = 13 } }
+    m.mapUIInfo[587] = { name = "D587", mapID = 587 }; m.seasonBest[587] = { intime = { level = 14 } }
+    NS.Filters.Get().smartKeyLevel = true
+    NS.Filters.Get().keyTargeting = false
+    NS.Panel.Refresh()
+    local kr, kg, kb = Skin:Color(OWNER, "text.disabled")
+    local kOff = NS.SkinEscape("text.disabled")
+    NS.ApplySkinChoice("ka0s", "obsidian")
+    local dr, dg, db = Skin:Color(OWNER, "text.disabled")
+    local off = NS.SkinEscape("text.disabled")
+    assertTrue(not (close(dr, kr) and close(dg, kg) and close(db, kb)) and off ~= kOff,
+        "Obsidian's text.disabled differs from Ka0s Default's, so the case can tell them apart")
+    local c = f.levelBox.__textColor
+    assertTrue(close(c[1], dr) and close(c[2], dg) and close(c[3], db),
+        "the locked level box took the new skin's text.disabled")
+    assertTrue(close(f.copyLabel.__textColor[1], dr), "the dimmed copy label took the new skin's text.disabled")
+    local text = f.readout:GetText()
+    assertTrue(text:find(NS.SkinEscape("text.accent") .. "D 13|r", 1, true) ~= nil, text)
+    assertTrue(text:find(off .. "D 14|r", 1, true) ~= nil, text)
+end)
+
 -- ── the Scope: the panel is a window, not the settings panel ────────────────────────────────────
 
 test("skin: with Ignore settings panel on, the panel's labels and title still wear the skin", function()
