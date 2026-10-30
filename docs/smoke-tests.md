@@ -179,9 +179,9 @@ substitute its numbers.
   on Ka0s Default, no empty body under it), and the button shows the skin's down arrow. The band's
   edge closes cleanly around it (no corner art past the band, no metal header pieces) and sits flush
   under PGF's dialog. `/reload` → it stays folded with the same arrow; press the arrow → the rows
-  return, the edge looks exactly as before folding, and the arrow flips back. Result: pass
-  (owner-marked 2026-10-10). Changed by the skin library follow-ups' PG-01 (2026-10-30): the metal header strip and its
-  arrows retired with the metal panel; re-check pending.
+  return, the edge looks exactly as before folding, and the arrow flips back. Result: pending (the skin library follow-ups' PG-01).
+  The metal-panel version passed, owner-marked 2026-10-10; expectation changed 2026-10-30 (the metal
+  header strip and its arrows retired with the metal panel), re-check owed.
 - **APPLY-15. Layout.** Expanded, no label is covered by its input box (key level, min score, max
   age) or by the Smart checkbox. The Smart checkbox sits about 60px right of the level box, and its
   text is as far from its box as every other row's text is from its own box; the readout (`AOF 13  RLP 13 …`) is one line, not cut off, and the
@@ -233,9 +233,9 @@ substitute its numbers.
   panel sits flush under PGF's dialog: its edge meets PGF's bottom border with no gap and no overlap
   of the panel's body, and PGF's border never draws over the panel's title strip, expanded or
   collapsed. The panel's title is centered on the whole header strip, expanded
-  and collapsed, and does not touch the arrow button. Result: pass (owner-marked 2026-10-10).
-  Changed by the skin library follow-ups' PG-01 (2026-10-30): the panel no longer rises 3px into PGF's border (the metal
-  panel's overhang, retired); re-check pending.
+  and collapsed, and does not touch the arrow button. Result: pending (the skin library follow-ups' PG-01).
+  The metal-panel version passed, owner-marked 2026-10-10; expectation changed 2026-10-30 (the panel no
+  longer rises 3px into PGF's border, the metal panel's overhang, retired), re-check owed.
 - **APPLY-24. Region tags.** With PremadeRegions disabled, search Mythic+ → every listing's dungeon
   name starts with the leader's colored region (OCE, LA, CHI, MEX, BZL on US; ENG, GER, ... on EU),
   matching what PremadeRegions showed; list your own group → each applicant's name starts with
@@ -471,9 +471,10 @@ visible is lifted one strata above it, then put back on hide (`core/Constants.lu
   → the same value twice (FULLSCREEN today). `/dump PremadeGroupsFilterExtensionPanel:GetFrameLevel() - PremadeGroupsFilterDialog:GetFrameLevel()`
   → 5. The panel's title strip draws over PGF's bottom border, never under it, on several
   opens and with the panel collapsed. **Failure looks like:** PGF's border across the panel's title
-  strip, or two different strata. Result: pass (owner-marked 2026-10-24). Changed by
-  the skin library follow-ups' PG-01 (2026-10-30): the panel is the one skinned frame (the metal panel retired), still named
-  `PremadeGroupsFilterExtensionPanel`; re-check pending.
+  strip, or two different strata. Result: pending (the skin library follow-ups' PG-01).
+  The metal-panel version passed, owner-marked 2026-10-24; expectation changed 2026-10-30 (the panel is
+  the one skinned frame, the metal panel retired, still named `PremadeGroupsFilterExtensionPanel`),
+  re-check owed.
 - **LAYER-2. Preset popups over the panel.** Move PGF's dialog (PGF's *dialogMovable*) so it sits at
   the top center of the screen, under where StaticPopup1 opens. *Save as* → the popup draws over
   PGF's dialog and the panel, its edit box visible and typing into it works; Save. Select the new
@@ -526,7 +527,7 @@ settings panel*, and *Ignore fonts* reaches it live); SKIN-11, SKIN-13, SKIN-15,
 SKIN-20, SKIN-25, SKIN-26, SKIN-29 and SKIN-31 rewritten (the metal panel retired under Ka0s Default,
 the picker's *Choose a skin* title and its name line, the console's title-bar labels and resize grip,
 `drawsKey` in the diagnostics); and APPLY-14, APPLY-22 and LAYER-1, whose recorded passes predate the
-change and are re-checked.
+change and now read *pending* until re-checked.
 
 Before that run none was owed. On 2026-10-10 the owner marked every check in this file as passed, recorded on its
 `Result:` line as `pass (owner-marked 2026-10-10)`; a check that already carried a dated owner pass
