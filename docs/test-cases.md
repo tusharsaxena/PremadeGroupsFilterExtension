@@ -393,7 +393,7 @@ Total.
 - skin seam: the degraded facade answers every name the live facade carries
 - skin seam: each host-copy skin token is the live library's Ka0s Default value
 
-### test_skin.lua (12)
+### test_skin.lua (13)
 
 - skin: under Ka0s Default the one panel is painted through the facade, every widget and label
 - skin: the colors the panel writes under Ka0s Default are its exact pixels
@@ -404,6 +404,7 @@ Total.
 - skin: the panel's geometry: 24px check buttons on the rows' centers, flush under the dialog
 - skin: collapsed, the panel folds to the skin's title band, Ka0s Default's included
 - skin: the panel writes the skin's colors: locked boxes, the dimmed label, the readout
+- skin: a pick after the panel is built rewrites the colors the panel reads from tokens
 - skin: with Ignore settings panel on, the panel's labels and title still wear the skin
 - skin: a pick while stood down builds nothing; the stand-up shows the same panel in the new skin
 - skin: modules/Panel.lua types no color: no literal SetTextColor, tooltip color or markup
@@ -550,7 +551,7 @@ Total.
 | test_layers.lua | 8 |
 | test_settings_layout.lua | 11 |
 | test_skinsetup.lua | 19 |
-| test_skin.lua | 12 |
+| test_skin.lua | 13 |
 | test_skin_picker.lua | 16 |
 | test_skin_eui.lua | 12 |
 | test_reset.lua | 5 |
@@ -562,4 +563,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **428** |
+| **Total** | **429** |

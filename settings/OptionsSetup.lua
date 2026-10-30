@@ -69,6 +69,8 @@ if not lib then
     H.AppearanceRows       = function() return nil end
     H.SkinPicker           = function() return nil end
     H.HideSkinPicker       = function() end
+    -- LibKa0s v1.82.0 (OptionsSkinPicker 3): `/pgfe skin`'s act; without the library nothing opens.
+    H.SkinVerb             = function() return nil, "absent" end
     H.StrataTooltip        = function() return "" end
     H.ResetAllTooltip      = function() return "" end
     H.ID_NAME_HINT         = {}
