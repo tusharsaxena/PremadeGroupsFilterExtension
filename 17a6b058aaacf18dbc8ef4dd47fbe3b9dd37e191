@@ -1,0 +1,39 @@
+Independent review (skin-library-followups M2, PremadeGroupsFilterExtension): I found no blockers in PremadeGroupsFilterExtension feat/2026-10-30-skin-library-followups. It implements D-05 option A as ruled, and the gate is green.
+
+**Gate and vendor check:**
+- At HEAD 7566736, `ka0s-bounded lua tests/run.lua` gives 428 passed, 0 failed, 1 skipped (429 total).
+- `ka0s-bounded luacheck .` gives 0 warnings / 0 errors in 64 files.
+- Largest own files are tests/test_panel.lua at 1153 lines and modules/Panel.lua at 952, under the cap.
+- `libs/LibKa0s` and `tests/_kit` match `git archive v1.81.0` (56ebc24) apart from the icon prune: clear, close, copy, settings and the Open Iconic license are kept, and the `game-icons/` and `phosphor/` folders are pruned.
+- PG-RV alone (28dccb2) was green in a scratch copy, because the tests still used the `__DrawsKey` alias at that point.
+- All three commit subjects carry PG-RV, PG-01 or PG-02 and end with the session trailers.
+
+**Inventory workarounds:**
+- The twin (stockFrame/skinFrame/choose), ATTACH_RAISE, the 32px check arm, the clipped header copies with `LEVEL.HEADER_ART`, the RedButton swap and `NS.SkinDrawsDefault` are all removed.
+- The `opts.stock` fade list is kept, which is right (H-1). In v1.81.0, `S.Shell` still fades `NineSlice` plus the `opts.stock` textures under every skin (SkinPaint.lua:252-262), so Ka0s Default now gets the Ka0s look and not the template's metal.
+- Diagnostics now read the public `Skin:DrawsKey` through a guarded read, and no addon file reaches `__DrawsKey`.
+- The other rulings have nothing to act on here, which I confirmed with the inventory's proof greps: no HUD (so Ignore fonts on the HUD and R-4 do not apply), no ResetToSkin (so the opt-in rule does not apply), no close-button tint handling, no `q.*` read, no custom widget, and no settings-page token paint (so no D-03 gate is needed).
+- **Scope (D-01 to D-03):** the panel is a window and calls bare `S.Text`. The new H-2 test fails when the labels pass `{ panel = true }`; I checked this with a mutation.
+- **Other mutations caught:** putting the 3px raise back fails two tests.
+- **Mutation that survived:** removing `Panel.Refresh()` from `onLooksChanged` fails no test. On master, the swap test caught this.
+
+**Smoke checks:**
+- None of the rewritten or new checks is marked passed.
+- However, APPLY-14, APPLY-22 and LAYER-1 still read "Result: pass (owner-marked …)" under rewritten expectations.
+- SKIN-13 matches R-11 and the v1.81.0 changelog. SKIN-19's grip and title-bar label claims match the library at the tag (the console passes its owner to `MakeResizable`).
+
+**Implementer's "doubtful points":** these are accurate. The degraded fold that no longer cuts the border to the strip matches D-05 ("the degraded install keeps the template art").
+Findings: [minor] PG-01 tests modules/Panel.lua:830-833 (onLooksChanged); tests/test_skin.lua:148-166: Nothing pins the refresh that runs after a live skin change any more. I deleted `Panel.Refresh()` from onLooksChanged in a scratch copy and every test still passed. On master the same mutation fails 'skin: a swap carries the filter state…'. Its rewrite ('a skin pick never shows a hidden panel…') reads values written by an explicit Refresh, and the colors test calls `NS.Panel.Refresh()` itself before it asserts. With the twin gone, this Refresh is now the only thing that rewrites the colors the host reads from tokens after a pick: locked boxes `text.disabled`, the copy label, readout escapes and the tooltip lines. Only one test changed skin before the panel existed, so a pick after build had no coverage. | [minor] PG-02 smoke checks docs/smoke-tests.md:176-184 (APPLY-14), :232-238 (APPLY-22), :469-476 (LAYER-1): These three checks had their pass/fail expectations rewritten: a 30px skin title band in place of the metal strip and its red arrows, flush with no raise, and no metal border. Their Result lines still open with 'Result: pass (owner-marked 2026-10-10/2026-10-24)', and 're-check pending' follows only after it. Read at a glance, the check shows as passed against text the owner has never verified. The run's rule is that no smoke check is shown as passed by the run. | [nit] PG-01 header click band modules/Panel.lua:652 (HEADER_CLICK_H = 24), buildHeaderClick ~:716-719; docs/smoke-tests.md APPLY-14: Under Ka0s Default the panel now folds to a 30px title band, but the header click band is still a fixed 24px. The bottom 6px of the band does not fold the panel. APPLY-14 says 'Clicking anywhere on the header strip (the title band…) folds'. The skinned twin already had this gap under other skins; it now applies to every profile's default skin. | [nit] PG-01 test_disabled tests/test_disabled.lua:63-77, 216-221: Step 6 now adds every region and child under the panel to the 'before' set, so 'nothing shown' can no longer catch anything inside the panel being shown during stand-down. The reason given is sound: the skin's check mark follows SetChecked, and the mock's IsShown does not walk parents. The new assertFalse(f:IsShown()) covers what is on screen, but the exemption is broader than it needs to be. | [nit] PG-02 smoke wording docs/smoke-tests.md SKIN-11 (:333-339), SKIN-31 (:445-451): SKIN-11 says '24px Ka0s check boxes'. The button frame is 24px, but the skin draws a 16px box inside it (CHECK_INSET 4), so the owner may judge the wrong size. SKIN-31 says the degraded panel shows 'Blizzard … arrows'. Without the library, the template's own pairing returns: expanded shows RedButton-Condense, the reverse of the owner's earlier request, which the retired setArrowArt swap handled. The check does not tell the owner to expect this, so it may be logged as a failure.
+Fix round: Both findings were real, and I fixed both. I rejected none.
+
+1. PG-01 test, commit 63df89a. I added a new case to /mnt/d/Profile/Users/Tushar/Documents/GIT/PremadeGroupsFilterExtension/tests/test_skin.lua: "skin: a pick after the panel is built rewrites the colors the panel reads from tokens". It builds on Ka0s Default, turns on Smart (which locks the level box), turns key targeting off (which dims the copy label) and loads two dungeons of season data. It then calls Refresh once, picks a new skin with no manual Refresh after it, and checks that these took the new skin's tokens: the level box text color, the copy label's color, and both readout escapes (`text.accent` for D 13, `text.disabled` for D 14).
+   - I deviated from the suggested fix in one place. WoW Default has the same `text.disabled` as Ka0s Default, so a test using it could not tell the two skins apart. I used Obsidian (#6A6A72) instead. The case also asserts up front that the two values differ, so it cannot pass vacuously.
+   - Mutation check: with `Panel.Refresh()` removed from `onLooksChanged` in modules/Panel.lua, the new case fails ("the locked level box took the new skin's text.disabled") and the suite reads 428 passed, 1 failed. I then restored the file with `git checkout`.
+
+2. PG-02 smoke checks, commit 17a6b05, in /mnt/d/Profile/Users/Tushar/Documents/GIT/PremadeGroupsFilterExtension/docs/smoke-tests.md.
+   - APPLY-14, APPLY-22 and LAYER-1 now read "Result: pending (the skin library follow-ups' PG-01)."
+   - The earlier pass moved into each note, for example "The metal-panel version passed, owner-marked 2026-10-10; expectation changed 2026-10-30 (...), re-check owed." LAYER-1's note keeps its 2026-10-24 date.
+   - In the Pending sign-off paragraph, I also changed "are re-checked" to "now read *pending* until re-checked", because the old wording could read as a re-check already done.
+   - All three checks stay listed under Pending sign-off. No smoke check is marked as passed.
+
+Both files kept their CRLF line endings (edited byte-safe). The branch is still feat/2026-10-30-skin-library-followups and the tree is clean. Nothing was pushed, tagged or merged, and no other repo was touched.
