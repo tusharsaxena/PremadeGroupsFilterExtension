@@ -230,7 +230,10 @@ test("skin: the min/max button is one size and centered on the title band in eve
         assertEqual(p, "TOPRIGHT"); assertTrue(rel == f, def.key .. ": on the panel"); assertEqual(rp, "TOPRIGHT")
         assertEqual(x, -(inset + 4), def.key .. ": x")
         assertEqual(y, -(inset + (h - 20) / 2), def.key .. ": y, centered on the band")
-        assertEqual(f.headerClick.__height, inset + h, def.key .. ": the click band covers the title band")
+        local _, _, _, _, bodyTop = f.body:GetPoint(1)
+        assertEqual(f.headerClick.__height, math.min(inset + h, -bodyTop),
+            def.key .. ": the click band covers the title band")
+        assertTrue(f.headerClick.__height <= -bodyTop, def.key .. ": the click band stops above the body")
         local _, _, _, cx = f.headerClick:GetPoint(2)
         assertEqual(cx, -(inset + 4 + 20), def.key .. ": the click band stops at the button")
     end

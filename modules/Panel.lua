@@ -700,6 +700,12 @@ local function tintChevrons(mm)
     end
 end
 
+-- The header's click band: the title band's depth, capped at the body's top so a click in the
+-- body's top gap never collapses the panel (a band deeper than BODY_TOP would reach into it).
+local function headerClickHeight(inset, h)
+    return math.min(inset + h, -BODY_TOP)
+end
+
 -- The button centered on the band, ARROW_PAD in from its right end, the same box in every skin; the
 -- header's click band covers the band up to it.
 local function placeMinMax(f)
@@ -714,7 +720,7 @@ local function placeMinMax(f)
     hc:ClearAllPoints()
     hc:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
     hc:SetPoint("TOPRIGHT", f, "TOPRIGHT", -(inset + ARROW_PAD + ARROW_BTN), 0)
-    hc:SetHeight(inset + h)
+    hc:SetHeight(headerClickHeight(inset, h))
 end
 
 local function applyLayout(f)
@@ -780,7 +786,7 @@ local function buildHeaderClick(f)
     local b = CreateFrame("Button", nil, f)
     b:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
     b:SetPoint("TOPRIGHT", f, "TOPRIGHT", -(1 + ARROW_PAD + ARROW_BTN), 0)
-    b:SetHeight(1 + HEADER_H)
+    b:SetHeight(headerClickHeight(1, HEADER_H))
     b:RegisterForClicks("LeftButtonUp")
     b:SetScript("OnClick", function()
         if stoodDown() then return end

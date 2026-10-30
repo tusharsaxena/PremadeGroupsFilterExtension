@@ -385,10 +385,11 @@ if not Skin then
     S.ChartStyle = function() return {} end
     S.BarStyle = function() return {} end
     -- LibKa0s v1.82.0 (SkinPaintExtras 7, Skin 9): never nil, which SetFont would refuse. A picked
-    -- flag stands; From skin (or nothing) is the outline every skin draws by default.
-    S.FontFlags = function(v)
+    -- flag stands; From skin (or nothing) answers as the library does while fonts are not skinned:
+    -- stock flags ("") for window text (`where == "window"`), "OUTLINE" for the HUD.
+    S.FontFlags = function(v, where)
         if type(v) == "string" and v ~= S.FROM_SKIN then return v end
-        return "OUTLINE"
+        return where == "window" and "" or "OUTLINE"
     end
     -- The HUD size scale: without a skin there is nothing to scale by, so the stored size stands.
     S.HudFontSize = function(size)

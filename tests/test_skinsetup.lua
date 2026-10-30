@@ -297,6 +297,23 @@ test("skin seam: the degraded facade answers every name the live facade carries"
     assertEqual(degraded.ApplySkinChoice(), false, "nothing to apply without the library")
 end)
 
+-- PG-01 review: the degraded FontFlags takes the library's `where`, as the library does while the
+-- owner ignores fonts (nothing to resolve a Font outline through): stock flags ("") for window text,
+-- "OUTLINE" for the HUD. HudFontSize answers the stored size, or 12 for none.
+test("skin seam: the degraded FontFlags and HudFontSize answer as the library does unskinned", function()
+    -- red under: a FontFlags that ignores `where` (window text drew OUTLINE)
+    local S = T.newAddon{ skip = NO_LIBKA0S }.Skin
+    assertEqual(S.FontFlags("THICKOUTLINE"), "THICKOUTLINE", "a picked flag stands")
+    assertEqual(S.FontFlags("", "window"), "", "a picked empty flag stands")
+    assertEqual(S.FontFlags(S.FROM_SKIN), "OUTLINE", "From skin on the HUD")
+    assertEqual(S.FontFlags(nil), "OUTLINE", "nothing stored on the HUD")
+    assertEqual(S.FontFlags(S.FROM_SKIN, "window"), "", "From skin on window text")
+    assertEqual(S.FontFlags(nil, "window"), "", "nothing stored on window text")
+    assertEqual(S.HudFontSize(24), 24, "the stored size")
+    assertEqual(S.HudFontSize(0), 12, "zero is none")
+    assertEqual(S.HudFontSize(nil), 12, "none")
+end)
+
 test("skin seam: each host-copy skin token is the live library's Ka0s Default value", function()
     -- A copy that drifts from the library goes red here, so a degraded install draws Ka0s Default.
     local degraded = T.newAddon{ skip = NO_LIBKA0S }
