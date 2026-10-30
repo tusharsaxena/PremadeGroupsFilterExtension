@@ -337,6 +337,12 @@ local SKIN_ROWS = {
         label = L["Texture"],
         tooltip = L["The texture this addon's bars use, over the skin's own. Empty keeps the skin's."],
         onChange = function(v) NS.ApplySkinOverride(nil, v) end }),
+    -- The Font outline (LibKa0s-Skin-1.0 minor 9, ruling D-06), drawn by the same tab as its "Font
+    -- outline" dropdown: where the skin outlines this addon's text. The library's three modes.
+    skinRow("outline", { type = "string", widget = "Dropdown", values = NS.SKIN_OUTLINE_OPTIONS,
+        label = L["Font outline"],
+        tooltip = L["Where the skin outlines this addon's text: all of it, its HUD text only, or nowhere."],
+        onChange = function(v) NS.ApplySkinOutline(v) end }),
     -- The first-run skin picker's memory: set when the picker closes, so it shows once per
     -- profile. Drawn by nothing; a reset puts it back to false.
     skinRow("pickerSeen", { type = "bool", widget = "CheckBox",

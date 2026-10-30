@@ -24,6 +24,9 @@ local COMMANDS = {
         function() Sl:PrintHelp() end},
     {"config",   L["Open the Ka0s Premade Groups Filter Extension settings panel"],
         function() runConfig() end},
+    -- The reserved skin verb (LibKa0s v1.82.0's O.SkinVerb, ruling D-16): the picker on demand.
+    {"skin",     L["Choose a skin: open the skin picker"],
+        function() NS.RunSkinVerb() end},
     {"enable",   L["Enable the addon"],
         function() runEnabled(true) end},
     {"disable",  L["Disable the addon"],

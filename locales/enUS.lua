@@ -26,6 +26,7 @@ L["all settings reset to defaults"] = "all settings reset to defaults"
 L["List available commands"] = "List available commands"
 L["Open the Ka0s Premade Groups Filter Extension settings panel"] =
     "Open the Ka0s Premade Groups Filter Extension settings panel"
+L["Choose a skin: open the skin picker"] = "Choose a skin: open the skin picker"
 L["Enable the addon"]  = "Enable the addon"
 L["Disable the addon"] = "Disable the addon"
 L["Print the addon version"] = "Print the addon version"
@@ -242,6 +243,12 @@ L["The font this addon's text uses, over the skin's own. Empty keeps the skin's.
 L["Texture"] = "Texture"
 L["The texture this addon's bars use, over the skin's own. Empty keeps the skin's."] =
     "The texture this addon's bars use, over the skin's own. Empty keeps the skin's."
+L["Font outline"] = "Font outline"
+L["Where the skin outlines this addon's text: all of it, its HUD text only, or nowhere."] =
+    "Where the skin outlines this addon's text: all of it, its HUD text only, or nowhere."
+L["All text"] = "All text"
+L["HUD text only"] = "HUD text only"
+L["Off"] = "Off"
 L["Skin picker seen"] = "Skin picker seen"
 L["Whether the first-run skin picker was closed on this profile."] =
     "Whether the first-run skin picker was closed on this profile."

@@ -120,6 +120,8 @@ Kit.run{
         "test_skin",
         "test_skin_picker",
         "test_skin_eui",
+        "test_skin_outline",
+        "test_skin_verb",
         "test_reset",
         "test_diagnostics",
         "test_vendor_sync",

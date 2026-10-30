@@ -10,6 +10,7 @@ positional triples `{name, desc, fn}`, passed in.
 | *(bare)* | Opens the settings panel | yes |
 | `help` | Prints the command list | yes |
 | `config` | Opens the settings panel | yes |
+| `skin` | Opens the skin picker a new profile shows, whatever `skin.pickerSeen` says (`NS.RunSkinVerb`, the library's `O.SkinVerb`, LibKa0s v1.82.0); in combat the library's gray line on every call | no |
 | `enable` / `disable` | Writes `enabled` through the write seam (the latch follows) | yes |
 | `version` | Prints the version | yes |
 | `list` / `get` / `set` / `reset` / `resetall` | The schema CLI | yes |
@@ -27,4 +28,4 @@ library's unknown-command line and the index, the same enabled and disabled.
 off. Their messages are the `MSG_*` keys in `locales/enUS.lua`, printed by `NS.Apply.Report`.
 
 With LibKa0s absent the host stub routes the verbs itself, the schema CLI names the missing library,
-and `enable` / `disable` / `profile` print the library-absent line without writing.
+and `enable` / `disable` / `profile` / `skin` print the library-absent line without writing.

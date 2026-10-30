@@ -11,7 +11,7 @@ takes the next free number in its theme and a retired number is never reused.
 | ID range | Theme | What it covers |
 |---|---|---|
 | INSTALL-1..3 | Install | Load with and without PGF, reload, first run |
-| SLASH-1..3 | Slash | `/pgfe` verbs, help, the long alias |
+| SLASH-1..4 | Slash | `/pgfe` verbs, help, the long alias, `/pgfe skin` |
 | PANEL-1..4 | Settings panel | Landing page, General page, Defaults, the General page's layout after item 020 |
 | PROFILE-1..2 | Profiles | The Profiles page and `/pgfe profile` |
 | STATE-1..2 | Enable / disable | Stand-down and stand-up |
@@ -23,6 +23,7 @@ takes the next free number in its theme and a retired number is never reused.
 | LOC-1..2 | Non-English client | Realm-name and dungeon-name seams on a deDE/frFR client |
 | SKIN-1..10 | EllesmereUI skin (retired) | The record of the addon's own EllesmereUI bridge, retired by the skinning rollout's PG-06 (2026-10-29); EllesmereUI is now the library's `eui` skin source |
 | SKIN-11..33 | Skins | The skinning rollout (2026-10-29) and its library follow-ups (2026-10-30): Ka0s Default's look, the Skin tab, the first-run picker, the attached panel, the settings pages and the debug console under every skin, fonts, profiles, the copy, stand-down, the `euiSkin` migration, EllesmereUI on and off, diagnostics, the launcher, a degraded install, the panel under the Scope switches |
+| SKIN-34..37 | Skins | The skin fonts and feedback run (2026-10-30, LibKa0s v1.82.0): the Font outline setting, text outlined from the skin by default, the new faces, the attached panel's width parity across skins |
 
 ## Before you start
 
@@ -47,6 +48,13 @@ season. Know your best timed level per dungeon (the Mythic+ tab) before the APPL
 - **SLASH-2. Bare command.** `/pgfe` → opens Settings at this addon's page. Result: pass (owner-marked 2026-10-10)
 - **SLASH-3. Unknown verb.** `/pgfe nonsense` → one line naming the unknown command and the help;
   no Lua error. Result: pass (owner-marked 2026-10-10)
+- **SLASH-4. `/pgfe skin` (PG-01 of the skin fonts and feedback run; ruling D-16).** On a profile
+  that has already closed the first-run picker, `/pgfe skin` → the skin picker opens, the same window
+  a new profile shows at login; pick a skin and Apply → it sticks, the picker closes. `/pgfe help`
+  lists `skin` right after `config`, "Choose a skin: open the skin picker". In combat, `/pgfe skin`
+  twice → a gray "cannot open the skin picker during combat" line each time, no picker. `/pgfe
+  disable`, then `/pgfe skin` → the one disabled line, no picker. Fail: the picker not opening on a
+  seen profile, a second press in combat printing nothing, or a Lua error. Result:
 
 ## Settings panel
 
@@ -460,6 +468,38 @@ Default, and a player who wants the client's look picks **WoW Default** (SKIN-11
   kept; untick → the skin's face back, no reload. Fail: the panel turning stock under *Ignore
   settings panel*, or a reload needed. Result: pass (owner-marked 2026-10-30)
 
+The skin fonts and feedback run's checks (Ka0sAddonsCommonTasks `docs/2026-10-30-SKIN_FONTS_AND_FEEDBACK/`,
+LibKa0s v1.82.0, item PG-01). Ka0s Default now draws Prototype where SKIN-11 says Oxanium, Obsidian
+draws Expressway and WoW Forever Fira Sans Medium (titles SemiBold). The addon has no font setting of
+its own (no size, color or flags row; the panel's strings follow the skin), so the From skin flag has
+one place to show: the panel's text, outlined from the skin's Font outline.
+
+- **SKIN-34. The Font outline setting (PG-01; ruling D-06).** `/pgfe config` → General → **Skin** →
+  *Font and texture* shows **Font outline** under the two reset buttons, set to **All text** on a new
+  profile. Open PGF on Dungeons → every string on the attached panel (title, labels, readout, the
+  copy label) is outlined. Pick **HUD text only** → the panel's strings lose the outline live (the
+  panel is window text; the addon draws no HUD); **Off** → the same; **All text** → back. `/reload`
+  → the stored mode stands. `/pgfe set skin.outline thick` → refused, nothing changes. Switch to
+  another profile → its own mode (All text by default) applies; switch back → the first one's. Tick
+  **Ignore fonts** → the dropdown grays out and the panel takes the game's faces. Fail: the outline
+  not following the setting live, a mode lost on reload or a profile switch, or a Lua error.
+  Result:
+- **SKIN-35. Text outlined from the skin by default (PG-01; ruling D-07).** On a new profile under
+  each of Ka0s Default, Obsidian and WoW Forever, open PGF on Dungeons → the panel's strings are
+  outlined (the skin's *From skin* flag resolves to OUTLINE under All text). The debug console
+  (`/pgfe debug`) text is the monospace face, never outlined. Fail: an unoutlined panel string under
+  All text, an outlined console line, or a Lua error. Result:
+- **SKIN-36. The new faces (PG-01; rulings D-01, D-02).** Ka0s Default → the panel draws Prototype;
+  Obsidian → Expressway; WoW Forever → Fira Sans Medium for the labels, Fira Sans SemiBold for the
+  title. No character on the panel draws as a box or a blank in any of the nine skins (the dungeon
+  short names, the readout, the region names). Fail: a missing glyph, the old Oxanium or Inter face,
+  or a Lua error. Result:
+- **SKIN-37. The attached panel's width parity (PG-01; ruling D-08).** Open PGF on Dungeons and pick
+  each of the nine skins in turn → the panel's labels, the dungeon rows, the readout and the copy
+  label fit their places in every skin as they do in Ka0s Default, outlined: no label truncated, run
+  into its control or wrapped where Ka0s Default's is not. Fail: any string clipped or overlapping
+  in one skin and not in Ka0s Default. Result:
+
 ## Frame layering
 
 The panel takes PGF's dialog strata by reading it, and a PGFE StaticPopup shown while the panel is
@@ -525,3 +565,6 @@ keeps it. On 2026-10-24 the owner reported that every check of the keybindings, 
 frame layering run passed (LAYER-1..3 and PANEL-4, with PANEL-4's re-check of PANEL-2, APPLY-21,
 APPLY-24, APPLY-26 and SKIN-10), recorded on each `Result:` line as `pass (owner-marked 2026-10-24)`.
 A check added or rewritten after that date is listed here until its `Result:` line records a pass.
+
+Owed from the skin fonts and feedback run (`docs/2026-10-30-SKIN_FONTS_AND_FEEDBACK/`, LibKa0s
+v1.82.0): SLASH-4 and SKIN-34 to SKIN-37.

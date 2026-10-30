@@ -377,7 +377,7 @@ Total.
 - skin seam: the owner is registered at file load, before the profile store exists
 - skin seam: the read answers Ka0s Default before the profile store exists
 - skin seam: Core's window edge is handed the owner
-- skin seam: the seven skin keys default to Ka0s Default, the picker unseen
+- skin seam: the eight skin keys default to Ka0s Default, the picker unseen
 - skin seam: every skin key is a skip-render schema row on the Skin tab
 - skin seam: the skin row's values are every registered skin, in the library's order
 - skin seam: /pgfe set refuses a skin that is not registered and applies one that is
@@ -442,6 +442,27 @@ Total.
 - eui: the collapsed panel folds to EllesmereUI's 25px shell bar
 - eui diagnostics: the skin section names the key the library draws by, in every state
 - eui diagnostics: the skin section reports the choice and the library's EllesmereUI gate
+
+### test_skin_outline.lua (9)
+
+- outline: a fresh profile stores All text, the library's default
+- outline: the schema row offers the library's three modes, in its order
+- outline: the write seam stores media.outline, and leaves it alone when it is nil
+- outline: another addon's copy reaches the store through WriteChoice
+- outline: the row's write applies the mode live
+- outline: /pgfe set refuses a mode the library does not know
+- outline: the stored mode is applied at load
+- outline: a profile switch applies the incoming profile's mode, and back
+- outline: without the skin engine the apply is a quiet no-op
+
+### test_skin_verb.lua (6)
+
+- skin verb: the row sits right after config, with the library's help words
+- skin verb: /pgfe skin shows the picker on a profile that has closed it
+- skin verb: NS.RunSkinVerb hands O.SkinVerb this addon's first-run spec
+- skin verb: in combat every call prints the library's gray line and shows nothing
+- skin verb: refused while the addon is disabled, and no picker shows
+- skin verb: without LibKa0s the verb prints the library-absent line
 
 ### test_reset.lua (5)
 
@@ -554,6 +575,8 @@ Total.
 | test_skin.lua | 13 |
 | test_skin_picker.lua | 16 |
 | test_skin_eui.lua | 12 |
+| test_skin_outline.lua | 9 |
+| test_skin_verb.lua | 6 |
 | test_reset.lua | 5 |
 | test_diagnostics.lua | 6 |
 | test_vendor_sync.lua | 3 |
@@ -563,4 +586,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **429** |
+| **Total** | **444** |

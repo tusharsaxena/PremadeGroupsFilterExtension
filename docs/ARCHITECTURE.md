@@ -31,7 +31,7 @@ child), its third-party skinning and this addon's Third-Party Addons entry are o
 ([`superpowers/plans/2026-10-09-eui-skin.md`](superpowers/plans/2026-10-09-eui-skin.md)) was
 retired by the skinning rollout (2026-10-29).
 
-Built to the Ka0s WoW Addon Standard: Ace3, vendored `LibKa0s` v1.81.0 (one setup file per adopted
+Built to the Ka0s WoW Addon Standard: Ace3, vendored `LibKa0s` v1.82.0 (one setup file per adopted
 major), schema-driven master settings, the launcher, one stand-down latch, headless tests and
 luacheck. Retail only (`## Interface: 120105`). The design is
 [`superpowers/specs/2026-10-09-m-plus-v0.1-design.md`](superpowers/specs/2026-10-09-m-plus-v0.1-design.md)
@@ -115,7 +115,7 @@ Three AceDB scopes on `PremadeGroupsFilterExtensionDB`; full shape and defaults 
   colors* (the twelve colors only). No alpha. `RegionTags.Hex`
   turns the stored color into the tag's hex, cached per stored table (every write stores a new one).
 - **`skin.*`** (profile, `source`, `skin`, `ignorePanel`, `ignoreFonts`, `font`, `texture`,
-  `pickerSeen`): the skin this addon wears, skip-render rows the library's Skin tab draws (the
+  `outline`, `pickerSeen`): the skin this addon wears, skip-render rows the library's Skin tab draws (the
   General page's last tab), written through the same seam (`core/SkinSetup.lua`). The old `euiSkin`
   switch (the retired EllesmereUI bridge) was carried to `skin.source = "eui"` by schema step 2
   (`core/Database.lua`) and deleted.
@@ -166,6 +166,7 @@ order that CallbackHandler's fan-out does not promise. There are three reaction 
 |---|---|
 | `help` | Prints the command list |
 | `config` | Opens the settings panel |
+| `skin` | Opens the skin picker (`NS.RunSkinVerb`, LibKa0s v1.82.0's `O.SkinVerb`); refused while disabled |
 | `enable` / `disable` | Writes `enabled` through the write seam; the latch follows |
 | `version` | Prints the version |
 | `list` / `get` / `set` / `reset` / `resetall` | The schema CLI |
