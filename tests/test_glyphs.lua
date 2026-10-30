@@ -21,12 +21,14 @@ test("glyphs: the region labels a tag or the panel paints are glyph-safe", funct
     -- red under: a label (RegionTags' row tag, the panel's region checkboxes) carrying a character a
     -- shipped face cannot draw, which the data mark over the realm lists would not excuse.
     local NS = T.newAddon()
-    local n = 0
-    for key, label in pairs(NS.Regions.LABELS) do
-        n = n + 1
+    for _, key in ipairs(NS.Regions.ALL_KEYS) do
+        local label = NS.Regions.LABELS[key]
+        assertTrue(type(label) == "string", "a label for the " .. key .. " region key")
         T.assertGlyphSafe(label, "the " .. key .. " region label")
     end
-    assertTrue(n == #NS.Regions.ALL_KEYS, "a label per region key")
+    local n = 0
+    for _ in pairs(NS.Regions.LABELS) do n = n + 1 end
+    assertTrue(n == #NS.Regions.ALL_KEYS, "no label without a region key")
 end)
 
 test("glyphs: the realm lists' data mark is the only exemption the guard needs", function()
@@ -39,7 +41,10 @@ test("glyphs: the realm lists' data mark is the only exemption the guard needs",
     assertTrue(#hits > 0, "the realm lists carry characters outside the safe set")
     local first = text:find("NS.RealmLists = {", 1, true)
     local startLine = select(2, text:sub(1, first):gsub("\n", "")) + 1
+    local close = assert(text:find("\n}\r?\n%-%- glyph: data end", first), "the table closes before the end mark")
+    local endLine = select(2, text:sub(1, close):gsub("\n", "")) + 1
     for _, h in ipairs(hits) do
-        assertTrue(h.line > startLine, "hit at line " .. h.line .. " lies inside NS.RealmLists")
+        assertTrue(h.line > startLine and h.line < endLine,
+            "hit at line " .. h.line .. " lies inside NS.RealmLists")
     end
 end)
