@@ -26,7 +26,7 @@ Mythic+ conveniences on top of Premade Groups Filter (PGF), applied through PGF'
   each applicant's in front of their name: the display half of PremadeRegions, which this addon
   replaces.
 - **Skins** — the panel and the settings follow the Ka0s skin chosen on the Skin tab (LibKa0s);
-  Ka0s Default keeps PGF's metal look. With EllesmereUI installed, EllesmereUI is a skin source
+  WoW Default is the client's look. With EllesmereUI installed, EllesmereUI is a skin source
   (LibKa0s's provider paints the panel in its theme once its conditions hold), and the Filters tab
   points at PGF's own EllesmereUI skin, which matches PGF's window.
 - **Apply** writes PGF's dungeon checkboxes and a marked block in PGF's Advanced Filter Expression,

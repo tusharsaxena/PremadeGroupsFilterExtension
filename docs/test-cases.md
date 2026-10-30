@@ -263,7 +263,7 @@ Total.
 - apply: a Clear refusal and a Clear success each write one [Clear] line
 - apply: a filtersActive toggle writes one [Apply] toggled line
 
-### test_panel.lua (84)
+### test_panel.lua (80)
 
 - panel: the module publishes its namespace table
 - panel: anchored under PGF dialog, both edges
@@ -311,13 +311,9 @@ Total.
 - panel: each number box is anchored to the right of its own label
 - panel: the expanded height fits every row
 - panel: the min/max arrow follows the stored collapsed state
-- panel: collapsed shows only the header strip, drawn by two clipped border copies
-- panel: expanded keeps the template's own border; the header copies hide
-- panel: a saved collapsed state shows the header strip on the first Refresh
-- panel: without NineSliceUtil the collapse still folds, with no header copies
-- panel: the header copies sit at the panel's own level, under the arrow
+- panel: collapsed shows only the skin's title band; no metal header copies are built
 - panel: Apply leaves focus alone; Enter in the copy box focuses the search box
-- panel: the arrow art is swapped between the min/max buttons
+- panel: the min/max arrows are the skin's paging arrows, expanded up and collapsed down
 - panel: the regions and playstyle dropdowns are 225 wide, right-aligned in one column
 - panel: each menu opens with Any and a divider; Any is ticked with nothing ticked and clears
 - panel: ticking every option stores Any and the button reads Any
@@ -355,7 +351,7 @@ Total.
 - layers: one table names the strata and every level offset
 - layers: the panel takes PGF's dialog strata by reading it, never a literal
 - layers: a host that cannot answer its strata leaves the panel inheriting it
-- layers: the panel's level band (L, header art L, chrome L+1, widgets L+2)
+- layers: the panel's level band (L, chrome L+1, widgets L+2)
 - layers: a popup shown over the visible panel is lifted, and put back to what it was
 - layers: with the panel not visible the popup keeps the client's strata
 - layers: every PGFE popup spec restores on hide
@@ -399,17 +395,17 @@ Total.
 
 ### test_skin.lua (12)
 
-- skin: under Ka0s Default the panel is the metal instance, and no primitive ever touched it
-- skin: the colors the metal panel writes are Ka0s Default's exact pixels
+- skin: under Ka0s Default the one panel is painted through the facade, every widget and label
+- skin: the colors the panel writes under Ka0s Default are its exact pixels
 - skin: the panel's tooltip lines are the skin's tooltip colors, Ka0s Default's white over gold
-- skin: another skin shows the twin, painted through the facade; the metal instance hides
-- skin: back to Ka0s Default shows the untouched metal instance again
-- skin: a swap carries the filter state, and a hidden panel stays hidden
-- skin: a pick before the panel exists builds only the instance the skin wants
-- skin: the twin's geometry: 24px check buttons on the rows' centers, flush under the dialog
-- skin: collapsed, the twin folds to the skin's title band
-- skin: the twin writes the skin's colors: locked boxes, the dimmed label, the readout
-- skin: a pick while stood down builds nothing; the stand-up shows the skin's instance
+- skin: a switch repaints the one panel live, and back to Ka0s Default the same frame again
+- skin: a skin pick never shows a hidden panel, and the panel reads the stored filters
+- skin: a pick before the panel exists builds the one panel, painted
+- skin: the panel's geometry: 24px check buttons on the rows' centers, flush under the dialog
+- skin: collapsed, the panel folds to the skin's title band, Ka0s Default's included
+- skin: the panel writes the skin's colors: locked boxes, the dimmed label, the readout
+- skin: with Ignore settings panel on, the panel's labels and title still wear the skin
+- skin: a pick while stood down builds nothing; the stand-up shows the same panel in the new skin
 - skin: modules/Panel.lua types no color: no literal SetTextColor, tooltip color or markup
 
 ### test_skin_picker.lua (16)
@@ -439,11 +435,11 @@ Total.
 - eui migration: the store is applied as migrated, and the step runs once
 - eui: the folder is registered with EllesmereUI once, by the library
 - eui: no addon file reads EllesmereUIDB or registers with EllesmereUI itself
-- eui: once EllesmereUI paints the owner, the skinned twin shows and goes to its facade
-- eui: before EllesmereUI paints, the eui source wears the metal instance (Ka0s Default)
-- eui: which instance shows is read from public API only, never the library's __DrawsKey
-- eui: the public answer matches the key the library draws by, in every state
-- eui: the twin folds to EllesmereUI's 25px shell bar
+- eui: once EllesmereUI paints the owner, the panel goes to its facade
+- eui: before EllesmereUI paints, the eui source wears Ka0s Default through the library
+- eui: no addon file reaches the library-internal __DrawsKey
+- eui: the collapsed panel folds to EllesmereUI's 25px shell bar
+- eui diagnostics: the skin section names the key the library draws by, in every state
 - eui diagnostics: the skin section reports the choice and the library's EllesmereUI gate
 
 ### test_reset.lua (5)
@@ -550,7 +546,7 @@ Total.
 | test_regiontags.lua | 13 |
 | test_bridge.lua | 18 |
 | test_apply.lua | 33 |
-| test_panel.lua | 84 |
+| test_panel.lua | 80 |
 | test_layers.lua | 8 |
 | test_settings_layout.lua | 11 |
 | test_skinsetup.lua | 19 |
@@ -566,4 +562,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **432** |
+| **Total** | **428** |

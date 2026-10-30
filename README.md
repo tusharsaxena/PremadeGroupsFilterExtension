@@ -4,7 +4,7 @@
 ![CurseForge Version](https://img.shields.io/curseforge/v/1736636)
 ![License](https://img.shields.io/badge/License-MIT-orange)
 ![Standard](https://img.shields.io/badge/Ka0s-WoW_Addon_Standard-yellow)
-![Tests](https://img.shields.io/badge/Tests-432%2F432_passing-green)
+![Tests](https://img.shields.io/badge/Tests-428%2F428_passing-green)
 
 A small companion to [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter)
 for Mythic+. You type the key level you want to push (or let Smart pick it), and it ticks every
@@ -53,9 +53,9 @@ Filter choices are saved per character, and presets load on any character. **Use
 filters** switches the filtering off without turning the addon off.
 
 The panel and the debug console wear one of nine Ka0s skins, picked when you first log in or later on
-Settings → General → **Skin**. Ka0s Default, where every profile starts, keeps the panel in Premade
-Groups Filter's own metal look; the settings pages stay in the game's look unless you untick
-**Ignore settings panel** there. If you use EllesmereUI, pick it as the skin source on the Skin tab and the panel takes your EllesmereUI theme once EllesmereUI's
+Settings → General → **Skin**. Every profile starts on Ka0s Default; pick **WoW Default** for the
+game's own look. The settings pages stay in the game's look unless you untick **Ignore settings
+panel** there. If you use EllesmereUI, pick it as the skin source on the Skin tab and the panel takes your EllesmereUI theme once EllesmereUI's
 third-party skinning is on for this addon (the tab shows what's missing); Premade Groups Filter's own
 EllesmereUI [skin](https://www.curseforge.com/wow/addons/premade-groups-filter-ellesmereui) makes
 PGF's window match. `/pgfe` opens the settings and `/pgfe help` lists the commands.

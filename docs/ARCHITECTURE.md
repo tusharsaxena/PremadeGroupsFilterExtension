@@ -18,10 +18,13 @@ then clicks PGF's search button inside the hardware event.
 
 The attached panel, the debug console and (with *Ignore settings panel* off) the settings pages wear
 the LibKa0s-Skin-1.0 skin the player picks per profile on the General page's Skin tab or in the
-first-run picker (`core/SkinSetup.lua`). Under Ka0s Default the panel keeps PGF's metal look (a
-ratified deviation, [Documented deviations](#documented-deviations)); under the other eight skins it
-shows a skinned twin. Optionally (`## OptionalDeps: EllesmereUI`), EllesmereUI is the skin source:
-the library's `eui` provider paints the twin in the user's EllesmereUI theme, the way
+first-run picker (`core/SkinSetup.lua`). The panel is one frame the skin paints under all nine
+skins, Ka0s Default included: LibKa0s v1.81.0 retired the stock look under Ka0s Default, and with it
+the panel's never-painted metal instance (the skin library follow-ups' PG-01; the deviation row in
+[Documented deviations](#documented-deviations) records it). A player who wants the client's look
+picks WoW Default. The panel is a window, not the settings panel, so *Ignore settings panel* leaves
+it skinned. Optionally (`## OptionalDeps: EllesmereUI`), EllesmereUI is the skin source:
+the library's `eui` provider paints the panel in the user's EllesmereUI theme, the way
 `PremadeGroupsFilter_EllesmereUI` paints PGF's own dialog, once EllesmereUI (with its Blizzard Skin
 child), its third-party skinning and this addon's Third-Party Addons entry are on: see
 [EllesmereUI seams](#ellesmereui-seams). The addon's own EllesmereUI bridge
@@ -149,9 +152,9 @@ order that CallbackHandler's fan-out does not promise. There are three reaction 
   while stood down; otherwise it runs `Apply.Run` / `Apply.Clear` when the dungeon panel is the
   active one, and then `Panel.Refresh`, so the PGF block is written or cleared before the panel
   readout refreshes.
-- **`NS.Skin.OnLooksChanged`** (`modules/Panel.lua`, registered with the first panel instance): the
-  library fires it after a skin change repainted the recorded frames, and the panel swaps between its
-  metal instance and its skinned twin.
+- **`NS.Skin.OnLooksChanged`** (`modules/Panel.lua`, registered when the panel is built): the
+  library fires it after a skin change repainted the recorded frames, and the panel refreshes, which
+  re-writes the colors it reads from tokens and refolds a collapsed panel to the new title band.
 
 ## Slash Commands
 
@@ -236,7 +239,7 @@ hook went in is kept on the module that installed it (`EnvInject.hooked`, `Panel
   `/pgfe apply`.
 - Apply refuses under `InCombatLockdown()`. The settings panel's combat lock is the library's.
 - Under the `eui` source the library's provider hands this addon's own frames to EllesmereUI's
-  facade (the panel's skinned twin, the library's windows it draws for the owner); it never hands
+  facade (the attached panel, the library's windows it draws for the owner); it never hands
   over an AceGUI widget or a shared frame, and it never touches PGF's dialog, which is
   `PremadeGroupsFilter_EllesmereUI`'s job. EllesmereUI's callback cannot be unregistered; arriving
   while the addon is stood down it repaints only frames already recorded (no panel is built while
@@ -291,15 +294,14 @@ library's:
   library's `SkinEUI.lua` is the one file that reads EllesmereUI's saved variables
   (library-stack-§6); this addon never does (anti-pattern #107, pinned by
   `tests/test_skin_eui.lua`).
-- **The paint.** Once EllesmereUI paints the owner (`NS.SkinEUIPainted()`), `NS.SkinDrawsDefault()`
-  answers false and the panel shows its skinned twin, whose recorded primitives go to EllesmereUI's
-  facade; the metal instance is never handed to it. The twin keeps the host geometry: 24px check
-  buttons, flush under the dialog, and a collapsed height of EllesmereUI's 25px shell bar
-  (`EUI_SHELL_HEADER_H`, `modules/Panel.lua`). Before EllesmereUI paints, the `eui` source draws the
-  stored skin (the library's live fallback): the metal instance on Ka0s Default, the twin on any other.
-  The answer is built from public API (`GetChoice`, `GetEUIStatus`, `GetSkin`), never the library's
-  internal draws-key. Leaving `eui` after a paint asks for a reload (the library's popup from the
-  Skin tab; one chat line from a profile event).
+- **The paint.** Once EllesmereUI paints the owner (`NS.SkinEUIPainted()`), the panel's recorded
+  primitives go to EllesmereUI's facade. The panel keeps the host geometry: 24px check buttons, flush
+  under the dialog, and a collapsed height of EllesmereUI's 25px shell bar (`EUI_SHELL_HEADER_H`,
+  `modules/Panel.lua`). Before EllesmereUI paints, the `eui` source draws the stored skin (the
+  library's live fallback), Ka0s Default unless the player chose another. The diagnostics' skin
+  section names the key the library draws the owner by from its public `Skin:DrawsKey(owner)`
+  (LibKa0s v1.81.0), never the internal `__DrawsKey`. Leaving `eui` after a paint asks for a reload
+  (the library's popup from the Skin tab; one chat line from a profile event).
 - **The migration.** Schema step 2 (`core/Database.lua`) carried `profile.euiSkin` to
   `skin.source = "eui"` on every profile, where EllesmereUI is present and the old switch was not an
   explicit `false` (DECISIONS D3).
@@ -323,8 +325,8 @@ first:
   (HIGH), StaticPopups (DIALOG), the debug console (DIALOG, toplevel) and its copy window, dropdown
   menus (FULLSCREEN_DIALOG), tooltips (TOOLTIP).
 - **The attached panel, a host-matched surface:** PGF's dialog strata, read from the dialog
-  (FULLSCREEN today), at the dialog's level + `LEVEL.ABOVE_HOST` = L. Inside it: header art at L
-  (`LEVEL.HEADER_ART`), body, min/max and header click at L+1, widgets at L+2.
+  (FULLSCREEN today), at the dialog's level + `LEVEL.ABOVE_HOST` = L. Inside it: body, min/max and
+  header click at L+1, widgets at L+2.
 - **PGFE popups while the panel is visible:** every PGFE `StaticPopup_Show` goes through
   `NS.ShowPopup` (`core/Popup.lua`), which lifts the shared popup frame to `STRATA.POPUP` while the
   panel is visible, and each PGFE popup spec's `OnHide` (`NS.RestorePopupStrata`) puts back the strata
@@ -411,9 +413,10 @@ is kept line for line, blank edge lines included. No clauses means no block. Ove
   library's popup from the Skin tab, one chat line from a profile switch, copy or reset onto a
   Ka0s-source profile), and a condition turned off in EllesmereUI's options leaves the panel painted
   until a reload, while the Skin tab already shows it off.
-- The skinned twin's look under each skin and under EllesmereUI (its folded title band, the shell's
+- The panel's look under each skin and under EllesmereUI (its folded title band, the shell's
   layering over the body, the dropdowns) is checked in game only
-  ([`smoke-tests.md`](smoke-tests.md), SKIN-11 to SKIN-32).
+  ([`smoke-tests.md`](smoke-tests.md), SKIN-11 to SKIN-33). Without the library (a degraded install)
+  the panel keeps PGF's template art, and folded, the template's border is not cut to the strip.
 - Best timed levels read 0 until the server answers the season-data request
   (`C_MythicPlus.RequestMapInfo`, sent once per episode by `Season.GetDungeons`). The client cannot
   tell a dungeon never timed from one whose best has not loaded yet: both answer no in-time level.
