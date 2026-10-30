@@ -1,13 +1,14 @@
 -- tests/test_skin.lua — the attached panel through the skin (modules/Panel.lua, skinning-§1, §2;
--- PG-02 of the skinning rollout).
+-- PG-02 of the skinning rollout, PG-01 of the library follow-ups).
 --
--- The panel is built twice from one builder: a metal instance that NO primitive ever touches, shown
--- while this owner draws Ka0s Default, so Ka0s Default stays today's PGF-matching chrome by
--- construction; and a skinned twin, built the first time another skin is drawn, painted once through
--- NS.Skin and recorded, so the library replays every later switch onto it. What this suite pins is
--- the host half: which instance shows, that the metal one is never recorded, that the twin's every
--- widget is, that a swap carries the filter state and the panel's shown state across, and that the
--- colors the panel writes itself are the skin's tokens, Ka0s Default's exact pixels on the metal one.
+-- The panel is ONE frame, painted once through NS.Skin at build and recorded, so the library replays
+-- every later switch onto it, Ka0s Default included: LibKa0s v1.81.0 retired the stock look under
+-- Ka0s Default (owner ruling R-2, decision D-05), and with it the never-painted metal instance this
+-- suite used to pin. A player who wants the client's look picks WoW Default. What this suite pins is
+-- the host half: that every widget and label is recorded, that a switch repaints the same frame live,
+-- that the panel keeps its geometry and its shown state across one, that it is a window and keeps the
+-- skin under Ignore settings panel (D-01), and that the colors the panel writes itself are the skin's
+-- tokens, Ka0s Default's exact pixels.
 --
 -- "Recorded" is LibKa0s-Skin-1.0's own ledger, `lib.painted[target]` ({ owner, calls = { [prim] =
 -- args } }): a frame some primitive painted for an owner. Every case builds its own instance.
@@ -49,6 +50,11 @@ local function texts(f)
     return out
 end
 
+--- The body's label that reads `text`.
+local function labelFor(f, text)
+    for _, fs in ipairs(texts(f)) do if fs:GetText() == text then return fs end end
+end
+
 local function recorded(Skin, target)
     local rec = Skin.painted[target]
     return rec ~= nil and rec.owner == OWNER
@@ -56,23 +62,29 @@ end
 
 local function close(a, b) return math.abs((a or 1) - (b or 1)) < 1e-6 end
 
--- ── Ka0s Default: the metal instance, untouched ─────────────────────────────────────────────────
+-- ── Ka0s Default: the Ka0s look ─────────────────────────────────────────────────────────────────
 
-test("skin: under Ka0s Default the panel is the metal instance, and no primitive ever touched it", function()
-    -- red under: painting the one panel through NS.Skin (since SkinPaint minor 6 every primitive
-    -- fades the template's art under Ka0s Default too), or showing the twin on Ka0s Default.
+test("skin: under Ka0s Default the one panel is painted through the facade, every widget and label", function()
+    -- red under: the retired metal instance (never handed to a primitive under Ka0s Default), or a
+    -- widget or label the paint skipped.
     local NS, _, Skin = setup()
     local f = NS.Panel.frame
     assertTrue(f ~= nil and f:IsShown(), "the panel did not show")
-    assertTrue(rawequal(f, NS.Panel.stockFrame), "Ka0s Default shows the metal instance")
-    assertEqual(f.__name, FRAME_NAME)
-    assertEqual(NS.Panel.skinFrame, nil, "no twin is built while Ka0s Default is drawn")
-    for _, w in ipairs(widgets(f)) do assertFalse(recorded(Skin, w), "a metal widget was painted") end
-    for _, fs in ipairs(texts(f)) do assertFalse(recorded(Skin, fs), "a metal label was painted") end
+    assertEqual(f.__name, FRAME_NAME, "the one frame keeps the global name LAYER-1's /dump reads")
+    assertEqual(rawget(NS.Panel, "stockFrame"), nil, "no metal instance")
+    assertEqual(rawget(NS.Panel, "skinFrame"), nil, "no twin")
+    for _, w in ipairs(widgets(f)) do assertTrue(recorded(Skin, w), "a widget was not painted") end
+    for _, fs in ipairs(texts(f)) do assertTrue(recorded(Skin, fs), "a label was not painted") end
     assertTrue(#texts(f) >= 10, "the label walk found the panel's font strings")
+    assertTrue(Skin.painted[f].calls.Shell ~= nil, "the window is the skin's Shell")
+    assertTrue(Skin.painted[f.MaximizeMinimizeFrame.MinimizeButton].calls.PageButton ~= nil)
+    assertTrue(Skin.painted[f.activeCheck].calls.Checkbox ~= nil)
+    assertTrue(Skin.painted[f.levelBox].calls.EditBox ~= nil)
+    assertTrue(Skin.painted[f.presetDropdown].calls.Dropdown ~= nil)
+    assertTrue(Skin.painted[f.applyButton].calls.Button ~= nil)
 end)
 
-test("skin: the colors the metal panel writes are Ka0s Default's exact pixels", function()
+test("skin: the colors the panel writes under Ka0s Default are its exact pixels", function()
     -- red under: a token whose Ka0s Default value is not today's (white labels and boxes, 0.5 gray
     -- dimmed, ffd100 / 808080 readout markup, white tooltip names over a gold body).
     local NS, m = setup()
@@ -112,105 +124,82 @@ test("skin: the panel's tooltip lines are the skin's tooltip colors, Ka0s Defaul
     assertEqual(body[2], 1); assertTrue(close(body[3], 0.82)); assertEqual(body[4], 0)
 end)
 
--- ── another skin: the twin ──────────────────────────────────────────────────────────────────────
+-- ── a switch: the same frame, repainted live ────────────────────────────────────────────────────
 
-test("skin: another skin shows the twin, painted through the facade; the metal instance hides", function()
-    -- red under: no twin (the metal panel left under Obsidian), a twin widget the paint skipped, or
-    -- the metal instance painted on the way.
+test("skin: a switch repaints the one panel live, and back to Ka0s Default the same frame again", function()
+    -- red under: a second frame built for another skin (the retired twin), or a frame hidden by a pick.
     local NS, _, Skin = setup()
-    local stock = NS.Panel.frame
-    NS.ApplySkinChoice("ka0s", "obsidian")
     local f = NS.Panel.frame
-    assertTrue(f ~= nil and not rawequal(f, stock), "the panel did not swap to the twin")
-    assertTrue(rawequal(f, NS.Panel.skinFrame))
-    assertTrue(f:IsShown(), "the twin shows where the metal panel showed")
-    assertFalse(stock:IsShown(), "the metal instance hides")
-    assertTrue(f.__name == nil, "the twin takes no global name")
-    for _, w in ipairs(widgets(f)) do assertTrue(recorded(Skin, w), "a twin widget was not painted") end
-    for _, fs in ipairs(texts(f)) do assertTrue(recorded(Skin, fs), "a twin label was not painted") end
-    for _, w in ipairs(widgets(stock)) do assertFalse(recorded(Skin, w), "a metal widget was painted") end
-    assertTrue(Skin.painted[f].calls.Shell ~= nil, "the window is the skin's Shell")
-    assertTrue(Skin.painted[f.MaximizeMinimizeFrame.MinimizeButton].calls.PageButton ~= nil)
-    assertTrue(Skin.painted[f.activeCheck].calls.Checkbox ~= nil)
-    assertTrue(Skin.painted[f.levelBox].calls.EditBox ~= nil)
-    assertTrue(Skin.painted[f.presetDropdown].calls.Dropdown ~= nil)
-    assertTrue(Skin.painted[f.applyButton].calls.Button ~= nil)
-end)
-
-test("skin: back to Ka0s Default shows the untouched metal instance again", function()
-    -- red under: a single painted panel (a live switch back would replay Ka0s Default's flat tokens
-    -- onto it), or a swap that leaves the twin on show.
-    local NS, _, Skin = setup()
-    local stock = NS.Panel.frame
     NS.ApplySkinChoice("ka0s", "obsidian")
-    local twin = NS.Panel.frame
+    assertTrue(rawequal(NS.Panel.frame, f), "a pick built a second frame")
+    assertTrue(f:IsShown(), "the panel still shows")
+    local hr, hg, hb = Skin:Color(OWNER, "text.body")
+    local label = labelFor(f, NS.L.KEY_TARGETING)
+    assertTrue(label ~= nil and close(label.__textColor[1], hr) and close(label.__textColor[2], hg)
+        and close(label.__textColor[3], hb), "the library replayed Obsidian's body text onto the labels")
     NS.ApplySkinChoice("ka0s", "ka0s")
-    assertTrue(rawequal(NS.Panel.frame, stock), "Ka0s Default did not bring the metal instance back")
-    assertTrue(stock:IsShown()); assertFalse(twin:IsShown())
-    for _, w in ipairs(widgets(stock)) do assertFalse(recorded(Skin, w), "a metal widget was painted") end
-    NS.ApplySkinChoice("ka0s", "ember")
-    assertTrue(rawequal(NS.Panel.frame, twin), "the twin is built once and reused")
+    assertTrue(rawequal(NS.Panel.frame, f)); assertTrue(f:IsShown())
+    for _, w in ipairs(widgets(f)) do assertTrue(recorded(Skin, w), "a widget left the ledger") end
 end)
 
-test("skin: a swap carries the filter state, and a hidden panel stays hidden", function()
-    -- red under: a swap that shows the twin without a Refresh (its widgets read the build-time
-    -- filters), or one that shows a panel PGF's dialog does not show.
+test("skin: a skin pick never shows a hidden panel, and the panel reads the stored filters", function()
     local NS, m = setup()
-    local stock = NS.Panel.frame
+    local f = NS.Panel.frame
     NS.Filters.Set("keyTargeting", true)
     NS.Filters.Set("keyLevel", 12)
     NS.Panel.Refresh()
     m.pgf.dialog.shown = false
     NS.Panel.UpdateVisibility()
-    assertFalse(stock:IsShown())
+    assertFalse(f:IsShown())
     NS.ApplySkinChoice("ka0s", "azeroth")
-    local f = NS.Panel.frame
     assertFalse(f:IsShown(), "a skin pick never shows a hidden panel")
-    assertTrue(f.checks.keyTargeting:GetChecked(), "the twin reads the stored filters")
+    assertTrue(f.checks.keyTargeting:GetChecked())
     assertEqual(f.levelBox:GetText(), "12")
     m.pgf.dialog.shown = true
     NS.Panel.UpdateVisibility()
-    assertTrue(f:IsShown()); assertFalse(stock:IsShown())
+    assertTrue(f:IsShown())
 end)
 
-test("skin: a pick before the panel exists builds only the instance the skin wants", function()
-    local NS, m = T.enableAddon{}
+test("skin: a pick before the panel exists builds the one panel, painted", function()
+    local NS, _, m = T.enableAddon{}
+    local Skin = m.LibStub("LibKa0s-Skin-1.0")
     NS.ApplySkinChoice("ka0s", "glass")
     m.pgf.dialog.shown = true
     NS.Panel.UpdateVisibility()
-    assertTrue(NS.Panel.frame ~= nil and rawequal(NS.Panel.frame, NS.Panel.skinFrame))
-    assertEqual(NS.Panel.stockFrame, nil, "the metal instance is built only when Ka0s Default is drawn")
+    local f = NS.Panel.frame
+    assertTrue(f ~= nil and f:IsShown())
+    assertEqual(f.__name, FRAME_NAME)
+    assertTrue(recorded(Skin, f))
 end)
 
-test("skin: the twin's geometry: 24px check buttons on the rows' centers, flush under the dialog", function()
+test("skin: the panel's geometry: 24px check buttons on the rows' centers, flush under the dialog", function()
     -- The skin's Checkbox draws its box 4 inside the frame, so 24 gives a 16px box (PGF's EllesmereUI
-    -- skin's); a flat window sits on its rect, so the metal border's 3px raise goes.
-    -- red under: the twin keeping the template's 32px boxes or the metal panel's raise.
+    -- skin's); a flat window sits on its rect, so the metal border's 3px raise is gone.
+    -- red under: the template's 32px boxes, the metal panel's raise, or its header copies.
     local NS = setup()
-    NS.ApplySkinChoice("ka0s", "obsidian")
     local f = NS.Panel.frame
     local cb = f.checks.keyTargeting
     assertEqual(cb:GetWidth(), 24); assertEqual(cb:GetHeight(), 24)
-    local stock = NS.Panel.stockFrame
-    local _, _, _, _, ys = stock.checks.keyTargeting:GetPoint(1)
-    local _, _, _, _, yt = cb:GetPoint(1)
-    assertEqual(yt, ys - 4, "the smaller box moves down by half the difference")
-    assertEqual(cb.__hitRect[2], stock.checks.keyTargeting.__hitRect[2] - 8, "the hit rect still reaches the label")
+    local _, _, _, _, yRow = cb:GetPoint(1)
+    local _, _, _, _, yLabel = labelFor(f, NS.L.KEY_TARGETING):GetPoint(1)
+    assertEqual(yRow, yLabel, "the 24px box is centered on its 26px row as the template's 32px was")
+    assertEqual(cb.__hitRect[2], -(35 - 24 + #NS.L.KEY_TARGETING * 6), "the hit rect still reaches the label")
     local _, _, _, _, y1 = f:GetPoint(1)
     assertEqual(y1, 0)
-    assertEqual(f.headerArt, nil, "the twin carries no metal header copies")
+    assertEqual(f.headerArt, nil, "no metal header copies")
 end)
 
-test("skin: collapsed, the twin folds to the skin's title band", function()
+test("skin: collapsed, the panel folds to the skin's title band, Ka0s Default's included", function()
     local NS, _, Skin = setup()
-    NS.ApplySkinChoice("ka0s", "obsidian")
     local f = NS.Panel.frame
     NS.addon.db.profile.panelCollapsed = true
     NS.Panel.Refresh()
     assertEqual(f.__height, Skin:Token(OWNER, "title.height"))
+    NS.ApplySkinChoice("ka0s", "obsidian")
+    assertEqual(f.__height, Skin:Token(OWNER, "title.height"))
 end)
 
-test("skin: the twin writes the skin's colors: locked boxes, the dimmed label, the readout", function()
+test("skin: the panel writes the skin's colors: locked boxes, the dimmed label, the readout", function()
     -- red under: a color written once at build (a later switch would leave the last skin's), or a
     -- typed value.
     local NS, m, Skin = setup()
@@ -235,20 +224,44 @@ test("skin: the twin writes the skin's colors: locked boxes, the dimmed label, t
         f.readout:GetText())
 end)
 
+-- ── the Scope: the panel is a window, not the settings panel ────────────────────────────────────
+
+test("skin: with Ignore settings panel on, the panel's labels and title still wear the skin", function()
+    -- D-01: Ignore settings panel covers the settings panel only; the attached panel is a window.
+    -- S.Text paints a window string unless it opts in with `panel = true` (LibKa0s v1.81.0, D-02).
+    -- red under: the panel's labels passed `{ panel = true }`, or a host gate on GetIgnore's panel half.
+    local NS, _, Skin = setup()
+    local f = NS.Panel.frame
+    NS.ApplySkinChoice("ka0s", "obsidian")
+    NS.ApplySkinIgnore(true, false)
+    assertTrue((Skin:GetIgnore(OWNER)), "the owner ignores its settings panel (the profile default)")
+    local br, bg, bb = Skin:Color(OWNER, "text.body")
+    local n = 0
+    for _, fs in ipairs(texts(f.body)) do
+        if fs ~= f.copyLabel and fs ~= f.regionsUnsupported and fs.__textColor then
+            n = n + 1
+            assertTrue(close(fs.__textColor[1], br) and close(fs.__textColor[2], bg)
+                and close(fs.__textColor[3], bb), "a label gave the skin back under Ignore settings panel")
+        end
+    end
+    assertTrue(n >= 5, "the walk found the body's labels")
+    local title = f.TitleContainer and f.TitleContainer.TitleText
+    if title then assertTrue(recorded(Skin, title), "the title left the ledger") end
+end)
+
 -- ── stand-down ──────────────────────────────────────────────────────────────────────────────────
 
-test("skin: a pick while stood down builds nothing; the stand-up shows the skin's instance", function()
+test("skin: a pick while stood down builds nothing; the stand-up shows the same panel in the new skin", function()
     -- D10: the library repaints recorded frames whatever the latch; the host builds no frame while
     -- stood down.
-    local NS = setup()
-    local stock = NS.Panel.frame
+    local NS, _, Skin = setup()
+    local f = NS.Panel.frame
     NS.addon.Settings.Helpers.Set("enabled", false)
-    assertFalse(stock:IsShown())
+    assertFalse(f:IsShown())
     NS.ApplySkinChoice("ka0s", "obsidian")
-    assertEqual(NS.Panel.skinFrame, nil, "no twin is built while stood down")
     NS.addon.Settings.Helpers.Set("enabled", true)
-    assertTrue(NS.Panel.skinFrame ~= nil and NS.Panel.skinFrame:IsShown(), "the stand-up shows the twin")
-    assertFalse(stock:IsShown())
+    assertTrue(rawequal(NS.Panel.frame, f) and f:IsShown(), "the stand-up shows the one panel")
+    assertTrue(recorded(Skin, f))
 end)
 
 -- ── no typed look values ────────────────────────────────────────────────────────────────────────

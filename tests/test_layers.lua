@@ -39,7 +39,7 @@ test("layers: one table names the strata and every level offset", function()
     assertEqual(type(LAYERS), "table")
     assertEqual(LAYERS.STRATA.POPUP, "FULLSCREEN_DIALOG", "a borrowed confirmation lifted while shown (T8)")
     assertEqual(LAYERS.LEVEL.ABOVE_HOST, 5)
-    assertEqual(LAYERS.LEVEL.HEADER_ART, 0, "sunk to the panel's own level")
+    assertEqual(LAYERS.LEVEL.HEADER_ART, nil, "the metal header copies are retired")
     -- red under: an offset left behind by the retired EllesmereUI bridge (PG-06)
     assertEqual(LAYERS.LEVEL.ACCENT_RING, nil)
 end)
@@ -65,25 +65,19 @@ test("layers: a host that cannot answer its strata leaves the panel inheriting i
 end)
 
 -- PRE-Z06: the band the panel's frames sit in, in one place.
-test("layers: the panel's level band (L, header art L, chrome L+1, widgets L+2)", function()
+test("layers: the panel's level band (L, chrome L+1, widgets L+2)", function()
     local NS, m, restore = layered("FULLSCREEN", 20)
     local f = NS.Panel.Create()
     local L = m.__layers(f).level
     local lv = function(fr) return m.__layers(fr).level end
     local got = {
         strata = m.__layers(f).strata,
-        clips = { lv(f.headerArt[1]), lv(f.headerArt[2]) },
-        slices = { lv(f.headerArt[1].__children[1]), lv(f.headerArt[2].__children[1]) },
         body = lv(f.body), minmax = lv(f.MaximizeMinimizeFrame), header = lv(f.headerClick),
         check = lv(f.checks[1] or f.body.__children[1]), apply = lv(f.applyButton),
     }
     restore()
     assertEqual(L, 25)
     assertEqual(got.strata, "FULLSCREEN")
-    for i = 1, 2 do
-        assertEqual(got.clips[i], L, "header clip " .. i)
-        assertEqual(got.slices[i], L, "header slice " .. i)
-    end
     assertEqual(got.body, L + 1); assertEqual(got.minmax, L + 1); assertEqual(got.header, L + 1)
     assertEqual(got.check, L + 2); assertEqual(got.apply, L + 2)
 end)

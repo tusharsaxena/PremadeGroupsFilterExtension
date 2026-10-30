@@ -11,7 +11,6 @@ local _, NS = ...
 --   debug console           DIALOG, toplevel (LibKa0s-DebugLog-1.0); its copy window FULLSCREEN
 --   the attached panel      the HOST's strata, read (host-matched surface, frame-layering-§1),
 --                           at host level + LEVEL.ABOVE_HOST = L
---     header art clips and their NineSlice copies   L + LEVEL.HEADER_ART (sunk to the panel)
 --     body, min/max arrow, header click, template   L + 1 (child default)
 --     body widgets (checks, edit boxes, dropdowns, buttons, hover frame)   L + 2
 --   PGFE StaticPopups shown while the panel is visible   STRATA.POPUP, lifted and put back
@@ -33,12 +32,9 @@ NS.Constants.LAYERS = {
     },
     LEVEL = {
         -- Over the host's level. A child defaults to its parent + 1, which is where PGF's own
-        -- border (its NineSlice) sits; with the two borders overlapping by the panel's raise, the
-        -- client drew PGF's bottom border over the panel's title strip in no fixed order (owner
-        -- screenshot). Raised clear of it, the panel always draws on top.
+        -- border (its NineSlice) sits; PGF's bottom border overhangs the dialog's edge, and the
+        -- client drew it over the panel's title strip in no fixed order (owner screenshot). Raised
+        -- clear of it, the panel always draws on top.
         ABOVE_HOST  = 5,
-        -- The two clipped header-art copies sit AT the panel's level: a child default (+1) ties
-        -- with the min/max arrow and the close button and leaves their draw order to chance.
-        HEADER_ART  = 0,
     },
 }

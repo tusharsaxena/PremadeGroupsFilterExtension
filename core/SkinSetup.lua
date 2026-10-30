@@ -27,8 +27,6 @@ local addonName, NS = ...
 --   NS.SKIN_SOURCE_OPTIONS  the source row's values, and NS.SKIN_OPTIONS the skin row's (every
 --   NS.SKIN_OPTIONS         registered skin, in the library's order). settings/Panel.lua reads both.
 --   NS.SKIN_FALLBACK        the host copy of the Ka0s Default tokens the degraded facade answers.
---   NS.SkinDrawsDefault()   true while this owner draws Ka0s Default (and always without the
---                           library): modules/Panel.lua shows its never-painted metal instance then.
 --   NS.SkinColor(name)      a color token as a call site writes it (three components when opaque).
 --   NS.SkinEscape(name)     a color token as a "|cffrrggbb" escape, rounded to the byte, so markup
 --                           written as a literal keeps its bytes on Ka0s Default (|cff808080).
@@ -51,7 +49,7 @@ local addonName, NS = ...
 --                           one way this addon learns what EllesmereUI does (anti-pattern #107: it
 --                           never reads EllesmereUI's saved variables); nil without the library.
 --   NS.SkinEUIPainted()     true once EllesmereUI painted this owner this session: modules/Panel.lua
---                           folds the skinned twin to EllesmereUI's shell bar then.
+--                           folds the collapsed panel to EllesmereUI's shell bar then.
 --
 -- No owner tokens (skinning-§1): every color the addon draws under Ka0s Default is a library token's
 -- exact value (the M0 inventory's PG-G1..G3 were refuted, 01_INVENTORY.md), so RegisterOwner carries
@@ -356,7 +354,6 @@ if not Skin then
     S.BarStyle = function() return {} end
 
     NS.Skin = S
-    function NS.SkinDrawsDefault() return true end
     function NS.ApplySkinChoice() return false, false end
     function NS.ApplySkinIgnore() return false, false end
     function NS.ApplySkinOverride() return false end
@@ -377,17 +374,6 @@ Skin:RegisterOwner(addonName, {
     get = NS.SkinChoice,
     set = NS.WriteSkinChoice,
 })
-
---- True while the owner draws Ka0s Default: the same answer as the key the library draws the owner
---- by (internal; the question `opts.stockDefault` asks), built from public API only. While
---- EllesmereUI paints the owner it draws EllesmereUI's tokens; otherwise the applied skin, where a
---- key the library does not know draws as Ka0s Default. So an `eui` source before EllesmereUI paints
---- (the live fallback) answers by the stored skin, Ka0s Default unless the player chose another.
-function NS.SkinDrawsDefault()
-    local source, skin = Skin:GetChoice(addonName)
-    if source == "eui" and NS.SkinEUIPainted() then return false end
-    return skin == DEFAULT or type(Skin.GetSkin) ~= "function" or Skin:GetSkin(skin) == nil
-end
 
 -- The one line a reload request earns on the path that has no popup of its own (a profile event
 -- leaving an EllesmereUI that painted this session). The Skin tab raises the library's popup for
