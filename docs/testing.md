@@ -34,6 +34,11 @@ library's `perf` hold taken as a test-only second holder). Kit suites, declared 
 directory: `test_eol`, `test_prose`, `test_layout_cap`, `test_diagnostics_contract`,
 `test_lizard_sighted`.
 
+`test_glyphs` wires the kit's display-glyph guard (`T.assertDisplayGlyphs`, kit revision 45): every
+string literal outside `libs/` and `tests/` carries only characters every shipped skin face draws.
+`defaults/Realms.lua`'s realm lists are marked `glyph: data` (lookup keys, never drawn; the Russian
+names are Cyrillic, which no shipped face draws).
+
 `lua tests/run.lua --list` prints the case inventory; it is committed as
 [`test-cases.md`](test-cases.md), and its pass count is the README's `[tests]` badge. Regenerate both
 in the change that moves the count (testing-§5).

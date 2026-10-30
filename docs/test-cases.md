@@ -484,6 +484,12 @@ Total.
 - diagnostics: an empty filter set reads Any
 - diagnostics: stood down, the feature events are declared but not registered
 
+### test_glyphs.lua (3)
+
+- glyphs: display strings use only characters every shipped skin face draws
+- glyphs: the region labels a tag or the panel paints are glyph-safe
+- glyphs: the realm lists' data mark is the only exemption the guard needs
+
 ### test_vendor_sync.lua (3)
 
 - libs/LibKa0s is the LibKa0s release CLAUDE.md says this addon bundles
@@ -582,6 +588,7 @@ Total.
 | test_skin_verb.lua | 6 |
 | test_reset.lua | 5 |
 | test_diagnostics.lua | 6 |
+| test_glyphs.lua | 3 |
 | test_vendor_sync.lua | 3 |
 | test_eol.lua | 2 |
 | test_prose.lua | 15 |
@@ -589,4 +596,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **447** |
+| **Total** | **450** |
