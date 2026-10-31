@@ -1,0 +1,54 @@
+{
+  "addon": "PremadeGroupsFilterExtension",
+  "buckets": {
+    "applicantRowPaint": {
+      "apiPerIter": 5.2000,
+      "bytesPerIter": 160.3770,
+      "calls": 1000,
+      "maxMs": 0.0042,
+      "totalMs": 4.2490
+    },
+    "combatEvents": {
+      "apiPerIter": 143,
+      "bytesPerIter": 28113.0970,
+      "calls": 1000,
+      "maxMs": 0.3153,
+      "totalMs": 315.3150
+    },
+    "envNoPR": {
+      "apiPerIter": 1.2000,
+      "bytesPerIter": 80.0950,
+      "calls": 1000,
+      "maxMs": 0.0045,
+      "totalMs": 4.4990
+    },
+    "envStoodDown": {
+      "apiPerIter": 0,
+      "bytesPerIter": 0,
+      "calls": 1000,
+      "maxMs": 0.0009,
+      "totalMs": 0.8990
+    },
+    "envWithPR": {
+      "apiPerIter": 0,
+      "bytesPerIter": 0,
+      "calls": 1000,
+      "maxMs": 0.0013,
+      "totalMs": 1.3040
+    },
+    "searchRowPaint": {
+      "apiPerIter": 5.2000,
+      "bytesPerIter": 160.5610,
+      "calls": 1000,
+      "maxMs": 0.0048,
+      "totalMs": 4.7590
+    }
+  },
+  "failures": [],
+  "interface": 0,
+  "label": "v1.84.0-adoption",
+  "schema": 1,
+  "source": "offline",
+  "timestamp": 1793472058,
+  "version": "1.0.0"
+}

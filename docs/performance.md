@@ -28,6 +28,9 @@ stays reserved and unregistered) and no suspend contract. `libs/LibKa0s/` stays 
 - **On Apply:** one pass over the season's 8 dungeons and PGF's 8 rows, one string build, then
   PGF's own re-filter. It is a player action, and it refuses in combat.
 - **Panel:** `Panel.Refresh` runs on show and on a widget change. The frame is built once, lazily.
+  A refresh allocates about 7.6 KB in `tests/perf.lua`, most of it the readout's strings. It
+  re-anchors the collapse button only when the skin's title band moved, and only an owner on the
+  `eui` source, or waiting on a reload, pays for `GetEUIStatus`'s tables (about 1.2 KB).
 
 ## The combat-path sweep (criterion (a))
 
@@ -40,17 +43,17 @@ UI action.
 
 | Site | Hit | Work per event or call | Runs in combat? |
 |---|---|---|---|
-| `core/PGFE.lua:42` | `registerFeatureEvents`, through `NS.SafeRegisterEvent` (`core/CoreSetup.lua:56-80`) | The feature registration site. It registers the 6 `NS.FEATURE_EVENTS` rows below on enable and stand-up, and unregisters them on stand-down | — |
+| `core/PGFE.lua:41` | `registerFeatureEvents`, through `NS.SafeRegisterEvent` (`core/CoreSetup.lua:56-80`) | The feature registration site. It registers the 6 `NS.FEATURE_EVENTS` rows below on enable and stand-up, and unregisters them on stand-down | — |
 | `modules/EnvInject.lua:85-86` | `ACTIVE_PLAYER_SPECIALIZATION_CHANGED`, `PLAYER_SPECIALIZATION_CHANGED` | `RefreshPlayer`: 3 calls (spec index, spec info, `UnitClass`) | Rare (a spec change) |
-| `modules/Panel.lua:997-999` | `CHALLENGE_MODE_MAPS_UPDATE`, `CHALLENGE_MODE_COMPLETED`, `MYTHIC_PLUS_CURRENT_AFFIX_UPDATE` | `OnPanelSeasonData`: Smart level, then the readout rebuilt over 8 dungeons. 34 calls, about 8 KB | Rare (a season-data reply, a completed key, an affix change) |
-| `modules/Panel.lua:1000` | `PLAYER_ENTERING_WORLD` | Re-arms the season request, then `Panel.UpdateVisibility` (the readout as above). 35 calls | At a loading screen |
-| `core/PGFE.lua:116-119` | AceDB `OnProfileChanged` / `Copied` / `Reset` | Migrations, panel refresh, the latch re-read | Player action |
+| `modules/Panel.lua:1003-1005` | `CHALLENGE_MODE_MAPS_UPDATE`, `CHALLENGE_MODE_COMPLETED`, `MYTHIC_PLUS_CURRENT_AFFIX_UPDATE` | `OnPanelSeasonData`: Smart level, then the readout rebuilt over 8 dungeons. 34 calls, about 8 KB | Rare (a season-data reply, a completed key, an affix change) |
+| `modules/Panel.lua:1006` | `PLAYER_ENTERING_WORLD` | Re-arms the season request, then `Panel.UpdateVisibility` (the readout as above). 35 calls | At a loading screen |
+| `core/PGFE.lua:116-118` | AceDB `OnProfileChanged` / `Copied` / `Reset` | Migrations, panel refresh, the latch re-read | Player action |
 | `core/PGFBridge.lua:173` | `hooksecurefunc(PGF, "PutPremadeRegionInfo")` | `EnvInject.Apply`, above: 1.2 calls and 80 bytes per result, 0 while stood down | Only while PGF filters a search the player started |
 | `core/PGFBridge.lua:184-186` | `SwitchToPanel`, dialog `OnShow` / `OnHide` | `Panel.UpdateVisibility` | Player action |
 | `modules/RegionTags.lua:102` | `LFGListSearchEntry_Update`, `LFGListApplicationViewer_UpdateApplicantMember` | One row tag: 5.2 calls, 160 bytes | Only while the Group Finder repaints |
 | `modules/Panel.lua:111-120` | Tooltip `OnEnter` / `OnLeave` | Fill and show `GameTooltip`; hide it | Player action |
 | `modules/Panel.lua`, `settings/Panel.lua` | `SetScript` / `HookScript` on the addon's own widgets (click, edit box, focus, settings `OnShow`) | One handler per player action | Player action |
-| `core/SkinSetup.lua:309` | `PLAYER_REGEN_ENABLED` on a private one-shot frame (D11) | Registered only while the first-run skin picker is held in combat; it unregisters and drops its frame when it fires, then shows the picker once. The stand-down drops it the same way | Once, as combat ends |
+| `core/SkinSetup.lua:311` | `PLAYER_REGEN_ENABLED` on a private one-shot frame (D11) | Registered only while the first-run skin picker is held in combat; it unregisters and drops its frame when it fires, then shows the picker once. The stand-down drops it the same way | Once, as combat ends |
 | `modules/Apply.lua:37` | `InCombatLockdown()` in `precheck` | Apply refuses in combat | Refused |
 
 `PLAYER_REGEN_DISABLED` and every other combat event are unregistered (the picker's one-shot

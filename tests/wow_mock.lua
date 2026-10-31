@@ -274,9 +274,18 @@ local function build()
         f.GetFrameLevel = function(self) return self.__level or 1 end
         f.GetEffectiveScale = function() return 1 end
         f.SetColorTexture = function(self, r, g, b, a) self.__color = { r, g, b, a }; return self end
-        f.SetVertexColor = function(self, r, g, b, a) self.__vertexColor = { r, g, b, a }; return self end
+        -- One table per texture, refilled: tests/perf.lua's bytes are the addon's, not this mock's.
+        f.SetVertexColor = function(self, r, g, b, a)
+            local c = self.__vertexColor or {}
+            c[1], c[2], c[3], c[4] = r, g, b, a
+            self.__vertexColor = c
+            return self
+        end
         -- A texture's file (the min/max button's chevron, PG-02 of the skin fonts and feedback run).
         f.SetTexture = function(self, path) self.__texture = path; return self end
+        f.SetRotation = function(self, radians) self.__rotation = radians; return self end
+        f.SetDesaturated = function(self, on) self.__desaturated = on; return self end
+        f.IsDesaturated = function(self) return self.__desaturated == true end
         f.GetTexture = function(self) return self.__texture end
         local function stateTexture(key)
             return function(self)
@@ -321,6 +330,12 @@ local function build()
             f.__objType = frameType
             -- UICheckButtonTemplate's own size (Blizzard SharedUIPanelTemplates.xml).
             if template == "UICheckButtonTemplate" then f.__width, f.__height = 32, 32 end
+            -- WowStyle1DropdownTemplate's own art and label (parentKeys in Blizzard_Menu
+            -- Mainline/MenuTemplates.xml): Arrow is the whole gold button, not a glyph.
+            if template == "WowStyle1DropdownTemplate" then
+                f.Background, f.Arrow = f:CreateTexture(), f:CreateTexture()
+                f.Text = f:CreateFontString()
+            end
             parent.__children = parent.__children or {}
             parent.__children[#parent.__children + 1] = f
             -- PortraitFrameTemplate's own close button (a parentKey in the template's XML).

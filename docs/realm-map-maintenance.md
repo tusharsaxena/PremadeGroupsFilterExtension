@@ -74,7 +74,7 @@ sorted case-insensitively within its bucket. Record the change and its reason in
 `lua tests/run.lua` must stay green after any change to the map. The `regions:` cases in
 `tests/test_regions.lua` pin the lookup rules (suffix, no suffix, accents, unknown realm,
 unsupported portal) and the data integrity rules: no realm in two buckets of one portal, no
-unknown bucket key, no empty bucket. `luacheck .` must stay at 0 warnings / 0 errors. A realm name
+unknown bucket key, no empty bucket. `~/.claude/dev-copilot/bin/ka0s-bounded luacheck .` must stay at 0 warnings / 0 errors. A realm name
 the prose gate reads as a British spelling is game data: waive it per file and per word in
 `tests/prose_waivers.lua` rather than respelling it.
 

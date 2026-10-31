@@ -114,6 +114,7 @@ Kit.run{
         "test_bridge",
         "test_apply",
         "test_panel",
+        "test_panel_layout",
         "test_layers",
         "test_settings_layout",
         "test_skinsetup",

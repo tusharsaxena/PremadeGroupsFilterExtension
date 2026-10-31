@@ -1,7 +1,7 @@
 # Module map — Ka0s Premade Groups Filter Extension
 
 Every non-vendored file, in TOC load order, with its one responsibility. Vendored: `libs/` (Ace3,
-LibStub, CallbackHandler, LibSharedMedia, LibDataBroker, LibDBIcon, LibKa0s v1.83.0) and
+LibStub, CallbackHandler, LibSharedMedia, LibDataBroker, LibDBIcon, LibKa0s v1.84.0) and
 `tests/_kit/` (the LibKa0s test kit) — never edited here.
 
 ## Load order and why
@@ -79,5 +79,6 @@ Profiles page. The constraints that fix the order:
 | `tests/pgf_fake.lua` | Premade Groups Filter stand-in |
 | `tests/prose_waivers.lua` | Per-file, per-word waivers for the kit's prose gate (realm names) |
 | `tests/perf.lua` | The offline performance scenarios (`lua tests/perf.lua`): env hook, row painters, stood-down hook, `combatEvents`. Outside the green gate; ships under the performance-§12 exemption ([`performance.md`](performance.md)) |
-| `tests/test_*.lua` | One suite per module plus the standard's named suites |
+| `tests/panel_helpers.lua` | What `test_panel.lua` and `test_panel_layout.lua` share: the season seed, a dropdown's menu entries, typing into a box. Not a suite |
+| `tests/test_*.lua` | One suite per module plus the standard's named suites; the attached panel has two, `test_panel.lua` and `test_panel_layout.lua` |
 | `tools/realm_map_diff.py` | Diffs `defaults/Realms.lua` against an installed PremadeRegions ([`realm-map-maintenance.md`](realm-map-maintenance.md)) |

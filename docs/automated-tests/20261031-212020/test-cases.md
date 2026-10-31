@@ -1,0 +1,609 @@
+# Test Cases
+
+The full inventory of every headless test case in this repo, grouped by the suite file it
+lives in. The `## Totals` table below counts the cases that run: its **Total** is the
+authoritative pass count, and the README test badge and any count quoted in the docs must equal
+it. A declared skip is listed by name in its group and counted on the `Skipped` row, never in
+Total.
+
+**Generated — do not hand-edit.** Regenerate with `lua tests/run.lua --list > docs/test-cases.md`.
+
+### test_harness.lua (10)
+
+- harness: the load list is derived from the TOC, in TOC order
+- harness: every factory returns (NS, env, mock) with env and mock the same table
+- harness: the PGF fake is installed before the addon loads
+- harness: factory opts seed the mock fields
+- harness: client-data mock fields answer through their APIs
+- harness: hooksecurefunc is a real post-hook on a table member
+- harness: fireEvent dispatches to AceEvent handlers
+- harness: the explicit LibKa0s list matches LibKa0s.xml, in XML order (anti-pattern #48)
+- harness: every addon file in the TOC is annotated
+- harness: AceTimer is not embedded
+
+### test_surface_parity.lua (12)
+
+- parity: the Core seam's namespace surface survives the library's absence
+- parity: the DebugLog stub carries the whole live surface
+- parity: the Slash stub carries the whole live surface
+- parity: the Options helpers stub carries the whole live surface
+- parity: the Schema host stub's instance carries the whole live instance surface
+- parity: the Schema host stub carries the library's own members
+- parity: the Launcher stub carries the whole live surface
+- parity: the Lifecycle stub carries the whole live surface
+- parity: the Compat arm carries every library member the addon wires
+- parity: no module reads PGF outside the bridge
+- parity: the register holds the ratified rows and the §5 row names every Filters writer
+- parity: every locale key used is defined in enUS, and every enUS key is used
+
+### test_setup.lua (20)
+
+- setup: NS is the AceAddon object, with the cyan [PGFE] tag
+- setup: NS.Print is reclaimed from AceConsole and is NS.Util.print
+- setup: per-character filter defaults (char.filters)
+- setup: global defaults hold the presets store and LibDBIcon's table
+- setup: profile defaults hold the master switch and the panel's collapsed state
+- setup: migrations stamp the schema version
+- setup: the Master controls rows are in the schema, frameless
+- setup: Master controls holds only the canonical rows
+- setup: the Minimap button row inverts onto LibDBIcon's hide
+- setup: enable registers the settings category and the launcher, and stands up
+- setup: the debug console is built with the addon's folder and brand
+- setup: no perf harness is wired (performance-§12)
+- setup: the Compat spec readers route through LibKa0s-Compat-1.0
+- setup: the media seam names this addon's folder
+- setup: the landing page lists every NS.COMMANDS row
+- setup: the landing page is drawn by the library's BuildLandingPage, logo and commands
+- setup: the TOC icon is the launcher icon and the folder-named 128 TGA
+- setup: logo TGAs are uncompressed 32-bit at their sizes
+- setup: no pgfe.logo file remains
+- setup: the enable writes one [Init] PGF seams and hooks line
+
+### test_slash.lua (8)
+
+- slash: NS.COMMANDS is ordered positional triples with every reserved verb
+- slash: /pgfe and /premadegroupsfilterextension are registered through AceConsole
+- slash: disable and enable write the Enable row through the write seam
+- slash: perf is reserved but not registered
+- slash: the library-absent stub pins the library's disabled line
+- slash: the library-absent stub still answers version and refuses enable honestly
+- slash: player-facing lines go through NS.L (LibKa0s absent, the stub paths)
+- slash: player-facing lines go through NS.L (LibKa0s present)
+
+### test_disabled.lua (14)
+
+- disabled 1: enabled, the addon registers exactly the six events it declares
+- disabled 2-5: through /pgfe disable, nothing is registered, scheduled or shown
+- disabled 2-5: through the write seam, nothing is registered, scheduled or shown
+- disabled 6: survivors reached anyway write, say and show nothing
+- disabled 6: the EllesmereUI callback, arriving while stood down, builds nothing and shows nothing
+- disabled 7: every verb answers while disabled; apply and clear refuse with one line
+- disabled 7: bare /pgfe and /pgfe debug diagnostics answer while disabled
+- disabled 7: /pgfe perf answers as an unknown command, the same as when enabled
+- disabled 8: left-click opens settings; the menu keeps Enabled, which writes only enabled
+- disabled 8: while another hold stands the addon down, the launcher reports the stored setting
+- disabled 8: after /pgfe disable the launcher's Enabled line says No
+- disabled 9: a setting changed while disabled is what the enable rebuilds from
+- disabled 10: a perf hold then disable, and disable then a perf hold, share one latch
+- disabled: a profile stored disabled stands down at the next enable
+
+### test_regions.lua (12)
+
+- regions: the module publishes its namespace table
+- regions: normalize strips spaces, punctuation, case
+- regions: suffixed leader resolves on US portal
+- regions: leader without suffix uses the player's realm
+- regions: EU realm with accent
+- regions: unknown realm, nil/empty name, unsupported portal → nil
+- regions: a non-string leader name → nil, no error
+- regions: a protected leader name is not matched
+- regions: the same realm name resolves per portal
+- regions: key and label tables cover all twelve buckets
+- regions: data integrity — no realm in two buckets, only known keys
+- regions: every bucket is populated
+
+### test_targeting.lua (9)
+
+- targeting: the module publishes its namespace table
+- targeting: N=14 targets the four dungeons timed below 14
+- targeting: N=15 targets all eight
+- targeting: N=2 targets none
+- targeting: never-timed counts as 0
+- targeting: ToSet keys the targets by cmID
+- targeting: level validation and range text
+- targeting: SmartLevel is the lowest best timed level + 1
+- targeting: SmartLevel counts never-timed as 0, clamps to 2..40, nil without rows
+
+### test_season.lua (8)
+
+- season: the module publishes its namespace table
+- season: nil map table → nil (loading)
+- season: empty map table → nil (loading)
+- season: best timed from intimeInfo, untimed → 0, short from PGF keyword
+- season: dungeon never run (GetSeasonBestForMap → nil) → best timed 0
+- season: unknown mapID falls back to initials
+- season: Apply with no panel still requests season data
+- season: short names fall back to initials without PGF's keyword table
+
+### test_expression.lua (18)
+
+- expression: clauses in fixed order
+- expression: empty user text → bare block
+- expression: user text is parenthesized so its OR cannot leak
+- expression: re-apply is idempotent and replaces the block
+- expression: strip restores the user text exactly
+- expression: no clauses → user text only (block removed)
+- expression: comment-only user text treated as empty (no `and ( )`)
+- expression: damaged block (begin without end) → error, text untouched
+- expression: close marker without ')' → damaged
+- expression: wrapped block, close marker deleted → damaged
+- expression: deleting both close and ')' is refused (conservative)
+- expression: unwrapped comment-only block strips ok without a close pair
+- expression: strip keeps blank edge lines
+- expression: clear keeps the user's blank edge lines
+- expression: round trip keeps blank edge lines
+- expression: over 2000 chars → toolong
+- expression: the block passes everything when the env hook did not run
+- expression: without the hook, the user's own text still decides
+
+### test_filters.lua (12)
+
+- filters: clause opts honor enable flags and portal order
+- filters: regions on with none selected for this portal filters on no region
+- filters: every region of the portal ticked adds no region clause
+- filters: playstyles on with some ticked filter on those, in the game's order
+- filters: validation
+- filters: set and region toggle write the live table
+- filters: per-character defaults
+- filters: ticking the last unticked option clears the set to Any
+- filters: a stored all-ticked set is Any: no clause, and a tick selects that option alone
+- filters: clearing empties this portal's regions and the playstyles
+- filters: ApplySmartLevel sets the level from the season only when Smart is on
+- filters: composition applies only while its box is on
+
+### test_presets.lua (9)
+
+- presets: save/load round-trip is a deep copy into the same table
+- presets: list sorted, delete, bad names, missing
+- presets: names are trimmed and saving overwrites
+- presets: a preset missing keys loads over the current defaults
+- presets: Smart travels with a preset; an older preset loads the default (on)
+- presets: save, load, delete and refusals each write one [Preset] line
+- presets: the selected preset survives a reload
+- presets: Save and Load select; Delete of the selected one clears it
+- presets: a selection whose preset is gone from the shared registry reads as none
+
+### test_envinject.lua (14)
+
+- envinject: the module publishes its namespace table
+- envinject: keywords follow PGF's formula
+- envinject: unknown spec / role / missing table → nil keywords, no error
+- envinject: samespec / sameclassrole from env counts
+- envinject: the spec is read through Compat when the deprecated globals are gone
+- envinject: spec change is picked up without re-apply
+- envinject: PLAYER_SPECIALIZATION_CHANGED refreshes for the player only
+- envinject: regions injected only without PremadeRegions
+- envinject: stood down → hook is a no-op
+- envinject: the block's guard is off while Use the extension's filters is off
+- envinject: the env hook's install result is stored
+- envinject: a non-function PutPremadeRegionInfo leaves the hook off without raising
+- envinject: a protected leader name injects no region
+- envinject: a spec refresh logs the keywords once, and again only when they change
+
+### test_regiontags.lua (13)
+
+- regiontags: a search row gets the leader's colored region in front of its activity
+- regiontags: a leader on the player's own realm, an unknown realm, an unsupported portal
+- regiontags: EU realms are tagged by language
+- regiontags: an applicant gets their region in front of their name
+- regiontags: a painter the client lacks is skipped, the other still installs
+- regiontags: no tag while stood down, with the setting off, or with PremadeRegions loaded
+- regiontags: the setting is a schema row, on by default
+- regiontags: a name that is not a plain string gets no tag and raises nothing
+- regiontags: every region bucket has a default color and a color row
+- regiontags: the color rows pass the schema check
+- regiontags: a changed color paints the next tag, and reset puts the default back
+- regiontags: /pgfe set takes a color in 0-255
+- regiontags: the Region tags tab shows each portal's tags and a picker per region
+
+### test_bridge.lua (18)
+
+- bridge: the module publishes its namespace table
+- bridge: seams present
+- bridge: missing seam is named, no error
+- bridge: missing C.SPECIALIZATIONS is named
+- bridge: Specializations/MapKeywords read through the bridge, nil-guarded
+- bridge: missing Dialog.panels is named
+- bridge: missing DungeonPanel.Dungeons is named
+- bridge: missing DungeonPanel.Advanced.Expression.EditBox is named
+- bridge: SetDungeons maps cmID → positional key, shuffled order
+- bridge: non-dungeon category → no state
+- bridge: missing dungeon state table is created on the active category
+- bridge: expression read clears focus first; commit inits + triggers; search clicks
+- bridge: commit with minimized dialog leaves PGF's live panel alone
+- bridge: the dungeon panel is active only while maximized on Dungeons
+- bridge: dialog shown and accessor
+- bridge: env hook installs once, as a post-hook on PGF's own function
+- bridge: env hook refuses when the seam is missing
+- bridge: HookDialog wires SwitchToPanel and both scripts
+
+### test_apply.lua (33)
+
+- apply: the module publishes its namespace table
+- apply: N=14 ticks AOF/RLP/BV/KR, writes block, triggers, searches
+- apply: everything timed → refuses, nothing written
+- apply: combat, wrong category, missing PGF seam, loading
+- apply: invalid options refuse before anything is written
+- apply: key targeting off leaves checkboxes alone; no search when not requested
+- apply: keeps user text; clear restores it
+- apply: a damaged managed block refuses Apply and Clear
+- apply: /pgfe apply searches and prints; /pgfe clear prints
+- apply: /pgfe apply prints the refusal with its argument
+- apply: after Apply then /pgfe disable, PGF's evaluation passes groups again
+- apply: PGF minimized → refuses Apply and Clear, nothing written or searched
+- apply: the message counts the rows ticked, and says so when targeting is off
+- apply: the targeting-off message prints no key range
+- apply: with Smart on, Run sets the key level from the season bests first
+- apply: refuses while Use the extension's filters is off, writing nothing
+- apply: the filtersActive setting is a schema row, and its writes remove / rewrite the block
+- apply: a MSG_COMBAT refusal writes an [Apply] refused line
+- apply: a MSG_NO_PGF refusal writes an [Apply] refused line
+- apply: a MSG_NOT_DUNGEONS refusal writes an [Apply] refused line
+- apply: a MSG_MINIMIZED refusal writes an [Apply] refused line
+- apply: a MSG_INACTIVE refusal writes an [Apply] refused line
+- apply: a MSG_BAD_LEVEL refusal writes an [Apply] refused line
+- apply: a MSG_BAD_AGE refusal writes an [Apply] refused line
+- apply: a MSG_LOADING refusal writes an [Apply] refused line
+- apply: a MSG_ALL_TIMED refusal writes an [Apply] refused line
+- apply: a MSG_DAMAGED refusal writes an [Apply] refused line
+- apply: a MSG_TOOLONG refusal writes an [Apply] refused line
+- apply: a success writes the wrote and ok lines, and search only when searching
+- apply: a targeting-off success says the dungeon rows were untouched
+- apply: Clear refuses a wrapped block with its close marker deleted, and logs it
+- apply: a Clear refusal and a Clear success each write one [Clear] line
+- apply: a filtersActive toggle writes one [Apply] toggled line
+
+### test_panel.lua (49)
+
+- panel: the module publishes its namespace table
+- panel: anchored under PGF dialog, both edges
+- panel: Create is idempotent
+- panel: visible only for shown dialog on the dungeon category
+- panel: hidden while PGF's dialog is minimized
+- panel: created lazily, on the first UpdateVisibility that wants it
+- panel: the dialog's SwitchToPanel is hooked at load
+- panel: hidden when stood down, and the dialog hook is a no-op
+- panel: the dialog hook body returns at once while stood down
+- panel: the region dropdown lists this portal's regions
+- panel: ticking a region writes it and keeps the menu open; the button sums up
+- panel: a long selection is summed up as a count
+- panel: unsupported portal shows the note instead of the region dropdown
+- panel: the playstyle dropdown uses the game's names and writes the playstyles
+- panel: a tick while stood down writes nothing
+- panel: range field shows N-N for the current level
+- panel: typing into the range field puts the range back
+- panel: a level commits on Enter / focus loss, never per keystroke
+- panel: the age box commits whole values and re-syncs a rejected one
+- panel: readout highlights targeted dungeons, grays the rest
+- panel: readout says loading until the season data arrives
+- panel: an empty map table asks the server once, not every round trip
+- panel: a populated map table still requests once
+- panel: a rollover re-arms the request once, not once per event
+- panel: one event after a rollover already sends the re-armed request
+- panel: PLAYER_ENTERING_WORLD re-arms the request
+- panel: the affix event recomputes Smart and leaves loading
+- panel: a stand-down hides a tooltip the panel showed
+- panel: a stand-down leaves a tooltip owned outside the panel shown
+- panel: the dialog hook install is recorded
+- panel: checkboxes write their filter option
+- panel: Refresh re-reads the filters into the widgets
+- panel: Apply searches and prints; the range field follows
+- panel: after an Apply the range field still follows the level
+- panel: Apply does nothing while stood down
+- panel: a missing PGF seam shows one line and disables Apply
+- panel: collapse folds to the title bar and is remembered in the profile
+- panel: a profile switch refreshes the attached panel's layout
+- panel: preset Save as stores a named preset; Load refills the widgets
+- panel: preset Delete removes the selected preset after confirming
+- panel: the selected preset is still selected after a reload
+- panel: Enter in the Save as box saves and closes the popup
+- panel: a blank preset name is refused
+- panel: each number box is anchored to the right of its own label
+- panel: the expanded height fits every row
+- panel: the min/max arrow follows the stored collapsed state
+- panel: collapsed shows only the skin's title band; no metal header copies are built
+- panel: Apply leaves focus alone; Enter in the copy box focuses the search box
+- panel: visibility logs on change only, and again after a stand-down
+
+### test_panel_layout.lua (31)
+
+- panel: the min/max arrows are chevron icons on the skin's button, expanded up and collapsed down
+- panel: the regions and playstyle dropdowns are 225 wide, right-aligned in one column
+- panel: each menu opens with Any and a divider; Any is ticked with nothing ticked and clears
+- panel: ticking every option stores Any and the button reads Any
+- panel: a stored all-ticked set reads Any; a tick then selects that option alone
+- panel: the readout is one row high, so the rows below keep the same pitch
+- panel: a readout too wide for its row closes the gaps to one space
+- panel: every checkbox has a tooltip, and its label hovers and clicks as the box
+- panel: every number box, button and the copy box and its label have a tooltip
+- panel: each dropdown and every menu entry has a tooltip
+- panel: tooltips stay quiet while stood down
+- panel: presets: one row, the dropdown up to three equal buttons right-aligned
+- panel: Apply and Clear share one width, with extra space above their row
+- panel: the copy box is right-aligned on the action row, its label before it, clear of Clear
+- panel: Smart sits right of the level box; ticked, it locks the box and sets the level
+- panel: the level box locked by Smart still shows its tooltip
+- panel: Smart keeps the stored level until season data arrives, then follows it
+- panel: with Smart off, season data leaves the level box alone
+- panel: Smart writes nothing while stood down
+- panel: the level row fits the body: label, box, Smart and its label
+- panel: a fresh character sees the owner's default panel
+- panel: the presets row has the same extra space above as below, buttons as tall as the dropdown
+- panel: Composition is one dropdown; Any clears, both ticked stays both (not Any)
+- panel: Use the extension's filters is the first row, on by default
+- panel: unticking Use the extension's filters removes the block; ticking writes it back
+- panel: presets never switch the extension on or off
+- panel: the title is centered on the whole header
+- panel: the copy box and its label dim, disable and empty while key targeting is off
+- panel: the panel's frame level is above PGF's dialog and its border
+- panel: the title is the full addon name, and the copy box centers its range
+- panel: a click on the header strip collapses and expands, like the arrow
+
+### test_layers.lua (8)
+
+- layers: one table names the strata and every level offset
+- layers: the panel takes PGF's dialog strata by reading it, never a literal
+- layers: a host that cannot answer its strata leaves the panel inheriting it
+- layers: the panel's level band (L, chrome L+1, widgets L+2)
+- layers: a popup shown over the visible panel is lifted, and put back to what it was
+- layers: with the panel not visible the popup keeps the client's strata
+- layers: every PGFE popup spec restores on hide
+- layers: no strata literal, no absolute level, no direct StaticPopup_Show
+
+### test_settings_layout.lua (11)
+
+- layout: every stored path, its type and its default are unchanged by item 020
+- layout: the region-tag switch leads the Region tags tab, unheaded, beside its colors
+- layout: the color pickers say what each code means; the tag text is unchanged
+- layout: Reset region tag colors resets the twelve colors only, never the switch
+- layout: the Filters tab holds the extension's switch and says where the filters are
+- layout: the filters switch reads true on both surfaces
+- layout: without EllesmereUI the Filters tab carries no PGF skin pointer
+- layout: under EllesmereUI a missing PGF skin is named, with its link right under it
+- layout: the link box selects on focus and leaves the pooled editbox frame as it found it
+- layout: under EllesmereUI a disabled or loaded PGF skin is named, with no link
+- layout: the header Defaults describes the reset in Reset all settings' own words
+
+### test_skinsetup.lua (21)
+
+- skin seam: the owner is the folder name, and NS.Skin is its facade
+- skin seam: the owner is registered at file load, before the profile store exists
+- skin seam: the read answers Ka0s Default before the profile store exists
+- skin seam: Core's window edge is handed the owner
+- skin seam: the eight skin keys default to Ka0s Default, the picker unseen
+- skin seam: every skin key is a skip-render schema row on the Skin tab
+- skin seam: the skin row's values are every registered skin, in the library's order
+- skin seam: /pgfe set refuses a skin that is not registered and applies one that is
+- skin seam: /pgfe set reaches an exception, and only its own half
+- skin seam: the Skin tab is the library's, last on the General page
+- skin seam: one tab pick is one effective SetChoice, one repaint and no reload
+- skin seam: the tab's Ignore fonts reaches the library and the profile, one repaint
+- skin seam: the own condition names the folder, as EllesmereUI's list shows it
+- skin seam: another addon's copy to every Ka0s addon repaints this one once
+- skin seam: login applies the stored skin, exceptions and overrides
+- skin seam: a profile switch applies the new profile's skin, panel built or not
+- skin seam: Reset all settings puts the skin back on Ka0s Default and applies it
+- skin seam: the degraded facade answers every name the live facade carries
+- skin seam: the degraded FontFlags and HudFontSize answer as the library does unskinned
+- skin seam: each host-copy skin token is the live library's Ka0s Default value
+- skin seam: the descriptor reaches LibSharedMedia, so the panel preloads the faces it previews
+
+### test_skin.lua (15)
+
+- skin: under Ka0s Default the one panel is painted through the facade, every widget and label
+- skin: the colors the panel writes under Ka0s Default are its exact pixels
+- skin: the panel's tooltip lines are the skin's tooltip colors, Ka0s Default's white over gold
+- skin: a switch repaints the one panel live, and back to Ka0s Default the same frame again
+- skin: a skin pick never shows a hidden panel, and the panel reads the stored filters
+- skin: a pick before the panel exists builds the one panel, painted
+- skin: the panel's geometry: 24px check buttons on the rows' centers, flush under the dialog
+- skin: collapsed, the panel folds to the skin's title band, Ka0s Default's included
+- skin: the min/max button is one size and centered on the title band in every skin
+- skin: a Refresh re-anchors the min/max button only when the band moved
+- skin: the panel writes the skin's colors: locked boxes, the dimmed label, the readout
+- skin: a pick after the panel is built rewrites the colors the panel reads from tokens
+- skin: with Ignore settings panel on, the panel's labels and title still wear the skin
+- skin: a pick while stood down builds nothing; the stand-up shows the same panel in the new skin
+- skin: modules/Panel.lua types no color: no literal SetTextColor, tooltip color or markup
+
+### test_skin_picker.lua (16)
+
+- skin picker: skin.pickerSeen defaults to false, a skip-render row on the Skin tab
+- skin picker: the spec names this owner, its seams, the General page's Skin tab, and no eye
+- skin picker: it shows once at login on an unseen profile, scheduling nothing
+- skin picker: a profile that has seen it shows nothing at login
+- skin picker: in combat a start waits for PLAYER_REGEN_ENABLED, once, on a private frame
+- skin picker: a held start is dropped by the stand-down
+- skin picker: a dropped held start lets go of its frame, and the next one makes its own
+- skin picker: never while the addon is switched off
+- skin picker: a new profile and a reset profile show it again; a seen one does not
+- skin picker: the player's close marks it seen; this addon's own hide does not
+- skin picker: the stand-down takes it down unmarked
+- skin picker: a profile that has seen it takes a shown picker down, unmarked
+- skin tools: the Options instance acquires through the library's owner proxy
+- skin tools: the Profiles page paints AceConfigDialog's tree for this owner
+- skin tools: a host release is chained onto the skin's restore, both run
+- skin tools: the debug console is painted for this owner
+
+### test_skin_eui.lua (16)
+
+- eui migration: with EllesmereUI, every profile but an explicit false moves to skin.source eui
+- eui migration: without EllesmereUI every profile keeps the Ka0s source
+- eui migration: EllesmereUI without its Blizzard Skin child is not present
+- eui migration: the store is applied as migrated, and the step runs once
+- eui: the folder is registered with EllesmereUI once, by the library
+- eui: no addon file reads EllesmereUIDB or registers with EllesmereUI itself
+- eui: once EllesmereUI paints the owner, the panel goes to its facade
+- eui: an owner that was never on the eui source answers unpainted without building the status
+- eui: leaving the eui source after a paint still reads as painted, until the reload
+- eui: an owner on the eui source reads the status, so a closed gate still asks for the reload
+- eui: before EllesmereUI paints, the eui source wears Ka0s Default through the library
+- eui: no addon file reaches the library-internal __DrawsKey
+- eui: the collapsed panel folds to EllesmereUI's 25px shell bar
+- eui: the min/max button is EllesmereUI's box with the chevron, never a worded PageButton
+- eui diagnostics: the skin section names the key the library draws by, in every state
+- eui diagnostics: the skin section reports the choice and the library's EllesmereUI gate
+
+### test_skin_outline.lua (10)
+
+- outline: a fresh profile stores HUD text only, the library's default
+- outline: a profile that stored All text keeps it, unmigrated (D-10)
+- outline: the schema row offers the library's three modes, in its order
+- outline: the write seam stores media.outline, and leaves it alone when it is nil
+- outline: another addon's copy reaches the store through WriteChoice
+- outline: the row's write applies the mode live
+- outline: /pgfe set refuses a mode the library does not know
+- outline: the stored mode is applied at load
+- outline: a profile switch applies the incoming profile's mode, and back
+- outline: without the skin engine the apply is a quiet no-op
+
+### test_skin_verb.lua (6)
+
+- skin verb: the row sits right after config, with the library's help words
+- skin verb: /pgfe skin shows the picker on a profile that has closed it
+- skin verb: NS.RunSkinVerb hands O.SkinVerb this addon's first-run spec
+- skin verb: in combat every call prints the library's gray line and shows nothing
+- skin verb: refused while the addon is disabled, and no picker shows
+- skin verb: without LibKa0s the verb prints the library-absent line
+
+### test_reset.lua (5)
+
+- reset: Reset all settings resets only the active profile
+- reset: Reset all settings sweeps the debug console off
+- reset: Reset all settings leaves the minimap button hidden
+- reset: the General page's Defaults leaves the minimap button hidden
+- reset: Reset all settings while disabled comes back enabled and running
+
+### test_diagnostics.lua (6)
+
+- diagnostics: dependencies reports the PGF seams as present
+- diagnostics: dependencies reports every hook as installed
+- diagnostics: a missing PGF seam is named
+- diagnostics: the filters section prints a set's keys, not a table
+- diagnostics: an empty filter set reads Any
+- diagnostics: stood down, the feature events are declared but not registered
+
+### test_glyphs.lua (3)
+
+- glyphs: display strings use only characters every shipped skin face draws
+- glyphs: the region labels a tag or the panel paints are glyph-safe
+- glyphs: the realm lists' data mark is the only exemption the guard needs
+
+### test_vendor_sync.lua (3)
+
+- libs/LibKa0s is the LibKa0s release CLAUDE.md says this addon bundles
+- tests/_kit is the test kit that shipped with that release
+- the automated-test runner is recorded executable (100755)
+
+### test_eol.lua (2)
+
+- eol: every tracked file carries the terminator .gitattributes declares for it
+- eol: .gitattributes is line-endings-§5's canonical body for this repo kind
+
+### test_prose.lua (15)
+
+- prose: no authored file carries a British spelling from localization-§5's published list
+- prose: the gate carries localization-§5's two lists whole, and nothing of its own
+- prose self-test: the carve-out suppresses the named generated folder, and only it
+- prose self-test: a path the carve-out does not name is not covered by one that looks like it
+- prose self-test: a carve-out that is not a set of path strings is a failure, not a silence
+- prose self-test: a TOC's file lines are read as paths, and its directives and comments are not
+- prose self-test: a .pkgmeta's ignore block is read, and the keys around it are not
+- prose self-test: an ignore entry covers a path exactly, by folder, and by wildcard
+- prose self-test: the carve-out admits a generated dump and refuses a file the TOC loads
+- prose self-test: a waiver-file exclusion meets the same two refusals as the carve-out
+- prose self-test: each list is refused on the matching rule its own scan uses
+- prose self-test: the scan and the refusals read the added exclusions through one reader
+- prose self-test: a narrowing is refused by what it suppresses, not by how it is written
+- prose self-test: the disclosure names what each entry suppressed, and says when it is bounded
+- prose self-test: a malformed waived is a failure, not a silence
+
+### test_layout_cap.lua (13)
+
+- layoutcap: every authored file over the 1500-line cap is named in the census
+- layoutcap: no census row outlives the breach it records
+- layoutcap: every over-cap census row carries one of layout-§1's three terminal states
+- layoutcap: the census and the exempt set agree about which paths were exempted
+- layoutcap: an empty census is written as a result rather than left standing empty
+- layoutcap self-test: the parser reads the census nested under the register, and stops there
+- layoutcap self-test: a census outside its register, or at the wrong level, is not read
+- layoutcap self-test: an over-cap file missing from the census is reported, and an exempt one is not
+- layoutcap self-test: a census row that outlives its breach is reported
+- layoutcap self-test: an over-cap row that names no terminal state is reported
+- layoutcap self-test: the census and the exempt set are held to naming the same paths
+- layoutcap self-test: a census that states nothing is told apart from one that states none
+- layoutcap self-test: the exempt set takes folders as well as paths
+
+### test_diagnostics_contract.lua (9)
+
+- diagnostics contract: both forms run the report
+- diagnostics contract: the debug word is matched in any case
+- diagnostics contract: both markers carry the brand and the end counts the report
+- diagnostics contract: the report appends after what the console already holds
+- diagnostics contract: the report lands with logging off and turns it on for the session
+- diagnostics contract: an addon that opts out lands the report and leaves logging off (skipped: this addon keeps the default (Kit.diagnostics.enablesLogging is not false), so its report turns logging on; the case above holds it)
+- diagnostics contract: with logging already on, the report writes no second enable line
+- diagnostics contract: both forms run while the addon is disabled
+- diagnostics contract: no other name runs the report
+
+### test_lizard_sighted.lua (8)
+
+- lizard sighted: every hazard lizard loses a function over is neutralized
+- lizard sighted: fields, strings, comments and look-alike names come through unchanged
+- lizard sighted: a method definition is rewritten to its dot form with self
+- lizard sighted: no line is added or removed, CRLF included
+- lizard sighted: countFunctions counts the keyword, not strings, comments or longer names
+- lizard sighted: listedCounts reads the per-file table, once per file
+- lizard sighted: parity names every file whose counts differ, and only those
+- lizard sighted: lizard lists every function of a hazard fixture once it is sanitized
+
+## Totals
+
+| Suite | Cases |
+|-------|------:|
+| test_harness.lua | 10 |
+| test_surface_parity.lua | 12 |
+| test_setup.lua | 20 |
+| test_slash.lua | 8 |
+| test_disabled.lua | 14 |
+| test_regions.lua | 12 |
+| test_targeting.lua | 9 |
+| test_season.lua | 8 |
+| test_expression.lua | 18 |
+| test_filters.lua | 12 |
+| test_presets.lua | 9 |
+| test_envinject.lua | 14 |
+| test_regiontags.lua | 13 |
+| test_bridge.lua | 18 |
+| test_apply.lua | 33 |
+| test_panel.lua | 49 |
+| test_panel_layout.lua | 31 |
+| test_layers.lua | 8 |
+| test_settings_layout.lua | 11 |
+| test_skinsetup.lua | 21 |
+| test_skin.lua | 15 |
+| test_skin_picker.lua | 16 |
+| test_skin_eui.lua | 16 |
+| test_skin_outline.lua | 10 |
+| test_skin_verb.lua | 6 |
+| test_reset.lua | 5 |
+| test_diagnostics.lua | 6 |
+| test_glyphs.lua | 3 |
+| test_vendor_sync.lua | 3 |
+| test_eol.lua | 2 |
+| test_prose.lua | 15 |
+| test_layout_cap.lua | 13 |
+| test_diagnostics_contract.lua | 8 |
+| test_lizard_sighted.lua | 8 |
+| Skipped | 1 |
+| **Total** | **456** |

@@ -39,9 +39,11 @@ re-render.
   - *Use the extension's filters* → `filtersActive` (profile). The attached panel's first box
     writes the same path. Off removes the managed block from PGF's expression; on writes it back.
     Separate from *Enable*: the addon stays up and the panel stays shown.
-  - A static line, drawn by the tab's after-group hook (`AFTER_GROUP[FILTER_GROUP]`), not a schema
-    row, so `/pgfe list` does not list it: "The filter options are on the panel under Premade Groups
-    Filter's window: open the Group Finder, choose Dungeons, and it appears below PGF's filters."
+  - A schema `note` row, drawn dim at full width, with no path, so `/pgfe list` and both resets skip
+    it: "The filter options are on the panel under Premade Groups Filter's window: open the Group
+    Finder, choose Dungeons, and it appears below PGF's filters." The EllesmereUI skin advice under
+    it stays in the tab's after-group hook (`AFTER_GROUP[FILTER_GROUP]`), because it reads the
+    client at render time.
 
 - **Region tags** (the third tab; one group, drawn by a host tab in `settings/Panel.lua`):
   - *Show region tags in the Group Finder* → `showRegionTags` (profile), first and unheaded, as the

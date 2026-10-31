@@ -71,6 +71,11 @@ local DROPDOWN_H    = 26          -- WowStyle1DropdownTemplate's height when the
 local ACTION_W      = 88          -- Apply and Clear, at least
 local SELECT_W      = 225         -- the regions, playstyle and composition dropdowns
 local PRESET_BUTTON_MIN_W = 64     -- Save / Save as / Delete never narrower than this
+-- A dropdown's arrow, as LibKa0s's skin picker draws its own: the client's arrow art turned to point
+-- down, a fixed size, in from the right end. Its color is the skin's (paint).
+local GLYPH_ART     = "Interface\\ChatFrame\\ChatFrameExpandArrow"
+local GLYPH_SIZE    = 12
+local GLYPH_PAD     = 8
 -- The readout's two colors: a dungeon still to time in the accent, a timed one disabled. Read from
 -- the skin at write time (ffd100 and 808080 on Ka0s Default, NS.SkinEscape's byte rounding).
 local TARGETED_TOKEN, NOT_TARGETED_TOKEN = "text.accent", "text.disabled"
@@ -333,6 +338,29 @@ local function buildKeyRow(f, body, y)
     return y - 2 * ROW_H + READOUT_PULL
 end
 
+-- ── dropdown arrows ─────────────────────────────────────────────────────────────────────────────
+
+-- WowStyle1DropdownTemplate has no arrow to tint: its Arrow is the atlas of a whole gold button. So
+-- each dropdown carries a glyph under `dd.arrow`, the field S.Dropdown colors ahead of `dd.Arrow`, and
+-- the template's art goes in the call's `stock` (paint). Hidden until syncGlyphs says the Ka0s skin
+-- paints this owner.
+local function addGlyph(dd)
+    local t = dd:CreateTexture(nil, "OVERLAY")
+    t:SetSize(GLYPH_SIZE, GLYPH_SIZE)
+    t:SetPoint("RIGHT", dd, "RIGHT", -GLYPH_PAD, 0)
+    t:SetTexture(GLYPH_ART)
+    t:SetRotation(-math.pi / 2)
+    t:Hide()
+    dd.arrow = t
+end
+
+-- Without the library the template's button stays, and EllesmereUI draws its own arrow, so the glyph
+-- shows only under a Ka0s skin.
+local function syncGlyphs(f)
+    local on = NS.Skin.IsEnabled() and not NS.SkinEUIPainted()
+    for _, dd in ipairs(f.dropdowns) do dd.arrow:SetShown(on) end
+end
+
 -- ── multi-select dropdowns (server regions, playstyle) ──────────────────────────────────────────
 --
 -- A checkbox list in a Blizzard dropdown (Blizzard_Menu CreateCheckbox), right-aligned on its row so
@@ -366,6 +394,7 @@ local function multiSelect(body, y, spec)
     local dd = CreateFrame("DropdownButton", nil, body, "WowStyle1DropdownTemplate")
     dd:SetWidth(SELECT_W)
     dd:SetPoint("TOPRIGHT", 0, y)
+    addGlyph(dd)
     local function isAny() return NS.Filters.IsAny(spec.selected(), anyTotal(spec)) end
     -- An all-ticked set reads as Any, so its entries show unticked, as an empty one's do.
     local function isOn(key) return spec.isOn(key) and not isAny() end
@@ -561,6 +590,7 @@ local function buildPresetRow(f, body, y)
     local dd = CreateFrame("DropdownButton", nil, body, "WowStyle1DropdownTemplate")
     dd:SetPoint("TOPLEFT", 4, y)
     dd:SetPoint("RIGHT", f.saveButton, "LEFT", -BUTTON_GAP, 0)
+    addGlyph(dd)
     dd:SetDefaultText(L.PRESET_NONE)
     dd:SetupMenu(presetMenu)
     menuTooltip(dd, L.PRESETS, L.PRESETS_TOOLTIP)
@@ -690,14 +720,17 @@ local function collapsedHeight()
     return h
 end
 
+local function tintChevron(btn, r, g, b, a)
+    if btn and btn.chevron then btn.chevron:SetVertexColor(r, g, b, a) end
+end
+
 -- The chevrons' color: the skin's `icon.arrow`, the color its own paging arrows take. A skin that
 -- leaves the token alone leaves the art's white.
 local function tintChevrons(mm)
     local r, g, b, a = NS.SkinColor("icon.arrow")
     if r == nil then return end
-    for _, btn in ipairs({ mm.MinimizeButton, mm.MaximizeButton }) do
-        if btn and btn.chevron then btn.chevron:SetVertexColor(r, g, b, a) end
-    end
+    tintChevron(mm.MinimizeButton, r, g, b, a)
+    tintChevron(mm.MaximizeButton, r, g, b, a)
 end
 
 -- The header's click band: the title band's depth, capped at the body's top so a click in the
@@ -707,14 +740,17 @@ local function headerClickHeight(inset, h)
 end
 
 -- The button centered on the band, ARROW_PAD in from its right end, the same box in every skin; the
--- header's click band covers the band up to it.
+-- header's click band covers the band up to it. Anchored only when the band moved: every Refresh
+-- lands here, and nothing else anchors these two frames.
 local function placeMinMax(f)
     local mm = f.MaximizeMinimizeFrame
     if not mm then return end
+    tintChevrons(mm)
     local inset, h = titleBand()
+    if f.placedInset == inset and f.placedBand == h then return end
+    f.placedInset, f.placedBand = inset, h
     mm:ClearAllPoints()
     mm:SetPoint("TOPRIGHT", f, "TOPRIGHT", -(inset + ARROW_PAD), -(inset + (h - ARROW_BTN) / 2))
-    tintChevrons(mm)
     local hc = f.headerClick
     if not hc then return end
     hc:ClearAllPoints()
@@ -728,6 +764,7 @@ local function applyLayout(f)
     local ok, missing = NS.Bridge.Check()
     f:SetHeight(collapsed and collapsedHeight() or f.expandedHeight)
     placeMinMax(f)
+    syncGlyphs(f)
     syncMinMax(f, collapsed)
     f.body:SetShown(ok and not collapsed)
     f.unsupported:SetShown(not ok and not collapsed)
@@ -862,9 +899,8 @@ local function paint(f)
     S.Checkbox(f.activeCheck, { borderInset = CHECK_INSET })
     for _, cb in pairs(f.checks) do S.Checkbox(cb, { borderInset = CHECK_INSET }) end
     for _, box in ipairs({ f.levelBox, f.ageBox, f.rangeBox }) do S.EditBox(box) end
-    for _, dd in ipairs({ f.regionSelect, f.playstyleSelect, f.compositionSelect, f.presetDropdown }) do
-        S.Dropdown(dd)
-    end
+    -- `stock`: S.Dropdown's own list knows neither of the template's two art regions by name (image 35).
+    for _, dd in ipairs(f.dropdowns) do S.Dropdown(dd, { stock = { dd.Background, dd.Arrow } }) end
     for _, b in ipairs({ f.saveButton, f.saveAsButton, f.deleteButton, f.applyButton, f.clearButton }) do
         S.Button(b)
     end
@@ -891,6 +927,7 @@ local function buildFrame(dialog)
     local y = 0
     for _, build in ipairs(BUILDERS) do y = build(f, body, y) end
     f.expandedHeight = -BODY_TOP - y + BODY_BOTTOM
+    f.dropdowns = { f.regionSelect, f.playstyleSelect, f.compositionSelect, f.presetDropdown }
     f.unsupported = label(f, "", 14, BODY_TOP, "GameFontDisable")
     buildMinMax(f)
     buildHeaderClick(f)

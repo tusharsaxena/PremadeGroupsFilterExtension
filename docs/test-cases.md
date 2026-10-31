@@ -263,7 +263,7 @@ Total.
 - apply: a Clear refusal and a Clear success each write one [Clear] line
 - apply: a filtersActive toggle writes one [Apply] toggled line
 
-### test_panel.lua (80)
+### test_panel.lua (49)
 
 - panel: the module publishes its namespace table
 - panel: anchored under PGF dialog, both edges
@@ -313,6 +313,10 @@ Total.
 - panel: the min/max arrow follows the stored collapsed state
 - panel: collapsed shows only the skin's title band; no metal header copies are built
 - panel: Apply leaves focus alone; Enter in the copy box focuses the search box
+- panel: visibility logs on change only, and again after a stand-down
+
+### test_panel_layout.lua (31)
+
 - panel: the min/max arrows are chevron icons on the skin's button, expanded up and collapsed down
 - panel: the regions and playstyle dropdowns are 225 wide, right-aligned in one column
 - panel: each menu opens with Any and a divider; Any is ticked with nothing ticked and clears
@@ -344,7 +348,6 @@ Total.
 - panel: the panel's frame level is above PGF's dialog and its border
 - panel: the title is the full addon name, and the copy box centers its range
 - panel: a click on the header strip collapses and expands, like the arrow
-- panel: visibility logs on change only, and again after a stand-down
 
 ### test_layers.lua (8)
 
@@ -357,7 +360,7 @@ Total.
 - layers: every PGFE popup spec restores on hide
 - layers: no strata literal, no absolute level, no direct StaticPopup_Show
 
-### test_settings_layout.lua (11)
+### test_settings_layout.lua (13)
 
 - layout: every stored path, its type and its default are unchanged by item 020
 - layout: the region-tag switch leads the Region tags tab, unheaded, beside its colors
@@ -367,6 +370,8 @@ Total.
 - layout: the filters switch reads true on both surfaces
 - layout: without EllesmereUI the Filters tab carries no PGF skin pointer
 - layout: under EllesmereUI a missing PGF skin is named, with its link right under it
+- layout: the Filters pointer draws once, above the skin advice, and is no setting
+- layout: the Filters pointer is a schema note row the page draws
 - layout: the link box selects on focus and leaves the pooled editbox frame as it found it
 - layout: under EllesmereUI a disabled or loaded PGF skin is named, with no link
 - layout: the header Defaults describes the reset in Reset all settings' own words
@@ -395,7 +400,7 @@ Total.
 - skin seam: each host-copy skin token is the live library's Ka0s Default value
 - skin seam: the descriptor reaches LibSharedMedia, so the panel preloads the faces it previews
 
-### test_skin.lua (14)
+### test_skin.lua (19)
 
 - skin: under Ka0s Default the one panel is painted through the facade, every widget and label
 - skin: the colors the panel writes under Ka0s Default are its exact pixels
@@ -406,9 +411,14 @@ Total.
 - skin: the panel's geometry: 24px check buttons on the rows' centers, flush under the dialog
 - skin: collapsed, the panel folds to the skin's title band, Ka0s Default's included
 - skin: the min/max button is one size and centered on the title band in every skin
+- skin: a Refresh re-anchors the min/max button only when the band moved
 - skin: the panel writes the skin's colors: locked boxes, the dimmed label, the readout
 - skin: a pick after the panel is built rewrites the colors the panel reads from tokens
 - skin: with Ignore settings panel on, the panel's labels and title still wear the skin
+- skin: every panel dropdown drops the template's art and draws the skin's glyph arrow
+- skin: the dropdown glyph follows a live switch and stays under Ignore settings panel
+- skin: without the library the dropdowns keep the template's art and no glyph shows
+- skin: while EllesmereUI paints the panel its own arrow is the only one
 - skin: a pick while stood down builds nothing; the stand-up shows the same panel in the new skin
 - skin: modules/Panel.lua types no color: no literal SetTextColor, tooltip color or markup
 
@@ -431,7 +441,7 @@ Total.
 - skin tools: a host release is chained onto the skin's restore, both run
 - skin tools: the debug console is painted for this owner
 
-### test_skin_eui.lua (13)
+### test_skin_eui.lua (16)
 
 - eui migration: with EllesmereUI, every profile but an explicit false moves to skin.source eui
 - eui migration: without EllesmereUI every profile keeps the Ka0s source
@@ -440,6 +450,9 @@ Total.
 - eui: the folder is registered with EllesmereUI once, by the library
 - eui: no addon file reads EllesmereUIDB or registers with EllesmereUI itself
 - eui: once EllesmereUI paints the owner, the panel goes to its facade
+- eui: an owner that was never on the eui source answers unpainted without building the status
+- eui: leaving the eui source after a paint still reads as painted, until the reload
+- eui: an owner on the eui source reads the status, so a closed gate still asks for the reload
 - eui: before EllesmereUI paints, the eui source wears Ka0s Default through the library
 - eui: no addon file reaches the library-internal __DrawsKey
 - eui: the collapsed panel folds to EllesmereUI's 25px shell bar
@@ -579,13 +592,14 @@ Total.
 | test_regiontags.lua | 13 |
 | test_bridge.lua | 18 |
 | test_apply.lua | 33 |
-| test_panel.lua | 80 |
+| test_panel.lua | 49 |
+| test_panel_layout.lua | 31 |
 | test_layers.lua | 8 |
-| test_settings_layout.lua | 11 |
+| test_settings_layout.lua | 13 |
 | test_skinsetup.lua | 21 |
-| test_skin.lua | 14 |
+| test_skin.lua | 19 |
 | test_skin_picker.lua | 16 |
-| test_skin_eui.lua | 13 |
+| test_skin_eui.lua | 16 |
 | test_skin_outline.lua | 10 |
 | test_skin_verb.lua | 6 |
 | test_reset.lua | 5 |
@@ -598,4 +612,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **452** |
+| **Total** | **462** |

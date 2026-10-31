@@ -108,7 +108,8 @@ function Helpers.ValidateSchema()
                 pout("|cffff0000schema error|r: " .. where .. ": missing or non-string `section`")
                 errors = errors + 1
             end
-            if type(def.label) ~= "string" then
+            -- A note row is text in the schema: it has `text` (the library checks it), no label.
+            if def.type ~= "note" and type(def.label) ~= "string" then
                 pout("|cffff0000schema error|r: " .. where .. ": missing or non-string `label`")
                 errors = errors + 1
             end

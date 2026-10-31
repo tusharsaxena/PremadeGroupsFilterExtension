@@ -40,7 +40,7 @@ test("reset: Reset all settings sweeps the debug console off", function()
     assertFalse(NS.DebugLog:IsShown())
 end)
 
--- red under: drop resetExempt (settings/Schema.lua:89) AND make Settings.VetoedFromResetAll return only row.page == "profiles" (:144)
+-- red under: drop resetExempt (settings/Schema.lua:90) AND make Settings.VetoedFromResetAll return only row.page == "profiles" (:146)
 -- Two layers protect the row on this path: db:ResetProfile() leaves `global` alone and the walk
 -- reaches only sessionOnly rows (Settings.VetoedFromResetAll), and resetExempt vetoes it inside the
 -- bracket (libs/LibKa0s/Schema.lua:649). Red-proved: either mutation alone keeps this case green;
@@ -56,7 +56,7 @@ test("reset: Reset all settings leaves the minimap button hidden", function()
     assertFalse(m.minimapButtons[NAME].shown, "the button stays hidden")
 end)
 
--- red under: drop resetExempt on the minimap row (settings/Schema.lua:89)
+-- red under: drop resetExempt on the minimap row (settings/Schema.lua:90)
 -- The page Defaults path brackets its writes (bulkBegin), so resetExempt is its only layer.
 test("reset: the General page's Defaults leaves the minimap button hidden", function()
     local NS, _, m = T.enableAddon()

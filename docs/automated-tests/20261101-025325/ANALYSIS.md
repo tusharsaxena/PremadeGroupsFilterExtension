@@ -1,0 +1,78 @@
+# Analysis — 20261101-025325
+
+- **Addon:** PremadeGroupsFilterExtension 1.0.0
+- **Verdict:** green
+- **Commit:** 9da00b9 (feat/2026-10-31-findings-remediation)
+- **Previous run:** 20261101-001036
+
+## Headline
+
+All four suites pass on a clean tree under the label `final-pre-merge` (`manifest.json`). Against the
+previous run, tests grew 459 → 463, the same one skip stands, and every perf allocation and API figure
+held. Complexity is clean with no function above CCN 15, the largest at 14. Nothing to act on.
+
+## Suites
+
+| Suite | Status | Result | Artifact | Moved since 20261101-001036 |
+|---|---|---|---|---|
+| lint | pass | 0 warnings / 0 errors in 69 files | [`lint.txt`](lint.txt) | Not moved |
+| tests | pass | 462 passed, 1 skipped, 0 failed, 463 total | [`tests.txt`](tests.txt) · [`test-cases.md`](test-cases.md) | Total 459 → 463, same one skip |
+| perf | pass | 6 scenarios | [`perf.txt`](perf.txt) · [`perf.json`](perf.json) | api/iter and bytes/iter unchanged in all six |
+| complexity | pass | see below | [`complexity.txt`](complexity.txt) | NLOC 9642 → 9716, functions 1419 → 1430, avg tokens 51.9 → 52.0 |
+
+| Metric | Value |
+|---|---|
+| Total NLOC | 9716 |
+| Functions | 1430 |
+| Avg NLOC / function | 5.8 |
+| Avg CCN | 2.0 |
+| Max CCN | 14 |
+| Avg tokens / function | 52.0 |
+| Warnings (CCN > 15) | 0 |
+| Warning rate (`Fun Rt` / `nloc Rt`) | 0.00 / 0.00 |
+| Files in the 1000–1500 band | 1 |
+| Files over the 1500 cap | 0 |
+| Blind files (parity mismatch) | 0 |
+| Crashed files (lizard raised) | 0 |
+
+**tests.** Pass, with one skip that is pre-existing: the kit's diagnostics opt-out case. This addon
+keeps the default, so the case does not apply (`tests.txt`). The skip is counted in the total and not
+in `passed`, and at the release gate it is not evaluated.
+
+**complexity.** Sighted and measured: `blindFiles` and `crashedFiles` are both 0, and nothing warns
+(`manifest.json`).
+
+## What moved
+
+- **lint:** did not move: 69 files, 0/0.
+- **tests:** 459 → 463 cases; failures unchanged at 0, skips unchanged at 1. All four new cases are in
+  `test_skin.lua` (15 → 19) and cover the panel's dropdown arrow (`test-cases.md`).
+- **perf:** the scenario count (6) and every api/iter and bytes/iter figure are unchanged,
+  `combatEvents` included at 143.00 api/iter and 28113.1 bytes/iter (`perf.txt`). All six ms/iter
+  figures fell, for example `combatEvents` 0.31532 → 0.24903. `perf.txt` says timings are for
+  orientation only, so they are not read as a change.
+- **complexity:** Total NLOC 9642 → 9716 and functions 1419 → 1430, which is growth. Avg NLOC (5.8),
+  avg CCN (2.0) and max CCN (14) did not move. Avg tokens rose 51.9 → 52.0, which is the rounding-size
+  edge of the figure and not a density signal on its own. Band files stay at 1 and over-cap files at 0.
+
+## Complexity watch list
+
+**Functions `lizard` warned on:**
+
+| Function | CCN | Location | Disposition |
+|---|---|---|---|
+
+None.
+
+**Files by `layout-§1` band:**
+
+| Band | File | LOC | Disposition |
+|---|---|---|---|
+| 1000–1500 (on notice) | `modules/Panel.lua` | 1063 | on notice: cohesive, the row builders, layout and paint of the one attached panel frame; split the row builders out before it reaches 1500 lines |
+
+No entry is new this run, so no Disposition cell is blank. `modules/Panel.lua` rose 1032 → 1063 lines
+inside the band it already sat in, and the runner carried its disposition forward.
+
+## Actions
+
+None.

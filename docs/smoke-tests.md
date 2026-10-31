@@ -12,7 +12,7 @@ takes the next free number in its theme and a retired number is never reused.
 |---|---|---|
 | INSTALL-1..3 | Install | Load with and without PGF, reload, first run |
 | SLASH-1..4 | Slash | `/pgfe` verbs, help, the long alias, `/pgfe skin` |
-| PANEL-1..4 | Settings panel | Landing page, General page, Defaults, the General page's layout after item 020 |
+| PANEL-1..5 | Settings panel | Landing page, General page, Defaults, the General page's layout after item 020, the Filters tab's note line |
 | PROFILE-1..2 | Profiles | The Profiles page and `/pgfe profile` |
 | STATE-1..2 | Enable / disable | Stand-down and stand-up |
 | COMBAT-1..2 | Combat | Apply refusal, settings panel in combat |
@@ -23,7 +23,7 @@ takes the next free number in its theme and a retired number is never reused.
 | LOC-1..2 | Non-English client | Realm-name and dungeon-name seams on a deDE/frFR client |
 | SKIN-1..10 | EllesmereUI skin (retired) | The record of the addon's own EllesmereUI bridge, retired by the skinning rollout's PG-06 (2026-10-29); EllesmereUI is now the library's `eui` skin source |
 | SKIN-11..33 | Skins | The skinning rollout (2026-10-29) and its library follow-ups (2026-10-30): Ka0s Default's look, the Skin tab, the first-run picker, the attached panel, the settings pages and the debug console under every skin, fonts, profiles, the copy, stand-down, the `euiSkin` migration, EllesmereUI on and off, diagnostics, the launcher, a degraded install, the panel under the Scope switches |
-| SKIN-34..39 | Skins | The skin fonts and feedback run (2026-10-30, LibKa0s v1.82.0): the Font outline setting, the panel's text and the Font outline's default, the new faces, the attached panel's width parity across skins, the collapse button's chevron and place |
+| SKIN-34..42 | Skins | The skin fonts and feedback run (2026-10-30, LibKa0s v1.82.0): the Font outline setting, the panel's text and the Font outline's default, the new faces, the attached panel's width parity across skins, the collapse button's chevron and place; the findings remediation's re-anchor check, the panel's flat dropdowns and the one media picker |
 
 ## Before you start
 
@@ -54,7 +54,7 @@ season. Know your best timed level per dungeon (the Mythic+ tab) before the APPL
   lists `skin` right after `config`, "Choose a skin: open the skin picker". In combat, `/pgfe skin`
   twice → a gray "cannot open the skin picker during combat" line each time, no picker. `/pgfe
   disable`, then `/pgfe skin` → the one disabled line, no picker. Fail: the picker not opening on a
-  seen profile, a second press in combat printing nothing, or a Lua error. Result:
+  seen profile, a second press in combat printing nothing, or a Lua error. Result: Owner reported pass, 2026-10-31
 
 ## Settings panel
 
@@ -85,6 +85,13 @@ season. Know your best timed level per dungeon (the Mythic+ tab) before the APPL
   - `/pgfe list` lists the same settings in the same order with the same values as before; `/reload`
     → every value survives. No setting lost, no moved key, no changed default.
   Result: pass (owner-marked 2026-10-24)
+- **PANEL-5. The Filters tab's note line (LibKa0s#59).** Settings → General → *Filters*, under each of
+  Ka0s Default and one other skin: the line "The filter options are on the panel under Premade Groups
+  Filter's window: ..." sits under *Use the extension's filters* at full width, wrapped, in the smaller
+  dim face rather than the old white text, and stays readable. With EllesmereUI loaded the skin advice
+  still follows it. `/pgfe list` does not show the line; **Defaults** → Yes raises no error. Fail: the
+  line missing, drawn twice, or too faint to read.
+  Result:
 
 ## Profiles
 
@@ -357,7 +364,7 @@ Default, and a player who wants the client's look picks **WoW Default** (SKIN-11
   **Ignore fonts** off), **Copy to every Ka0s addon…** and the note. With EllesmereUI loaded, its own
   condition line names *PremadeGroupsFilterExtension* (the folder, as EllesmereUI's Third-Party
   Addons list shows it). `/pgfe get skin.skin` → `ka0s`; `/pgfe set skin.skin nonsense` is refused;
-  `/pgfe set skin.skin obsidian` repaints the open panel at once. Result:
+  `/pgfe set skin.skin obsidian` repaints the open panel at once. Result: Owner reported pass, 2026-10-31
 - **SKIN-13. The first-run picker (PG-04; owner ruling O3; the follow-ups' ruling R-11).** On a
   profile that has never closed it (any profile right after the upgrade, old or new) log in → the
   library's skin picker shows once, titled **Choose a skin**, with *Ka0s Premade Groups Filter
@@ -412,7 +419,7 @@ Default, and a player who wants the client's look picks **WoW Default** (SKIN-11
   Prototype on the panel too). Tick **Ignore fonts** under Ember → every string on the panel and the
   console (its title-bar labels included) keeps the game's face and size and still takes the skin's
   colors. Untick it, set **Font** to another LibSharedMedia font → the panel's text takes it; clear it
-  → "Skin's default" again. **Texture** changes nothing visible (the addon draws no bars). Result:
+  → "Skin's default" again. **Texture** changes nothing visible (the addon draws no bars). Result: Owner reported pass, 2026-10-31
 - **SKIN-21. Profiles (PG-01, PG-04).** Give two profiles different skins and switch between them on
   the Profiles page → the panel and console follow each time, no reload. Create a new profile → the
   picker shows for it; reset a profile → Ka0s Default and the picker again. A profile switch with the
@@ -483,14 +490,14 @@ one place to show: the panel's text, outlined from the skin's Font outline.
   another profile → its own mode (HUD text only by default) applies; switch back → the first one's. Tick
   **Ignore fonts** → the dropdown grays out and the panel takes the game's faces. Fail: the outline
   not following the setting live, a mode lost on reload or a profile switch, or a Lua error.
-  Result:
+  Result: Owner reported pass, 2026-10-31
 - **SKIN-35. The panel's text and the Font outline (PG-01; ruling D-07, moved by PG-F01, D-10).** On a
   new profile under each of Ka0s Default, Obsidian and WoW Forever, open PGF on Dungeons → the panel's
   strings are not outlined (HUD text only). A profile that stored **All text** before LibKa0s v1.83.0
   keeps it: pick **All text**, `/reload` → the strings are outlined (the skin's *From skin* flag
   resolves to OUTLINE). The debug console (`/pgfe debug`) text is the monospace face, never outlined.
   Fail: an outlined panel string on a new profile, an unoutlined one under All text, a stored All text
-  moved, an outlined console line, or a Lua error. Result:
+  moved, an outlined console line, or a Lua error. Result: Owner reported pass, 2026-10-31
 - **SKIN-36. The new faces (PG-01; rulings D-01, D-02; moved by PG-F01, D-01, D-06).** Ka0s Default →
   the panel draws Prototype; Obsidian → Expressway, its title the blue of its primary button; WoW
   Forever → Fira Sans Medium for the labels, Fira Sans SemiBold for the title; WoW Midnight → Segoe UI
@@ -498,12 +505,12 @@ one place to show: the panel's text, outlined from the skin's Font outline.
   High Contrast → Doris PP; Glass → Avant Garde; WoW Default → Friz Quadrata, visibly unlike Ka0s
   Default. No character on the panel draws as a box or a blank in any of the nine skins (the dungeon
   short names, the readout, the region names). Fail: a missing glyph, a face other than the one named,
-  or a Lua error. Result:
+  or a Lua error. Result: Owner reported pass, 2026-10-31
 - **SKIN-37. The attached panel's width parity (PG-01; ruling D-08).** Open PGF on Dungeons and pick
   each of the nine skins in turn → the panel's labels, the dungeon rows, the readout and the copy
   label fit their places in every skin as they do in Ka0s Default, on the default Font outline and on All
   text: no label truncated, run into its control or wrapped where Ka0s Default's is not. Fail: any string clipped or overlapping
-  in one skin and not in Ka0s Default. Result:
+  in one skin and not in Ka0s Default. Result: Owner reported pass, 2026-10-31
 - **SKIN-38. The collapse button: a chevron, on the band, in every skin (PG-02; ruling D-20,
   image-33/34, image-48..51).** Open PGF on Dungeons. Under each of the nine skins, and under
   EllesmereUI (source **EllesmereUI** with its four conditions met, after the reload): the button at
@@ -515,7 +522,7 @@ one place to show: the panel's text, outlined from the skin's Font outline.
   same size in every skin. Under EllesmereUI it sits on the 25px shell bar. Click it → the panel
   folds; click again → it unfolds; click the title band left of it → the same toggle; the button's
   own click still works at its left edge. Fail: text in the box, a chevron missing or pointing the
-  wrong way, a box off the band or a different size in one skin, or a Lua error. Result:
+  wrong way, a box off the band or a different size in one skin, or a Lua error. Result: Owner reported pass, 2026-10-31
 
 The font pickers and skin faces run's check (Ka0sAddonsCommonTasks
 `docs/2026-10-31-FONT_PICKERS_AND_SKIN_FACES/`, LibKa0s v1.83.0, item PG-F01). This run also moved
@@ -526,7 +533,39 @@ SKIN-12, SKIN-20 and SKIN-34 to SKIN-37, and re-opened SKIN-12 and SKIN-20.
   → the list starts with "Skin's default (X)", and every row is drawn in its own face, that first row
   too. Open **Texture** → every row shows its bar. Pick a font and a texture, then reset both → each
   reads "Skin's default" again and the panel is back. Fail: a row in the plain menu face, a missing
-  swatch, the words "Skin's own", or a Lua error. Result:
+  swatch, the words "Skin's own", or a Lua error. Result: Owner reported pass, 2026-10-31
+
+The findings remediation's check (Ka0sAddonsCommonTasks `docs/2026-10-31-FINDINGS_REMEDIATION/`, item
+FX-PG-PERF). The collapse button is now anchored only when the title band moves, and its tint and the
+EllesmereUI read took a shorter path; nothing should look different.
+
+- **SKIN-40. The collapse button follows a live skin switch.** Open PGF's dialog on Dungeons with the
+  panel showing. `/pgfe skin`, then pick skins with different title bands in turn (Glass, WoW Default,
+  Ka0s Default) → after each pick the box stays centered on the band, its chevron takes the skin's arrow
+  color, and the click band still ends at the box. Fold the panel and pick again → it refolds to the new
+  band. With EllesmereUI painting the panel: switch the source to Ka0s skins → the box stays on the 25px
+  shell bar until the reload the game asks for; turn EllesmereUI's third-party skinning off and press
+  a filter checkbox → the same reload request appears. Fail: a box left on the old band, a stale chevron
+  color, a missing reload request, or a Lua error. Result:
+- **SKIN-41. The panel's dropdowns are flat (PG-D1).** Open PGF's dialog on Dungeons with the panel
+  showing, on Ka0s Default → Server regions, Playstyle, Composition and the Presets dropdown each draw
+  a flat dark box with the skin's edge and one small gold triangle at the right end, the look of the
+  dropdown in `/pgfe skin`: no gold button and no stock bevel. Each still opens its menu, its text reads
+  up to the triangle and is not clipped, and its height matches Save beside it. The boxes keep no
+  hover art now, as the skin picker's has none (this replaces APPLY-19's hover-art line). With
+  `/pgfe skin` open, pick other skins in turn (Glass, Ember, WoW Default) → box and triangle take each
+  skin's colors live. Tick *Ignore settings panel* → they stay skinned. With EllesmereUI painting the
+  panel → one arrow only, EllesmereUI's. Fail: a gold button or bevel left, two arrows, a triangle on
+  the wrong side or pointing the wrong way, a color that lags a pick, or a Lua error. Result:
+
+- **SKIN-42. One media picker (M3-MEDIA; the owner's ruling of 2026-11-01).** This addon has no border
+  row: its panel's media rows are the Skin tab's Font and Texture, so they stand in here. Fully restart
+  the client with another addon that carries AceGUI-3.0-SharedMediaWidgets enabled, if you have one.
+  Pick a non-default skin. `/pgfe config` -> General -> **Skin** -> *Font and texture*: open **Font**,
+  then **Texture** -> each closed row and its pull-out wear the skin's colors and edge, with every row
+  in its own face or beside its swatch, and none is a stock SharedMedia list. Pick an entry in each ->
+  the first click selects and closes, and the row reads it. Reset both. Fail: a stock pull-out, a
+  blank row on the first open, or a Lua error. Result:
 
 ## Frame layering
 
@@ -594,8 +633,9 @@ frame layering run passed (LAYER-1..3 and PANEL-4, with PANEL-4's re-check of PA
 APPLY-24, APPLY-26 and SKIN-10), recorded on each `Result:` line as `pass (owner-marked 2026-10-24)`.
 A check added or rewritten after that date is listed here until its `Result:` line records a pass.
 
-Owed from the skin fonts and feedback run (`docs/2026-10-30-SKIN_FONTS_AND_FEEDBACK/`, LibKa0s
-v1.82.0): SLASH-4 and SKIN-34 to SKIN-38.
+On 2026-10-31 the owner reported that every check of the skin fonts and feedback run
+(`docs/2026-10-30-SKIN_FONTS_AND_FEEDBACK/`, LibKa0s v1.82.0) and the font pickers and skin faces run
+(`docs/2026-10-31-FONT_PICKERS_AND_SKIN_FACES/`, LibKa0s v1.83.0) passed: SLASH-4, SKIN-12, SKIN-20
+and SKIN-34 to SKIN-39, each recorded on its `Result:` line.
 
-Owed from the font pickers and skin faces run (`docs/2026-10-31-FONT_PICKERS_AND_SKIN_FACES/`, LibKa0s
-v1.83.0): SKIN-12, SKIN-20 and SKIN-39, with SKIN-34 to SKIN-37 as they now read.
+Owed from the findings remediation (`docs/2026-10-31-FINDINGS_REMEDIATION/`): SKIN-40, SKIN-41, SKIN-42, PANEL-5.
