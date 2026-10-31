@@ -267,6 +267,7 @@ end
 local VERBS = {
     help        = { check = function(_, m) return #m.prints > 1 end },
     config      = { check = function(_, _, ctx) return ctx.opened.n == 1 end },
+    skin        = { check = function(NS, m) return onlyLine(m, disabledLine(NS)) end },
     enable      = { check = function(NS) return not NS.IsStoodDown() end },
     disable     = { check = function(NS, m) return NS.IsStoodDown() and #m.prints == 1 end },
     version     = { check = function(_, m) return m.prints[1] ~= nil and m.prints[1]:find("1.0.0", 1, true) ~= nil end },

@@ -77,7 +77,7 @@ test("skin: under Ka0s Default the one panel is painted through the facade, ever
     for _, fs in ipairs(texts(f)) do assertTrue(recorded(Skin, fs), "a label was not painted") end
     assertTrue(#texts(f) >= 10, "the label walk found the panel's font strings")
     assertTrue(Skin.painted[f].calls.Shell ~= nil, "the window is the skin's Shell")
-    assertTrue(Skin.painted[f.MaximizeMinimizeFrame.MinimizeButton].calls.PageButton ~= nil)
+    assertTrue(Skin.painted[f.MaximizeMinimizeFrame.MinimizeButton].calls.Button ~= nil)
     assertTrue(Skin.painted[f.activeCheck].calls.Checkbox ~= nil)
     assertTrue(Skin.painted[f.levelBox].calls.EditBox ~= nil)
     assertTrue(Skin.painted[f.presetDropdown].calls.Dropdown ~= nil)
@@ -197,6 +197,47 @@ test("skin: collapsed, the panel folds to the skin's title band, Ka0s Default's 
     assertEqual(f.__height, Skin:Token(OWNER, "title.height"))
     NS.ApplySkinChoice("ka0s", "obsidian")
     assertEqual(f.__height, Skin:Token(OWNER, "title.height"))
+end)
+
+-- PG-02 of the skin fonts and feedback run (ruling D-20, image-48..51): the min/max button had no
+-- size of its own and sat on the hidden template close button's anchor, so it landed on a different
+-- part of the band, or the window edge, in each skin. Now it is one size everywhere, centered on
+-- the skin's title band (the band Shell draws: `win.borderSize` in from a flat edge, else 1, and
+-- `title.height` tall), 4px in from the right; the header's click band covers the band up to it.
+test("skin: the min/max button is one size and centered on the title band in every skin", function()
+    -- red under: the CloseButton anchor (no TOPRIGHT point on the frame, no size), or a fixed offset
+    -- that ignores the skin's edge and band height.
+    local NS, _, Skin = setup()
+    local f = NS.Panel.frame
+    local mm = f.MaximizeMinimizeFrame
+    local n = 0
+    for _, def in ipairs(Skin:Skins()) do
+        NS.ApplySkinChoice("ka0s", def.key)
+        n = n + 1
+        local style = Skin:Token(OWNER, "win.borderStyle") or "flat"
+        local inset = style == "flat" and Skin:Token(OWNER, "win.borderSize") or 1
+        local h = Skin:Token(OWNER, "title.height") or 30
+        assertEqual(mm.__width, 20, def.key .. ": width"); assertEqual(mm.__height, 20, def.key .. ": height")
+        for _, btn in ipairs({ mm.MinimizeButton, mm.MaximizeButton }) do
+            assertEqual(btn.__width, 20, def.key .. ": a button's width")
+            assertEqual(btn.__height, 20, def.key .. ": a button's height")
+            assertEqual(btn.chevron.__width, 12, def.key .. ": the chevron's size")
+            local p, rel = btn:GetPoint(1)
+            assertEqual(p, "CENTER"); assertTrue(rel == mm, def.key .. ": the button on its frame")
+        end
+        assertEqual(#mm.__points, 1, def.key .. ": one anchor")
+        local p, rel, rp, x, y = mm:GetPoint(1)
+        assertEqual(p, "TOPRIGHT"); assertTrue(rel == f, def.key .. ": on the panel"); assertEqual(rp, "TOPRIGHT")
+        assertEqual(x, -(inset + 4), def.key .. ": x")
+        assertEqual(y, -(inset + (h - 20) / 2), def.key .. ": y, centered on the band")
+        local _, _, _, _, bodyTop = f.body:GetPoint(1)
+        assertEqual(f.headerClick.__height, math.min(inset + h, -bodyTop),
+            def.key .. ": the click band covers the title band")
+        assertTrue(f.headerClick.__height <= -bodyTop, def.key .. ": the click band stops above the body")
+        local _, _, _, cx = f.headerClick:GetPoint(2)
+        assertEqual(cx, -(inset + 4 + 20), def.key .. ": the click band stops at the button")
+    end
+    assertEqual(n, 9, "every registered skin")
 end)
 
 test("skin: the panel writes the skin's colors: locked boxes, the dimmed label, the readout", function()

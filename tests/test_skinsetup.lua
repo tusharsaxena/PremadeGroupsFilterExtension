@@ -1,7 +1,7 @@
 -- tests/test_skinsetup.lua — the LibKa0s-Skin-1.0 seam (core/SkinSetup.lua, skinning-§1..§3; PG-01).
 --
 -- What this addon owes the skin engine, and nothing the library pins itself: the owner is
--- registered under the folder name with this addon's read and write seams; the seven skin.* keys
+-- registered under the folder name with this addon's read and write seams; the eight skin.* keys
 -- default to Ka0s Default and are skip-render schema rows on the Skin tab; the tab is the library's
 -- and the General page's last; the profile's skin is applied right after AceDB exists and on every
 -- profile event; one pick from the tab, or from another addon's copy, is ONE effective SetChoice
@@ -20,7 +20,7 @@ local NO_LIBKA0S = T.loadAddon.libFiles
 
 local KEYS = {
     { "source", "ka0s" }, { "skin", "ka0s" }, { "ignorePanel", true }, { "ignoreFonts", false },
-    { "font", "" }, { "texture", "" }, { "pickerSeen", false },
+    { "font", "" }, { "texture", "" }, { "outline", "hud" }, { "pickerSeen", false },
 }
 
 --- An enabled instance, its Skin major and a counter of this owner's looks changes and reload
@@ -115,7 +115,7 @@ end)
 
 -- ── the keys and the rows ────────────────────────────────────────────────────────────────────────
 
-test("skin seam: the seven skin keys default to Ka0s Default, the picker unseen", function()
+test("skin seam: the eight skin keys default to Ka0s Default, the picker unseen", function()
     -- red under: a default other than today's look, or pickerSeen true (owner ruling O3: every
     -- profile, old and new, gets the first-run picker).
     local NS = T.bootAddon()
@@ -297,6 +297,23 @@ test("skin seam: the degraded facade answers every name the live facade carries"
     assertEqual(degraded.ApplySkinChoice(), false, "nothing to apply without the library")
 end)
 
+-- PG-01 review: the degraded FontFlags takes the library's `where`, as the library does while the
+-- owner ignores fonts (nothing to resolve a Font outline through): stock flags ("") for window text,
+-- "OUTLINE" for the HUD. HudFontSize answers the stored size, or 12 for none.
+test("skin seam: the degraded FontFlags and HudFontSize answer as the library does unskinned", function()
+    -- red under: a FontFlags that ignores `where` (window text drew OUTLINE)
+    local S = T.newAddon{ skip = NO_LIBKA0S }.Skin
+    assertEqual(S.FontFlags("THICKOUTLINE"), "THICKOUTLINE", "a picked flag stands")
+    assertEqual(S.FontFlags("", "window"), "", "a picked empty flag stands")
+    assertEqual(S.FontFlags(S.FROM_SKIN), "OUTLINE", "From skin on the HUD")
+    assertEqual(S.FontFlags(nil), "OUTLINE", "nothing stored on the HUD")
+    assertEqual(S.FontFlags(S.FROM_SKIN, "window"), "", "From skin on window text")
+    assertEqual(S.FontFlags(nil, "window"), "", "nothing stored on window text")
+    assertEqual(S.HudFontSize(24), 24, "the stored size")
+    assertEqual(S.HudFontSize(0), 12, "zero is none")
+    assertEqual(S.HudFontSize(nil), 12, "none")
+end)
+
 test("skin seam: each host-copy skin token is the live library's Ka0s Default value", function()
     -- A copy that drifts from the library goes red here, so a degraded install draws Ka0s Default.
     local degraded = T.newAddon{ skip = NO_LIBKA0S }
@@ -313,4 +330,15 @@ test("skin seam: each host-copy skin token is the live library's Ka0s Default va
         end
     end
     assertTrue(n > 0, "the host copy is empty")
+end)
+
+test("skin seam: the descriptor reaches LibSharedMedia, so the panel preloads the faces it previews", function()
+    -- red under: a descriptor with no getLSM: LSMValues answers its one "no media" row and the
+    -- panel's font preload never runs, so the Skin tab's Font picker draws faces the client has not
+    -- loaded (options-ui-§23).
+    local NS, _, m = T.enableAddon()
+    local LSM = m.LibStub:NewLibrary("LibSharedMedia-3.0", 1) or m.LibStub("LibSharedMedia-3.0")
+    LSM.HashTable = function(_, kind) return { [kind .. " one"] = "path" } end
+    local values = NS.addon.Settings.Helpers.LSMValues("font")()
+    assertEqual(values["font one"], "font one")
 end)

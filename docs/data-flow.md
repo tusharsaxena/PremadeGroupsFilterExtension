@@ -84,8 +84,8 @@ minimized); the frame is built on the
 first call that wants it. Every show runs `Panel.Refresh()`, which first recomputes the Smart level
 (`Filters.ApplySmartLevel`, when on and not stood down), then reads `char.filters` into the widgets
 (the level box locked and grayed under Smart), rebuilds the best-timed readout (one line, its gaps closed to one space when it overflows; gold for
-targets, gray otherwise, and "loading…" while season data is missing) and the copy box, and lays the frame out (collapsed: the title strip only, drawn by two
-clipped copies of the border layout; or the "not supported" line when `Bridge.Check()` fails, which
+targets, gray otherwise, and "loading…" while season data is missing) and the copy box, and lays the frame out (collapsed: the title strip only, the height of the skin's
+title band, or of EllesmereUI's 25px shell bar once it paints; or the "not supported" line when `Bridge.Check()` fails, which
 also disables Apply). Three events, `CHALLENGE_MODE_MAPS_UPDATE`, `CHALLENGE_MODE_COMPLETED` and
 `MYTHIC_PLUS_CURRENT_AFFIX_UPDATE`, recompute the Smart level (the panel need not exist) and rebuild
 the readout; under Smart they also rewrite the level box and copy box.

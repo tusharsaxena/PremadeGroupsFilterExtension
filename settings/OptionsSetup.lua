@@ -69,6 +69,8 @@ if not lib then
     H.AppearanceRows       = function() return nil end
     H.SkinPicker           = function() return nil end
     H.HideSkinPicker       = function() end
+    -- LibKa0s v1.82.0 (OptionsSkinPicker 3): `/pgfe skin`'s act; without the library nothing opens.
+    H.SkinVerb             = function() return nil, "absent" end
     H.StrataTooltip        = function() return "" end
     H.ResetAllTooltip      = function() return "" end
     H.ID_NAME_HINT         = {}
@@ -99,6 +101,9 @@ local O = lib:New({
     get          = NS.SchemaRuntime.Get,
     set          = NS.SchemaRuntime.Set,
     applyDefault = NS.SchemaRuntime.ApplyDefault,
+    -- The Skin tab's Font and Texture pickers: without it O.LSMValues answers only its "no media"
+    -- row and the panel's font preload never runs (options-ui-§23).
+    getLSM      = function() return LibStub and LibStub("LibSharedMedia-3.0", true) end,
     rowsForPage = function() return Settings.Schema end,
     allRows     = function() return Settings.Schema end,
     validate = function() host.ValidateSchema() end,

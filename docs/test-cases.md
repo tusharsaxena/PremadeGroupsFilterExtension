@@ -313,7 +313,7 @@ Total.
 - panel: the min/max arrow follows the stored collapsed state
 - panel: collapsed shows only the skin's title band; no metal header copies are built
 - panel: Apply leaves focus alone; Enter in the copy box focuses the search box
-- panel: the min/max arrows are the skin's paging arrows, expanded up and collapsed down
+- panel: the min/max arrows are chevron icons on the skin's button, expanded up and collapsed down
 - panel: the regions and playstyle dropdowns are 225 wide, right-aligned in one column
 - panel: each menu opens with Any and a divider; Any is ticked with nothing ticked and clears
 - panel: ticking every option stores Any and the button reads Any
@@ -371,13 +371,13 @@ Total.
 - layout: under EllesmereUI a disabled or loaded PGF skin is named, with no link
 - layout: the header Defaults describes the reset in Reset all settings' own words
 
-### test_skinsetup.lua (19)
+### test_skinsetup.lua (21)
 
 - skin seam: the owner is the folder name, and NS.Skin is its facade
 - skin seam: the owner is registered at file load, before the profile store exists
 - skin seam: the read answers Ka0s Default before the profile store exists
 - skin seam: Core's window edge is handed the owner
-- skin seam: the seven skin keys default to Ka0s Default, the picker unseen
+- skin seam: the eight skin keys default to Ka0s Default, the picker unseen
 - skin seam: every skin key is a skip-render schema row on the Skin tab
 - skin seam: the skin row's values are every registered skin, in the library's order
 - skin seam: /pgfe set refuses a skin that is not registered and applies one that is
@@ -391,9 +391,11 @@ Total.
 - skin seam: a profile switch applies the new profile's skin, panel built or not
 - skin seam: Reset all settings puts the skin back on Ka0s Default and applies it
 - skin seam: the degraded facade answers every name the live facade carries
+- skin seam: the degraded FontFlags and HudFontSize answer as the library does unskinned
 - skin seam: each host-copy skin token is the live library's Ka0s Default value
+- skin seam: the descriptor reaches LibSharedMedia, so the panel preloads the faces it previews
 
-### test_skin.lua (12)
+### test_skin.lua (14)
 
 - skin: under Ka0s Default the one panel is painted through the facade, every widget and label
 - skin: the colors the panel writes under Ka0s Default are its exact pixels
@@ -403,7 +405,9 @@ Total.
 - skin: a pick before the panel exists builds the one panel, painted
 - skin: the panel's geometry: 24px check buttons on the rows' centers, flush under the dialog
 - skin: collapsed, the panel folds to the skin's title band, Ka0s Default's included
+- skin: the min/max button is one size and centered on the title band in every skin
 - skin: the panel writes the skin's colors: locked boxes, the dimmed label, the readout
+- skin: a pick after the panel is built rewrites the colors the panel reads from tokens
 - skin: with Ignore settings panel on, the panel's labels and title still wear the skin
 - skin: a pick while stood down builds nothing; the stand-up shows the same panel in the new skin
 - skin: modules/Panel.lua types no color: no literal SetTextColor, tooltip color or markup
@@ -427,7 +431,7 @@ Total.
 - skin tools: a host release is chained onto the skin's restore, both run
 - skin tools: the debug console is painted for this owner
 
-### test_skin_eui.lua (12)
+### test_skin_eui.lua (13)
 
 - eui migration: with EllesmereUI, every profile but an explicit false moves to skin.source eui
 - eui migration: without EllesmereUI every profile keeps the Ka0s source
@@ -439,8 +443,31 @@ Total.
 - eui: before EllesmereUI paints, the eui source wears Ka0s Default through the library
 - eui: no addon file reaches the library-internal __DrawsKey
 - eui: the collapsed panel folds to EllesmereUI's 25px shell bar
+- eui: the min/max button is EllesmereUI's box with the chevron, never a worded PageButton
 - eui diagnostics: the skin section names the key the library draws by, in every state
 - eui diagnostics: the skin section reports the choice and the library's EllesmereUI gate
+
+### test_skin_outline.lua (10)
+
+- outline: a fresh profile stores HUD text only, the library's default
+- outline: a profile that stored All text keeps it, unmigrated (D-10)
+- outline: the schema row offers the library's three modes, in its order
+- outline: the write seam stores media.outline, and leaves it alone when it is nil
+- outline: another addon's copy reaches the store through WriteChoice
+- outline: the row's write applies the mode live
+- outline: /pgfe set refuses a mode the library does not know
+- outline: the stored mode is applied at load
+- outline: a profile switch applies the incoming profile's mode, and back
+- outline: without the skin engine the apply is a quiet no-op
+
+### test_skin_verb.lua (6)
+
+- skin verb: the row sits right after config, with the library's help words
+- skin verb: /pgfe skin shows the picker on a profile that has closed it
+- skin verb: NS.RunSkinVerb hands O.SkinVerb this addon's first-run spec
+- skin verb: in combat every call prints the library's gray line and shows nothing
+- skin verb: refused while the addon is disabled, and no picker shows
+- skin verb: without LibKa0s the verb prints the library-absent line
 
 ### test_reset.lua (5)
 
@@ -458,6 +485,12 @@ Total.
 - diagnostics: the filters section prints a set's keys, not a table
 - diagnostics: an empty filter set reads Any
 - diagnostics: stood down, the feature events are declared but not registered
+
+### test_glyphs.lua (3)
+
+- glyphs: display strings use only characters every shipped skin face draws
+- glyphs: the region labels a tag or the panel paints are glyph-safe
+- glyphs: the realm lists' data mark is the only exemption the guard needs
 
 ### test_vendor_sync.lua (3)
 
@@ -549,12 +582,15 @@ Total.
 | test_panel.lua | 80 |
 | test_layers.lua | 8 |
 | test_settings_layout.lua | 11 |
-| test_skinsetup.lua | 19 |
-| test_skin.lua | 12 |
+| test_skinsetup.lua | 21 |
+| test_skin.lua | 14 |
 | test_skin_picker.lua | 16 |
-| test_skin_eui.lua | 12 |
+| test_skin_eui.lua | 13 |
+| test_skin_outline.lua | 10 |
+| test_skin_verb.lua | 6 |
 | test_reset.lua | 5 |
 | test_diagnostics.lua | 6 |
+| test_glyphs.lua | 3 |
 | test_vendor_sync.lua | 3 |
 | test_eol.lua | 2 |
 | test_prose.lua | 15 |
@@ -562,4 +598,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **428** |
+| **Total** | **452** |

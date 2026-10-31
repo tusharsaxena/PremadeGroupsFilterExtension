@@ -32,6 +32,7 @@ archaeology, for the same reason a skip is never a pass (`automated-tests-§4`).
 
 | Run | Commit | Tree | Version | Lint w/e | Files | Tests | Perf | NLOC | Funcs | Avg NLOC | Avg CCN | Max CCN | CCN warn | Verdict |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| [`20261031-202055`](20261031-202055/) | `e6bbce4` | clean | 1.0.0 | 0/0 | 67 | 452/1/453 | fail | 9540 | 1408 | 5.8 | 2.0 | 14 | 0 | **amber** |
 | [`20261010-195814`](20261010-195814/) | `cd648c8` | clean | 0.1.0 → 1.0.0 | 0/0 | 60 | 414/1/415 | pass | 8679 | 1281 | 5.8 | 2.0 | 14 | 0 | **green** |
 | [`20261010-130739`](20261010-130739/) | `33c358f` | clean | 0.1.0 | 0/0 | 60 | 414/1/415 | pass | 8665 | 1281 | 5.8 | 2.0 | 14 | 0 | **green** |
 | [`20261010-122612`](20261010-122612/) | `ee090c7` | clean | 0.1.0 | 0/0 | 60 | 414/1/415 | pass | 8665 | 1281 | 5.8 | 2.0 | 14 | 0 | **green** |
@@ -40,19 +41,18 @@ archaeology, for the same reason a skip is never a pass (`automated-tests-§4`).
 
 ## Test suite
 
-**415 cases** — 414 passed, 0 failed, 1 skipped. The generated inventory
-[`20261010-195814/test-cases.md`](20261010-195814/test-cases.md) is the authority on which cases existed at this run;
+**453 cases** — 452 passed, 0 failed, 1 skipped. The generated inventory
+[`20261031-202055/test-cases.md`](20261031-202055/test-cases.md) is the authority on which cases existed at this run;
 `docs/test-cases.md` is that same list at HEAD.
 
-The count has been **flat at 415 across the last 3 runs**. A suite that stopped growing while
-the addon did is a coverage gap, and it is the one thing the table above cannot show.
+Moved **415 → 453** since the previous run.
 
 **1 case(s) reported a `skip`.** A skip is counted in the total and never in `passed`, and at
 the release gate it is NOT EVALUATED rather than passed (`automated-tests-§3`).
 
 ## Lint
 
-**0 warnings / 0 errors over 60 files** (`luacheck .`).
+**0 warnings / 0 errors over 67 files** (`luacheck .`).
 
 Read that figure with its scope attached: `.luacheckrc` excludes 6 path(s) from it — `libs/`, `docs/audits/`, `docs/reviews/`, `docs/revendor/`, `_dev/`, `tests/_kit/` —
 so nothing under them is in the count above. A `0/0` that never moves is partly a statement about
@@ -62,24 +62,24 @@ to whoever thinks to open `.luacheckrc`.
 ## Perf
 
 **6 scenarios** from `tests/perf.lua`; the measurements are in
-[`20261010-195814/perf.json`](20261010-195814/perf.json).
+[`20261031-202055/perf.json`](20261031-202055/perf.json).
 
 | `scenario` | `iters` | `ms/iter` | `api/iter` | `bytes/iter` |
 |---|---|---|---|---|
-| `envNoPR` | 1000 | 0.00257 | 1.20 | 80.1 |
-| `envWithPR` | 1000 | 0.00078 | 0.00 | 0.0 |
-| `envStoodDown` | 1000 | 0.00048 | 0.00 | 0.0 |
-| `searchRowPaint` | 1000 | 0.00240 | 5.20 | 160.4 |
-| `applicantRowPaint` | 1000 | 0.00266 | 5.20 | 160.4 |
-| `combatEvents` | 1000 | 0.13516 | 143.00 | 28161.1 |
+| `envNoPR` | 1000 | 0.00258 | 1.20 | 80.1 |
+| `envWithPR` | 1000 | 0.00088 | 0.00 | 0.0 |
+| `envStoodDown` | 1000 | 0.00054 | 0.00 | 0.0 |
+| `searchRowPaint` | 1000 | 0.00320 | 5.20 | 160.6 |
+| `applicantRowPaint` | 1000 | 0.00380 | 5.20 | 160.4 |
+| `combatEvents` | 1000 | 0.23612 | 143.00 | 30641.4 |
 
 `perf` never fails a run and never blocks a commit — it is recorded, read and compared, not
 thresholded (`performance-§9`). It does gate the **tag** (`automated-tests-§3`).
 
 ## Complexity watch list
 
-Current as of [`20261010-195814`](20261010-195814/) — **this run's measurement, not its diff.** Max CCN **14** across 1281
-functions, **0** of them warned on; 1 file(s) in the 1000–1500 band and 0 over the 1500 cap
+Current as of [`20261031-202055`](20261031-202055/) — **this run's measurement, not its diff.** Max CCN **14** across 1408
+functions, **0** of them warned on; 2 file(s) in the 1000–1500 band and 0 over the 1500 cap
 (`layout-§1`).
 
 Every row below is generated from this run's own `lizard` output. **The `Disposition` column is
@@ -98,7 +98,8 @@ None.
 
 | Band | File | LOC | Disposition |
 |---|---|---|---|
-| 1000–1500 (on notice) | `tests/test_panel.lua` | 1202 | on notice: test-only file; split by area (rows / presets / collapse / copy box) before it reaches 1500 lines or at the next panel feature |
+| 1000–1500 (on notice) | `modules/Panel.lua` | 1026 | on notice: cohesive, the row builders, layout and paint of the one attached panel frame; split the row builders out before it reaches 1500 lines |
+| 1000–1500 (on notice) | `tests/test_panel.lua` | 1169 | on notice: test-only file; split by area (rows / presets / collapse / copy box) before it reaches 1500 lines or at the next panel feature |
 
 `lizard` counts every `and`/`or` short-circuit as a decision, so in Lua a run of
 `t.k = rec.k or D.k` defaulting lines scores high with no visible branching at all: a large CCN

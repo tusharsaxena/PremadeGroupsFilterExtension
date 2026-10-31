@@ -120,8 +120,11 @@ Kit.run{
         "test_skin",
         "test_skin_picker",
         "test_skin_eui",
+        "test_skin_outline",
+        "test_skin_verb",
         "test_reset",
         "test_diagnostics",
+        "test_glyphs",
         "test_vendor_sync",
         { name = "test_eol",                  dir = "tests/_kit/" },   -- line-endings-§7
         { name = "test_prose",                dir = "tests/_kit/" },   -- localization-§5

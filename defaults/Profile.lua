@@ -46,10 +46,11 @@ NS.C = {
         -- The skin this addon wears (core/SkinSetup.lua; General > Skin, skinning-§2): Ka0s Default,
         -- the settings panel left the client's (the owner's call of 2026-10-27, as LootHistory), the
         -- fonts skinned, the skin's own font and texture, and the first-run picker not yet seen on
-        -- any profile, old or new (owner ruling O3, 2026-10-29).
+        -- any profile, old or new (owner ruling O3, 2026-10-29); HUD text only outlined (the Font
+        -- outline: "all", "hud" or "off", LibKa0s v1.82.0, ruling D-06; "hud" since v1.83.0).
         skin = {
             source = "ka0s", skin = "ka0s", ignorePanel = true, ignoreFonts = false,
-            font = "", texture = "", pickerSeen = false,
+            font = "", texture = "", outline = "hud", pickerSeen = false,
         },
     },
 

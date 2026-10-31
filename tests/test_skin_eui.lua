@@ -148,6 +148,26 @@ test("eui: the collapsed panel folds to EllesmereUI's 25px shell bar", function(
     assertEqual(NS.Panel.frame:GetHeight(), 25)
 end)
 
+-- PG-02 of the skin fonts and feedback run (image-33/34): S.PageButton is one of EllesmereUI's native
+-- names, and its facade takes "<" or ">" only, drawing anything else as text, so the panel's
+-- "up" / "down" showed as the words. The button is now EllesmereUI's Button box, with the addon's own
+-- chevron on a child frame (EllesmereUI's Button fades the button's own texture regions, not its
+-- children's), centered on EllesmereUI's 25px shell bar.
+test("eui: the min/max button is EllesmereUI's box with the chevron, never a worded PageButton", function()
+    -- red under: S.PageButton(btn, "up") reaching EllesmereUI's facade.
+    local NS, m = painted()
+    local f = NS.Panel.frame
+    local mm = f.MaximizeMinimizeFrame
+    assertEqual(#m.eui.callsFor("PageButton"), 0, "no paging arrow went to EllesmereUI")
+    for btn, icon in pairs({ [mm.MinimizeButton] = "chevron-up", [mm.MaximizeButton] = "chevron-down" }) do
+        assertTrue(#m.eui.callsFor("Button", btn) >= 1, icon .. ": EllesmereUI's button box")
+        assertEqual(btn.chevron.__texture, NS.Icon(icon), icon .. ": the chevron, on top")
+        assertTrue(btn.chevronHolder.__parent == btn, icon .. ": a child frame, not a region EllesmereUI fades")
+    end
+    local p, _, _, x, y = mm:GetPoint(1)
+    assertEqual(p, "TOPRIGHT"); assertEqual(x, -4); assertEqual(y, -(25 - 20) / 2)
+end)
+
 -- ── diagnostics ──────────────────────────────────────────────────────────────────────────────────
 
 local function skinSection(NS)

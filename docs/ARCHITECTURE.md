@@ -31,7 +31,7 @@ child), its third-party skinning and this addon's Third-Party Addons entry are o
 ([`superpowers/plans/2026-10-09-eui-skin.md`](superpowers/plans/2026-10-09-eui-skin.md)) was
 retired by the skinning rollout (2026-10-29).
 
-Built to the Ka0s WoW Addon Standard: Ace3, vendored `LibKa0s` v1.81.0 (one setup file per adopted
+Built to the Ka0s WoW Addon Standard: Ace3, vendored `LibKa0s` v1.83.0 (one setup file per adopted
 major), schema-driven master settings, the launcher, one stand-down latch, headless tests and
 luacheck. Retail only (`## Interface: 120105`). The design is
 [`superpowers/specs/2026-10-09-m-plus-v0.1-design.md`](superpowers/specs/2026-10-09-m-plus-v0.1-design.md)
@@ -71,12 +71,12 @@ libraries → `locales/enUS.lua` → the `core/` setup files (the skin seam `cor
 `modules/` → `settings/`, with every addon file's TOC line annotated. Full per-file
 table and the load-order reasoning: [`module-map.md`](module-map.md).
 
-`LibKa0s` majors wired, one setup file each: Core (`core/CoreSetup.lua`), Media
+`LibKa0s` majors wired, one setup file each: Core (`core/CoreSetup.lua`), Skin (`core/SkinSetup.lua`), Media
 (`core/MediaSetup.lua`), Compat (`core/Compat.lua`), Env (`core/EnvSetup.lua`), DebugLog
 (`core/DebugLogSetup.lua`), Launcher (`core/LauncherSetup.lua`), Lifecycle
 (`core/LifecycleSetup.lua`), Schema (`settings/SchemaSetup.lua`), Options
 (`settings/OptionsSetup.lua`), Slash (`settings/Slash.lua`). Vendored and not wired: Bus, Pool, Item,
-Widgets, Perf (the performance-§12 exemption), Glow, Sim. Ace3, LibSharedMedia, LibDataBroker and LibDBIcon are vendored under `libs/` too
+Widgets, Perf (the performance-§12 exemption), Glow, Sim, Toast. Ace3, LibSharedMedia, LibDataBroker and LibDBIcon are vendored under `libs/` too
 (`DEPENDENCIES.md`).
 
 The feature modules, one purpose each:
@@ -115,8 +115,10 @@ Three AceDB scopes on `PremadeGroupsFilterExtensionDB`; full shape and defaults 
   colors* (the twelve colors only). No alpha. `RegionTags.Hex`
   turns the stored color into the tag's hex, cached per stored table (every write stores a new one).
 - **`skin.*`** (profile, `source`, `skin`, `ignorePanel`, `ignoreFonts`, `font`, `texture`,
-  `pickerSeen`): the skin this addon wears, skip-render rows the library's Skin tab draws (the
-  General page's last tab), written through the same seam (`core/SkinSetup.lua`). The old `euiSkin`
+  `outline`, `pickerSeen`): the skin this addon wears, skip-render rows the library's Skin tab draws (the
+  General page's last tab), written through the same seam (`core/SkinSetup.lua`). The Font and
+  Texture rows are the library's preview pickers, fed by the Options descriptor's `getLSM`
+  (`settings/OptionsSetup.lua`), which also runs the panel's font preload. The old `euiSkin`
   switch (the retired EllesmereUI bridge) was carried to `skin.source = "eui"` by schema step 2
   (`core/Database.lua`) and deleted.
 - **Registries outside the seam** (architecture-§5), each written by one owner:
@@ -166,6 +168,7 @@ order that CallbackHandler's fan-out does not promise. There are three reaction 
 |---|---|
 | `help` | Prints the command list |
 | `config` | Opens the settings panel |
+| `skin` | Opens the skin picker (`NS.RunSkinVerb`, LibKa0s v1.82.0's `O.SkinVerb`); refused while disabled |
 | `enable` / `disable` | Writes `enabled` through the write seam; the latch follows |
 | `version` | Prints the version |
 | `list` / `get` / `set` / `reset` / `resetall` | The schema CLI |
@@ -297,7 +300,9 @@ library's:
 - **The paint.** Once EllesmereUI paints the owner (`NS.SkinEUIPainted()`), the panel's recorded
   primitives go to EllesmereUI's facade. The panel keeps the host geometry: 24px check buttons, flush
   under the dialog, and a collapsed height of EllesmereUI's 25px shell bar (`EUI_SHELL_HEADER_H`,
-  `modules/Panel.lua`). Before EllesmereUI paints, the `eui` source draws the stored skin (the
+  `modules/Panel.lua`), with the min/max button centered on that bar. The min/max arrows are the
+  skin's `Button` box under the addon's own chevrons, never `PageButton`: EllesmereUI's facade takes
+  `"<"` or `">"` only and drew `"up"` / `"down"` as the words. Before EllesmereUI paints, the `eui` source draws the stored skin (the
   library's live fallback), Ka0s Default unless the player chose another. The diagnostics' skin
   section names the key the library draws the owner by from its public `Skin:DrawsKey(owner)`
   (LibKa0s v1.81.0), never the internal `__DrawsKey`. Leaving `eui` after a paint asks for a reload
@@ -326,7 +331,8 @@ first:
   menus (FULLSCREEN_DIALOG), tooltips (TOOLTIP).
 - **The attached panel, a host-matched surface:** PGF's dialog strata, read from the dialog
   (FULLSCREEN today), at the dialog's level + `LEVEL.ABOVE_HOST` = L. Inside it: body, min/max and
-  header click at L+1, widgets at L+2.
+  header click at L+1, widgets at L+2; each min/max arrow's chevron holder sits two levels over its
+  button, above the skin's button edge.
 - **PGFE popups while the panel is visible:** every PGFE `StaticPopup_Show` goes through
   `NS.ShowPopup` (`core/Popup.lua`), which lifts the shared popup frame to `STRATA.POPUP` while the
   panel is visible, and each PGFE popup spec's `OnHide` (`NS.RestorePopupStrata`) puts back the strata
@@ -444,7 +450,7 @@ and `docs/investigations/`.
 | Doc | Status | Trigger |
 |---|---|---|
 | `perf-analysis/README.md` | Not applicable | The performance-§12 exemption is held; no harness is wired |
-| `slash-dispatch.md` | Present | 15 commands in `NS.COMMANDS` |
+| `slash-dispatch.md` | Present | 16 commands in `NS.COMMANDS` |
 | `profiles.md` | Present | The Profiles page ships in the options UI |
 | `debug.md` | Present | The diagnostics dump ships in every addon (debug-logging-§14) |
 | `midnight-quirks.md` | Not applicable | The addon carries no client-version workaround of its own |
@@ -480,7 +486,7 @@ deviation not in this table is not ratified.
 | architecture-§4, anti-patterns #19 | No AceEvent message bus, although the two-feature-module threshold is crossed (Apply, Panel, Filters, Presets, RegionTags, Targeting, EnvInject). Modules call each other through `NS`. The cross-module reactions: the shell's `reloadProfile` (`core/PGFE.lua`, on the three AceDB profile callbacks) fans out, in order, to `HideSkinPicker`, `RunMigrations`, `ApplySkinChoice`, `Settings.Helpers.RefreshAll` / `RefreshProfilesPage`, `Panel.Refresh`, the `enabled` latch re-read (`Lifecycle:Set` + `Reevaluate`) and `MaybeShowSkinPicker`; `Apply.OnFiltersToggled` (the `filtersActive` onChange) returns at once while stood down; otherwise it runs `Apply.Run` / `Apply.Clear` only while the dungeon panel is the active one, and then calls `Panel.Refresh` | Every reaction has one sender and a required order that CallbackHandler's fan-out does not promise: `reloadProfile` must take the first-run skin picker down before the incoming skin is applied and offer it again only after the latch re-read, so a disabled incoming profile shows nothing, and `Apply.OnFiltersToggled` must write or clear the PGF block before the panel readout refreshes. `reloadProfile` has several receivers, but none its sender should not know about, and with no messages defined the CallbackHandler clobber §4 guards against cannot occur (issue #10; audit `docs/audits/2026-10-10/` PGE-03) | 2026-10-10 (owner) | A reaction gains an order-independent receiver the sender should not name, a module outside the shell and Apply needs to hear profile-changed or filters-toggled, or the standard adds an ordered-dispatch carve-out |
 | standalone-windows; library-stack-§8; options-ui-§15 | The attached panel (`modules/Panel.lua` `buildFrame`) is built on PGF's dialog template (`PortraitFrameTemplateMinimizable` with the `ButtonFrameTemplateNoPortraitMinimizable` border layout) and is one frame the skin paints under every skin, Ka0s Default included, and under EllesmereUI once it paints (the skinning rollout's PG-02 and PG-06). Until 2026-10-30 Ka0s Default showed a never-painted metal instance in PGF's own chrome; LibKa0s v1.81.0 retired the stock look under Ka0s Default (owner ruling R-2) and the metal instance went with it (the skin library follow-ups' PG-01, decision D-05): a player who wants the client's look picks WoW Default. The panel is parented and anchored to PGF's dialog, is not movable and persists no geometry. The General page has no General visibility row (`settings/Panel.lua` `omit = { visibility = true }`): the panel shows only with PGF's dialog on the dungeon category, and the addon holds no visibility state | An extension surface must read as part of the host window it attaches to; its visibility is the host's, so a visibility setting would only duplicate Enable and `filtersActive` (issue #18; audit `docs/audits/2026-10-10/` PGE-17, PGE-19, PGE-26) | 2026-10-10 (owner); the Ka0s Default clause retired 2026-10-30 (owner ruling R-2) | The panel becomes independently shown or movable, or the standard gains an attached-panel or extension-surface rule |
 | frame-layering-§1 | The attached panel takes PGF's dialog strata (FULLSCREEN today, read from the dialog in `modules/Panel.lua` `layerWithDialog`), so when the Group Finder stays open under `/pgfe config` it, and PGF's dialog, draw over the Blizzard Settings panel (HIGH). For the same reason the LibKa0s debug console (DIALOG) can sit under the panel while both are open; its descriptor takes no strata (LibKa0s v1.77.0) | The panel must layer with the host window it is part of (the host-matched surface of frame-layering-§1), and PGF's own dialog covers the Settings panel the same way; lowering the panel would let PGF's FULLSCREEN dialog draw over the panel's title strip. The console case is developer-facing only (item 030 analysis PRE-S05, PRE-S09; change PRE-Z08) | 2026-10-24 (owner, item 030) | PGF moves its dialog off FULLSCREEN, opening the Settings panel is found to close the Group Finder, or the LibKa0s DebugLog descriptor gains a `strata` field |
-| `performance-§12` | No performance harness is wired: no `core/PerfSetup.lua`, no `PremadeGroupsFilterExtensionPerfDB` (the TOC declares one SavedVariables global), no `perf` verb registration (`perf` stays reserved; `/pgfe perf` answers with the library's unknown-command line and the index), no suspend/resume contract (production takes only the `disabled` hold), and no `docs/perf-analysis/`. `libs/LibKa0s/` stays vendored whole apart from `media/icons`, pruned to the declaration, `Perf.lua` included, and `docs/performance.md` stays as the one-screen page. The offline `tests/perf.lua` is shipped anyway (it suspends nothing, ships nothing to the client and adds no SavedVariable), so the runner's `perf` suite reads `pass` rather than this exemption's skip | **Criterion (a) plus (b).** (a): the committed whole-repo sweep of `RegisterEvent` / `SetScript("OnUpdate"` / `C_Timer`, with every `hooksecurefunc` / `HookScript` site, in [`performance.md`](./performance.md), sweep at `2c86d49`: no `OnUpdate` handler, no timer of any kind (AceTimer removed, C-35), one registration site over eight `NS.FEATURE_EVENTS` rows that each do one small refresh, hooks that run on the player's own Group Finder actions, and `Apply` refusing in combat; `tests/perf.lua`'s `combatEvents` scenario measures the per-event cost. (b): the capture windows open on the player's combat state (performance-§7), so every declared bucket would read `0.000` by construction. Owner checkpoint D1 (C-09, issue #5; audit `docs/audits/2026-10-10/` PGE-09) | 2026-10-10 (owner) | The first `OnUpdate` handler, repeating ticker, or in-combat event handler doing real work re-arms the full wiring MUST (performance-§12): wire `core/PerfSetup.lua`, `PremadeGroupsFilterExtensionPerfDB`, the `perf` verb and the suspend contract, and retire this row |
+| `performance-§12` | No performance harness is wired: no `core/PerfSetup.lua`, no `PremadeGroupsFilterExtensionPerfDB` (the TOC declares one SavedVariables global), no `perf` verb registration (`perf` stays reserved; `/pgfe perf` answers with the library's unknown-command line and the index), no suspend/resume contract (production takes only the `disabled` hold), and no `docs/perf-analysis/`. `libs/LibKa0s/` stays vendored whole apart from `media/icons`, pruned to the declaration, `Perf.lua` included, and `docs/performance.md` stays as the one-screen page. The offline `tests/perf.lua` is shipped anyway (it suspends nothing, ships nothing to the client and adds no SavedVariable), so the runner's `perf` suite reads `pass` rather than this exemption's skip | **Criterion (a) plus (b).** (a): the committed whole-repo sweep of `RegisterEvent` / `SetScript("OnUpdate"` / `C_Timer`, with every `hooksecurefunc` / `HookScript` site, in [`performance.md`](./performance.md), sweep at `2c86d49`: no `OnUpdate` handler, no timer of any kind (AceTimer removed, C-35), one feature registration site over six `NS.FEATURE_EVENTS` rows that each do one small refresh, the first-run picker's one-shot combat retry, hooks that run on the player's own Group Finder actions, and `Apply` refusing in combat; `tests/perf.lua`'s `combatEvents` scenario measures the per-event cost. (b): the capture windows open on the player's combat state (performance-§7), so every declared bucket would read `0.000` by construction. Owner checkpoint D1 (C-09, issue #5; audit `docs/audits/2026-10-10/` PGE-09) | 2026-10-10 (owner) | The first `OnUpdate` handler, repeating ticker, or in-combat event handler doing real work re-arms the full wiring MUST (performance-§12): wire `core/PerfSetup.lua`, `PremadeGroupsFilterExtensionPerfDB`, the `perf` verb and the suspend contract, and retire this row |
 
 ### Files over the 1500-line cap
 

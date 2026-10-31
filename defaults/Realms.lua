@@ -14,6 +14,9 @@ local _, NS = ...
 -- Seeded from PremadeRegions' realm lists (a reference source, GPL-3; no code copied) and checked
 -- against warcraft.wiki.gg. Maintained per docs/realm-map-maintenance.md (tools/realm_map_diff.py).
 
+-- glyph: data begin: realm names are lookup keys (Regions.Lookup normalizes them into a match
+-- table); none is ever drawn. A tag paints Regions.LABELS (ASCII), and a leader's realm on screen is
+-- the client's own string in Blizzard's row, not one of these literals.
 NS.RealmLists = {
     US = {
         oce = {
@@ -557,3 +560,4 @@ NS.RealmLists = {
         },
     },
 }
+-- glyph: data end

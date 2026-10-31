@@ -623,16 +623,32 @@ end)
 
 -- ── owner feedback round: arrow art, Any, widths, row pitch, tooltips, presets, copy box, Smart ────
 
--- Owner request (screenshots): expanded shows the up arrow, collapsed the down one. The skin's paging
--- arrows draw them (the retired metal instance swapped the template's RedButton art instead).
-test("panel: the min/max arrows are the skin's paging arrows, expanded up and collapsed down", function()
+-- Owner request (screenshots): expanded shows the up arrow, collapsed the down one. Since the skin
+-- fonts and feedback run's PG-02 (ruling D-20, image-33/34) each is the skin's Button box with a
+-- chevron from the shipped icon set on top, tinted `icon.arrow`: never S.PageButton, whose "up" and
+-- "down" EllesmereUI's facade drew as the words.
+test("panel: the min/max arrows are chevron icons on the skin's button, expanded up and collapsed down", function()
     local NS, _, m = T.enableAddon{}
     local mm = NS.Panel.Create().MaximizeMinimizeFrame
     local Skin = m.LibStub("LibKa0s-Skin-1.0")
-    -- red under: the RedButton atlas swap left in Panel's buildMinMax, or no PageButton paint
+    -- red under: the RedButton atlas swap left in Panel's buildMinMax, or the S.PageButton paint
     assertEqual(mm.MinimizeButton.__normalAtlas ~= "RedButton-Expand", true)
-    assertEqual(Skin.painted[mm.MinimizeButton].calls.PageButton[1], "up")
-    assertEqual(Skin.painted[mm.MaximizeButton].calls.PageButton[1], "down")
+    for btn, icon in pairs({ [mm.MinimizeButton] = "chevron-up", [mm.MaximizeButton] = "chevron-down" }) do
+        local calls = Skin.painted[btn].calls
+        assertEqual(calls.PageButton, nil, icon .. ": no paging arrow")
+        assertTrue(calls.Button ~= nil, icon .. ": the skin's button box")
+        local chev = btn.chevron
+        assertTrue(chev ~= nil, icon .. ": a chevron")
+        assertEqual(chev.__texture, NS.Icon(icon), icon .. ": the shipped icon")
+        assertEqual(chev.__width, 12); assertEqual(chev.__height, 12)
+        local p, rel, rp = chev:GetPoint(1)
+        assertEqual(p, "CENTER"); assertTrue(rel == btn, icon .. ": centered on its button"); assertEqual(rp, "CENTER")
+        local r, g, b = Skin:Color("PremadeGroupsFilterExtension", "icon.arrow")
+        assertEqual(chev.__vertexColor[1], r); assertEqual(chev.__vertexColor[2], g)
+        assertEqual(chev.__vertexColor[3], b)
+        local holder = btn.chevronHolder
+        assertEqual(holder:GetFrameLevel(), btn:GetFrameLevel() + 2, icon .. ": over the button's edge")
+    end
 end)
 
 test("panel: the regions and playstyle dropdowns are 225 wide, right-aligned in one column", function()

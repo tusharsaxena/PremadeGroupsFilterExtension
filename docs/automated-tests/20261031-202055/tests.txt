@@ -1,0 +1,455 @@
+  PASS  harness: the load list is derived from the TOC, in TOC order
+  PASS  harness: every factory returns (NS, env, mock) with env and mock the same table
+  PASS  harness: the PGF fake is installed before the addon loads
+  PASS  harness: factory opts seed the mock fields
+  PASS  harness: client-data mock fields answer through their APIs
+  PASS  harness: hooksecurefunc is a real post-hook on a table member
+  PASS  harness: fireEvent dispatches to AceEvent handlers
+  PASS  harness: the explicit LibKa0s list matches LibKa0s.xml, in XML order (anti-pattern #48)
+  PASS  harness: every addon file in the TOC is annotated
+  PASS  harness: AceTimer is not embedded
+  PASS  parity: the Core seam's namespace surface survives the library's absence
+  PASS  parity: the DebugLog stub carries the whole live surface
+  PASS  parity: the Slash stub carries the whole live surface
+  PASS  parity: the Options helpers stub carries the whole live surface
+  PASS  parity: the Schema host stub's instance carries the whole live instance surface
+  PASS  parity: the Schema host stub carries the library's own members
+  PASS  parity: the Launcher stub carries the whole live surface
+  PASS  parity: the Lifecycle stub carries the whole live surface
+  PASS  parity: the Compat arm carries every library member the addon wires
+  PASS  parity: no module reads PGF outside the bridge
+  PASS  parity: the register holds the ratified rows and the §5 row names every Filters writer
+  PASS  parity: every locale key used is defined in enUS, and every enUS key is used
+  PASS  setup: NS is the AceAddon object, with the cyan [PGFE] tag
+  PASS  setup: NS.Print is reclaimed from AceConsole and is NS.Util.print
+  PASS  setup: per-character filter defaults (char.filters)
+  PASS  setup: global defaults hold the presets store and LibDBIcon's table
+  PASS  setup: profile defaults hold the master switch and the panel's collapsed state
+  PASS  setup: migrations stamp the schema version
+  PASS  setup: the Master controls rows are in the schema, frameless
+  PASS  setup: Master controls holds only the canonical rows
+  PASS  setup: the Minimap button row inverts onto LibDBIcon's hide
+  PASS  setup: enable registers the settings category and the launcher, and stands up
+  PASS  setup: the debug console is built with the addon's folder and brand
+  PASS  setup: no perf harness is wired (performance-§12)
+  PASS  setup: the Compat spec readers route through LibKa0s-Compat-1.0
+  PASS  setup: the media seam names this addon's folder
+  PASS  setup: the landing page lists every NS.COMMANDS row
+  PASS  setup: the landing page is drawn by the library's BuildLandingPage, logo and commands
+  PASS  setup: the TOC icon is the launcher icon and the folder-named 128 TGA
+  PASS  setup: logo TGAs are uncompressed 32-bit at their sizes
+  PASS  setup: no pgfe.logo file remains
+  PASS  setup: the enable writes one [Init] PGF seams and hooks line
+  PASS  slash: NS.COMMANDS is ordered positional triples with every reserved verb
+  PASS  slash: /pgfe and /premadegroupsfilterextension are registered through AceConsole
+  PASS  slash: disable and enable write the Enable row through the write seam
+  PASS  slash: perf is reserved but not registered
+  PASS  slash: the library-absent stub pins the library's disabled line
+  PASS  slash: the library-absent stub still answers version and refuses enable honestly
+  PASS  slash: player-facing lines go through NS.L (LibKa0s absent, the stub paths)
+  PASS  slash: player-facing lines go through NS.L (LibKa0s present)
+  PASS  disabled 1: enabled, the addon registers exactly the six events it declares
+  PASS  disabled 2-5: through /pgfe disable, nothing is registered, scheduled or shown
+  PASS  disabled 2-5: through the write seam, nothing is registered, scheduled or shown
+  PASS  disabled 6: survivors reached anyway write, say and show nothing
+  PASS  disabled 6: the EllesmereUI callback, arriving while stood down, builds nothing and shows nothing
+  PASS  disabled 7: every verb answers while disabled; apply and clear refuse with one line
+  PASS  disabled 7: bare /pgfe and /pgfe debug diagnostics answer while disabled
+  PASS  disabled 7: /pgfe perf answers as an unknown command, the same as when enabled
+  PASS  disabled 8: left-click opens settings; the menu keeps Enabled, which writes only enabled
+  PASS  disabled 8: while another hold stands the addon down, the launcher reports the stored setting
+  PASS  disabled 8: after /pgfe disable the launcher's Enabled line says No
+  PASS  disabled 9: a setting changed while disabled is what the enable rebuilds from
+  PASS  disabled 10: a perf hold then disable, and disable then a perf hold, share one latch
+  PASS  disabled: a profile stored disabled stands down at the next enable
+  PASS  regions: the module publishes its namespace table
+  PASS  regions: normalize strips spaces, punctuation, case
+  PASS  regions: suffixed leader resolves on US portal
+  PASS  regions: leader without suffix uses the player's realm
+  PASS  regions: EU realm with accent
+  PASS  regions: unknown realm, nil/empty name, unsupported portal → nil
+  PASS  regions: a non-string leader name → nil, no error
+  PASS  regions: a protected leader name is not matched
+  PASS  regions: the same realm name resolves per portal
+  PASS  regions: key and label tables cover all twelve buckets
+  PASS  regions: data integrity — no realm in two buckets, only known keys
+  PASS  regions: every bucket is populated
+  PASS  targeting: the module publishes its namespace table
+  PASS  targeting: N=14 targets the four dungeons timed below 14
+  PASS  targeting: N=15 targets all eight
+  PASS  targeting: N=2 targets none
+  PASS  targeting: never-timed counts as 0
+  PASS  targeting: ToSet keys the targets by cmID
+  PASS  targeting: level validation and range text
+  PASS  targeting: SmartLevel is the lowest best timed level + 1
+  PASS  targeting: SmartLevel counts never-timed as 0, clamps to 2..40, nil without rows
+  PASS  season: the module publishes its namespace table
+  PASS  season: nil map table → nil (loading)
+  PASS  season: empty map table → nil (loading)
+  PASS  season: best timed from intimeInfo, untimed → 0, short from PGF keyword
+  PASS  season: dungeon never run (GetSeasonBestForMap → nil) → best timed 0
+  PASS  season: unknown mapID falls back to initials
+  PASS  season: Apply with no panel still requests season data
+  PASS  season: short names fall back to initials without PGF's keyword table
+  PASS  expression: clauses in fixed order
+  PASS  expression: empty user text → bare block
+  PASS  expression: user text is parenthesized so its OR cannot leak
+  PASS  expression: re-apply is idempotent and replaces the block
+  PASS  expression: strip restores the user text exactly
+  PASS  expression: no clauses → user text only (block removed)
+  PASS  expression: comment-only user text treated as empty (no `and ( )`)
+  PASS  expression: damaged block (begin without end) → error, text untouched
+  PASS  expression: close marker without ')' → damaged
+  PASS  expression: wrapped block, close marker deleted → damaged
+  PASS  expression: deleting both close and ')' is refused (conservative)
+  PASS  expression: unwrapped comment-only block strips ok without a close pair
+  PASS  expression: strip keeps blank edge lines
+  PASS  expression: clear keeps the user's blank edge lines
+  PASS  expression: round trip keeps blank edge lines
+  PASS  expression: over 2000 chars → toolong
+  PASS  expression: the block passes everything when the env hook did not run
+  PASS  expression: without the hook, the user's own text still decides
+  PASS  filters: clause opts honor enable flags and portal order
+  PASS  filters: regions on with none selected for this portal filters on no region
+  PASS  filters: every region of the portal ticked adds no region clause
+  PASS  filters: playstyles on with some ticked filter on those, in the game's order
+  PASS  filters: validation
+  PASS  filters: set and region toggle write the live table
+  PASS  filters: per-character defaults
+  PASS  filters: ticking the last unticked option clears the set to Any
+  PASS  filters: a stored all-ticked set is Any: no clause, and a tick selects that option alone
+  PASS  filters: clearing empties this portal's regions and the playstyles
+  PASS  filters: ApplySmartLevel sets the level from the season only when Smart is on
+  PASS  filters: composition applies only while its box is on
+  PASS  presets: save/load round-trip is a deep copy into the same table
+  PASS  presets: list sorted, delete, bad names, missing
+  PASS  presets: names are trimmed and saving overwrites
+  PASS  presets: a preset missing keys loads over the current defaults
+  PASS  presets: Smart travels with a preset; an older preset loads the default (on)
+  PASS  presets: save, load, delete and refusals each write one [Preset] line
+  PASS  presets: the selected preset survives a reload
+  PASS  presets: Save and Load select; Delete of the selected one clears it
+  PASS  presets: a selection whose preset is gone from the shared registry reads as none
+  PASS  envinject: the module publishes its namespace table
+  PASS  envinject: keywords follow PGF's formula
+  PASS  envinject: unknown spec / role / missing table → nil keywords, no error
+  PASS  envinject: samespec / sameclassrole from env counts
+  PASS  envinject: the spec is read through Compat when the deprecated globals are gone
+  PASS  envinject: spec change is picked up without re-apply
+  PASS  envinject: PLAYER_SPECIALIZATION_CHANGED refreshes for the player only
+  PASS  envinject: regions injected only without PremadeRegions
+  PASS  envinject: stood down → hook is a no-op
+  PASS  envinject: the block's guard is off while Use the extension's filters is off
+  PASS  envinject: the env hook's install result is stored
+  PASS  envinject: a non-function PutPremadeRegionInfo leaves the hook off without raising
+  PASS  envinject: a protected leader name injects no region
+  PASS  envinject: a spec refresh logs the keywords once, and again only when they change
+  PASS  regiontags: a search row gets the leader's colored region in front of its activity
+  PASS  regiontags: a leader on the player's own realm, an unknown realm, an unsupported portal
+  PASS  regiontags: EU realms are tagged by language
+  PASS  regiontags: an applicant gets their region in front of their name
+  PASS  regiontags: a painter the client lacks is skipped, the other still installs
+  PASS  regiontags: no tag while stood down, with the setting off, or with PremadeRegions loaded
+  PASS  regiontags: the setting is a schema row, on by default
+  PASS  regiontags: a name that is not a plain string gets no tag and raises nothing
+  PASS  regiontags: every region bucket has a default color and a color row
+  PASS  regiontags: the color rows pass the schema check
+  PASS  regiontags: a changed color paints the next tag, and reset puts the default back
+  PASS  regiontags: /pgfe set takes a color in 0-255
+  PASS  regiontags: the Region tags tab shows each portal's tags and a picker per region
+  PASS  bridge: the module publishes its namespace table
+  PASS  bridge: seams present
+  PASS  bridge: missing seam is named, no error
+  PASS  bridge: missing C.SPECIALIZATIONS is named
+  PASS  bridge: Specializations/MapKeywords read through the bridge, nil-guarded
+  PASS  bridge: missing Dialog.panels is named
+  PASS  bridge: missing DungeonPanel.Dungeons is named
+  PASS  bridge: missing DungeonPanel.Advanced.Expression.EditBox is named
+  PASS  bridge: SetDungeons maps cmID → positional key, shuffled order
+  PASS  bridge: non-dungeon category → no state
+  PASS  bridge: missing dungeon state table is created on the active category
+  PASS  bridge: expression read clears focus first; commit inits + triggers; search clicks
+  PASS  bridge: commit with minimized dialog leaves PGF's live panel alone
+  PASS  bridge: the dungeon panel is active only while maximized on Dungeons
+  PASS  bridge: dialog shown and accessor
+  PASS  bridge: env hook installs once, as a post-hook on PGF's own function
+  PASS  bridge: env hook refuses when the seam is missing
+  PASS  bridge: HookDialog wires SwitchToPanel and both scripts
+  PASS  apply: the module publishes its namespace table
+  PASS  apply: N=14 ticks AOF/RLP/BV/KR, writes block, triggers, searches
+  PASS  apply: everything timed → refuses, nothing written
+  PASS  apply: combat, wrong category, missing PGF seam, loading
+  PASS  apply: invalid options refuse before anything is written
+  PASS  apply: key targeting off leaves checkboxes alone; no search when not requested
+  PASS  apply: keeps user text; clear restores it
+  PASS  apply: a damaged managed block refuses Apply and Clear
+  PASS  apply: /pgfe apply searches and prints; /pgfe clear prints
+  PASS  apply: /pgfe apply prints the refusal with its argument
+  PASS  apply: after Apply then /pgfe disable, PGF's evaluation passes groups again
+  PASS  apply: PGF minimized → refuses Apply and Clear, nothing written or searched
+  PASS  apply: the message counts the rows ticked, and says so when targeting is off
+  PASS  apply: the targeting-off message prints no key range
+  PASS  apply: with Smart on, Run sets the key level from the season bests first
+  PASS  apply: refuses while Use the extension's filters is off, writing nothing
+  PASS  apply: the filtersActive setting is a schema row, and its writes remove / rewrite the block
+  PASS  apply: a MSG_COMBAT refusal writes an [Apply] refused line
+  PASS  apply: a MSG_NO_PGF refusal writes an [Apply] refused line
+  PASS  apply: a MSG_NOT_DUNGEONS refusal writes an [Apply] refused line
+  PASS  apply: a MSG_MINIMIZED refusal writes an [Apply] refused line
+  PASS  apply: a MSG_INACTIVE refusal writes an [Apply] refused line
+  PASS  apply: a MSG_BAD_LEVEL refusal writes an [Apply] refused line
+  PASS  apply: a MSG_BAD_AGE refusal writes an [Apply] refused line
+  PASS  apply: a MSG_LOADING refusal writes an [Apply] refused line
+  PASS  apply: a MSG_ALL_TIMED refusal writes an [Apply] refused line
+  PASS  apply: a MSG_DAMAGED refusal writes an [Apply] refused line
+  PASS  apply: a MSG_TOOLONG refusal writes an [Apply] refused line
+  PASS  apply: a success writes the wrote and ok lines, and search only when searching
+  PASS  apply: a targeting-off success says the dungeon rows were untouched
+  PASS  apply: Clear refuses a wrapped block with its close marker deleted, and logs it
+  PASS  apply: a Clear refusal and a Clear success each write one [Clear] line
+  PASS  apply: a filtersActive toggle writes one [Apply] toggled line
+  PASS  panel: the module publishes its namespace table
+  PASS  panel: anchored under PGF dialog, both edges
+  PASS  panel: Create is idempotent
+  PASS  panel: visible only for shown dialog on the dungeon category
+  PASS  panel: hidden while PGF's dialog is minimized
+  PASS  panel: created lazily, on the first UpdateVisibility that wants it
+  PASS  panel: the dialog's SwitchToPanel is hooked at load
+  PASS  panel: hidden when stood down, and the dialog hook is a no-op
+  PASS  panel: the dialog hook body returns at once while stood down
+  PASS  panel: the region dropdown lists this portal's regions
+  PASS  panel: ticking a region writes it and keeps the menu open; the button sums up
+  PASS  panel: a long selection is summed up as a count
+  PASS  panel: unsupported portal shows the note instead of the region dropdown
+  PASS  panel: the playstyle dropdown uses the game's names and writes the playstyles
+  PASS  panel: a tick while stood down writes nothing
+  PASS  panel: range field shows N-N for the current level
+  PASS  panel: typing into the range field puts the range back
+  PASS  panel: a level commits on Enter / focus loss, never per keystroke
+  PASS  panel: the age box commits whole values and re-syncs a rejected one
+  PASS  panel: readout highlights targeted dungeons, grays the rest
+  PASS  panel: readout says loading until the season data arrives
+  PASS  panel: an empty map table asks the server once, not every round trip
+  PASS  panel: a populated map table still requests once
+  PASS  panel: a rollover re-arms the request once, not once per event
+  PASS  panel: one event after a rollover already sends the re-armed request
+  PASS  panel: PLAYER_ENTERING_WORLD re-arms the request
+  PASS  panel: the affix event recomputes Smart and leaves loading
+  PASS  panel: a stand-down hides a tooltip the panel showed
+  PASS  panel: a stand-down leaves a tooltip owned outside the panel shown
+  PASS  panel: the dialog hook install is recorded
+  PASS  panel: checkboxes write their filter option
+  PASS  panel: Refresh re-reads the filters into the widgets
+  PASS  panel: Apply searches and prints; the range field follows
+  PASS  panel: after an Apply the range field still follows the level
+  PASS  panel: Apply does nothing while stood down
+  PASS  panel: a missing PGF seam shows one line and disables Apply
+  PASS  panel: collapse folds to the title bar and is remembered in the profile
+  PASS  panel: a profile switch refreshes the attached panel's layout
+  PASS  panel: preset Save as stores a named preset; Load refills the widgets
+  PASS  panel: preset Delete removes the selected preset after confirming
+  PASS  panel: the selected preset is still selected after a reload
+  PASS  panel: Enter in the Save as box saves and closes the popup
+  PASS  panel: a blank preset name is refused
+  PASS  panel: each number box is anchored to the right of its own label
+  PASS  panel: the expanded height fits every row
+  PASS  panel: the min/max arrow follows the stored collapsed state
+  PASS  panel: collapsed shows only the skin's title band; no metal header copies are built
+  PASS  panel: Apply leaves focus alone; Enter in the copy box focuses the search box
+  PASS  panel: the min/max arrows are chevron icons on the skin's button, expanded up and collapsed down
+  PASS  panel: the regions and playstyle dropdowns are 225 wide, right-aligned in one column
+  PASS  panel: each menu opens with Any and a divider; Any is ticked with nothing ticked and clears
+  PASS  panel: ticking every option stores Any and the button reads Any
+  PASS  panel: a stored all-ticked set reads Any; a tick then selects that option alone
+  PASS  panel: the readout is one row high, so the rows below keep the same pitch
+  PASS  panel: a readout too wide for its row closes the gaps to one space
+  PASS  panel: every checkbox has a tooltip, and its label hovers and clicks as the box
+  PASS  panel: every number box, button and the copy box and its label have a tooltip
+  PASS  panel: each dropdown and every menu entry has a tooltip
+  PASS  panel: tooltips stay quiet while stood down
+  PASS  panel: presets: one row, the dropdown up to three equal buttons right-aligned
+  PASS  panel: Apply and Clear share one width, with extra space above their row
+  PASS  panel: the copy box is right-aligned on the action row, its label before it, clear of Clear
+  PASS  panel: Smart sits right of the level box; ticked, it locks the box and sets the level
+  PASS  panel: the level box locked by Smart still shows its tooltip
+  PASS  panel: Smart keeps the stored level until season data arrives, then follows it
+  PASS  panel: with Smart off, season data leaves the level box alone
+  PASS  panel: Smart writes nothing while stood down
+  PASS  panel: the level row fits the body: label, box, Smart and its label
+  PASS  panel: a fresh character sees the owner's default panel
+  PASS  panel: the presets row has the same extra space above as below, buttons as tall as the dropdown
+  PASS  panel: Composition is one dropdown; Any clears, both ticked stays both (not Any)
+  PASS  panel: Use the extension's filters is the first row, on by default
+  PASS  panel: unticking Use the extension's filters removes the block; ticking writes it back
+  PASS  panel: presets never switch the extension on or off
+  PASS  panel: the title is centered on the whole header
+  PASS  panel: the copy box and its label dim, disable and empty while key targeting is off
+  PASS  panel: the panel's frame level is above PGF's dialog and its border
+  PASS  panel: the title is the full addon name, and the copy box centers its range
+  PASS  panel: a click on the header strip collapses and expands, like the arrow
+  PASS  panel: visibility logs on change only, and again after a stand-down
+  PASS  layers: one table names the strata and every level offset
+  PASS  layers: the panel takes PGF's dialog strata by reading it, never a literal
+  PASS  layers: a host that cannot answer its strata leaves the panel inheriting it
+  PASS  layers: the panel's level band (L, chrome L+1, widgets L+2)
+  PASS  layers: a popup shown over the visible panel is lifted, and put back to what it was
+  PASS  layers: with the panel not visible the popup keeps the client's strata
+  PASS  layers: every PGFE popup spec restores on hide
+  PASS  layers: no strata literal, no absolute level, no direct StaticPopup_Show
+  PASS  layout: every stored path, its type and its default are unchanged by item 020
+  PASS  layout: the region-tag switch leads the Region tags tab, unheaded, beside its colors
+  PASS  layout: the color pickers say what each code means; the tag text is unchanged
+  PASS  layout: Reset region tag colors resets the twelve colors only, never the switch
+  PASS  layout: the Filters tab holds the extension's switch and says where the filters are
+  PASS  layout: the filters switch reads true on both surfaces
+  PASS  layout: without EllesmereUI the Filters tab carries no PGF skin pointer
+  PASS  layout: under EllesmereUI a missing PGF skin is named, with its link right under it
+  PASS  layout: the link box selects on focus and leaves the pooled editbox frame as it found it
+  PASS  layout: under EllesmereUI a disabled or loaded PGF skin is named, with no link
+  PASS  layout: the header Defaults describes the reset in Reset all settings' own words
+  PASS  skin seam: the owner is the folder name, and NS.Skin is its facade
+  PASS  skin seam: the owner is registered at file load, before the profile store exists
+  PASS  skin seam: the read answers Ka0s Default before the profile store exists
+  PASS  skin seam: Core's window edge is handed the owner
+  PASS  skin seam: the eight skin keys default to Ka0s Default, the picker unseen
+  PASS  skin seam: every skin key is a skip-render schema row on the Skin tab
+  PASS  skin seam: the skin row's values are every registered skin, in the library's order
+  PASS  skin seam: /pgfe set refuses a skin that is not registered and applies one that is
+  PASS  skin seam: /pgfe set reaches an exception, and only its own half
+  PASS  skin seam: the Skin tab is the library's, last on the General page
+  PASS  skin seam: one tab pick is one effective SetChoice, one repaint and no reload
+  PASS  skin seam: the tab's Ignore fonts reaches the library and the profile, one repaint
+  PASS  skin seam: the own condition names the folder, as EllesmereUI's list shows it
+  PASS  skin seam: another addon's copy to every Ka0s addon repaints this one once
+  PASS  skin seam: login applies the stored skin, exceptions and overrides
+  PASS  skin seam: a profile switch applies the new profile's skin, panel built or not
+  PASS  skin seam: Reset all settings puts the skin back on Ka0s Default and applies it
+  PASS  skin seam: the degraded facade answers every name the live facade carries
+  PASS  skin seam: the degraded FontFlags and HudFontSize answer as the library does unskinned
+  PASS  skin seam: each host-copy skin token is the live library's Ka0s Default value
+  PASS  skin seam: the descriptor reaches LibSharedMedia, so the panel preloads the faces it previews
+  PASS  skin: under Ka0s Default the one panel is painted through the facade, every widget and label
+  PASS  skin: the colors the panel writes under Ka0s Default are its exact pixels
+  PASS  skin: the panel's tooltip lines are the skin's tooltip colors, Ka0s Default's white over gold
+  PASS  skin: a switch repaints the one panel live, and back to Ka0s Default the same frame again
+  PASS  skin: a skin pick never shows a hidden panel, and the panel reads the stored filters
+  PASS  skin: a pick before the panel exists builds the one panel, painted
+  PASS  skin: the panel's geometry: 24px check buttons on the rows' centers, flush under the dialog
+  PASS  skin: collapsed, the panel folds to the skin's title band, Ka0s Default's included
+  PASS  skin: the min/max button is one size and centered on the title band in every skin
+  PASS  skin: the panel writes the skin's colors: locked boxes, the dimmed label, the readout
+  PASS  skin: a pick after the panel is built rewrites the colors the panel reads from tokens
+  PASS  skin: with Ignore settings panel on, the panel's labels and title still wear the skin
+  PASS  skin: a pick while stood down builds nothing; the stand-up shows the same panel in the new skin
+  PASS  skin: modules/Panel.lua types no color: no literal SetTextColor, tooltip color or markup
+  PASS  skin picker: skin.pickerSeen defaults to false, a skip-render row on the Skin tab
+  PASS  skin picker: the spec names this owner, its seams, the General page's Skin tab, and no eye
+  PASS  skin picker: it shows once at login on an unseen profile, scheduling nothing
+  PASS  skin picker: a profile that has seen it shows nothing at login
+  PASS  skin picker: in combat a start waits for PLAYER_REGEN_ENABLED, once, on a private frame
+  PASS  skin picker: a held start is dropped by the stand-down
+  PASS  skin picker: a dropped held start lets go of its frame, and the next one makes its own
+  PASS  skin picker: never while the addon is switched off
+  PASS  skin picker: a new profile and a reset profile show it again; a seen one does not
+  PASS  skin picker: the player's close marks it seen; this addon's own hide does not
+  PASS  skin picker: the stand-down takes it down unmarked
+  PASS  skin picker: a profile that has seen it takes a shown picker down, unmarked
+  PASS  skin tools: the Options instance acquires through the library's owner proxy
+  PASS  skin tools: the Profiles page paints AceConfigDialog's tree for this owner
+  PASS  skin tools: a host release is chained onto the skin's restore, both run
+  PASS  skin tools: the debug console is painted for this owner
+  PASS  eui migration: with EllesmereUI, every profile but an explicit false moves to skin.source eui
+  PASS  eui migration: without EllesmereUI every profile keeps the Ka0s source
+  PASS  eui migration: EllesmereUI without its Blizzard Skin child is not present
+  PASS  eui migration: the store is applied as migrated, and the step runs once
+  PASS  eui: the folder is registered with EllesmereUI once, by the library
+  PASS  eui: no addon file reads EllesmereUIDB or registers with EllesmereUI itself
+  PASS  eui: once EllesmereUI paints the owner, the panel goes to its facade
+  PASS  eui: before EllesmereUI paints, the eui source wears Ka0s Default through the library
+  PASS  eui: no addon file reaches the library-internal __DrawsKey
+  PASS  eui: the collapsed panel folds to EllesmereUI's 25px shell bar
+  PASS  eui: the min/max button is EllesmereUI's box with the chevron, never a worded PageButton
+  PASS  eui diagnostics: the skin section names the key the library draws by, in every state
+  PASS  eui diagnostics: the skin section reports the choice and the library's EllesmereUI gate
+  PASS  outline: a fresh profile stores HUD text only, the library's default
+  PASS  outline: a profile that stored All text keeps it, unmigrated (D-10)
+  PASS  outline: the schema row offers the library's three modes, in its order
+  PASS  outline: the write seam stores media.outline, and leaves it alone when it is nil
+  PASS  outline: another addon's copy reaches the store through WriteChoice
+  PASS  outline: the row's write applies the mode live
+  PASS  outline: /pgfe set refuses a mode the library does not know
+  PASS  outline: the stored mode is applied at load
+  PASS  outline: a profile switch applies the incoming profile's mode, and back
+  PASS  outline: without the skin engine the apply is a quiet no-op
+  PASS  skin verb: the row sits right after config, with the library's help words
+  PASS  skin verb: /pgfe skin shows the picker on a profile that has closed it
+  PASS  skin verb: NS.RunSkinVerb hands O.SkinVerb this addon's first-run spec
+  PASS  skin verb: in combat every call prints the library's gray line and shows nothing
+  PASS  skin verb: refused while the addon is disabled, and no picker shows
+  PASS  skin verb: without LibKa0s the verb prints the library-absent line
+  PASS  reset: Reset all settings resets only the active profile
+  PASS  reset: Reset all settings sweeps the debug console off
+  PASS  reset: Reset all settings leaves the minimap button hidden
+  PASS  reset: the General page's Defaults leaves the minimap button hidden
+  PASS  reset: Reset all settings while disabled comes back enabled and running
+  PASS  diagnostics: dependencies reports the PGF seams as present
+  PASS  diagnostics: dependencies reports every hook as installed
+  PASS  diagnostics: a missing PGF seam is named
+  PASS  diagnostics: the filters section prints a set's keys, not a table
+  PASS  diagnostics: an empty filter set reads Any
+  PASS  diagnostics: stood down, the feature events are declared but not registered
+  PASS  glyphs: display strings use only characters every shipped skin face draws
+  PASS  glyphs: the region labels a tag or the panel paints are glyph-safe
+  PASS  glyphs: the realm lists' data mark is the only exemption the guard needs
+  PASS  libs/LibKa0s is the LibKa0s release CLAUDE.md says this addon bundles
+  PASS  tests/_kit is the test kit that shipped with that release
+  PASS  the automated-test runner is recorded executable (100755)
+  PASS  eol: every tracked file carries the terminator .gitattributes declares for it
+  PASS  eol: .gitattributes is line-endings-§5's canonical body for this repo kind
+  PASS  prose: no authored file carries a British spelling from localization-§5's published list
+  PASS  prose: the gate carries localization-§5's two lists whole, and nothing of its own
+  PASS  prose self-test: the carve-out suppresses the named generated folder, and only it
+  PASS  prose self-test: a path the carve-out does not name is not covered by one that looks like it
+  PASS  prose self-test: a carve-out that is not a set of path strings is a failure, not a silence
+  PASS  prose self-test: a TOC's file lines are read as paths, and its directives and comments are not
+  PASS  prose self-test: a .pkgmeta's ignore block is read, and the keys around it are not
+  PASS  prose self-test: an ignore entry covers a path exactly, by folder, and by wildcard
+  PASS  prose self-test: the carve-out admits a generated dump and refuses a file the TOC loads
+  PASS  prose self-test: a waiver-file exclusion meets the same two refusals as the carve-out
+  PASS  prose self-test: each list is refused on the matching rule its own scan uses
+  PASS  prose self-test: the scan and the refusals read the added exclusions through one reader
+  PASS  prose self-test: a narrowing is refused by what it suppresses, not by how it is written
+  PASS  prose self-test: the disclosure names what each entry suppressed, and says when it is bounded
+  PASS  prose self-test: a malformed waived is a failure, not a silence
+  PASS  layoutcap: every authored file over the 1500-line cap is named in the census
+  PASS  layoutcap: no census row outlives the breach it records
+  PASS  layoutcap: every over-cap census row carries one of layout-§1's three terminal states
+  PASS  layoutcap: the census and the exempt set agree about which paths were exempted
+  PASS  layoutcap: an empty census is written as a result rather than left standing empty
+  PASS  layoutcap self-test: the parser reads the census nested under the register, and stops there
+  PASS  layoutcap self-test: a census outside its register, or at the wrong level, is not read
+  PASS  layoutcap self-test: an over-cap file missing from the census is reported, and an exempt one is not
+  PASS  layoutcap self-test: a census row that outlives its breach is reported
+  PASS  layoutcap self-test: an over-cap row that names no terminal state is reported
+  PASS  layoutcap self-test: the census and the exempt set are held to naming the same paths
+  PASS  layoutcap self-test: a census that states nothing is told apart from one that states none
+  PASS  layoutcap self-test: the exempt set takes folders as well as paths
+  PASS  diagnostics contract: both forms run the report
+  PASS  diagnostics contract: the debug word is matched in any case
+  PASS  diagnostics contract: both markers carry the brand and the end counts the report
+  PASS  diagnostics contract: the report appends after what the console already holds
+  PASS  diagnostics contract: the report lands with logging off and turns it on for the session
+  SKIP  diagnostics contract: an addon that opts out lands the report and leaves logging off — this addon keeps the default (Kit.diagnostics.enablesLogging is not false), so its report turns logging on; the case above holds it
+  PASS  diagnostics contract: with logging already on, the report writes no second enable line
+  PASS  diagnostics contract: both forms run while the addon is disabled
+  PASS  diagnostics contract: no other name runs the report
+  PASS  lizard sighted: every hazard lizard loses a function over is neutralized
+  PASS  lizard sighted: fields, strings, comments and look-alike names come through unchanged
+  PASS  lizard sighted: a method definition is rewritten to its dot form with self
+  PASS  lizard sighted: no line is added or removed, CRLF included
+  PASS  lizard sighted: countFunctions counts the keyword, not strings, comments or longer names
+  PASS  lizard sighted: listedCounts reads the per-file table, once per file
+  PASS  lizard sighted: parity names every file whose counts differ, and only those
+  PASS  lizard sighted: lizard lists every function of a hazard fixture once it is sanitized
+
+452 passed, 0 failed, 1 skipped, 453 total

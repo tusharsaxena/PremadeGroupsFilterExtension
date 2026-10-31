@@ -29,13 +29,15 @@ local PINNED = {
     { "regionColors.spa",     "color", "3399ff" },
     { "regionColors.por",     "color", "8788ee" },
     { "regionColors.rus",     "color", "a330c9" },
-    -- PG-01 (the skinning rollout): the Skin tab's seven rows, appended last (settings/Panel.lua).
+    -- PG-01 (the skinning rollout): the Skin tab's rows, appended last (settings/Panel.lua); the
+    -- Font outline (LibKa0s v1.82.0, its default "hud" since v1.83.0) is the eighth.
     { "skin.source",          "string", "ka0s" },
     { "skin.skin",            "string", "ka0s" },
     { "skin.ignorePanel",     "bool",  "true" },
     { "skin.ignoreFonts",     "bool",  "false" },
     { "skin.font",            "string", "" },
     { "skin.texture",         "string", "" },
+    { "skin.outline",         "string", "hud" },
     { "skin.pickerSeen",      "bool",  "false" },
 }
 
