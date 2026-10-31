@@ -141,7 +141,7 @@ for _, way in ipairs(DISABLES) do
         way[2](NS)
         assertTrue(NS.IsStoodDown())
         assertFalse(NS.addon.db.profile.enabled, "the stored setting is the source")
-        -- red under: drop the UnregisterEvent loop in NS.StandDown (core/PGFE.lua:131)
+        -- red under: drop the UnregisterEvent loop in NS.StandDown (core/PGFE.lua:130)
         assertEqual(registered(m), "", "every feature event unregistered, by name")
         for _, event in ipairs(PINNED) do assertEqual(m.__fire(event), 0, event) end
         assertEqual(#m.__timers(), 0, "no live timer")
