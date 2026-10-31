@@ -23,7 +23,7 @@ takes the next free number in its theme and a retired number is never reused.
 | LOC-1..2 | Non-English client | Realm-name and dungeon-name seams on a deDE/frFR client |
 | SKIN-1..10 | EllesmereUI skin (retired) | The record of the addon's own EllesmereUI bridge, retired by the skinning rollout's PG-06 (2026-10-29); EllesmereUI is now the library's `eui` skin source |
 | SKIN-11..33 | Skins | The skinning rollout (2026-10-29) and its library follow-ups (2026-10-30): Ka0s Default's look, the Skin tab, the first-run picker, the attached panel, the settings pages and the debug console under every skin, fonts, profiles, the copy, stand-down, the `euiSkin` migration, EllesmereUI on and off, diagnostics, the launcher, a degraded install, the panel under the Scope switches |
-| SKIN-34..40 | Skins | The skin fonts and feedback run (2026-10-30, LibKa0s v1.82.0): the Font outline setting, the panel's text and the Font outline's default, the new faces, the attached panel's width parity across skins, the collapse button's chevron and place; the findings remediation's re-anchor check |
+| SKIN-34..41 | Skins | The skin fonts and feedback run (2026-10-30, LibKa0s v1.82.0): the Font outline setting, the panel's text and the Font outline's default, the new faces, the attached panel's width parity across skins, the collapse button's chevron and place; the findings remediation's re-anchor check and the panel's flat dropdowns |
 
 ## Before you start
 
@@ -547,6 +547,16 @@ EllesmereUI read took a shorter path; nothing should look different.
   shell bar until the reload the game asks for; turn EllesmereUI's third-party skinning off and press
   a filter checkbox → the same reload request appears. Fail: a box left on the old band, a stale chevron
   color, a missing reload request, or a Lua error. Result:
+- **SKIN-41. The panel's dropdowns are flat (PG-D1).** Open PGF's dialog on Dungeons with the panel
+  showing, on Ka0s Default → Server regions, Playstyle, Composition and the Presets dropdown each draw
+  a flat dark box with the skin's edge and one small gold triangle at the right end, the look of the
+  dropdown in `/pgfe skin`: no gold button and no stock bevel. Each still opens its menu, its text reads
+  up to the triangle and is not clipped, and its height matches Save beside it. The boxes keep no
+  hover art now, as the skin picker's has none (this replaces APPLY-19's hover-art line). With
+  `/pgfe skin` open, pick other skins in turn (Glass, Ember, WoW Default) → box and triangle take each
+  skin's colors live. Tick *Ignore settings panel* → they stay skinned. With EllesmereUI painting the
+  panel → one arrow only, EllesmereUI's. Fail: a gold button or bevel left, two arrows, a triangle on
+  the wrong side or pointing the wrong way, a color that lags a pick, or a Lua error. Result:
 
 ## Frame layering
 
@@ -619,4 +629,4 @@ On 2026-10-31 the owner reported that every check of the skin fonts and feedback
 (`docs/2026-10-31-FONT_PICKERS_AND_SKIN_FACES/`, LibKa0s v1.83.0) passed: SLASH-4, SKIN-12, SKIN-20
 and SKIN-34 to SKIN-39, each recorded on its `Result:` line.
 
-Owed from the findings remediation (`docs/2026-10-31-FINDINGS_REMEDIATION/`): SKIN-40, PANEL-5.
+Owed from the findings remediation (`docs/2026-10-31-FINDINGS_REMEDIATION/`): SKIN-40, SKIN-41, PANEL-5.

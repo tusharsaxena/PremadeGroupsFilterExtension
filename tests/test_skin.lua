@@ -338,6 +338,68 @@ test("skin: with Ignore settings panel on, the panel's labels and title still we
     if title then assertTrue(recorded(Skin, title), "the title left the ledger") end
 end)
 
+-- ── the dropdowns: the skin picker's look (PG-D1) ───────────────────────────────────────────────
+
+local function dropdowns(f)
+    return { f.regionSelect, f.playstyleSelect, f.compositionSelect, f.presetDropdown }
+end
+
+test("skin: every panel dropdown drops the template's art and draws the skin's glyph arrow", function()
+    -- red under: S.Dropdown handed no `stock` (its list knows no Background, the atlas stayed), or the
+    -- template's Arrow left as the painted arrow: that atlas is the whole gold button, tinted, not a
+    -- triangle (image 35 against the skin picker's image 36).
+    local NS, _, Skin = setup()
+    local r, g, b = Skin:Color(OWNER, "icon.arrow")
+    for _, dd in ipairs(dropdowns(NS.Panel.frame)) do
+        assertEqual(dd.Background:GetAlpha(), 0, "the template's text holder is faded")
+        assertEqual(dd.Arrow:GetAlpha(), 0, "the template's gold button is faded")
+        local glyph = dd.arrow
+        assertTrue(glyph ~= nil and not rawequal(glyph, dd.Arrow), "the glyph is a texture of its own")
+        assertTrue(glyph:IsShown(), "the glyph shows")
+        assertEqual(glyph:GetAlpha(), 1)
+        assertTrue(glyph.__desaturated == true, "the library desaturated the glyph")
+        assertTrue(close(glyph.__vertexColor[1], r) and close(glyph.__vertexColor[2], g)
+            and close(glyph.__vertexColor[3], b), "the glyph wears icon.arrow")
+        assertEqual(glyph.__texture, "Interface\\ChatFrame\\ChatFrameExpandArrow")
+    end
+end)
+
+test("skin: the dropdown glyph follows a live switch and stays under Ignore settings panel", function()
+    -- red under: an arrow colored at build, or a dropdown given back by the Scope toggle (D-01).
+    local NS, _, Skin = setup()
+    local dd = NS.Panel.frame.presetDropdown
+    NS.ApplySkinChoice("ka0s", "ember")
+    local r, g, b = Skin:Color(OWNER, "icon.arrow")
+    local c = dd.arrow.__vertexColor
+    assertTrue(close(c[1], r) and close(c[2], g) and close(c[3], b), "Ember's arrow color replayed")
+    NS.ApplySkinIgnore(true, false)
+    assertEqual(dd.Arrow:GetAlpha(), 0, "the panel is a window: the Scope toggle leaves it skinned")
+    assertTrue(dd.arrow:IsShown())
+end)
+
+test("skin: without the library the dropdowns keep the template's art and no glyph shows", function()
+    -- red under: a glyph over the stock gold button, or stock art faded with nothing to replace it.
+    local NS, _, m = T.enableAddon{ skip = T.loadAddon.libFiles }
+    m.pgf.dialog.shown = true
+    NS.Panel.UpdateVisibility()
+    for _, dd in ipairs(dropdowns(NS.Panel.frame)) do
+        assertEqual(dd.Arrow:GetAlpha(), 1, "the template's button stays")
+        assertEqual(dd.Background:GetAlpha(), 1, "the template's text holder stays")
+        assertFalse(dd.arrow:IsShown(), "no second arrow")
+    end
+end)
+
+test("skin: while EllesmereUI paints the panel its own arrow is the only one", function()
+    -- red under: the Ka0s glyph left showing beside the arrow WSkin.Dropdown draws.
+    local NS, _, m = T.enableAddon({ mock = function(mm) mm.installEUI() end })
+    NS.SchemaRuntime.Set("skin.source", "eui")
+    m.eui.dispatch(OWNER)
+    m.pgf.dialog.shown = true
+    NS.Panel.UpdateVisibility()
+    assertTrue(NS.SkinEUIPainted(), "EllesmereUI painted the owner")
+    for _, dd in ipairs(dropdowns(NS.Panel.frame)) do assertFalse(dd.arrow:IsShown(), "no second arrow") end
+end)
+
 -- ── stand-down ──────────────────────────────────────────────────────────────────────────────────
 
 test("skin: a pick while stood down builds nothing; the stand-up shows the same panel in the new skin", function()
