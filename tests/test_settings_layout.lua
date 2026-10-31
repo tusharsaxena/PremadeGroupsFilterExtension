@@ -155,7 +155,7 @@ test("layout: the Filters tab holds the extension's switch and says where the fi
     end
     -- red under: the old label, or showRegionTags still on the tab
     assertEqual(table.concat(boxes, " | "), "Use the extension's filters")
-    -- red under: drop AFTER_GROUP[FILTER_GROUP]
+    -- red under: the note row dropped from FILTER_ROWS
     assertEqual(texts[#texts], "The filter options are on the panel under Premade Groups Filter's window: "
         .. "open the Group Finder, choose Dungeons, and it appears below PGF's filters.")
 end)
