@@ -99,7 +99,7 @@ None.
 | Band | File | LOC | Disposition |
 |---|---|---|---|
 | 1000–1500 (on notice) | `modules/Panel.lua` | 1026 | on notice: cohesive, the row builders, layout and paint of the one attached panel frame; split the row builders out before it reaches 1500 lines |
-| 1000–1500 (on notice) | `tests/test_panel.lua` | 1169 | on notice: test-only file; split by area (rows / presets / collapse / copy box) before it reaches 1500 lines or at the next panel feature |
+| 1000–1500 (on notice) | `tests/test_panel.lua` | 1169 | split 2026-10-31 (FX-PG-SIZE): the next panel feature fired the re-check; now `tests/test_panel.lua` and `tests/test_panel_layout.lua`, both under 1000 lines, with `tests/panel_helpers.lua` shared. This row leaves at the next run |
 
 `lizard` counts every `and`/`or` short-circuit as a decision, so in Lua a run of
 `t.k = rec.k or D.k` defaulting lines scores high with no visible branching at all: a large CCN

@@ -263,7 +263,7 @@ Total.
 - apply: a Clear refusal and a Clear success each write one [Clear] line
 - apply: a filtersActive toggle writes one [Apply] toggled line
 
-### test_panel.lua (80)
+### test_panel.lua (49)
 
 - panel: the module publishes its namespace table
 - panel: anchored under PGF dialog, both edges
@@ -313,6 +313,10 @@ Total.
 - panel: the min/max arrow follows the stored collapsed state
 - panel: collapsed shows only the skin's title band; no metal header copies are built
 - panel: Apply leaves focus alone; Enter in the copy box focuses the search box
+- panel: visibility logs on change only, and again after a stand-down
+
+### test_panel_layout.lua (31)
+
 - panel: the min/max arrows are chevron icons on the skin's button, expanded up and collapsed down
 - panel: the regions and playstyle dropdowns are 225 wide, right-aligned in one column
 - panel: each menu opens with Any and a divider; Any is ticked with nothing ticked and clears
@@ -344,7 +348,6 @@ Total.
 - panel: the panel's frame level is above PGF's dialog and its border
 - panel: the title is the full addon name, and the copy box centers its range
 - panel: a click on the header strip collapses and expands, like the arrow
-- panel: visibility logs on change only, and again after a stand-down
 
 ### test_layers.lua (8)
 
@@ -583,7 +586,8 @@ Total.
 | test_regiontags.lua | 13 |
 | test_bridge.lua | 18 |
 | test_apply.lua | 33 |
-| test_panel.lua | 80 |
+| test_panel.lua | 49 |
+| test_panel_layout.lua | 31 |
 | test_layers.lua | 8 |
 | test_settings_layout.lua | 11 |
 | test_skinsetup.lua | 21 |
