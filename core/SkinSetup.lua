@@ -119,11 +119,11 @@ function NS.SkinColor(name)
     return r, g, b, a
 end
 
+local function escapeByte(v) return math.floor(v * 255 + 0.5) end
+
 --- A color token as a "|cffrrggbb" escape, each channel rounded to the nearest byte (.5 is 80), so
 --- markup a call site wrote as a literal keeps its bytes on Ka0s Default. nil for a token the skin
 --- leaves alone.
-local function escapeByte(v) return math.floor(v * 255 + 0.5) end
-
 function NS.SkinEscape(name)
     local r, g, b = NS.Skin.Color(name)
     if r == nil then return nil end
