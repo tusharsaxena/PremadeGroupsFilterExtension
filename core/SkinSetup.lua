@@ -55,11 +55,11 @@ local addonName, NS = ...
 --                           one way this addon learns what EllesmereUI does (anti-pattern #107: it
 --                           never reads EllesmereUI's saved variables); nil without the library.
 --   NS.SkinEUIPainted()     true once EllesmereUI painted this owner this session: modules/Panel.lua
---                           folds the collapsed panel to EllesmereUI's shell bar then.
+--                           folds to EllesmereUI's shell bar and seats the arrow on it then.
 --
 -- No owner tokens (skinning-§1): every color the addon draws under Ka0s Default is a library token's
--- exact value (the M0 inventory's PG-G1..G3 were refuted, 01_INVENTORY.md), so RegisterOwner carries
--- no `tokens` table. A color a later surface needs that no library token holds is added here, as
+-- exact value (the M0 inventory's PG-G1..G3 were refuted, Ka0sAddonsCommonTasks
+-- docs/2026-10-29-SKINNING_ROLLOUT/01_INVENTORY.md), so RegisterOwner carries no `tokens` table. A color a later surface needs that no library token holds is added here, as
 -- `pg.<name>` with its Ka0s Default `default` and a `follow` role token, in the same change.
 --
 -- ── WHERE IT LOADS ───────────────────────────────────────────────────────────────────────────
