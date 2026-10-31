@@ -1,0 +1,7 @@
+ka0s-review: PG-F01 + PG-F02 (b03ecb4, f27b77e), font pickers and skin faces run
+
+Independent review: the findings list passed to this round was empty, so nothing was fixed or rejected and no "PG-F02: Review fixes" commit was made.
+
+Gate on f27b77e: lua tests/run.lua 452 passed, 0 failed, 1 skipped (the opt-out diagnostics contract case, which does not apply to this addon); luacheck 0 warnings / 0 errors in 67 files; largest addon-owned Lua file 1169 lines; vendored complexity suite pass, max CCN 14. README badge and docs/test-cases.md both say 452.
+
+No smoke check marked passed; SKIN-12, SKIN-20, SKIN-34..37 and SKIN-39 await the owner.
