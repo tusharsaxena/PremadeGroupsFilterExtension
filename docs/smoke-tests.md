@@ -23,7 +23,7 @@ takes the next free number in its theme and a retired number is never reused.
 | LOC-1..2 | Non-English client | Realm-name and dungeon-name seams on a deDE/frFR client |
 | SKIN-1..10 | EllesmereUI skin (retired) | The record of the addon's own EllesmereUI bridge, retired by the skinning rollout's PG-06 (2026-10-29); EllesmereUI is now the library's `eui` skin source |
 | SKIN-11..33 | Skins | The skinning rollout (2026-10-29) and its library follow-ups (2026-10-30): Ka0s Default's look, the Skin tab, the first-run picker, the attached panel, the settings pages and the debug console under every skin, fonts, profiles, the copy, stand-down, the `euiSkin` migration, EllesmereUI on and off, diagnostics, the launcher, a degraded install, the panel under the Scope switches |
-| SKIN-34..41 | Skins | The skin fonts and feedback run (2026-10-30, LibKa0s v1.82.0): the Font outline setting, the panel's text and the Font outline's default, the new faces, the attached panel's width parity across skins, the collapse button's chevron and place; the findings remediation's re-anchor check and the panel's flat dropdowns |
+| SKIN-34..42 | Skins | The skin fonts and feedback run (2026-10-30, LibKa0s v1.82.0): the Font outline setting, the panel's text and the Font outline's default, the new faces, the attached panel's width parity across skins, the collapse button's chevron and place; the findings remediation's re-anchor check, the panel's flat dropdowns and the one media picker |
 
 ## Before you start
 
