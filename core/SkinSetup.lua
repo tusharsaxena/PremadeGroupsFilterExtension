@@ -121,11 +121,12 @@ end
 --- A color token as a "|cffrrggbb" escape, each channel rounded to the nearest byte (.5 is 80), so
 --- markup a call site wrote as a literal keeps its bytes on Ka0s Default. nil for a token the skin
 --- leaves alone.
+local function escapeByte(v) return math.floor(v * 255 + 0.5) end
+
 function NS.SkinEscape(name)
     local r, g, b = NS.Skin.Color(name)
     if r == nil then return nil end
-    local function byte(v) return math.floor(v * 255 + 0.5) end
-    return ("|cff%02x%02x%02x"):format(byte(r), byte(g), byte(b))
+    return ("|cff%02x%02x%02x"):format(escapeByte(r), escapeByte(g), escapeByte(b))
 end
 
 NS.SKIN_SOURCE_OPTIONS = {
@@ -452,7 +453,13 @@ function NS.SkinEUIStatus()
     return Skin:GetEUIStatus(addonName)
 end
 
+-- Panel.Refresh asks on every layout, and GetEUIStatus builds its four conditions each time (about
+-- 1.2 KB), so the ordinary owner answers without it. EllesmereUI paints only an owner on the `eui`
+-- source, and leaving that source after a paint sets the pending reload (Skin:SetChoice), so an
+-- owner on neither was never painted. An owner on `eui` always reads the status, because that read
+-- is also what notices a gate that closed after the paint.
 function NS.SkinEUIPainted()
+    if (Skin:GetChoice(addonName)) ~= "eui" and not Skin:PendingReload(addonName) then return false end
     local status = NS.SkinEUIStatus()
     return type(status) == "table" and status.painted == true
 end

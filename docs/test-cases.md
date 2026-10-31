@@ -395,7 +395,7 @@ Total.
 - skin seam: each host-copy skin token is the live library's Ka0s Default value
 - skin seam: the descriptor reaches LibSharedMedia, so the panel preloads the faces it previews
 
-### test_skin.lua (14)
+### test_skin.lua (15)
 
 - skin: under Ka0s Default the one panel is painted through the facade, every widget and label
 - skin: the colors the panel writes under Ka0s Default are its exact pixels
@@ -406,6 +406,7 @@ Total.
 - skin: the panel's geometry: 24px check buttons on the rows' centers, flush under the dialog
 - skin: collapsed, the panel folds to the skin's title band, Ka0s Default's included
 - skin: the min/max button is one size and centered on the title band in every skin
+- skin: a Refresh re-anchors the min/max button only when the band moved
 - skin: the panel writes the skin's colors: locked boxes, the dimmed label, the readout
 - skin: a pick after the panel is built rewrites the colors the panel reads from tokens
 - skin: with Ignore settings panel on, the panel's labels and title still wear the skin
@@ -431,7 +432,7 @@ Total.
 - skin tools: a host release is chained onto the skin's restore, both run
 - skin tools: the debug console is painted for this owner
 
-### test_skin_eui.lua (13)
+### test_skin_eui.lua (16)
 
 - eui migration: with EllesmereUI, every profile but an explicit false moves to skin.source eui
 - eui migration: without EllesmereUI every profile keeps the Ka0s source
@@ -440,6 +441,9 @@ Total.
 - eui: the folder is registered with EllesmereUI once, by the library
 - eui: no addon file reads EllesmereUIDB or registers with EllesmereUI itself
 - eui: once EllesmereUI paints the owner, the panel goes to its facade
+- eui: an owner that was never on the eui source answers unpainted without building the status
+- eui: leaving the eui source after a paint still reads as painted, until the reload
+- eui: an owner on the eui source reads the status, so a closed gate still asks for the reload
 - eui: before EllesmereUI paints, the eui source wears Ka0s Default through the library
 - eui: no addon file reaches the library-internal __DrawsKey
 - eui: the collapsed panel folds to EllesmereUI's 25px shell bar
@@ -583,9 +587,9 @@ Total.
 | test_layers.lua | 8 |
 | test_settings_layout.lua | 11 |
 | test_skinsetup.lua | 21 |
-| test_skin.lua | 14 |
+| test_skin.lua | 15 |
 | test_skin_picker.lua | 16 |
-| test_skin_eui.lua | 13 |
+| test_skin_eui.lua | 16 |
 | test_skin_outline.lua | 10 |
 | test_skin_verb.lua | 6 |
 | test_reset.lua | 5 |
@@ -598,4 +602,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **452** |
+| **Total** | **456** |

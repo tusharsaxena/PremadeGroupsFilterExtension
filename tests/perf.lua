@@ -24,7 +24,7 @@
 -- bytes. PGF's own work inside PutPremadeRegionInfo (including its PremadeRegions lookup) is PGF's,
 -- not counted. Region lookups (`NS.Regions.GetRegion`) are counted separately as `lookups`.
 --
--- CEILINGS (measured 2026-10-10, Lua 5.1.5). A byte ceiling is the measured figure rounded up plus
+-- CEILINGS (measured 2026-10-31, Lua 5.1.5). A byte ceiling is the measured figure rounded up plus
 -- 24 bytes, smaller than one extra table per iteration (64 bytes here), so the smallest added
 -- allocation trips it. `envStoodDown` is pinned hard at 0 bytes and 0 calls: the early return must
 -- cost nothing. Call counts are pinned exactly. Raise one only by re-measuring and saying why; a
@@ -34,20 +34,26 @@
 --   envNoPR                 80.1       105  1.2  (1 GetCurrentRegion; GetRealmName for 1 leader in 5)
 --   envWithPR                0.0        24  0
 --   envStoodDown             0.0         0  0
---   searchRowPaint         160.4       185  5.2  (2 GetCurrentRegion, 1 GetSearchResultInfo,
+--   searchRowPaint         160.6       185  5.2  (2 GetCurrentRegion, 1 GetSearchResultInfo,
 --                                                 1 GetText, 1 SetText; GetRealmName 1 in 5)
 --   applicantRowPaint      160.4       185  5.2  (the same, GetApplicantMemberInfo for the read)
---   combatEvents         28161.1     28186  143  (one firing of each event; EVENT_API has the split)
+--   combatEvents         28113.1     28138  143  (one firing of each event; EVENT_API has the split)
 --
 -- envNoPR's 80 bytes and the row painters' 160 are the C-32 concat probe and nothing else:
 -- LibKa0s's IsConcatSafe (`libs/LibKa0s/Core.lua:54`) builds a one-element table per call, once in
 -- Regions.GetRegion and once more in RegionTags.Tag. combatEvents is dominated by the three
 -- season-data events and PLAYER_ENTERING_WORLD, each rebuilding the panel's readout over the
--- eight dungeons (about 7 KB each).
+-- eight dungeons (about 7 KB each, 7.6 KB for PLAYER_ENTERING_WORLD's full Panel.Refresh).
+--
+-- searchRowPaint's .6 over applicantRowPaint's .4 is a one-off of about 200 bytes across the loop,
+-- not a per-paint cost: at 10000 iterations it reads 160.1. combatEvents read 30641.4 at the
+-- 2026-10-31 run; the cause was the chevron and skin work on the Refresh path (a closure in
+-- SkinEscape, GetEUIStatus's tables, a throwaway list per tint, a re-anchor per layout) and all of
+-- it was removed, which took the figure below the 2026-10-10 one.
 
 local BYTE_CEILING = {
     envNoPR = 105, envWithPR = 24, envStoodDown = 0,
-    searchRowPaint = 185, applicantRowPaint = 185, combatEvents = 28186,
+    searchRowPaint = 185, applicantRowPaint = 185, combatEvents = 28138,
 }
 local API_PER_ITER = {
     envNoPR = 1.2, envWithPR = 0, envStoodDown = 0,
@@ -62,8 +68,6 @@ local EVENT_API = {
     CHALLENGE_MODE_COMPLETED             = 34,   -- the same handler
     MYTHIC_PLUS_CURRENT_AFFIX_UPDATE     = 34,   -- the same handler
     PLAYER_ENTERING_WORLD                = 35,   -- re-arm the request, visibility, refresh
-    UI_SCALE_CHANGED                     = 0,    -- the skin's relayout; returns before a paint
-    DISPLAY_SIZE_CHANGED                 = 0,    -- the same handler
     PLAYER_REGEN_DISABLED                = 0,    -- not registered: no handler, no call
 }
 

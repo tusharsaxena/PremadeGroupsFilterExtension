@@ -690,14 +690,17 @@ local function collapsedHeight()
     return h
 end
 
+local function tintChevron(btn, r, g, b, a)
+    if btn and btn.chevron then btn.chevron:SetVertexColor(r, g, b, a) end
+end
+
 -- The chevrons' color: the skin's `icon.arrow`, the color its own paging arrows take. A skin that
 -- leaves the token alone leaves the art's white.
 local function tintChevrons(mm)
     local r, g, b, a = NS.SkinColor("icon.arrow")
     if r == nil then return end
-    for _, btn in ipairs({ mm.MinimizeButton, mm.MaximizeButton }) do
-        if btn and btn.chevron then btn.chevron:SetVertexColor(r, g, b, a) end
-    end
+    tintChevron(mm.MinimizeButton, r, g, b, a)
+    tintChevron(mm.MaximizeButton, r, g, b, a)
 end
 
 -- The header's click band: the title band's depth, capped at the body's top so a click in the
@@ -707,14 +710,17 @@ local function headerClickHeight(inset, h)
 end
 
 -- The button centered on the band, ARROW_PAD in from its right end, the same box in every skin; the
--- header's click band covers the band up to it.
+-- header's click band covers the band up to it. Anchored only when the band moved: every Refresh
+-- lands here, and nothing else anchors these two frames.
 local function placeMinMax(f)
     local mm = f.MaximizeMinimizeFrame
     if not mm then return end
+    tintChevrons(mm)
     local inset, h = titleBand()
+    if f.placedInset == inset and f.placedBand == h then return end
+    f.placedInset, f.placedBand = inset, h
     mm:ClearAllPoints()
     mm:SetPoint("TOPRIGHT", f, "TOPRIGHT", -(inset + ARROW_PAD), -(inset + (h - ARROW_BTN) / 2))
-    tintChevrons(mm)
     local hc = f.headerClick
     if not hc then return end
     hc:ClearAllPoints()

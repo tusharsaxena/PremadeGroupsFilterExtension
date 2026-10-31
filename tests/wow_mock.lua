@@ -274,7 +274,13 @@ local function build()
         f.GetFrameLevel = function(self) return self.__level or 1 end
         f.GetEffectiveScale = function() return 1 end
         f.SetColorTexture = function(self, r, g, b, a) self.__color = { r, g, b, a }; return self end
-        f.SetVertexColor = function(self, r, g, b, a) self.__vertexColor = { r, g, b, a }; return self end
+        -- One table per texture, refilled: tests/perf.lua's bytes are the addon's, not this mock's.
+        f.SetVertexColor = function(self, r, g, b, a)
+            local c = self.__vertexColor or {}
+            c[1], c[2], c[3], c[4] = r, g, b, a
+            self.__vertexColor = c
+            return self
+        end
         -- A texture's file (the min/max button's chevron, PG-02 of the skin fonts and feedback run).
         f.SetTexture = function(self, path) self.__texture = path; return self end
         f.GetTexture = function(self) return self.__texture end

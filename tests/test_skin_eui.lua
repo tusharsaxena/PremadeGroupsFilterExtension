@@ -115,6 +115,40 @@ test("eui: once EllesmereUI paints the owner, the panel goes to its facade", fun
     assertEqual(#m.eui.callsFor("Checkbox", f.activeCheck), 1, "and its check buttons")
 end)
 
+local function countStatusReads(Skin)
+    local reads = { n = 0 }
+    local real = Skin.GetEUIStatus
+    Skin.GetEUIStatus = function(...) reads.n = reads.n + 1; return real(...) end
+    return reads
+end
+
+test("eui: an owner that was never on the eui source answers unpainted without building the status", function()
+    -- red under: SkinEUIPainted reading GetEUIStatus unconditionally, about 1.2 KB per Panel.Refresh.
+    local NS, _, m = T.enableAddon{}
+    local reads = countStatusReads(m.LibStub("LibKa0s-Skin-1.0"))
+    assertFalse(NS.SkinEUIPainted())
+    assertEqual(reads.n, 0)
+end)
+
+test("eui: leaving the eui source after a paint still reads as painted, until the reload", function()
+    -- The paint is one-way, so the panel stays on EllesmereUI's band. red under: a shortcut on the
+    -- source alone, which forgets the pending reload.
+    local NS, m = painted()
+    local Skin = m.LibStub("LibKa0s-Skin-1.0")
+    Skin:SetChoice(OWNER, "ka0s", "ember")
+    assertTrue(Skin:PendingReload(OWNER))
+    assertTrue(NS.SkinEUIPainted())
+end)
+
+test("eui: an owner on the eui source reads the status, so a closed gate still asks for the reload", function()
+    -- GetEUIStatus is what notices the gate. red under: a shortcut that also skips an `eui` owner.
+    local NS, m = painted()
+    local Skin = m.LibStub("LibKa0s-Skin-1.0")
+    local reads = countStatusReads(Skin)
+    assertTrue(NS.SkinEUIPainted())
+    assertEqual(reads.n, 1)
+end)
+
 test("eui: before EllesmereUI paints, the eui source wears Ka0s Default through the library", function()
     -- The library's live fallback while the gate is closed: the master switch off here. red under:
     -- the retired metal instance (no primitive under Ka0s Default), or a call handed to EllesmereUI.

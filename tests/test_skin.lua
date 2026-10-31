@@ -240,6 +240,25 @@ test("skin: the min/max button is one size and centered on the title band in eve
     assertEqual(n, 9, "every registered skin")
 end)
 
+test("skin: a Refresh re-anchors the min/max button only when the band moved", function()
+    -- red under: placeMinMax's ClearAllPoints and SetPoint running on every layout, which is what
+    -- tests/perf.lua's combatEvents ceiling caught.
+    local NS, _, Skin = setup()
+    local f = NS.Panel.frame
+    local mm = f.MaximizeMinimizeFrame
+    local anchors = 0
+    local realClear = mm.ClearAllPoints
+    mm.ClearAllPoints = function(self) anchors = anchors + 1; return realClear(self) end
+    NS.Panel.Refresh(); NS.Panel.Refresh()
+    assertEqual(anchors, 0, "the same band: nothing moved")
+    local moved = false
+    for _, def in ipairs(Skin:Skins()) do
+        NS.ApplySkinChoice("ka0s", def.key)
+        moved = moved or anchors > 0
+    end
+    assertTrue(moved, "a skin with another band moves the button")
+end)
+
 test("skin: the panel writes the skin's colors: locked boxes, the dimmed label, the readout", function()
     -- red under: a color written once at build (a later switch would leave the last skin's), or a
     -- typed value.
