@@ -558,6 +558,15 @@ EllesmereUI read took a shorter path; nothing should look different.
   panel → one arrow only, EllesmereUI's. Fail: a gold button or bevel left, two arrows, a triangle on
   the wrong side or pointing the wrong way, a color that lags a pick, or a Lua error. Result:
 
+- **SKIN-42. One media picker (M3-MEDIA; the owner's ruling of 2026-11-01).** This addon has no border
+  row: its panel's media rows are the Skin tab's Font and Texture, so they stand in here. Fully restart
+  the client with another addon that carries AceGUI-3.0-SharedMediaWidgets enabled, if you have one.
+  Pick a non-default skin. `/pgfe config` -> General -> **Skin** -> *Font and texture*: open **Font**,
+  then **Texture** -> each closed row and its pull-out wear the skin's colors and edge, with every row
+  in its own face or beside its swatch, and none is a stock SharedMedia list. Pick an entry in each ->
+  the first click selects and closes, and the row reads it. Reset both. Fail: a stock pull-out, a
+  blank row on the first open, or a Lua error. Result:
+
 ## Frame layering
 
 The panel takes PGF's dialog strata by reading it, and a PGFE StaticPopup shown while the panel is
@@ -629,4 +638,4 @@ On 2026-10-31 the owner reported that every check of the skin fonts and feedback
 (`docs/2026-10-31-FONT_PICKERS_AND_SKIN_FACES/`, LibKa0s v1.83.0) passed: SLASH-4, SKIN-12, SKIN-20
 and SKIN-34 to SKIN-39, each recorded on its `Result:` line.
 
-Owed from the findings remediation (`docs/2026-10-31-FINDINGS_REMEDIATION/`): SKIN-40, SKIN-41, PANEL-5.
+Owed from the findings remediation (`docs/2026-10-31-FINDINGS_REMEDIATION/`): SKIN-40, SKIN-41, SKIN-42, PANEL-5.
