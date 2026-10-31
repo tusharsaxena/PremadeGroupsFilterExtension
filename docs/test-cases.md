@@ -446,9 +446,10 @@ Total.
 - eui diagnostics: the skin section names the key the library draws by, in every state
 - eui diagnostics: the skin section reports the choice and the library's EllesmereUI gate
 
-### test_skin_outline.lua (9)
+### test_skin_outline.lua (10)
 
-- outline: a fresh profile stores All text, the library's default
+- outline: a fresh profile stores HUD text only, the library's default
+- outline: a profile that stored All text keeps it, unmigrated (D-10)
 - outline: the schema row offers the library's three modes, in its order
 - outline: the write seam stores media.outline, and leaves it alone when it is nil
 - outline: another addon's copy reaches the store through WriteChoice
@@ -584,7 +585,7 @@ Total.
 | test_skin.lua | 14 |
 | test_skin_picker.lua | 16 |
 | test_skin_eui.lua | 13 |
-| test_skin_outline.lua | 9 |
+| test_skin_outline.lua | 10 |
 | test_skin_verb.lua | 6 |
 | test_reset.lua | 5 |
 | test_diagnostics.lua | 6 |
@@ -596,4 +597,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **450** |
+| **Total** | **451** |

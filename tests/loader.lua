@@ -59,6 +59,7 @@ local LIBKA0S = {
     "libs/LibKa0s/OptionsAppearance.lua",
     "libs/LibKa0s/OptionsSkinPicker.lua",
     "libs/LibKa0s/OptionsSwitch.lua",
+    "libs/LibKa0s/OptionsMedia.lua",
     "libs/LibKa0s/Perf.lua",
     "libs/LibKa0s/PerfSampler.lua",
     "libs/LibKa0s/PerfCommands.lua",

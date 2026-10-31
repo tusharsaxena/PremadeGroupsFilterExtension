@@ -1,6 +1,6 @@
 -- tests/test_skin_outline.lua — the font outline (LibKa0s v1.82.0, Skin minor 9; PG-01 of
 -- Ka0sAddonsCommonTasks docs/2026-10-30-SKIN_FONTS_AND_FEEDBACK, ruling D-06): stored as skin.outline
--- ("all", the default, "hud", "off"), written only through the skin write seam (NS.WriteSkinChoice's
+-- ("all", "hud", the default since v1.83.0 and D-10, "off"), written only through the skin write seam (NS.WriteSkinChoice's
 -- `media.outline`), and applied with Skin:SetOutline at load, on every profile event and on the row's
 -- own write.
 
@@ -13,10 +13,20 @@ local function lib(m) return m.LibStub("LibKa0s-Skin-1.0") end
 local function profileSkin(NS) return NS.addon.db.profile.skin end
 local function set(NS, path, v) return NS.addon.Settings.Helpers.Set(path, v) end
 
-test("outline: a fresh profile stores All text, the library's default", function()
+test("outline: a fresh profile stores HUD text only, the library's default", function()
     local NS, _, m = T.bootAddon()
-    assertEqual(profileSkin(NS).outline, "all")
+    assertEqual(profileSkin(NS).outline, "hud")
     assertEqual(profileSkin(NS).outline, lib(m).OUTLINE_DEFAULT)
+    assertEqual(lib(m):GetOutline(OWNER), "hud")
+end)
+
+test("outline: a profile that stored All text keeps it, unmigrated (D-10)", function()
+    -- red under: a load-time rewrite of the old default, which would take a player's choice.
+    local first = T.bootAddon()
+    set(first, "skin.outline", "all")
+    local saved = _G.PremadeGroupsFilterExtensionDB
+    local NS, _, m = T.bootAddon{ afterFile = function() _G.PremadeGroupsFilterExtensionDB = saved end }
+    assertEqual(profileSkin(NS).outline, "all")
     assertEqual(lib(m):GetOutline(OWNER), "all")
 end)
 
@@ -63,7 +73,7 @@ end)
 test("outline: /pgfe set refuses a mode the library does not know", function()
     local NS = T.bootAddon()
     NS.addon:OnSlashCommand("set skin.outline thick")
-    assertEqual(profileSkin(NS).outline, "all")
+    assertEqual(profileSkin(NS).outline, "hud")
 end)
 
 test("outline: the stored mode is applied at load", function()
@@ -77,11 +87,11 @@ end)
 
 test("outline: a profile switch applies the incoming profile's mode, and back", function()
     local NS, _, m = T.bootAddon()
-    set(NS, "skin.outline", "hud")
+    set(NS, "skin.outline", "all")
     NS.addon.db:SetProfile("Alt")
-    assertEqual(lib(m):GetOutline(OWNER), "all", "Alt keeps the default")
+    assertEqual(lib(m):GetOutline(OWNER), "hud", "Alt keeps the default")
     NS.addon.db:SetProfile("Default")
-    assertEqual(lib(m):GetOutline(OWNER), "hud", "Default's is back")
+    assertEqual(lib(m):GetOutline(OWNER), "all", "Default's is back")
 end)
 
 test("outline: without the skin engine the apply is a quiet no-op", function()

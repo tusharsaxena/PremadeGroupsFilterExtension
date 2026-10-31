@@ -69,7 +69,7 @@ re-render.
 - **Skin** (the last tab): the library's `O.AppearanceTab`, drawn over the skip-render `skin.*` rows
   (`core/SkinSetup.lua` is the write seam): the source (Ka0s skins or EllesmereUI, with EllesmereUI's
   four conditions and their fixes), the nine skins, the font and texture overrides with their two
-  reset buttons, the *Font outline* (`skin.outline`: All text, HUD text only, Off; LibKa0s
+  reset buttons, the *Font outline* (`skin.outline`: All text, HUD text only, the default, Off; LibKa0s
   v1.82.0), the scope and *Copy to every Ka0s addon* under its own heading. *Ignore settings panel* is on in a new profile, so these pages stay
   the client's until the player unticks it; the attached panel and the debug console follow the
   skin either way. The first-run skin picker (`NS.MaybeShowSkinPicker`, once per profile while

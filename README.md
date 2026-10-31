@@ -4,7 +4,7 @@
 ![CurseForge Version](https://img.shields.io/curseforge/v/1736636)
 ![License](https://img.shields.io/badge/License-MIT-orange)
 ![Standard](https://img.shields.io/badge/Ka0s-WoW_Addon_Standard-yellow)
-![Tests](https://img.shields.io/badge/Tests-450%2F450_passing-green)
+![Tests](https://img.shields.io/badge/Tests-451%2F451_passing-green)
 
 A small companion to [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter)
 for Mythic+. You type the key level you want to push (or let Smart pick it), and it ticks every
@@ -119,32 +119,8 @@ Please file reports there rather than in comments, so nothing gets lost.
 The addon extends [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter)
 by Bernhard Saumweber. PremadeRegions was the reference for the realm-to-region list.
 
-The debug console uses [JetBrains Mono](https://www.jetbrains.com/lp/mono/), licensed under the SIL
-Open Font License 1.1.
-
-Ka0s Default, the skin every profile starts on, draws [Prototype](https://www.dafont.com/prototype.font)
-v2.0 (2001). It is **not** under the Open Font License: it is "free for personal use, freely
-distributed with Prototype.txt", so the author's `Prototype.txt` ships beside it unchanged.
-
-Obsidian draws [Expressway](https://www.dafont.com/expressway.font) Rg Bold 2.100 (2005) by Ray
-Larabie, Typodermic. It is **not** under the Open Font License, and it ships against its terms: its
-name table reads "Do not distribute", and the Typodermic Desktop EULA 2026 puts embedding in software
-outside the free license. It ships on the owner's ruling of 2026-10-30, "Ship it anyways.", with the
-EULA (`Expressway-EULA.pdf`) and its quick guide (`Expressway-EULA-Guide.html`) beside it as the
-record of the terms that ruling overrode. Expressway is a trademark of Typodermic.
-
-The other skins draw on six SIL Open Font License 1.1 families:
-[Nunito](https://github.com/googlefonts/nunito) by The Nunito Project Authors,
-[Vollkorn](https://github.com/FAlthausen/Vollkorn-Typeface) by The Vollkorn Project Authors,
-[Bitter](https://github.com/solmatas/BitterPro) by The Bitter Project Authors,
-[Philosopher](https://github.com/alexeiva/philosopher) by The Philosopher Project Authors,
-[Fira Sans](https://github.com/mozilla/Fira) (Medium and SemiBold) by The Mozilla Foundation and
-Telefonica S.A., and [Atkinson Hyperlegible](https://www.brailleinstitute.org/freefont/) by the
-Braille Institute of America. Nunito, Vollkorn and Bitter are static weights cut from upstream's
-variable fonts.
-
 The addon's own icons come from [Open Iconic](https://github.com/iconic/open-iconic) by Waybury
 (MIT): the debug console's clear, copy and close buttons, the skin picker's settings gear, and the
 attached panel's collapse and expand chevrons. Only
-the icons the addon draws are shipped. The fonts and the icons are bundled inside the LibKa0s
-payload, with their license text beside them.
+the icons the addon draws are shipped. They are bundled inside the LibKa0s payload, with their
+license text beside them.
