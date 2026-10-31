@@ -8,7 +8,7 @@ they live on the panel attached under PGF's dialog (`modules/Panel.lua`, describ
 | Page | Covers |
 |---|---|
 | Ka0s Premade Groups Filter Extension (landing) | Logo, the TOC notes, and the slash command list from `NS.COMMANDS` |
-| General | Master controls: enable, debug console, minimap button, reset all settings. Filters: Use the extension's filters, and a line saying where the filter options are. Region tags: Show region tags in the Group Finder, then every region tag's color, with a picker each. Skin: the library's Skin tab (source, skin, font and texture, scope, copy to every Ka0s addon) |
+| General | Master controls: enable, debug console, minimap button, reset all settings. Filters: Use the extension's filters, and a line saying where the filter options are. Region tags: Show region tags in the Group Finder, then every region tag's color, with a picker each. Skin: the library's Skin tab (source, skin, font and texture, font outline, scope, copy to every Ka0s addon) |
 | Profiles | AceDB profiles: switch, copy, delete, reset |
 
 ## Page → tab → row
@@ -69,7 +69,8 @@ re-render.
 - **Skin** (the last tab): the library's `O.AppearanceTab`, drawn over the skip-render `skin.*` rows
   (`core/SkinSetup.lua` is the write seam): the source (Ka0s skins or EllesmereUI, with EllesmereUI's
   four conditions and their fixes), the nine skins, the font and texture overrides with their two
-  reset buttons, the *Font outline* (`skin.outline`: All text, HUD text only, the default, Off; LibKa0s
+  reset buttons (preview pickers, each led by *Skin's default*: font rows in their own face, texture
+  rows with their bar, through the Options descriptor's `getLSM`), the *Font outline* (`skin.outline`: All text, HUD text only, the default, Off; LibKa0s
   v1.82.0), the scope and *Copy to every Ka0s addon* under its own heading. *Ignore settings panel* is on in a new profile, so these pages stay
   the client's until the player unticks it; the attached panel and the debug console follow the
   skin either way. The first-run skin picker (`NS.MaybeShowSkinPicker`, once per profile while

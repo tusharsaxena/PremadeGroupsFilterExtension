@@ -69,7 +69,7 @@ Profiles page. The constraints that fix the order:
 | `modules/Diagnostics.lua` | The sections of `/pgfe diagnostics` (`NS.Diagnostics.Sections()`, wired as the DebugLog descriptor's `diagnostics` hook in `core/DebugLogSetup.lua`) |
 | `settings/SchemaSetup.lua` | `LibKa0s-Schema-1.0` or its host stub |
 | `settings/Schema.lua` | The write seam (`NS.SchemaRuntime`), the closure stamping for session and global rows (`Settings.StampClosureRows`), schema validation, defaults assembly and the reset. Declares no rows: `settings/Panel.lua` adds every row at load |
-| `settings/OptionsSetup.lua` | `LibKa0s-Options-1.0`: the settings panel descriptor |
+| `settings/OptionsSetup.lua` | `LibKa0s-Options-1.0`: the settings panel descriptor, with the `getLSM` the Skin tab's pickers and the panel's font preload read |
 | `settings/Panel.lua` | Landing page body and the General page, in four tabs: Master controls, Filters (`filtersActive`, a line pointing at the attached panel and, while EllesmereUI is loaded, a pointer to Premade Groups Filter's own EllesmereUI skin), Region tags (`showRegionTags`, then `regionColors.<key>`, `REGION_ROWS`) and Skin (the library's tab over the `skin.*` rows) |
 | `settings/Slash.lua` | `NS.COMMANDS` and `LibKa0s-Slash-1.0` |
 | `settings/Profiles.lua` | The Profiles page |

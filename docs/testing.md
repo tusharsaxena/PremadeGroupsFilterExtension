@@ -6,8 +6,10 @@ Both MUST pass before every commit (testing-§4):
 
 ```sh
 lua tests/run.lua      # the headless suite, Lua 5.1
-luacheck .             # 0 warnings / 0 errors
+~/.claude/dev-copilot/bin/ka0s-bounded luacheck .   # 0 warnings / 0 errors
 ```
+
+`luacheck` loads no kit, so it runs through the bounded runner (testing-§15); the suite bounds itself.
 
 Toolchain: [`DEPENDENCIES.md`](../DEPENDENCIES.md). The suite needs a sibling `../LibKa0s` checkout
 for the vendor gate's two payload cases (they SKIP without it).
@@ -29,7 +31,7 @@ each taking an `opts` table and returning `(NS, env, mock)`:
 
 Named suites the standard requires: `test_surface_parity` (testing-§8), `test_vendor_sync`
 (testing-§11, delegating to the kit), `test_disabled` (slash-commands-§7: the ten steps, built from
-`T.enableAddon()` and the kit recorders, with the eight feature events pinned by name and the
+`T.enableAddon()` and the kit recorders, with the six feature events pinned by name and the
 library's `perf` hold taken as a test-only second holder). Kit suites, declared by
 directory: `test_eol`, `test_prose`, `test_layout_cap`, `test_diagnostics_contract`,
 `test_lizard_sighted`.
@@ -47,7 +49,7 @@ in the change that moves the count (testing-§5).
 
 | Suite | Command | Commit / run | Release (the tag) |
 |---|---|---|---|
-| `lint` | `luacheck .` | **gates** | gates |
+| `lint` | `~/.claude/dev-copilot/bin/ka0s-bounded luacheck .` | **gates** | gates |
 | `tests` | `lua tests/run.lua` | **gates** | gates |
 | `perf` | `lua tests/perf.lua` (six offline scenarios; the addon holds the performance-§12 exemption and ships them anyway, see [`performance.md`](performance.md)) | recorded, never fails a run or blocks a commit | gates |
 | `complexity` | `bash tests/_kit/run-automated-tests.sh --suite complexity` (the sighted shadow) | recorded, never fails a run or blocks a commit | gates, with zero functions above CCN 15 and `blindFiles` 0; from kit 41 a `lizard` crash or bound is complexity `fail` with every figure zeroed and the crashed file named (`crashedFiles`) |

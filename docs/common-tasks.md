@@ -10,7 +10,7 @@
    `NS.SchemaRuntime.AddRows`. Add an `enUS` key for every label and tooltip. `settings/Schema.lua`
    declares no rows.
 3. Add it to `docs/schema.md` and `docs/settings-panel.md`.
-4. Cover it in a suite; `lua tests/run.lua`, `luacheck .`.
+4. Cover it in a suite; `lua tests/run.lua`, `~/.claude/dev-copilot/bin/ka0s-bounded luacheck .`.
 
 ## Add a filter option (per character)
 
