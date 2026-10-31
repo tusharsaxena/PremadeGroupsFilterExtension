@@ -371,7 +371,7 @@ Total.
 - layout: under EllesmereUI a disabled or loaded PGF skin is named, with no link
 - layout: the header Defaults describes the reset in Reset all settings' own words
 
-### test_skinsetup.lua (20)
+### test_skinsetup.lua (21)
 
 - skin seam: the owner is the folder name, and NS.Skin is its facade
 - skin seam: the owner is registered at file load, before the profile store exists
@@ -393,6 +393,7 @@ Total.
 - skin seam: the degraded facade answers every name the live facade carries
 - skin seam: the degraded FontFlags and HudFontSize answer as the library does unskinned
 - skin seam: each host-copy skin token is the live library's Ka0s Default value
+- skin seam: the descriptor reaches LibSharedMedia, so the panel preloads the faces it previews
 
 ### test_skin.lua (14)
 
@@ -581,7 +582,7 @@ Total.
 | test_panel.lua | 80 |
 | test_layers.lua | 8 |
 | test_settings_layout.lua | 11 |
-| test_skinsetup.lua | 20 |
+| test_skinsetup.lua | 21 |
 | test_skin.lua | 14 |
 | test_skin_picker.lua | 16 |
 | test_skin_eui.lua | 13 |
@@ -597,4 +598,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **451** |
+| **Total** | **452** |

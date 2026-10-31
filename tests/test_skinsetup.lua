@@ -331,3 +331,14 @@ test("skin seam: each host-copy skin token is the live library's Ka0s Default va
     end
     assertTrue(n > 0, "the host copy is empty")
 end)
+
+test("skin seam: the descriptor reaches LibSharedMedia, so the panel preloads the faces it previews", function()
+    -- red under: a descriptor with no getLSM: LSMValues answers its one "no media" row and the
+    -- panel's font preload never runs, so the Skin tab's Font picker draws faces the client has not
+    -- loaded (options-ui-§23).
+    local NS, _, m = T.enableAddon()
+    local LSM = m.LibStub:NewLibrary("LibSharedMedia-3.0", 1) or m.LibStub("LibSharedMedia-3.0")
+    LSM.HashTable = function(_, kind) return { [kind .. " one"] = "path" } end
+    local values = NS.addon.Settings.Helpers.LSMValues("font")()
+    assertEqual(values["font one"], "font one")
+end)

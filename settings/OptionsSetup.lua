@@ -101,6 +101,9 @@ local O = lib:New({
     get          = NS.SchemaRuntime.Get,
     set          = NS.SchemaRuntime.Set,
     applyDefault = NS.SchemaRuntime.ApplyDefault,
+    -- The Skin tab's Font and Texture pickers: without it O.LSMValues answers only its "no media"
+    -- row and the panel's font preload never runs (options-ui-§23).
+    getLSM      = function() return LibStub and LibStub("LibSharedMedia-3.0", true) end,
     rowsForPage = function() return Settings.Schema end,
     allRows     = function() return Settings.Schema end,
     validate = function() host.ValidateSchema() end,
