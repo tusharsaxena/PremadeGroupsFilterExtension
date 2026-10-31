@@ -12,7 +12,7 @@ takes the next free number in its theme and a retired number is never reused.
 |---|---|---|
 | INSTALL-1..3 | Install | Load with and without PGF, reload, first run |
 | SLASH-1..4 | Slash | `/pgfe` verbs, help, the long alias, `/pgfe skin` |
-| PANEL-1..4 | Settings panel | Landing page, General page, Defaults, the General page's layout after item 020 |
+| PANEL-1..5 | Settings panel | Landing page, General page, Defaults, the General page's layout after item 020, the Filters tab's note line |
 | PROFILE-1..2 | Profiles | The Profiles page and `/pgfe profile` |
 | STATE-1..2 | Enable / disable | Stand-down and stand-up |
 | COMBAT-1..2 | Combat | Apply refusal, settings panel in combat |
@@ -85,6 +85,13 @@ season. Know your best timed level per dungeon (the Mythic+ tab) before the APPL
   - `/pgfe list` lists the same settings in the same order with the same values as before; `/reload`
     → every value survives. No setting lost, no moved key, no changed default.
   Result: pass (owner-marked 2026-10-24)
+- **PANEL-5. The Filters tab's note line (LibKa0s#59).** Settings → General → *Filters*, under each of
+  Ka0s Default and one other skin: the line "The filter options are on the panel under Premade Groups
+  Filter's window: ..." sits under *Use the extension's filters* at full width, wrapped, in the smaller
+  dim face rather than the old white text, and stays readable. With EllesmereUI loaded the skin advice
+  still follows it. `/pgfe list` does not show the line; **Defaults** → Yes raises no error. Fail: the
+  line missing, drawn twice, or too faint to read.
+  Result:
 
 ## Profiles
 
@@ -612,4 +619,4 @@ On 2026-10-31 the owner reported that every check of the skin fonts and feedback
 (`docs/2026-10-31-FONT_PICKERS_AND_SKIN_FACES/`, LibKa0s v1.83.0) passed: SLASH-4, SKIN-12, SKIN-20
 and SKIN-34 to SKIN-39, each recorded on its `Result:` line.
 
-Owed from the findings remediation (`docs/2026-10-31-FINDINGS_REMEDIATION/`): SKIN-40.
+Owed from the findings remediation (`docs/2026-10-31-FINDINGS_REMEDIATION/`): SKIN-40, PANEL-5.

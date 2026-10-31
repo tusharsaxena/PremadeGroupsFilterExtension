@@ -53,7 +53,11 @@ end
 -- red under: any key, type or default change, or a row added, dropped or reordered in the schema
 test("layout: every stored path, its type and its default are unchanged by item 020", function()
     local NS = T.newAddon()
-    local schema = NS.addon.Settings.Schema
+    -- The rows with a path: a note row (XX-ADOPT) is text in the schema, not a setting.
+    local schema = {}
+    for _, row in ipairs(NS.addon.Settings.Schema) do
+        if row.path then schema[#schema + 1] = row end
+    end
     assertEqual(#schema, #PINNED, "the set of settings")
     for i, pin in ipairs(PINNED) do
         local row = schema[i]
@@ -199,6 +203,50 @@ test("layout: under EllesmereUI a missing PGF skin is named, with its link right
         texts[#texts])
     assertEqual(#boxes, 1, "the CurseForge link box")
     assertEqual(boxes[1].text, "https://www.curseforge.com/wow/addons/premade-groups-filter-ellesmereui")
+end)
+
+-- The Filters tab's pointer line (XX-ADOPT, LibKa0s#59). The first case was written against the
+-- host-drawn line and holds on both sides of the move; the second pins the schema note row.
+local POINTER = "The filter options are on the panel under Premade Groups Filter's window: "
+    .. "open the Group Finder, choose Dungeons, and it appears below PGF's filters."
+
+test("layout: the Filters pointer draws once, above the skin advice, and is no setting", function()
+    local NS, _, m = T.enableAddon{ mock = function(mm) mm.installEUI{ pgfSkin = "missing" } end }
+    local texts = filtersTexts(NS, m)
+    local at, count
+    count = 0
+    for i, t in ipairs(texts) do
+        if t == POINTER then at, count = i, count + 1 end
+    end
+    -- red under: both the note row and the host-drawn line, or neither
+    assertEqual(count, 1, "the pointer draws once")
+    -- red under: the advice drawn before the row
+    assertTrue(texts[at + 1]:find("is not installed", 1, true) ~= nil, "the advice stays right under it")
+    m.prints = {}
+    NS.addon:OnSlashCommand("list")
+    assertTrue(#m.prints > 0, "/pgfe list printed")
+    for _, line in ipairs(m.prints) do
+        -- red under: the row given a path, or /list walking it
+        assertTrue(tostring(line):find("filter options are on the panel", 1, true) == nil, tostring(line))
+    end
+end)
+
+-- The dim face is the library's (its own suites pin it); the mock's Label has no font string.
+test("layout: the Filters pointer is a schema note row the page draws", function()
+    local NS, _, m = T.enableAddon{}
+    local Settings = NS.addon.Settings
+    local note
+    for _, row in ipairs(Settings.Schema) do
+        if row.type == "note" then note = row end
+    end
+    -- red under: the line back in AFTER_GROUP[FILTER_GROUP]
+    assertTrue(note ~= nil, "the schema carries the note")
+    assertEqual(note.text, POINTER)
+    assertEqual(note.group, "Filters")
+    -- red under: Helpers.ValidateSchema asking a note for a label
+    assertEqual(Settings.Helpers.ValidateSchema(), 0)
+    -- red under: the row left out of the Filters group, or a skipRender on it
+    assertEqual(filtersTexts(NS, m)[1], POINTER)
 end)
 
 test("layout: the link box selects on focus and leaves the pooled editbox frame as it found it", function()

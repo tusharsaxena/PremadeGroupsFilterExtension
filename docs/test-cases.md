@@ -360,7 +360,7 @@ Total.
 - layers: every PGFE popup spec restores on hide
 - layers: no strata literal, no absolute level, no direct StaticPopup_Show
 
-### test_settings_layout.lua (11)
+### test_settings_layout.lua (13)
 
 - layout: every stored path, its type and its default are unchanged by item 020
 - layout: the region-tag switch leads the Region tags tab, unheaded, beside its colors
@@ -370,6 +370,8 @@ Total.
 - layout: the filters switch reads true on both surfaces
 - layout: without EllesmereUI the Filters tab carries no PGF skin pointer
 - layout: under EllesmereUI a missing PGF skin is named, with its link right under it
+- layout: the Filters pointer draws once, above the skin advice, and is no setting
+- layout: the Filters pointer is a schema note row the page draws
 - layout: the link box selects on focus and leaves the pooled editbox frame as it found it
 - layout: under EllesmereUI a disabled or loaded PGF skin is named, with no link
 - layout: the header Defaults describes the reset in Reset all settings' own words
@@ -589,7 +591,7 @@ Total.
 | test_panel.lua | 49 |
 | test_panel_layout.lua | 31 |
 | test_layers.lua | 8 |
-| test_settings_layout.lua | 11 |
+| test_settings_layout.lua | 13 |
 | test_skinsetup.lua | 21 |
 | test_skin.lua | 15 |
 | test_skin_picker.lua | 16 |
@@ -606,4 +608,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **456** |
+| **Total** | **458** |

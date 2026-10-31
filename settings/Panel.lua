@@ -80,7 +80,8 @@ NS.SchemaRuntime.AddRows(MASTER_ROWS, 1)
 -- The extension's filters switch, in its own group so its own tab (options-ui-§13): a feature
 -- switch, not a Master controls row (options-ui-§15). Added right after MASTER_ROWS, so the tab
 -- sits second. The filter options themselves are on the attached
--- panel, not in the schema (settings/Schema.lua), so the tab ends with a line saying where.
+-- panel, not in the schema (settings/Schema.lua), so the tab says where in a note row: text in the
+-- schema, with no path, so `/pgfe list` and the resets skip it (LibKa0s Options, the `note` row).
 local L = NS.L
 local FILTER_GROUP = L["Filters"]
 local REGION_GROUP = L["Region tags"]
@@ -91,6 +92,8 @@ local FILTER_ROWS = {
       page = "general", section = "general", group = FILTER_GROUP,
       label = NS.L.FILTERS_ACTIVE, tooltip = NS.L.FILTERS_ACTIVE_TOOLTIP,
       onChange = function(v) NS.Apply.OnFiltersToggled(v and true or false) end },
+    { type = "note", page = "general", section = "general", group = FILTER_GROUP,
+      text = L["The filter options are on the panel under Premade Groups Filter's window: open the Group Finder, choose Dungeons, and it appears below PGF's filters."] },
 }
 Settings.StampClosureRows(FILTER_ROWS)
 NS.SchemaRuntime.AddRows(FILTER_ROWS)
@@ -371,12 +374,8 @@ if type(SKIN_TAB) == "table" then GENERAL_OPTS.tabs[#GENERAL_OPTS.tabs + 1] = SK
 
 local AFTER_GROUP = {}
 if Helpers.MASTER_GROUP then AFTER_GROUP[Helpers.MASTER_GROUP] = MASTER_TAIL end
--- The Filters tab's closing line: a static pointer to the filter options, drawn, not a schema row,
--- so `/pgfe list` does not list it.
-AFTER_GROUP[FILTER_GROUP] = function(ctx)
-    Helpers.TextRow(ctx, L["The filter options are on the panel under Premade Groups Filter's window: open the Group Finder, choose Dungeons, and it appears below PGF's filters."])
-    renderPGFSkinAdvice(ctx)
-end
+-- Under the tab's note row: the advice reads the client at render time, so it is no schema row.
+AFTER_GROUP[FILTER_GROUP] = renderPGFSkinAdvice
 
 local function buildGeneralPage(parentCategory)
     local ctx = Helpers.CreatePanel("PremadeGroupsFilterExtensionGeneralPanel", L["General"], {
