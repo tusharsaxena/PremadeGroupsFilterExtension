@@ -40,7 +40,7 @@
 --   combatEvents         28113.1     28138  143  (one firing of each event; EVENT_API has the split)
 --
 -- envNoPR's 80 bytes and the row painters' 160 are the C-32 concat probe and nothing else:
--- LibKa0s's IsConcatSafe (`libs/LibKa0s/Core.lua:54`) builds a one-element table per call, once in
+-- LibKa0s's IsConcatSafe (`libs/LibKa0s/Core.lua:64`) builds a one-element table per call, once in
 -- Regions.GetRegion and once more in RegionTags.Tag. combatEvents is dominated by the three
 -- season-data events and PLAYER_ENTERING_WORLD, each rebuilding the panel's readout over the
 -- eight dungeons (about 7 KB each, 7.6 KB for PLAYER_ENTERING_WORLD's full Panel.Refresh).

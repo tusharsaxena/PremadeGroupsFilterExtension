@@ -59,8 +59,9 @@ local addonName, NS = ...
 --
 -- No owner tokens (skinning-§1): every color the addon draws under Ka0s Default is a library token's
 -- exact value (the M0 inventory's PG-G1..G3 were refuted, Ka0sAddonsCommonTasks
--- docs/2026-10-29-SKINNING_ROLLOUT/01_INVENTORY.md), so RegisterOwner carries no `tokens` table. A color a later surface needs that no library token holds is added here, as
--- `pg.<name>` with its Ka0s Default `default` and a `follow` role token, in the same change.
+-- docs/2026-10-29-SKINNING_ROLLOUT/01_INVENTORY.md), so RegisterOwner carries no `tokens` table.
+-- A color a later surface needs that no library token holds is added here, as `pg.<name>` with its
+-- Ka0s Default `default` and a `follow` role token, in the same change.
 --
 -- ── WHERE IT LOADS ───────────────────────────────────────────────────────────────────────────
 --

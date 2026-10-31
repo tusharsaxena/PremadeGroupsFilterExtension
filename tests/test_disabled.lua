@@ -141,7 +141,7 @@ for _, way in ipairs(DISABLES) do
         way[2](NS)
         assertTrue(NS.IsStoodDown())
         assertFalse(NS.addon.db.profile.enabled, "the stored setting is the source")
-        -- red under: drop the UnregisterEvent loop in NS.StandDown (core/PGFE.lua:120)
+        -- red under: drop the UnregisterEvent loop in NS.StandDown (core/PGFE.lua:131)
         assertEqual(registered(m), "", "every feature event unregistered, by name")
         for _, event in ipairs(PINNED) do assertEqual(m.__fire(event), 0, event) end
         assertEqual(#m.__timers(), 0, "no live timer")
@@ -190,7 +190,7 @@ test("disabled 6: survivors reached anyway write, say and show nothing", functio
     m.searchResults[1] = { leaderName = "Bob-Barthilas" }
     local row = { resultID = 1, ActivityName = fontString("X") }
     m.LFGListSearchEntry_Update(row)
-    -- red under: remove NS.IsStoodDown() in RegionTags' active() (modules/RegionTags.lua:25)
+    -- red under: remove NS.IsStoodDown() in RegionTags' active() (modules/RegionTags.lua:53)
     assertEqual(row.ActivityName.text, "X", "no tag on a search row")
     m.applicants[7] = { "Zed-Barthilas" }
     local member = { Name = fontString("Zed") }
@@ -453,7 +453,7 @@ end)
 
 -- ── step 10: one latch, both orders ─────────────────────────────────────────────────────────────
 
--- red under: replace the Lifecycle Set path in the `enabled` row's onChange (settings/Panel.lua:64) with a direct NS.StandUp()
+-- red under: replace the Lifecycle Set path in the `enabled` row's onChange (settings/Panel.lua:67) with a direct NS.StandUp()
 test("disabled 10: a perf hold then disable, and disable then a perf hold, share one latch", function()
     -- perf hold, then disable: releasing the perf hold leaves the disable standing.
     local NS, m, on = running()
