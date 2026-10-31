@@ -9,8 +9,7 @@ local addonName, NS = ...
 local PGFE = LibStub("AceAddon-3.0"):NewAddon(NS, addonName, "AceConsole-3.0", "AceEvent-3.0")
 NS.addon = PGFE
 
-NS.version   = "1.0.0"
-PGFE.VERSION = NS.version
+NS.version = "1.0.0"
 
 -- Session-only runtime state, never persisted (debug-logging-§5).
 NS.State = NS.State or {}
