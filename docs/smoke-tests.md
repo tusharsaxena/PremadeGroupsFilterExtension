@@ -23,7 +23,7 @@ takes the next free number in its theme and a retired number is never reused.
 | LOC-1..2 | Non-English client | Realm-name and dungeon-name seams on a deDE/frFR client |
 | SKIN-1..10 | EllesmereUI skin (retired) | The record of the addon's own EllesmereUI bridge, retired by the skinning rollout's PG-06 (2026-10-29); EllesmereUI is now the library's `eui` skin source |
 | SKIN-11..33 | Skins | The skinning rollout (2026-10-29) and its library follow-ups (2026-10-30): Ka0s Default's look, the Skin tab, the first-run picker, the attached panel, the settings pages and the debug console under every skin, fonts, profiles, the copy, stand-down, the `euiSkin` migration, EllesmereUI on and off, diagnostics, the launcher, a degraded install, the panel under the Scope switches |
-| SKIN-43..46 | Skins | The full skinning run (2026-11-01, LibKa0s v1.85.0): the Ka0s menu on the panel's dropdowns, the tooltip and input roles, the marks, the unknown realm's tag |
+| SKIN-43..47 | Skins | The full skinning run (2026-11-01, LibKa0s v1.85.0): the Ka0s menu on the panel's dropdowns, the tooltip and input roles, the marks, the unknown realm's tag |
 | SKIN-34..42 | Skins | The skin fonts and feedback run (2026-10-30, LibKa0s v1.82.0): the Font outline setting, the panel's text and the Font outline's default, the new faces, the attached panel's width parity across skins, the collapse button's chevron and place; the findings remediation's re-anchor check, the panel's flat dropdowns and the one media picker |
 
 ## Before you start
@@ -599,6 +599,11 @@ EllesmereUI read took a shorter path; nothing should look different.
   Ember the next repaint of the list draws it in the skin's disabled color. Fail: a `?` that stays
   `9d9d9d` under another skin, or a Lua error. Result:
 
+- **SKIN-47. The library paints the panel's dropdowns alone (SF-PG-1, LibKa0s #71).** The addon passes no
+  `opts.stock` and keeps no `dd.arrow` of its own for the stock dropdown template; the library's flat
+  dropdown is the only paint. Repeat SKIN-41 on Ka0s Default and Ember → the same flat box and one triangle.
+  Fail: a gold button, two arrows, or a Lua error. Result:
+
 ## Frame layering
 
 The panel takes PGF's dialog strata by reading it, and a PGFE StaticPopup shown while the panel is
@@ -672,4 +677,4 @@ and SKIN-34 to SKIN-39, each recorded on its `Result:` line.
 
 Owed from the findings remediation (`docs/2026-10-31-FINDINGS_REMEDIATION/`): SKIN-40, SKIN-41, SKIN-42, PANEL-5.
 
-Owed from the full skinning run (Ka0sAddonsCommonTasks `docs/2026-11-01-FULL_SKINNING/`, LibKa0s v1.85.0): SKIN-43, SKIN-44, SKIN-45, SKIN-46, and APPLY-17, APPLY-19 and SKIN-17, whose expected results changed with it.
+Owed from the full skinning run (Ka0sAddonsCommonTasks `docs/2026-11-01-FULL_SKINNING/`, LibKa0s v1.85.0): SKIN-43, SKIN-44, SKIN-45, SKIN-46, SKIN-47, and APPLY-17, APPLY-19 and SKIN-17, whose expected results changed with it.
