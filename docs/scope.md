@@ -19,7 +19,7 @@ Mythic+ conveniences on top of Premade Groups Filter (PGF), applied through PGF'
 - **Max group age** — drop listings older than M minutes.
 - **Presets** — named snapshots of the options (Smart included), shared by every character; the
   live options are per character.
-- **Tooltips** — every option, dropdown entry and button explains itself on hover.
+- **Tooltips** — every option, dropdown and button explains itself on hover; a dropdown's tooltip names its entries.
 - **Use the extension's filters** — one switch (panel and settings page) that takes the addon's
   block out of PGF's expression without turning the addon off, and puts it back.
 - **Region tags** — the leader's colored server region in front of every Group Finder listing, and

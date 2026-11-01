@@ -75,8 +75,8 @@ table and the load-order reasoning: [`module-map.md`](module-map.md).
 (`core/MediaSetup.lua`), Compat (`core/Compat.lua`), Env (`core/EnvSetup.lua`), DebugLog
 (`core/DebugLogSetup.lua`), Launcher (`core/LauncherSetup.lua`), Lifecycle
 (`core/LifecycleSetup.lua`), Schema (`settings/SchemaSetup.lua`), Options
-(`settings/OptionsSetup.lua`), Slash (`settings/Slash.lua`). Vendored and not wired: Bus, Pool, Item,
-Widgets, Perf (the performance-§12 exemption), Glow, Sim, Toast. Ace3, LibSharedMedia, LibDataBroker and LibDBIcon are vendored under `libs/` too
+(`settings/OptionsSetup.lua`), Slash (`settings/Slash.lua`), Widgets (`core/WidgetsSetup.lua`). Vendored and not wired: Bus, Pool, Item,
+Perf (the performance-§12 exemption), Glow, Sim, Toast. Ace3, LibSharedMedia, LibDataBroker and LibDBIcon are vendored under `libs/` too
 (`DEPENDENCIES.md`).
 
 The feature modules, one purpose each:

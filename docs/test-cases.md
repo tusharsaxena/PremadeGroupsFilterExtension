@@ -315,18 +315,21 @@ Total.
 - panel: Apply leaves focus alone; Enter in the copy box focuses the search box
 - panel: visibility logs on change only, and again after a stand-down
 
-### test_panel_layout.lua (31)
+### test_panel_layout.lua (34)
 
 - panel: the min/max arrows are chevron icons on the skin's button, expanded up and collapsed down
 - panel: the regions and playstyle dropdowns are 225 wide, right-aligned in one column
-- panel: each menu opens with Any and a divider; Any is ticked with nothing ticked and clears
+- panel: each menu opens with Any; Any is ticked with nothing ticked and clears
 - panel: ticking every option stores Any and the button reads Any
 - panel: a stored all-ticked set reads Any; a tick then selects that option alone
 - panel: the readout is one row high, so the rows below keep the same pitch
 - panel: a readout too wide for its row closes the gaps to one space
 - panel: every checkbox has a tooltip, and its label hovers and clicks as the box
+- panel: the Presets dropdown lists the presets, picks one, and an empty list picks nothing
+- panel: the shared menu closes when the panel hides or collapses
 - panel: every number box, button and the copy box and its label have a tooltip
-- panel: each dropdown and every menu entry has a tooltip
+- panel: each dropdown has a tooltip, and a multi-select's names every entry
+- panel: without the library each dropdown and every menu entry keeps the client's tooltip
 - panel: tooltips stay quiet while stood down
 - panel: presets: one row, the dropdown up to three equal buttons right-aligned
 - panel: Apply and Clear share one width, with extra space above their row
@@ -400,7 +403,7 @@ Total.
 - skin seam: each host-copy skin token is the live library's Ka0s Default value
 - skin seam: the descriptor reaches LibSharedMedia, so the panel preloads the faces it previews
 
-### test_skin.lua (19)
+### test_skin.lua (22)
 
 - skin: under Ka0s Default the one panel is painted through the facade, every widget and label
 - skin: the colors the panel writes under Ka0s Default are its exact pixels
@@ -415,10 +418,13 @@ Total.
 - skin: the panel writes the skin's colors: locked boxes, the dimmed label, the readout
 - skin: a pick after the panel is built rewrites the colors the panel reads from tokens
 - skin: with Ignore settings panel on, the panel's labels and title still wear the skin
-- skin: every panel dropdown drops the template's art and draws the skin's glyph arrow
-- skin: the dropdown glyph follows a live switch and stays under Ignore settings panel
-- skin: without the library the dropdowns keep the template's art and no glyph shows
+- skin: every panel dropdown is the library's, owned by this addon, with its menu and marks
+- skin: a dropdown follows a live switch and stays under Ignore settings panel
+- skin: without the library the dropdowns are the client's template and its art
 - skin: while EllesmereUI paints the panel its own arrow is the only one
+- skin: a tooltip's name and body keep Ka0s Default's pixels and take the roles in every other skin
+- skin: the level and copy boxes wear the input role, like the Age box, in every skin
+- skin: the title follows title.align on a switch
 - skin: a pick while stood down builds nothing; the stand-up shows the same panel in the new skin
 - skin: modules/Panel.lua types no color: no literal SetTextColor, tooltip color or markup
 
@@ -593,11 +599,11 @@ Total.
 | test_bridge.lua | 18 |
 | test_apply.lua | 33 |
 | test_panel.lua | 49 |
-| test_panel_layout.lua | 31 |
+| test_panel_layout.lua | 34 |
 | test_layers.lua | 8 |
 | test_settings_layout.lua | 13 |
 | test_skinsetup.lua | 21 |
-| test_skin.lua | 19 |
+| test_skin.lua | 22 |
 | test_skin_picker.lua | 16 |
 | test_skin_eui.lua | 16 |
 | test_skin_outline.lua | 10 |
@@ -612,4 +618,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **462** |
+| **Total** | **468** |
