@@ -93,6 +93,11 @@ Kit.diagnostics = {
     reset       = function() diagNS = enableAddon() end,
 }
 
+-- The typed-value gate's consumer facts (skinning-§1, kit revision 50).
+Kit.skinValues = {}
+-- The skin-switch test's: tests/skin_surfaces.lua declares what this addon paints (skinning-§1).
+Kit.skinSwitch = dofile("tests/skin_surfaces.lua")(enableAddon)
+
 -- Order is stable. Kit.assertSuiteInventory (called by Kit.run) fails the run in both directions:
 -- a name here with no file, and a test_*.lua on disk (tests/ or tests/_kit/) with no name here.
 Kit.run{
@@ -132,5 +137,7 @@ Kit.run{
         { name = "test_layout_cap",           dir = "tests/_kit/" },   -- layout-§1
         { name = "test_diagnostics_contract", dir = "tests/_kit/" },   -- debug-logging-§14
         { name = "test_lizard_sighted",       dir = "tests/_kit/" },   -- automated-tests-§3
+        { name = "test_skin_values",          dir = "tests/_kit/" },   -- skinning-§1
+        { name = "test_skin_switch",          dir = "tests/_kit/" },   -- skinning-§1
     },
 }

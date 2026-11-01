@@ -81,5 +81,6 @@ Profiles page. The constraints that fix the order:
 | `tests/prose_waivers.lua` | Per-file, per-word waivers for the kit's prose gate (realm names) |
 | `tests/perf.lua` | The offline performance scenarios (`lua tests/perf.lua`): env hook, row painters, stood-down hook, `combatEvents`. Outside the green gate; ships under the performance-§12 exemption ([`performance.md`](performance.md)) |
 | `tests/panel_helpers.lua` | What `test_panel.lua` and `test_panel_layout.lua` share: the season seed, a dropdown's menu entries, typing into a box. Not a suite |
+| `tests/skin_surfaces.lua` | The painted surfaces the kit's `test_skin_switch` flips, one instance of the addon of their own. Not a suite |
 | `tests/test_*.lua` | One suite per module plus the standard's named suites; the attached panel has two, `test_panel.lua` and `test_panel_layout.lua` |
 | `tools/realm_map_diff.py` | Diffs `defaults/Realms.lua` against an installed PremadeRegions ([`realm-map-maintenance.md`](realm-map-maintenance.md)) |

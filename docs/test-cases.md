@@ -190,10 +190,11 @@ Total.
 - envinject: a protected leader name injects no region
 - envinject: a spec refresh logs the keywords once, and again only when they change
 
-### test_regiontags.lua (13)
+### test_regiontags.lua (14)
 
 - regiontags: a search row gets the leader's colored region in front of its activity
 - regiontags: a leader on the player's own realm, an unknown realm, an unsupported portal
+- regiontags: the unknown realm's mark follows the skin, and keeps its bytes without the library
 - regiontags: EU realms are tagged by language
 - regiontags: an applicant gets their region in front of their name
 - regiontags: a painter the client lacks is skipped, the other still installs
@@ -315,7 +316,7 @@ Total.
 - panel: Apply leaves focus alone; Enter in the copy box focuses the search box
 - panel: visibility logs on change only, and again after a stand-down
 
-### test_panel_layout.lua (34)
+### test_panel_layout.lua (36)
 
 - panel: the min/max arrows are chevron icons on the skin's button, expanded up and collapsed down
 - panel: the regions and playstyle dropdowns are 225 wide, right-aligned in one column
@@ -328,7 +329,9 @@ Total.
 - panel: the Presets dropdown lists the presets, picks one, and an empty list picks nothing
 - panel: the shared menu closes when the panel hides or collapses
 - panel: every number box, button and the copy box and its label have a tooltip
-- panel: each dropdown has a tooltip, and a multi-select's names every entry
+- panel: each dropdown has a tooltip, and every multi-select entry has its own
+- panel: Any sits above a divider in the library's menu, as in the client's
+- panel: a menu row's tooltip stays quiet while stood down
 - panel: without the library each dropdown and every menu entry keeps the client's tooltip
 - panel: tooltips stay quiet while stood down
 - panel: presets: one row, the dropdown up to three equal buttons right-aligned
@@ -580,6 +583,56 @@ Total.
 - lizard sighted: parity names every file whose counts differ, and only those
 - lizard sighted: lizard lists every function of a hazard fixture once it is sanitized
 
+### test_skin_values.lua (3)
+
+- skin values: every host row carries its file, substring, why and cause id
+- skin values: no typed value outside the kit's categories and the host's rows
+- skin values: the check is falsifiable, a planted value of each shape is reported
+
+### test_skin_switch.lua (41)
+
+- skin switch: the check is falsifiable, a surface that redraws a literal is reported
+- skin switch: the window's bands and edge changes
+- skin switch: the window's bands and edge changes with the Scope ignored
+- skin switch: the title changes
+- skin switch: the title changes with the Scope ignored
+- skin switch: the collapse button's box changes
+- skin switch: the collapse button's box changes with the Scope ignored
+- skin switch: the collapse button's chevron changes
+- skin switch: the collapse button's chevron changes with the Scope ignored
+- skin switch: the expand button's chevron changes
+- skin switch: the expand button's chevron changes with the Scope ignored
+- skin switch: a check button changes
+- skin switch: a check button changes with the Scope ignored
+- skin switch: a row's label changes
+- skin switch: a row's label changes with the Scope ignored
+- skin switch: the locked level box changes
+- skin switch: the locked level box changes with the Scope ignored
+- skin switch: the open copy box changes
+- skin switch: the open copy box changes with the Scope ignored
+- skin switch: the copy label changes
+- skin switch: the copy label changes with the Scope ignored
+- skin switch: the dungeon readout changes
+- skin switch: the dungeon readout changes with the Scope ignored
+- skin switch: the unsupported-portal note changes
+- skin switch: the unsupported-portal note changes with the Scope ignored
+- skin switch: the unsupported-PGF note changes
+- skin switch: the unsupported-PGF note changes with the Scope ignored
+- skin switch: a dropdown's button changes
+- skin switch: a dropdown's button changes with the Scope ignored
+- skin switch: the Presets dropdown's button changes
+- skin switch: the Presets dropdown's button changes with the Scope ignored
+- skin switch: an action button changes
+- skin switch: an action button changes with the Scope ignored
+- skin switch: a panel tooltip's name and body changes
+- skin switch: a panel tooltip's name and body changes with the Scope ignored
+- skin switch: the Any row's tooltip changes
+- skin switch: the Any row's tooltip changes with the Scope ignored
+- skin switch: a menu entry's tooltip changes
+- skin switch: a menu entry's tooltip changes with the Scope ignored
+- skin switch: the unknown realm's tag on a Blizzard row changes
+- skin switch: the unknown realm's tag on a Blizzard row changes with the Scope ignored
+
 ## Totals
 
 | Suite | Cases |
@@ -596,11 +649,11 @@ Total.
 | test_filters.lua | 12 |
 | test_presets.lua | 9 |
 | test_envinject.lua | 14 |
-| test_regiontags.lua | 13 |
+| test_regiontags.lua | 14 |
 | test_bridge.lua | 18 |
 | test_apply.lua | 33 |
 | test_panel.lua | 49 |
-| test_panel_layout.lua | 34 |
+| test_panel_layout.lua | 36 |
 | test_layers.lua | 8 |
 | test_settings_layout.lua | 13 |
 | test_skinsetup.lua | 21 |
@@ -618,5 +671,7 @@ Total.
 | test_layout_cap.lua | 13 |
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
+| test_skin_values.lua | 3 |
+| test_skin_switch.lua | 41 |
 | Skipped | 1 |
-| **Total** | **469** |
+| **Total** | **516** |

@@ -320,7 +320,9 @@ test("skin seam: each host-copy skin token is the live library's Ka0s Default va
     local _, m = T.newAddon()
     local live = m.LibStub("LibKa0s-Skin-1.0"):ResolveSkin("ka0s")
     local n = 0
-    local own = { ["pg.tipName"] = { 1, 1, 1, 1 } }   -- an owner token: its `default`, not the library's
+    -- An owner token: its `default`, not the library's.
+    local own = { ["pg.tipName"] = { 1, 1, 1, 1 },
+                  ["pg.regionUnknown"] = { 157 / 255, 157 / 255, 157 / 255, 1 } }
     for name, c in pairs(degraded.SKIN_FALLBACK) do
         n = n + 1
         local want = own[name] or live[name]

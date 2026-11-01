@@ -23,7 +23,7 @@ takes the next free number in its theme and a retired number is never reused.
 | LOC-1..2 | Non-English client | Realm-name and dungeon-name seams on a deDE/frFR client |
 | SKIN-1..10 | EllesmereUI skin (retired) | The record of the addon's own EllesmereUI bridge, retired by the skinning rollout's PG-06 (2026-10-29); EllesmereUI is now the library's `eui` skin source |
 | SKIN-11..33 | Skins | The skinning rollout (2026-10-29) and its library follow-ups (2026-10-30): Ka0s Default's look, the Skin tab, the first-run picker, the attached panel, the settings pages and the debug console under every skin, fonts, profiles, the copy, stand-down, the `euiSkin` migration, EllesmereUI on and off, diagnostics, the launcher, a degraded install, the panel under the Scope switches |
-| SKIN-43..45 | Skins | The full skinning run (2026-11-01, LibKa0s v1.85.0): the Ka0s menu on the panel's dropdowns, the tooltip and input roles, the marks |
+| SKIN-43..46 | Skins | The full skinning run (2026-11-01, LibKa0s v1.85.0): the Ka0s menu on the panel's dropdowns, the tooltip and input roles, the marks, the unknown realm's tag |
 | SKIN-34..42 | Skins | The skin fonts and feedback run (2026-10-30, LibKa0s v1.82.0): the Font outline setting, the panel's text and the Font outline's default, the new faces, the attached panel's width parity across skins, the collapse button's chevron and place; the findings remediation's re-anchor check, the panel's flat dropdowns and the one media picker |
 
 ## Before you start
@@ -211,7 +211,7 @@ substitute its numbers.
 - **APPLY-16. (Removed.)** The Min leader M+ score row is gone: PGF's own *M+ Rating* row covers the
   leader's rating. The panel has no such row, and Apply writes no `mprating` clause. Result: pass (owner-marked 2026-10-10)
 - **APPLY-17. Multi-select dropdowns.** Open the Server regions dropdown → *Any* (ticked) heads
-  the Ka0s menu, then this portal's regions; tick two → the menu stays
+  the Ka0s menu, a divider under it, then this portal's regions; tick two → the menu stays
   open, *Any* unticks, the button reads e.g. `OCE, CHI`; click *Any* → the menu stays open and every
   region unticks, the button reads `Any`. Tick every region one by one → on the last one the
   regions untick, *Any* is ticked and the button reads `Any` (never `5 selected`). Same for
@@ -222,9 +222,10 @@ substitute its numbers.
   the option and says what it does (Untimed dungeons, Smart, Server regions, Playstyle,
   Composition, Experienced leader, Max group age); clicking the label
   toggles the box. Hover the three number boxes, the four dropdown buttons, Save, Save
-  as…, Delete, Apply, Clear and the copy field → each has a tooltip. The Server regions, Playstyle and
-  Composition buttons list every entry and what it does (e.g. OCE: Oceanic realms, in the Sydney data
-  center); the menu's rows have no tooltip of their own. No tooltip sticks after the pointer leaves.
+  as…, Delete, Apply, Clear and the copy field → each has a tooltip. Open the Server regions, Playstyle
+  and Composition menus and hover each row, *Any* included → the row names the entry and says what it
+  does (OCE: Oceanic realms, in the Sydney data center); the button's own tooltip no longer lists the
+  entries. No tooltip sticks after the pointer leaves or the menu closes.
   Result:
 - **APPLY-20. Smart key level.** On a character that never used the addon, *Smart* is ticked and
   the panel matches the owner's defaults: Toggle, Untimed dungeons, Smart, Server regions, Playstyle and
@@ -573,7 +574,8 @@ EllesmereUI read took a shorter path; nothing should look different.
   regions, Playstyle, Composition and Presets under Ka0s Default, then under Ember and Glass → each
   menu is the flat Ka0s menu in the skin's fill, edge, hover and text, never Blizzard's; ticked rows
   carry the Ka0s tick and the selected color, in the skin's body face. A tick keeps a multi-select
-  open and the button's summary updates behind it. With no presets, Presets lists one row, *No
+  open and the button's summary updates behind it. Hover a multi-select row → its tooltip, in the
+  skin's tooltip colors; the divider under *Any* is the skin's. With no presets, Presets lists one row, *No
   presets saved*, and picking it changes nothing. Save a preset, then reopen → it is
   listed; pick it → the options load and the button reads its name. Save one with a 32-letter name
   and pick it → the button holds one line, cut short before the arrow, never wrapped. Open a menu,
@@ -592,6 +594,10 @@ EllesmereUI read took a shorter path; nothing should look different.
   cleared, walk the settings pages → the marks the library draws beside skinned controls show, none
   blank, under every skin. The minimap button's tooltip words follow the skin (L1). Fail: a blank
   square where a mark should be, which is how a name missing from `LibKa0s icons:` shows. Result:
+- **SKIN-46. The unknown realm's tag (the typed-value gate).** On a listing whose leader's realm the map
+  does not know, the row leads with a gray `?`. Under Ka0s Default it is the same gray as before; under
+  Ember the next repaint of the list draws it in the skin's disabled color. Fail: a `?` that stays
+  `9d9d9d` under another skin, or a Lua error. Result:
 
 ## Frame layering
 
@@ -666,4 +672,4 @@ and SKIN-34 to SKIN-39, each recorded on its `Result:` line.
 
 Owed from the findings remediation (`docs/2026-10-31-FINDINGS_REMEDIATION/`): SKIN-40, SKIN-41, SKIN-42, PANEL-5.
 
-Owed from the full skinning run (Ka0sAddonsCommonTasks `docs/2026-11-01-FULL_SKINNING/`, LibKa0s v1.85.0): SKIN-43, SKIN-44, SKIN-45, and APPLY-17, APPLY-19 and SKIN-17, whose expected results changed with it.
+Owed from the full skinning run (Ka0sAddonsCommonTasks `docs/2026-11-01-FULL_SKINNING/`, LibKa0s v1.85.0): SKIN-43, SKIN-44, SKIN-45, SKIN-46, and APPLY-17, APPLY-19 and SKIN-17, whose expected results changed with it.

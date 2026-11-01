@@ -215,31 +215,66 @@ test("panel: every number box, button and the copy box and its label have a tool
     assertEqual(hoverLines(m, f.levelBox)[1], NS.L.KEY_TARGETING)
 end)
 
-test("panel: each dropdown has a tooltip, and a multi-select's names every entry", function()
-    -- The library's menu has no tooltip on its rows, so the button carries what each entry does.
-    -- red under: selectTip left out of a dropdown's tooltip.
+--- The lines a menu row's `tooltip` renderer draws, and the owner it gives GameTooltip.
+local function rowTipLines(m, row, frame)
+    local lines = {}
+    local setText, addLine = m.GameTooltip.SetText, m.GameTooltip.AddLine
+    m.GameTooltip.SetText = function(_, t) lines[#lines + 1] = t end
+    m.GameTooltip.AddLine = function(_, t) lines[#lines + 1] = t end
+    row.tooltip(frame, row)
+    m.GameTooltip.SetText, m.GameTooltip.AddLine = setText, addLine
+    return lines, m.GameTooltip:GetOwner()
+end
+
+test("panel: each dropdown has a tooltip, and every multi-select entry has its own", function()
+    -- red under: an entry's `tooltip` dropped from flatMulti, or the button carrying the entries again.
     local NS, _, m = T.enableAddon{}
     m.currentRegion = 1
     local f = NS.Panel.Create()
     local lines = hoverLines(m, f.regionSelect)
     assertEqual(lines[1], NS.L.REGIONS)
-    assertTrue(lines[2]:find(NS.L.REGIONS_SELECT_TOOLTIP, 1, true) == 1, "the dropdown's own line first")
-    assertTrue(lines[2]:find(NS.L.SELECT_ANY .. ": " .. NS.L.SELECT_ANY_TOOLTIP, 1, true) ~= nil, "Any")
-    assertTrue(lines[2]:find("OCE: Oceanic realms, in the Sydney data center.", 1, true) ~= nil, "OCE")
-    for _, e in ipairs(menuEntries(f.regionSelect)) do
-        assertTrue(lines[2]:find(NS.L["REGION_TIP_" .. e.data:upper()], 1, true) ~= nil, e.data)
+    assertEqual(lines[2], NS.L.REGIONS_SELECT_TOOLTIP, "the button says what the dropdown is, no more")
+    local frame = m.CreateFrame("Button")
+    local regions = menuEntries(f.regionSelect)
+    local any, owner = rowTipLines(m, regions.any.row, frame)
+    assertEqual(any[1], NS.L.SELECT_ANY); assertEqual(any[2], NS.L.SELECT_ANY_TOOLTIP)
+    assertTrue(owner == frame, "the hovered row owns the tooltip")
+    assertEqual(rowTipLines(m, regions[1].row, frame)[2], "Oceanic realms, in the Sydney data center.")
+    for _, e in ipairs(regions) do
+        assertEqual(rowTipLines(m, e.row, frame)[2], NS.L["REGION_TIP_" .. e.data:upper()], e.data)
     end
-    local styles = hoverLines(m, f.playstyleSelect)[2]
     for _, e in ipairs(menuEntries(f.playstyleSelect)) do
-        assertTrue(styles:find(NS.L["PLAYSTYLE_TIP_" .. e.data:upper()], 1, true) ~= nil, e.data)
+        assertEqual(rowTipLines(m, e.row, frame)[2], NS.L["PLAYSTYLE_TIP_" .. e.data:upper()], e.data)
     end
-    local comp = hoverLines(m, f.compositionSelect)[2]
-    assertTrue(comp:find(NS.L.NO_SAME_SPEC_TOOLTIP, 1, true) ~= nil, "composition names its entries")
+    local comp = menuEntries(f.compositionSelect)
+    assertEqual(rowTipLines(m, comp[1].row, frame)[1], NS.L.NO_SAME_SPEC)
+    assertEqual(rowTipLines(m, comp[1].row, frame)[2], NS.L.NO_SAME_SPEC_TOOLTIP)
     assertEqual(hoverLines(m, f.presetDropdown)[2], NS.L.PRESETS_TOOLTIP)
     -- Every region of both portals has its line.
     for _, keys in pairs(NS.Regions.KEYS) do
         for _, key in ipairs(keys) do assertTrue(isLocaleString(NS.L["REGION_TIP_" .. key:upper()]), key) end
     end
+end)
+
+test("panel: Any sits above a divider in the library's menu, as in the client's", function()
+    -- red under: the { divider = true } row dropped from flatMulti.
+    local NS, _, m = T.enableAddon{}
+    m.currentRegion = 1
+    local f = NS.Panel.Create()
+    for _, dd in ipairs({ f.regionSelect, f.playstyleSelect, f.compositionSelect }) do
+        local order = menuEntries(dd).order
+        assertEqual(order[1], "any"); assertEqual(order[2], "divider"); assertEqual(order[3], "entry")
+    end
+end)
+
+test("panel: a menu row's tooltip stays quiet while stood down", function()
+    -- red under: the stoodDown gate dropped from rowTooltip.
+    local NS, _, m = T.enableAddon{}
+    m.currentRegion = 1
+    local f = NS.Panel.Create()
+    local row = menuEntries(f.regionSelect).any.row
+    NS.addon:OnSlashCommand("disable")
+    assertEqual(#rowTipLines(m, row, m.CreateFrame("Button")), 0)
 end)
 
 test("panel: without the library each dropdown and every menu entry keeps the client's tooltip", function()

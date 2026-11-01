@@ -13,20 +13,23 @@ function H.seasonFromScreenshot(m)
 end
 
 -- A library dropdown's menu entries, as the row clicks reach them: every option entry in order as
--- { text, isOn, set, data }, the Any entry as `.any`. `set` does what a row's click does: the
--- library's ToggleSelected, then the host's onMultiSelect, the order Widgets.lua's rowOnClick runs.
+-- { text, isOn, set, data, row }, the Any entry as `.any`, a divider skipped and named in `.order`.
+-- `set` does what a row's click does: the library's ToggleSelected, then the host's onMultiSelect, the
+-- order Widgets.lua's rowOnClick runs.
 local function flatEntries(dd)
-    local entries = {}
+    local entries = { order = {} }
     for _, opt in ipairs(dd._options) do
+        entries.order[#entries.order + 1] = opt.divider and "divider" or (opt.value == "all" and "any" or "entry")
         local e = {
-            text = opt.label, data = opt.value,
+            text = opt.label, data = opt.value, row = opt,
             isOn = function() return opt.isActive(dd) end,
             set = function()
                 dd:ToggleSelected(opt.value)
                 if dd.onMultiSelect then dd.onMultiSelect(dd._selected) end
             end,
         }
-        if opt.value == "all" then entries.any = e else entries[#entries + 1] = e end
+        if opt.value == "all" then entries.any = e
+        elseif not opt.divider then entries[#entries + 1] = e end
     end
     return entries
 end

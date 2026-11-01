@@ -14,8 +14,8 @@ local _, NS = ...
 -- addon is not stood down; built lazily the first time it is wanted. Collapsed, only the title
 -- strip is left.
 --
--- Every option has a hover tooltip; a dropdown's names its entries, the library's menu having no
--- tooltip of its own. A checkbox's hit rect is stretched over its label, so hovering or clicking the
+-- Every option has a hover tooltip, and so does every multi-select menu entry, through the library
+-- menu's `tooltip` row option. A checkbox's hit rect is stretched over its label, so hovering or clicking the
 -- label acts on the box.
 --
 -- No code here calls SetText on a Blizzard frame: every SetText below lands on a frame or font
@@ -137,6 +137,18 @@ local function menuTooltip(obj, title, text)
         if stoodDown() then return end
         fillTooltip(tip, title, text)
     end)
+end
+
+-- The library's menu row (the row options of W.ContextMenu, LibKa0s-Widgets-1.0 minor 21, which a
+-- dropdown's options share): a `tooltip` renderer, so the lines take the same two roles as every
+-- other tooltip here. The library takes it off with the row and with the menu.
+local function rowTooltip(title, text)
+    return function(row)
+        if stoodDown() then return end
+        GameTooltip:SetOwner(row, "ANCHOR_RIGHT")
+        fillTooltip(GameTooltip, title, text)
+        GameTooltip:Show()
+    end
 end
 
 -- ── small builders ──────────────────────────────────────────────────────────────────────────────
@@ -386,8 +398,9 @@ end
 -- every entry's tick. The stored filters are the selection, so each row answers through `isActive`
 -- and writes through `dd.presets`, and the library's own `_selected` stays empty. The button shows our
 -- own summary, not the library's: Any, the labels when they fit, else a count, written after its
--- UpdateMultiLabel (onMultiSelect runs last). With the library absent, the same list in the client's
--- menu (Blizzard_Menu CreateCheckbox), the Any entry above a divider.
+-- UpdateMultiLabel (onMultiSelect runs last). Every entry has its tooltip and the Any entry sits above
+-- a divider, in the library's menu and, with the library absent, in the client's (Blizzard_Menu
+-- CreateCheckbox).
 
 local SELECT_TEXT_MAX = 30
 
@@ -407,31 +420,27 @@ local function selectionSummary(selected, total, labels)
     return text
 end
 
--- The button's tooltip body: the dropdown's own line, then each entry and what it does, there being
--- no tooltip on the library's rows.
-local function selectTip(spec)
-    local lines = { spec.tip, "", L.SELECT_ANY .. ": " .. L.SELECT_ANY_TOOLTIP }
-    for _, key in ipairs(spec.keys()) do
-        lines[#lines + 1] = (spec.labels[key] or key) .. ": " .. spec.tips[key]
-    end
-    return table.concat(lines, "\n")
-end
-
 local function flatMulti(dd, spec, h)
     dd:SetMulti(true)
-    local options = { { value = "all", label = L.SELECT_ANY, isActive = h.isAny } }
+    local options = {
+        { value = "all", label = L.SELECT_ANY, isActive = h.isAny,
+          tooltip = rowTooltip(L.SELECT_ANY, L.SELECT_ANY_TOOLTIP) },
+        { divider = true },
+    }
     local writes = { all = h.setAny }
     for _, key in ipairs(spec.keys()) do
+        local text = spec.labels[key] or key
         options[#options + 1] = {
-            value = key, label = spec.labels[key] or key,
+            value = key, label = text,
             isActive = function() return h.isOn(key) end,
+            tooltip = rowTooltip(text, spec.tips[key]),
         }
         writes[key] = function() h.setOn(key) end
     end
     dd.presets = writes
     dd.onMultiSelect = h.refreshText
     dd:SetOptions(options)
-    tooltip(dd, spec.title, selectTip(spec))
+    tooltip(dd, spec.title, spec.tip)
 end
 
 local function stockMulti(dd, spec, h)

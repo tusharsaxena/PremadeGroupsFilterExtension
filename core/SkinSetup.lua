@@ -57,9 +57,10 @@ local addonName, NS = ...
 --   NS.SkinEUIPainted()     true once EllesmereUI painted this owner this session: modules/Panel.lua
 --                           folds to EllesmereUI's shell bar and seats the arrow on it then.
 --
--- One owner token (skinning-§1): `pg.tipName`, a panel tooltip's option name. Ka0s Default draws it
--- white, the Blizzard settings convention, where `gtip.title` is gold; every other skin follows
--- `gtip.title` (cause L8). Every other color the addon draws under Ka0s Default is a library token's
+-- Two owner tokens (skinning-§1): `pg.tipName`, a panel tooltip's option name, which Ka0s Default
+-- draws white, the Blizzard settings convention, where `gtip.title` is gold, and every other skin
+-- follows `gtip.title` (cause L8); and `pg.regionUnknown`, the `?` tag of a realm the map does not
+-- know, which keeps Ka0s Default's 9d9d9d and follows `text.disabled`. Every other color the addon draws under Ka0s Default is a library token's
 -- exact value. A color a later surface needs that no library token holds is added to
 -- OWNER_TOKENS, as `pg.<name>` with its Ka0s Default `default` and a `follow` role token, in the
 -- same change.
@@ -107,10 +108,12 @@ NS.SKIN_FALLBACK = {
     ["input.text"]    = { 0.9, 0.9, 0.9, 1 },
     ["gtip.line"]     = { 1, 0.82, 0, 1 },
     ["pg.tipName"]    = { 1, 1, 1, 1 },
+    ["pg.regionUnknown"] = { 157 / 255, 157 / 255, 157 / 255, 1 },
 }
 
 local OWNER_TOKENS = {
     ["pg.tipName"] = { default = { 1, 1, 1, 1 }, follow = "gtip.title" },
+    ["pg.regionUnknown"] = { default = { 157 / 255, 157 / 255, 157 / 255, 1 }, follow = "text.disabled" },
 }
 
 --- A color token's components AS A CALL SITE WRITES THEM: r, g, b for an opaque color and r, g, b,
@@ -372,8 +375,8 @@ if not Skin then
         "Tooltip", "Strip", "Cover", "Text", "ChartStyle", "BarStyle", "IconBorder", "GlowColor",
         "BarTexture", "Mark",
         -- LibKa0s v1.85.0: nil is each getter's degraded answer, and this addon draws none of them.
-        -- BarGloss draws nothing: no skin, no gloss.
-        "HudTextColor", "HudLabelColor", "BarFillColor", "HudShadow", "BarGloss",
+        -- BarGloss draws nothing: no skin, no gloss. HoverArt leaves the client's art.
+        "HudTextColor", "HudLabelColor", "BarFillColor", "HudShadow", "BarGloss", "HoverArt",
     }) do S[name] = noop end
 
     S.Token = function(name) return NS.SKIN_FALLBACK[name] end
@@ -412,6 +415,8 @@ if not Skin then
         size = size or 14
         return ("|T%s:%d:%d|t"):format(path, size, size)
     end
+    -- LibKa0s v1.85.0 (SkinPaintExtras minor 16): no skin to defer to, so the three stored values.
+    S.BarBorder = function(style, show, size) return style, show, size end
     -- LibKa0s v1.85.0 (SkinPaintExtras minor 14): the one member that must draw; the Options
     -- document's stub. Both shadow arms are written, so the off arm clears.
     S.HudFont = function(fs, opts)

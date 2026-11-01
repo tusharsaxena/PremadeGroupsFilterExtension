@@ -35,6 +35,17 @@ test("regiontags: a leader on the player's own realm, an unknown realm, an unsup
     assertEqual(searchRow(m, 3, "Bob-Barthilas", "X").ActivityName.text, "X", "KR/TW/CN: no tag")
 end)
 
+test("regiontags: the unknown realm's mark follows the skin, and keeps its bytes without the library", function()
+    -- red under: a typed escape left in RegionTags.Tag, or the token dropped from NS.SKIN_FALLBACK.
+    local NS, _, m = T.enableAddon{}
+    NS.ApplySkinChoice("ka0s", "obsidian")
+    local want = NS.SkinEscape("text.disabled") .. "?|r X"
+    assertEqual(searchRow(m, 1, "Bob-Nowhere", "X").ActivityName.text, want)
+    assertTrue(want ~= "|cff9d9d9d?|r X", "obsidian's text.disabled is not the default mark")
+    local _, _, dm = T.enableAddon{ skip = T.loadAddon.libFiles }
+    assertEqual(searchRow(dm, 1, "Bob-Nowhere", "X").ActivityName.text, "|cff9d9d9d?|r X")
+end)
+
 test("regiontags: EU realms are tagged by language", function()
     local _, _, m = T.enableAddon{}
     m.currentRegion = 3
