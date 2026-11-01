@@ -123,6 +123,7 @@ Kit.run{
         "test_layers",
         "test_settings_layout",
         "test_skinsetup",
+        "test_launcher_skin_entry",
         "test_skin",
         "test_skin_picker",
         "test_skin_eui",
