@@ -121,7 +121,8 @@ The addon extends [Premade Groups Filter](https://www.curseforge.com/wow/addons/
 by Bernhard Saumweber. PremadeRegions was the reference for the realm-to-region list.
 
 The addon's own icons come from [Open Iconic](https://github.com/iconic/open-iconic) by Waybury
-(MIT): the debug console's clear, copy and close buttons, the skin picker's settings gear, and the
-attached panel's collapse and expand chevrons. Only
+(MIT): the debug console's clear, copy and close buttons, the skin picker's settings gear, the
+attached panel's collapse and expand chevrons, and the small marks LibKa0s draws beside skinned
+controls. Only
 the icons the addon draws are shipped. They are bundled inside the LibKa0s payload, with their
 license text beside them.
