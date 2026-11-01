@@ -57,11 +57,12 @@ local addonName, NS = ...
 --   NS.SkinEUIPainted()     true once EllesmereUI painted this owner this session: modules/Panel.lua
 --                           folds to EllesmereUI's shell bar and seats the arrow on it then.
 --
--- No owner tokens (skinning-§1): every color the addon draws under Ka0s Default is a library token's
--- exact value (the M0 inventory's PG-G1..G3 were refuted, Ka0sAddonsCommonTasks
--- docs/2026-10-29-SKINNING_ROLLOUT/01_INVENTORY.md), so RegisterOwner carries no `tokens` table.
--- A color a later surface needs that no library token holds is added here, as `pg.<name>` with its
--- Ka0s Default `default` and a `follow` role token, in the same change.
+-- One owner token (skinning-§1): `pg.tipName`, a panel tooltip's option name. Ka0s Default draws it
+-- white, the Blizzard settings convention, where `gtip.title` is gold; every other skin follows
+-- `gtip.title` (cause L8). Every other color the addon draws under Ka0s Default is a library token's
+-- exact value. A color a later surface needs that no library token holds is added to
+-- OWNER_TOKENS, as `pg.<name>` with its Ka0s Default `default` and a `follow` role token, in the
+-- same change.
 --
 -- ── WHERE IT LOADS ───────────────────────────────────────────────────────────────────────────
 --
@@ -99,13 +100,17 @@ local DEFAULT = "ka0s"
 -- entry to the live library's Ka0s Default value: a copy that drifts goes red there. A surface
 -- converted to a token adds the token here in the same change.
 NS.SKIN_FALLBACK = {
-    ["title.text"]     = { 1, 0.82, 0, 1 },
-    ["text.body"]      = { 0.9, 0.9, 0.9, 1 },
-    ["text.accent"]    = { 1, 0.82, 0, 1 },
-    ["text.highlight"] = { 1, 1, 1, 1 },
-    ["text.disabled"]  = { 0.5, 0.5, 0.5, 1 },
-    ["gtip.title"]     = { 1, 0.82, 0, 1 },
-    ["gtip.value"]     = { 1, 1, 1, 1 },
+    ["title.text"]    = { 1, 0.82, 0, 1 },
+    ["text.body"]     = { 0.9, 0.9, 0.9, 1 },
+    ["text.accent"]   = { 1, 0.82, 0, 1 },
+    ["text.disabled"] = { 0.5, 0.5, 0.5, 1 },
+    ["input.text"]    = { 0.9, 0.9, 0.9, 1 },
+    ["gtip.line"]     = { 1, 0.82, 0, 1 },
+    ["pg.tipName"]    = { 1, 1, 1, 1 },
+}
+
+local OWNER_TOKENS = {
+    ["pg.tipName"] = { default = { 1, 1, 1, 1 }, follow = "gtip.title" },
 }
 
 --- A color token's components AS A CALL SITE WRITES THEM: r, g, b for an opaque color and r, g, b,
@@ -441,6 +446,7 @@ Skin:RegisterOwner(addonName, {
     label = BRAND,
     get = NS.SkinChoice,
     set = NS.WriteSkinChoice,
+    tokens = OWNER_TOKENS,
 })
 
 -- The one line a reload request earns on the path that has no popup of its own (a profile event

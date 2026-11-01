@@ -48,6 +48,8 @@ core\CoreSetup.lua
 core\SkinSetup.lua
 # LOAD-BEARING: publishes NS.Constants.LAYERS, which modules\Panel.lua takes as a file-scope upvalue.
 core\Constants.lua
+# LOAD-BEARING: publishes NS.MakeDropdown and NS.CloseMenu, which modules\Panel.lua calls at build.
+core\WidgetsSetup.lua
 # LOAD-BEARING: publishes NS.MediaFont, which core\PGFE.lua resolves NS.FONT_MONO from at load.
 core\MediaSetup.lua
 # Conventional: NS.Compat is read inside functions only.

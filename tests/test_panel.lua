@@ -10,6 +10,7 @@ local T = _G.PGFE_TEST
 local test, assertEqual, assertTrue, assertFalse = T.test, T.assertEqual, T.assertTrue, T.assertFalse
 local H = dofile("tests/panel_helpers.lua")
 local seasonFromScreenshot, menuEntries, typeInto = H.seasonFromScreenshot, H.menuEntries, H.typeInto
+local ddText = H.ddText
 
 test("panel: the module publishes its namespace table", function()
     local NS = T.newAddon()
@@ -114,19 +115,19 @@ end)
 test("panel: ticking a region writes it and keeps the menu open; the button sums up", function()
     local NS, _, m = T.enableAddon{}
     m.currentRegion = 1
-    m.MenuResponse = { Refresh = 2 }
     NS.Panel.Create(); NS.Panel.Refresh()
     local dd = NS.Panel.frame.regionSelect
-    assertEqual(dd:GetText(), NS.L.SELECT_ANY)
+    assertTrue(dd.multi, "a multi-select keeps the library's menu open for the next tick")
+    assertEqual(ddText(dd), NS.L.SELECT_ANY)
     local oce, chi = menuEntries(dd)[1], menuEntries(dd)[3]
     assertFalse(oce.isOn(oce.data))
-    assertEqual(oce.set(oce.data), 2, "the menu stays open for the next tick")
+    oce.set(oce.data)
     assertTrue(NS.Filters.Get().regions.oce); assertTrue(oce.isOn(oce.data))
     chi.set(chi.data)
-    assertEqual(dd:GetText(), "OCE, CHI")
+    assertEqual(ddText(dd), "OCE, CHI")
     oce.set(oce.data)
     assertEqual(NS.Filters.Get().regions.oce, nil)
-    assertEqual(dd:GetText(), "CHI")
+    assertEqual(ddText(dd), "CHI")
 end)
 
 test("panel: a long selection is summed up as a count", function()
@@ -135,7 +136,7 @@ test("panel: a long selection is summed up as a count", function()
     local f = NS.Filters.Get()
     f.playstyles = { relaxed = true, competitive = true, carry = true }
     NS.Panel.Refresh()
-    assertEqual(NS.Panel.frame.playstyleSelect:GetText(), NS.L.SELECT_COUNT:format(3))
+    assertEqual(ddText(NS.Panel.frame.playstyleSelect), NS.L.SELECT_COUNT:format(3))
 end)
 
 test("panel: unsupported portal shows the note instead of the region dropdown", function()
@@ -158,7 +159,7 @@ test("panel: the playstyle dropdown uses the game's names and writes the playsty
     assertEqual(entries[4].text, "Carry Offered (game)")
     entries[2].set(entries[2].data)
     assertTrue(NS.Filters.Get().playstyles.relaxed)
-    assertEqual(NS.Panel.frame.playstyleSelect:GetText(), NS.L.PLAYSTYLE_RELAXED)
+    assertEqual(ddText(NS.Panel.frame.playstyleSelect), NS.L.PLAYSTYLE_RELAXED)
     local cb = NS.Panel.frame.checks.playstyleEnabled
     cb:SetChecked(true); cb:__fire("OnClick")
     assertTrue(NS.Filters.Get().playstyleEnabled)

@@ -14,8 +14,9 @@ local _, NS = ...
 -- addon is not stood down; built lazily the first time it is wanted. Collapsed, only the title
 -- strip is left.
 --
--- Every option has a hover tooltip. A checkbox's hit rect is stretched over its label, so hovering
--- or clicking the label acts on the box.
+-- Every option has a hover tooltip; a dropdown's names its entries, the library's menu having no
+-- tooltip of its own. A checkbox's hit rect is stretched over its label, so hovering or clicking the
+-- label acts on the box.
 --
 -- No code here calls SetText on a Blizzard frame: every SetText below lands on a frame or font
 -- string this file created. Searching goes through Apply.Run{ search = true }, called only from the
@@ -67,15 +68,11 @@ local BUTTON_GAP    = 4
 local BUTTON_PAD    = 20          -- a button's width past its text
 local READOUT_PULL  = 6           -- the dungeon readout sits this much closer under the key-level row
 local ACTION_GAP    = 8           -- the extra space under the Toggle row, around the Presets row and above Apply
-local DROPDOWN_H    = 26          -- WowStyle1DropdownTemplate's height when the client does not say
+local DROPDOWN_H    = 26          -- every dropdown's height, WowStyle1DropdownTemplate's when the client does not say
 local ACTION_W      = 88          -- Apply and Clear, at least
 local SELECT_W      = 225         -- the regions, playstyle and composition dropdowns
 local PRESET_BUTTON_MIN_W = 64     -- Save / Save as / Delete never narrower than this
--- A dropdown's arrow, as LibKa0s's skin picker draws its own: the client's arrow art turned to point
--- down, a fixed size, in from the right end. Its color is the skin's (paint).
-local GLYPH_ART     = "Interface\\ChatFrame\\ChatFrameExpandArrow"
-local GLYPH_SIZE    = 12
-local GLYPH_PAD     = 8
+local NO_PRESET     = ""          -- the value of the Presets menu's "no presets" row: picks nothing
 -- The readout's two colors: a dungeon still to time in the accent, a timed one disabled. Read from
 -- the skin at write time (ffd100 and 808080 on Ka0s Default, NS.SkinEscape's byte rounding).
 local TARGETED_TOKEN, NOT_TARGETED_TOKEN = "text.accent", "text.disabled"
@@ -97,15 +94,15 @@ end
 
 -- ── tooltips ────────────────────────────────────────────────────────────────────────────────────
 
--- The option's name in white, then what it does, wrapped, in gold: the Blizzard settings convention.
--- The lines take the skin's tooltip colors (skinning-§7; the frame stays GameTooltip's). The names
--- read crossed on purpose: the name is `gtip.value` (white) and the body `gtip.title` (gold), the
--- exact pixels of Ka0s Default.
+-- The option's name, then what it does, wrapped: white and gold under Ka0s Default, the Blizzard
+-- settings convention. The lines take the skin's tooltip roles (skinning-§7; the frame stays
+-- GameTooltip's): the name is the owner token `pg.tipName`, which keeps that white and follows
+-- `gtip.title` elsewhere, and the body `gtip.line`, a tooltip's body line in every skin.
 local function fillTooltip(tip, title, text)
-    local tr, tg, tb = NS.SkinColor("gtip.value")
+    local tr, tg, tb = NS.SkinColor("pg.tipName")
     tip:SetText(title, tr, tg, tb)
     if text then
-        local r, g, b = NS.SkinColor("gtip.title")
+        local r, g, b = NS.SkinColor("gtip.line")
         tip:AddLine(text, r, g, b, true)
     end
 end
@@ -125,9 +122,10 @@ local function tooltip(widget, title, text)
     end)
 end
 
--- A dropdown button or a menu entry (Blizzard_Menu SetTooltip): the menu owns, shows and hides the
--- tooltip; this only fills it. A WowStyle1DropdownTemplate's own OnEnter/OnLeave drive its hover art,
--- so a dropdown never gets the script hooks above.
+-- The client's dropdown, with the library absent: a button or a menu entry (Blizzard_Menu
+-- SetTooltip), where the menu owns, shows and hides the tooltip and this only fills it. A
+-- WowStyle1DropdownTemplate's own OnEnter/OnLeave drive its hover art, so it never gets the script
+-- hooks above.
 local function menuTooltip(obj, title, text)
     obj:SetTooltip(function(tip)
         if stoodDown() then return end
@@ -218,16 +216,20 @@ end
 local function isSmart() return NS.Filters.Get().smartKeyLevel == true end
 
 -- With Smart on the level box is locked: no focus, no typing, grayed text. The mouse stays on so
--- its tooltip still says why. The two colors are the skin's (white and 0.5 gray on Ka0s Default),
--- written after S.EditBox's own text color, and again on every Refresh, which a skin switch runs.
-local function dimText(fs, dim)
-    fs:SetTextColor(NS.SkinColor(dim and "text.disabled" or "text.highlight"))
+-- its tooltip still says why. Locked, the box takes `text.disabled` over S.EditBox's own text color;
+-- unlocked it takes that color back, `input.text`, the same as the Age box beside it. `role` is the
+-- string's own color while lit: `input.text` for a box and `text.body` for a label. A skin may
+-- leave `input.text` unset. Written again on every Refresh, which a skin switch runs.
+local function dimText(fs, dim, role)
+    local r, g, b, a = NS.SkinColor(dim and "text.disabled" or role)
+    if r == nil then r, g, b, a = NS.SkinColor("text.body") end
+    fs:SetTextColor(r, g, b, a)
 end
 
 local function setLocked(box, on)
     if on then box:ClearFocus() end
     box:SetEnabled(not on)
-    dimText(box, on)
+    dimText(box, on, "input.text")
 end
 
 -- ── row builders (each returns the next row's y) ────────────────────────────────────────────────
@@ -338,37 +340,40 @@ local function buildKeyRow(f, body, y)
     return y - 2 * ROW_H + READOUT_PULL
 end
 
--- ── dropdown arrows ─────────────────────────────────────────────────────────────────────────────
+-- ── dropdowns ───────────────────────────────────────────────────────────────────────────────────
+--
+-- The library's flat dropdown, its skinned menu and its marks (core/WidgetsSetup.lua). DROPDOWN_H
+-- keeps the row pitch and the height the Presets buttons take. With the library absent each dropdown
+-- is the client's template, its art and menu as Blizzard draws them.
 
--- WowStyle1DropdownTemplate has no arrow to tint: its Arrow is the atlas of a whole gold button. So
--- each dropdown carries a glyph under `dd.arrow`, the field S.Dropdown colors ahead of `dd.Arrow`, and
--- the template's art goes in the call's `stock` (paint). Hidden until syncGlyphs says the Ka0s skin
--- paints this owner.
-local function addGlyph(dd)
-    local t = dd:CreateTexture(nil, "OVERLAY")
-    t:SetSize(GLYPH_SIZE, GLYPH_SIZE)
-    t:SetPoint("RIGHT", dd, "RIGHT", -GLYPH_PAD, 0)
-    t:SetTexture(GLYPH_ART)
-    t:SetRotation(-math.pi / 2)
-    t:Hide()
-    dd.arrow = t
+local function flatDropdown(parent, width)
+    local dd = NS.MakeDropdown(parent, width)
+    if dd then dd:SetHeight(DROPDOWN_H) end
+    return dd
 end
 
--- Without the library the template's button stays, and EllesmereUI draws its own arrow, so the glyph
--- shows only under a Ka0s skin.
-local function syncGlyphs(f)
-    local on = NS.Skin.IsEnabled() and not NS.SkinEUIPainted()
-    for _, dd in ipairs(f.dropdowns) do dd.arrow:SetShown(on) end
+local function stockDropdown(parent)
+    return CreateFrame("DropdownButton", nil, parent, "WowStyle1DropdownTemplate")
+end
+
+-- EllesmereUI draws its own arrow on the dropdowns it paints, so the library's hides then.
+local function syncArrows(f)
+    local shown = not NS.SkinEUIPainted()
+    for _, dd in ipairs(f.dropdowns) do
+        if dd.arrow then dd.arrow:SetShown(shown) end
+    end
 end
 
 -- ── multi-select dropdowns (server regions, playstyle) ──────────────────────────────────────────
 --
--- A checkbox list in a Blizzard dropdown (Blizzard_Menu CreateCheckbox), right-aligned on its row so
--- every dropdown shares one column. An Any entry heads the list, above a divider: checked when the
--- selection means Any (none ticked, or every one ticked, Filters.IsAny), and a click on it clears the
--- selection. A checkbox answers MenuResponse.Refresh, so the menu stays open and every entry's tick
--- is re-read. The button shows our own summary (OverrideText), not the menu's selection text: Any,
--- the labels when they fit, else a count.
+-- A multi-select in the library's menu, right-aligned on its row so every dropdown shares one column.
+-- An Any entry heads the list: ticked when the selection means Any (none ticked, or every one
+-- ticked, Filters.IsAny), and a click on it clears the selection. The menu stays open and re-reads
+-- every entry's tick. The stored filters are the selection, so each row answers through `isActive`
+-- and writes through `dd.presets`, and the library's own `_selected` stays empty. The button shows our
+-- own summary, not the library's: Any, the labels when they fit, else a count, written after its
+-- UpdateMultiLabel (onMultiSelect runs last). With the library absent, the same list in the client's
+-- menu (Blizzard_Menu CreateCheckbox), the Any entry above a divider.
 
 local SELECT_TEXT_MAX = 30
 
@@ -388,17 +393,60 @@ local function selectionSummary(selected, total, labels)
     return text
 end
 
--- spec = { keys = fn() -> ordered keys, labels = { [key] = text }, tips = { [key] = text },
---          isOn = fn(key), toggle = fn(key), clear = fn(), selected = fn() -> ordered selected keys }
+-- The button's tooltip body: the dropdown's own line, then each entry and what it does, there being
+-- no tooltip on the library's rows.
+local function selectTip(spec)
+    local lines = { spec.tip, "", L.SELECT_ANY .. ": " .. L.SELECT_ANY_TOOLTIP }
+    for _, key in ipairs(spec.keys()) do
+        lines[#lines + 1] = (spec.labels[key] or key) .. ": " .. spec.tips[key]
+    end
+    return table.concat(lines, "\n")
+end
+
+local function flatMulti(dd, spec, h)
+    dd:SetMulti(true)
+    local options = { { value = "all", label = L.SELECT_ANY, isActive = h.isAny } }
+    local writes = { all = h.setAny }
+    for _, key in ipairs(spec.keys()) do
+        options[#options + 1] = {
+            value = key, label = spec.labels[key] or key,
+            isActive = function() return h.isOn(key) end,
+        }
+        writes[key] = function() h.setOn(key) end
+    end
+    dd.presets = writes
+    dd.onMultiSelect = h.refreshText
+    dd:SetOptions(options)
+    tooltip(dd, spec.title, selectTip(spec))
+end
+
+local function stockMulti(dd, spec, h)
+    dd:SetupMenu(function(_, root)
+        menuTooltip(root:CreateCheckbox(L.SELECT_ANY, h.isAny, h.setAny), L.SELECT_ANY, L.SELECT_ANY_TOOLTIP)
+        root:CreateDivider()
+        for _, key in ipairs(spec.keys()) do
+            local text = spec.labels[key] or key
+            menuTooltip(root:CreateCheckbox(text, h.isOn, h.setOn, key), text, spec.tips[key])
+        end
+    end)
+    menuTooltip(dd, spec.title, spec.tip)
+end
+
+-- spec = { title = text, tip = text, keys = fn() -> ordered keys, labels = { [key] = text },
+--          tips = { [key] = text }, isOn = fn(key), toggle = fn(key), clear = fn(),
+--          selected = fn() -> ordered selected keys }
 local function multiSelect(body, y, spec)
-    local dd = CreateFrame("DropdownButton", nil, body, "WowStyle1DropdownTemplate")
-    dd:SetWidth(SELECT_W)
+    local flat = flatDropdown(body, SELECT_W)
+    local dd = flat or stockDropdown(body)
+    if not flat then dd:SetWidth(SELECT_W) end
     dd:SetPoint("TOPRIGHT", 0, y)
-    addGlyph(dd)
     local function isAny() return NS.Filters.IsAny(spec.selected(), anyTotal(spec)) end
     -- An all-ticked set reads as Any, so its entries show unticked, as an empty one's do.
     local function isOn(key) return spec.isOn(key) and not isAny() end
-    local function refreshText() dd:OverrideText(selectionSummary(spec.selected(), anyTotal(spec), spec.labels)) end
+    local function refreshText()
+        local text = selectionSummary(spec.selected(), anyTotal(spec), spec.labels)
+        if flat then dd.text:SetText(text) else dd:OverrideText(text) end
+    end
     local function respond(write, key)
         if not stoodDown() then
             write(key)
@@ -406,16 +454,12 @@ local function multiSelect(body, y, spec)
         end
         return MenuResponse and MenuResponse.Refresh
     end
-    local function setOn(key) return respond(spec.toggle, key) end
-    local function setAny() return respond(spec.clear) end
-    dd:SetupMenu(function(_, root)
-        menuTooltip(root:CreateCheckbox(L.SELECT_ANY, isAny, setAny), L.SELECT_ANY, L.SELECT_ANY_TOOLTIP)
-        root:CreateDivider()
-        for _, key in ipairs(spec.keys()) do
-            local text = spec.labels[key] or key
-            menuTooltip(root:CreateCheckbox(text, isOn, setOn, key), text, spec.tips[key])
-        end
-    end)
+    local handlers = {
+        isAny = isAny, isOn = isOn, refreshText = refreshText,
+        setOn = function(key) return respond(spec.toggle, key) end,
+        setAny = function() return respond(spec.clear) end,
+    }
+    if flat then flatMulti(dd, spec, handlers) else stockMulti(dd, spec, handlers) end
     dd.RefreshSummary = refreshText
     return dd
 end
@@ -431,6 +475,7 @@ local function buildRegionRow(f, body, y)
     local portal = NS.Regions.GetPortal()
     local keys = (portal and NS.Regions.KEYS[portal]) or {}
     f.regionSelect = multiSelect(body, y, {
+        title = L.REGIONS, tip = L.REGIONS_SELECT_TOOLTIP,
         keys = function() return keys end,
         labels = NS.Regions.LABELS,
         tips = keyedTips(keys, "REGION_TIP_"),
@@ -439,7 +484,6 @@ local function buildRegionRow(f, body, y)
         clear = function() NS.Filters.ClearRegions(portal) end,
         selected = function() return NS.Filters.SelectedRegions(portal) end,
     })
-    menuTooltip(f.regionSelect, L.REGIONS, L.REGIONS_SELECT_TOOLTIP)
     f.regionSelect:SetShown(portal ~= nil)
     f.regionsUnsupported = body:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
     f.regionsUnsupported:SetPoint("TOPRIGHT", 0, y - 5)
@@ -461,6 +505,7 @@ end
 local function buildPlaystyleRow(f, body, y)
     checkRow(f, body, "playstyleEnabled", L.PLAYSTYLE, y, L.PLAYSTYLE_TOOLTIP)
     f.playstyleSelect = multiSelect(body, y, {
+        title = L.PLAYSTYLE, tip = L.PLAYSTYLE_SELECT_TOOLTIP,
         keys = function() return NS.Filters.PLAYSTYLES end,
         labels = playstyleLabels(),
         tips = keyedTips(NS.Filters.PLAYSTYLES, "PLAYSTYLE_TIP_"),
@@ -469,7 +514,6 @@ local function buildPlaystyleRow(f, body, y)
         clear = NS.Filters.ClearPlaystyles,
         selected = NS.Filters.SelectedPlaystyles,
     })
-    menuTooltip(f.playstyleSelect, L.PLAYSTYLE, L.PLAYSTYLE_SELECT_TOOLTIP)
     return y - SELECT_ROW_H
 end
 
@@ -479,6 +523,7 @@ local function buildCompositionRow(f, body, y)
     checkRow(f, body, "compositionEnabled", L.COMPOSITION, y, L.COMPOSITION_TOOLTIP)
     local keys = NS.Filters.COMPOSITION
     f.compositionSelect = multiSelect(body, y, {
+        title = L.COMPOSITION, tip = L.COMPOSITION_SELECT_TOOLTIP,
         keys = function() return keys end,
         labels = { noSameSpec = L.NO_SAME_SPEC, noSameClassRole = L.NO_SAME_CLASSROLE },
         tips = { noSameSpec = L.NO_SAME_SPEC_TOOLTIP, noSameClassRole = L.NO_SAME_CLASSROLE_TOOLTIP },
@@ -488,7 +533,6 @@ local function buildCompositionRow(f, body, y)
         clear = NS.Filters.ClearComposition,
         selected = NS.Filters.SelectedComposition,
     })
-    menuTooltip(f.compositionSelect, L.COMPOSITION, L.COMPOSITION_SELECT_TOOLTIP)
     return y - SELECT_ROW_H
 end
 
@@ -514,6 +558,37 @@ end
 
 local function isSelectedPreset(name) return name == NS.Presets.GetSelected() end
 
+local presetRows = {}
+
+-- Row `i` of the menu, refilled: Refresh runs on every season event, so it allocates no row twice.
+local function presetRow(i, value, text)
+    local row = presetRows[i] or {}
+    presetRows[i] = row
+    row.value, row.label = value, text
+end
+
+-- The library's single-select menu, its rows refilled on every Refresh: a preset saved or deleted on
+-- another character shows here. An empty list reads as one row that picks nothing.
+local function syncPresets(dd)
+    local names = NS.Presets.List()
+    for i, name in ipairs(names) do presetRow(i, name, name) end
+    if #names == 0 then presetRow(1, NO_PRESET, L.PRESET_EMPTY) end
+    for i = math.max(#names, 1) + 1, #presetRows do presetRows[i] = nil end
+    dd:SetOptions(presetRows)
+    local selected = NS.Presets.GetSelected()
+    dd:SetValue(selected, selected or L.PRESET_NONE)
+end
+
+local function flatPresets(dd)
+    dd.onSelect = function(name)
+        if name ~= NO_PRESET then Panel.SelectPreset(name) end
+        syncPresets(dd)
+    end
+    dd.RefreshPresets = syncPresets
+    syncPresets(dd)
+    tooltip(dd, L.PRESETS, L.PRESETS_TOOLTIP)
+end
+
 local function presetMenu(_, root)
     local names = NS.Presets.List()
     if #names == 0 then
@@ -523,6 +598,13 @@ local function presetMenu(_, root)
     for _, name in ipairs(names) do
         root:CreateRadio(name, isSelectedPreset, Panel.SelectPreset, name)
     end
+end
+
+local function stockPresets(dd)
+    dd:SetDefaultText(L.PRESET_NONE)
+    dd:SetupMenu(presetMenu)
+    dd.RefreshPresets = dd.GenerateMenu
+    menuTooltip(dd, L.PRESETS, L.PRESETS_TOOLTIP)
 end
 
 local function saveAs(name)
@@ -587,13 +669,11 @@ local function buildPresetRow(f, body, y)
     local row = { f.saveButton, f.saveAsButton, f.deleteButton }
     sameWidth(row, PRESET_BUTTON_MIN_W)
     rightAligned(row, y)
-    local dd = CreateFrame("DropdownButton", nil, body, "WowStyle1DropdownTemplate")
+    local flat = flatDropdown(body, SELECT_W)
+    local dd = flat or stockDropdown(body)
     dd:SetPoint("TOPLEFT", 4, y)
     dd:SetPoint("RIGHT", f.saveButton, "LEFT", -BUTTON_GAP, 0)
-    addGlyph(dd)
-    dd:SetDefaultText(L.PRESET_NONE)
-    dd:SetupMenu(presetMenu)
-    menuTooltip(dd, L.PRESETS, L.PRESETS_TOOLTIP)
+    if flat then flatPresets(dd) else stockPresets(dd) end
     f.presetDropdown = dd
     local h = dd:GetHeight()
     h = (type(h) == "number" and h > 0) and h or DROPDOWN_H
@@ -655,7 +735,7 @@ end
 -- Their tooltips still show.
 local function setCopyEnabled(f, on)
     setLocked(f.rangeBox, not on)
-    dimText(f.copyLabel, not on)
+    dimText(f.copyLabel, not on, "text.body")
 end
 
 -- Apply leaves keyboard focus alone: taking it into the copy box held the keyboard (movement, chat)
@@ -759,12 +839,27 @@ local function placeMinMax(f)
     hc:SetHeight(headerClickHeight(inset, h))
 end
 
+-- The title follows `title.align`: TitleText spans its container, so the justify is what places it.
+-- Every shipped skin's is CENTER, the fallback for a facade that names none. S.TitleBar is the one
+-- primitive that reads the token, but it would fill the band S.Shell already drew, and that band's
+-- fill is translucent.
+local function alignTitle(f)
+    local tc = f.TitleContainer
+    local title = type(tc) == "table" and tc.TitleText
+    if not title then return end
+    local align = NS.Skin.Token("title.align") or "CENTER"
+    if f.titleAlign == align then return end
+    f.titleAlign = align
+    title:SetJustifyH(align)
+end
+
 local function applyLayout(f)
     local collapsed = NS.addon.db.profile.panelCollapsed == true
     local ok, missing = NS.Bridge.Check()
     f:SetHeight(collapsed and collapsedHeight() or f.expandedHeight)
     placeMinMax(f)
-    syncGlyphs(f)
+    alignTitle(f)
+    syncArrows(f)
     syncMinMax(f, collapsed)
     f.body:SetShown(ok and not collapsed)
     f.unsupported:SetShown(not ok and not collapsed)
@@ -775,6 +870,7 @@ end
 local function setCollapsed(on)
     if not Panel.frame then return end
     if not stoodDown() then NS.addon.db.profile.panelCollapsed = on and true or false end
+    if on then NS.CloseMenu() end   -- the menu is a shared popup: hiding its row does not reach it
     applyLayout(Panel.frame)
 end
 
@@ -838,8 +934,8 @@ local BUILDERS = { buildActiveRow, buildKeyRow, buildRegionRow, buildPlaystyleRo
 
 -- PortraitFrameBaseTemplate starts its TitleContainer 58px in from the left (room for the portrait,
 -- hidden here) but only 24px in from the right (Blizzard SharedUIPanelTemplates.xml), so the title
--- sat ~17px right of center. Re-anchored 24px in on both sides: centered on the whole header, and
--- still clear of the min/max button.
+-- sat ~17px right of center. Re-anchored 24px in on both sides: even on the whole header, and still
+-- clear of the min/max button. Where the text sits inside it is the skin's (alignTitle).
 local TITLE_INSET = 24
 
 local function centerTitle(f)
@@ -864,7 +960,7 @@ end
 -- ── the paint ───────────────────────────────────────────────────────────────────────────────────
 
 -- Every font string of `frame`, the role each takes: the dimmed notes `disabled`, the copy label its
--- face only (its color is dimText's), every other label and the readout `body`. Bare S.Text, never
+-- face only (`body` or dimmed, dimText's), every other label and the readout `body`. Bare S.Text, never
 -- `{ panel = true }`: the panel is a window, so it keeps the skin under Ignore settings panel (D-01).
 local function paintTexts(S, f, frame)
     for _, r in ipairs({ frame:GetRegions() }) do
@@ -899,8 +995,6 @@ local function paint(f)
     S.Checkbox(f.activeCheck, { borderInset = CHECK_INSET })
     for _, cb in pairs(f.checks) do S.Checkbox(cb, { borderInset = CHECK_INSET }) end
     for _, box in ipairs({ f.levelBox, f.ageBox, f.rangeBox }) do S.EditBox(box) end
-    -- `stock`: S.Dropdown's own list knows neither of the template's two art regions by name (image 35).
-    for _, dd in ipairs(f.dropdowns) do S.Dropdown(dd, { stock = { dd.Background, dd.Arrow } }) end
     for _, b in ipairs({ f.saveButton, f.saveAsButton, f.deleteButton, f.applyButton, f.clearButton }) do
         S.Button(b)
     end
@@ -929,6 +1023,7 @@ local function buildFrame(dialog)
     f.expandedHeight = -BODY_TOP - y + BODY_BOTTOM
     f.dropdowns = { f.regionSelect, f.playstyleSelect, f.compositionSelect, f.presetDropdown }
     f.unsupported = label(f, "", 14, BODY_TOP, "GameFontDisable")
+    f:HookScript("OnHide", function() NS.CloseMenu() end)
     buildMinMax(f)
     buildHeaderClick(f)
     paint(f)
@@ -979,7 +1074,7 @@ function Panel.Refresh()
     local selected = NS.Presets.GetSelected() ~= nil
     f.saveButton:SetEnabled(selected)
     f.deleteButton:SetEnabled(selected)
-    f.presetDropdown:GenerateMenu()
+    f.presetDropdown:RefreshPresets()
     updateReadout(f)
     updateRange(f)
     applyLayout(f)

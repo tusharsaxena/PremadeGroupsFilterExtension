@@ -85,8 +85,8 @@ test("skin: under Ka0s Default the one panel is painted through the facade, ever
 end)
 
 test("skin: the colors the panel writes under Ka0s Default are its exact pixels", function()
-    -- red under: a token whose Ka0s Default value is not today's (white labels and boxes, 0.5 gray
-    -- dimmed, ffd100 / 808080 readout markup, white tooltip names over a gold body).
+    -- red under: a token whose Ka0s Default value is not today's (0.9 gray boxes and labels, the
+    -- input role, 0.5 gray dimmed, ffd100 / 808080 readout markup, white tooltip names over a gold body).
     local NS, m = setup()
     local f = NS.Panel.frame
     NS.Filters.Get().smartKeyLevel = true
@@ -95,7 +95,7 @@ test("skin: the colors the panel writes under Ka0s Default are its exact pixels"
     NS.Filters.Get().smartKeyLevel = false
     NS.Panel.Refresh()
     local c = f.levelBox.__textColor
-    assertEqual(c[1], 1); assertEqual(c[2], 1); assertEqual(c[3], 1)
+    assertEqual(c[1], 0.9); assertEqual(c[2], 0.9); assertEqual(c[3], 0.9)
     assertEqual(c[4], nil, "an opaque color is passed as three components, as before")
     m.mapTable = { 586, 587 }
     m.mapUIInfo[586] = { name = "D586", mapID = 586 }; m.seasonBest[586] = { intime = { level = 13 } }
@@ -274,8 +274,8 @@ test("skin: the panel writes the skin's colors: locked boxes, the dimmed label, 
     assertTrue(close(f.copyLabel.__textColor[1], dr), "the dimmed copy label is the skin's text.disabled")
     NS.Filters.Get().keyTargeting = true
     NS.Panel.Refresh()
-    local hr = Skin:Color(OWNER, "text.highlight")
-    assertTrue(close(f.copyLabel.__textColor[1], hr), "the copy label is the skin's text.highlight")
+    local hr = Skin:Color(OWNER, "text.body")
+    assertTrue(close(f.copyLabel.__textColor[1], hr), "the copy label is the skin's text.body")
     m.mapTable = { 586 }
     m.mapUIInfo[586] = { name = "D586", mapID = 586 }; m.seasonBest[586] = { intime = { level = 13 } }
     NS.Filters.Get().keyLevel = 14
@@ -344,27 +344,23 @@ local function dropdowns(f)
     return { f.regionSelect, f.playstyleSelect, f.compositionSelect, f.presetDropdown }
 end
 
-test("skin: every panel dropdown drops the template's art and draws the skin's glyph arrow", function()
-    -- red under: S.Dropdown handed no `stock` (its list knows no Background, the atlas stayed), or the
-    -- template's Arrow left as the painted arrow: that atlas is the whole gold button, tinted, not a
-    -- triangle (image 35 against the skin picker's image 36).
+test("skin: every panel dropdown is the library's, owned by this addon, with its menu and marks", function()
+    -- red under: the template's dropdown (the client's menu, cause A2), or a dropdown given no owner.
     local NS, _, Skin = setup()
     local r, g, b = Skin:Color(OWNER, "icon.arrow")
     for _, dd in ipairs(dropdowns(NS.Panel.frame)) do
-        assertEqual(dd.Background:GetAlpha(), 0, "the template's text holder is faded")
-        assertEqual(dd.Arrow:GetAlpha(), 0, "the template's gold button is faded")
-        local glyph = dd.arrow
-        assertTrue(glyph ~= nil and not rawequal(glyph, dd.Arrow), "the glyph is a texture of its own")
-        assertTrue(glyph:IsShown(), "the glyph shows")
-        assertEqual(glyph:GetAlpha(), 1)
-        assertTrue(glyph.__desaturated == true, "the library desaturated the glyph")
-        assertTrue(close(glyph.__vertexColor[1], r) and close(glyph.__vertexColor[2], g)
-            and close(glyph.__vertexColor[3], b), "the glyph wears icon.arrow")
-        assertEqual(glyph.__texture, "Interface\\ChatFrame\\ChatFrameExpandArrow")
+        assertEqual(dd.__owner, OWNER)
+        assertEqual(dd.__menuGen, nil, "no client menu")
+        assertTrue(dd.arrow:IsShown())
+        assertEqual(dd.__height, 26, "the row pitch")
+        local c = dd.arrow.__vertexColor
+        assertTrue(close(c[1], r) and close(c[2], g) and close(c[3], b), "the arrow wears icon.arrow")
+        assertTrue(dd.arrow.__texture:find("chevron-down", 1, true) ~= nil, "the Ka0s mark")
+        assertTrue(dd.__check:find("confirm", 1, true) ~= nil, "the Ka0s tick")
     end
 end)
 
-test("skin: the dropdown glyph follows a live switch and stays under Ignore settings panel", function()
+test("skin: a dropdown follows a live switch and stays under Ignore settings panel", function()
     -- red under: an arrow colored at build, or a dropdown given back by the Scope toggle (D-01).
     local NS, _, Skin = setup()
     local dd = NS.Panel.frame.presetDropdown
@@ -373,24 +369,25 @@ test("skin: the dropdown glyph follows a live switch and stays under Ignore sett
     local c = dd.arrow.__vertexColor
     assertTrue(close(c[1], r) and close(c[2], g) and close(c[3], b), "Ember's arrow color replayed")
     NS.ApplySkinIgnore(true, false)
-    assertEqual(dd.Arrow:GetAlpha(), 0, "the panel is a window: the Scope toggle leaves it skinned")
-    assertTrue(dd.arrow:IsShown())
+    assertTrue(dd.arrow:IsShown(), "the panel is a window: the Scope toggle leaves it skinned")
+    assertTrue(dd.arrow.__texture:find("chevron-down", 1, true) ~= nil)
 end)
 
-test("skin: without the library the dropdowns keep the template's art and no glyph shows", function()
-    -- red under: a glyph over the stock gold button, or stock art faded with nothing to replace it.
+test("skin: without the library the dropdowns are the client's template and its art", function()
+    -- red under: no dropdown at all, which leaves the filters with no way to pick a region.
     local NS, _, m = T.enableAddon{ skip = T.loadAddon.libFiles }
     m.pgf.dialog.shown = true
     NS.Panel.UpdateVisibility()
     for _, dd in ipairs(dropdowns(NS.Panel.frame)) do
         assertEqual(dd.Arrow:GetAlpha(), 1, "the template's button stays")
         assertEqual(dd.Background:GetAlpha(), 1, "the template's text holder stays")
-        assertFalse(dd.arrow:IsShown(), "no second arrow")
+        assertEqual(dd.arrow, nil, "no second arrow")
     end
+    assertTrue(NS.Panel.frame.regionSelect.__menuGen ~= nil, "the client's menu")
 end)
 
 test("skin: while EllesmereUI paints the panel its own arrow is the only one", function()
-    -- red under: the Ka0s glyph left showing beside the arrow WSkin.Dropdown draws.
+    -- red under: the library's arrow left showing beside the arrow WSkin.Dropdown draws.
     local NS, _, m = T.enableAddon({ mock = function(mm) mm.installEUI() end })
     NS.SchemaRuntime.Set("skin.source", "eui")
     m.eui.dispatch(OWNER)
@@ -398,6 +395,79 @@ test("skin: while EllesmereUI paints the panel its own arrow is the only one", f
     NS.Panel.UpdateVisibility()
     assertTrue(NS.SkinEUIPainted(), "EllesmereUI painted the owner")
     for _, dd in ipairs(dropdowns(NS.Panel.frame)) do assertFalse(dd.arrow:IsShown(), "no second arrow") end
+end)
+
+-- ── roles (L8, L9) ──────────────────────────────────────────────────────────────────────────────
+
+--- What the tooltip setters drew for `widget`'s hover: the name's and the first body line's rgb.
+local function hoverColors(m, widget)
+    local name, body
+    local setText, addLine = m.GameTooltip.SetText, m.GameTooltip.AddLine
+    m.GameTooltip.SetText = function(_, _, r, g, b) name = { r, g, b } end
+    m.GameTooltip.AddLine = function(_, _, r, g, b) body = { r, g, b } end
+    widget:__fire("OnEnter")
+    m.GameTooltip.SetText, m.GameTooltip.AddLine = setText, addLine
+    return name, body
+end
+
+local function sameColor(got, r, g, b, what)
+    assertTrue(close(got[1], r) and close(got[2], g) and close(got[3], b), what)
+end
+
+test("skin: a tooltip's name and body keep Ka0s Default's pixels and take the roles in every other skin", function()
+    -- red under: the crossed gtip.value and gtip.title (L8), or a body line that stayed gold under
+    -- a skin whose tooltip body is not.
+    local NS, m, Skin = setup()
+    local b = NS.Panel.frame.applyButton
+    local name, body = hoverColors(m, b)
+    sameColor(name, 1, 1, 1, "Ka0s Default's name is white")
+    sameColor(body, 1, 0.82, 0, "Ka0s Default's body is gold")
+    for _, def in ipairs(Skin:Skins()) do
+        if def.key ~= "ka0s" then
+            NS.ApplySkinChoice("ka0s", def.key)
+            local tr, tg, tb = Skin:Color(OWNER, "gtip.title")
+            local lr, lg, lb = Skin:Color(OWNER, "gtip.line")
+            name, body = hoverColors(m, b)
+            sameColor(name, tr, tg, tb, def.key .. ": the name is gtip.title")
+            sameColor(body, lr, lg, lb, def.key .. ": the body is gtip.line")
+        end
+    end
+end)
+
+test("skin: the level and copy boxes wear the input role, like the Age box, in every skin", function()
+    -- red under: text.highlight written over S.EditBox's color (L8), or a skin with no input.text
+    -- handing SetTextColor a nil.
+    local NS, _, Skin = setup()
+    local f = NS.Panel.frame
+    NS.Filters.Get().smartKeyLevel = false
+    NS.Filters.Get().keyTargeting = true
+    NS.Panel.Refresh()
+    for _, def in ipairs(Skin:Skins()) do
+        NS.ApplySkinChoice("ka0s", def.key)
+        local r, g, b = Skin:Color(OWNER, "input.text")
+        if r == nil then r, g, b = Skin:Color(OWNER, "text.body") end
+        sameColor(f.levelBox.__textColor, r, g, b, def.key .. ": the level box")
+        sameColor(f.rangeBox.__textColor, r, g, b, def.key .. ": the copy box")
+        local lr, lg, lb = Skin:Color(OWNER, "text.body")
+        sameColor(f.copyLabel.__textColor, lr, lg, lb, def.key .. ": the copy label")
+    end
+end)
+
+test("skin: the title follows title.align on a switch", function()
+    -- Every shipped skin says CENTER, so this skin's answer is faked at the facade.
+    -- red under: S.Text alone, which reads no title.align (L9).
+    local NS = setup()
+    local f = NS.Panel.frame
+    local title = f.TitleContainer.TitleText
+    local justified
+    title.SetJustifyH = function(_, a) justified = a end
+    local real = NS.Skin.Token
+    NS.Skin.Token = function(name) if name == "title.align" then return "LEFT" end return real(name) end
+    NS.Panel.Refresh()
+    NS.Skin.Token = real
+    assertEqual(justified, "LEFT")
+    NS.Panel.Refresh()
+    assertEqual(justified, "CENTER", "and back")
 end)
 
 -- ── stand-down ──────────────────────────────────────────────────────────────────────────────────

@@ -320,9 +320,10 @@ test("skin seam: each host-copy skin token is the live library's Ka0s Default va
     local _, m = T.newAddon()
     local live = m.LibStub("LibKa0s-Skin-1.0"):ResolveSkin("ka0s")
     local n = 0
+    local own = { ["pg.tipName"] = { 1, 1, 1, 1 } }   -- an owner token: its `default`, not the library's
     for name, c in pairs(degraded.SKIN_FALLBACK) do
         n = n + 1
-        local want = live[name]
+        local want = own[name] or live[name]
         assertTrue(type(want) == "table", name .. " is not a library color token")
         for i = 1, 4 do
             assertTrue(math.abs((c[i] or 1) - (want[i] or 1)) < 1e-6,

@@ -12,10 +12,30 @@ function H.seasonFromScreenshot(m)
     end
 end
 
--- Run a dropdown's menu generator against a recording root. Every option entry, in order, as
--- { text, isOn, set, data, tooltip }; the Any entry (the first checkbox, no data) as `.any`; and the
--- kinds in build order as `.order` ("any", "divider", "entry").
+-- A library dropdown's menu entries, as the row clicks reach them: every option entry in order as
+-- { text, isOn, set, data }, the Any entry as `.any`. `set` does what a row's click does: the
+-- library's ToggleSelected, then the host's onMultiSelect, the order Widgets.lua's rowOnClick runs.
+local function flatEntries(dd)
+    local entries = {}
+    for _, opt in ipairs(dd._options) do
+        local e = {
+            text = opt.label, data = opt.value,
+            isOn = function() return opt.isActive(dd) end,
+            set = function()
+                dd:ToggleSelected(opt.value)
+                if dd.onMultiSelect then dd.onMultiSelect(dd._selected) end
+            end,
+        }
+        if opt.value == "all" then entries.any = e else entries[#entries + 1] = e end
+    end
+    return entries
+end
+
+-- A dropdown's entries. The library's, or with the library absent, the client template's menu
+-- generator run against a recording root: as { text, isOn, set, data, tooltip }, and the kinds in
+-- build order as `.order` ("any", "divider", "entry").
 function H.menuEntries(dd)
+    if dd._options then return flatEntries(dd) end
     local entries = { order = {} }
     local root = {
         CreateCheckbox = function(_, text, isSelected, setSelected, data)
@@ -34,6 +54,8 @@ function H.menuEntries(dd)
     return entries
 end
 
+-- What a library dropdown's closed button reads.
+function H.ddText(dd) return dd.text:GetText() end
 
 -- Keystroke by keystroke, as the client fires OnTextChanged(userInput = true) per character.
 function H.typeInto(box, text)
