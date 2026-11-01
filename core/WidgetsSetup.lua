@@ -5,8 +5,9 @@ local addonName, NS = ...
 --
 -- A seam, nothing else (library-stack-§7). The factory names this addon's folder as the widget's
 -- skin `owner`, so the library paints the button and the menu for the owner core/SkinSetup.lua
--- registered and follows a switch, and draws the owner's tinted chevron-down and confirm marks
--- (CLAUDE.md's `LibKa0s icons:` line keeps both). No glyph face: no option here carries a glyph.
+-- registered and follows a switch, and draws the owner's tinted confirm mark (CLAUDE.md's
+-- `LibKa0s icons:` line keeps it). The arrow's art is the caller's: it tints what it is handed.
+-- No glyph face: no option here carries a glyph.
 --
 -- THE POPUP IS A PROCESS-WIDE SINGLETON parented to UIParent, so hiding the panel does not reach
 -- it. Every non-click close path calls NS.CloseMenu(): the panel's OnHide (which the stand-down
@@ -21,10 +22,11 @@ local W = LibStub and LibStub("LibKa0s-Widgets-1.0", true)
 --- One flat dropdown, or nil when the library is absent.
 --- @param parent table the frame to parent it to
 --- @param width number the collapsed button's width
+--- @param chevron string the arrow's art, a resolved path
 --- @return table|nil
-function NS.MakeDropdown(parent, width)
+function NS.MakeDropdown(parent, width, chevron)
     if not W then return nil end
-    return W.Dropdown(parent, width, { owner = addonName })
+    return W.Dropdown(parent, width, { owner = addonName, chevron = chevron })
 end
 
 --- Close the shared popup menu, if one is open. Safe when none ever opened.

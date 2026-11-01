@@ -72,6 +72,12 @@ local DROPDOWN_H    = 26          -- every dropdown's height, WowStyle1DropdownT
 local ACTION_W      = 88          -- Apply and Clear, at least
 local SELECT_W      = 225         -- the regions, playstyle and composition dropdowns
 local PRESET_BUTTON_MIN_W = 64     -- Save / Save as / Delete never narrower than this
+-- A dropdown's arrow: the client's arrow art turned to point down, a fixed size, in from the right
+-- end. Its color is the skin's. An icon's shape is not skin data (cause L10, on the Leave list), so
+-- the art stays this one: the menu is what cause A2 moved onto the library.
+local GLYPH_ART     = "Interface\\ChatFrame\\ChatFrameExpandArrow"
+local GLYPH_SIZE    = 12
+local GLYPH_PAD     = 8
 local NO_PRESET     = ""          -- the value of the Presets menu's "no presets" row: picks nothing
 -- The readout's two colors: a dungeon still to time in the accent, a timed one disabled. Read from
 -- the skin at write time (ffd100 and 808080 on Ka0s Default, NS.SkinEscape's byte rounding).
@@ -342,13 +348,21 @@ end
 
 -- ── dropdowns ───────────────────────────────────────────────────────────────────────────────────
 --
--- The library's flat dropdown, its skinned menu and its marks (core/WidgetsSetup.lua). DROPDOWN_H
--- keeps the row pitch and the height the Presets buttons take. With the library absent each dropdown
--- is the client's template, its art and menu as Blizzard draws them.
+-- The library's flat dropdown, its skinned menu and its tick (core/WidgetsSetup.lua), under the
+-- panel's own arrow. DROPDOWN_H keeps the row pitch and the height the Presets buttons take. The
+-- label stays on one line, as a client dropdown's does, and stops at the arrow: the Presets button
+-- is the row's narrow slot and a preset's name may run to 32 letters. With the library absent each
+-- dropdown is the client's template, its art and menu as Blizzard draws them.
 
 local function flatDropdown(parent, width)
-    local dd = NS.MakeDropdown(parent, width)
-    if dd then dd:SetHeight(DROPDOWN_H) end
+    local dd = NS.MakeDropdown(parent, width, GLYPH_ART)
+    if not dd then return nil end
+    dd:SetHeight(DROPDOWN_H)
+    dd.text:SetWordWrap(false)
+    dd.text:SetPoint("RIGHT", -(GLYPH_PAD + GLYPH_SIZE), 0)
+    dd.arrow:ClearAllPoints()
+    dd.arrow:SetPoint("RIGHT", dd, "RIGHT", -GLYPH_PAD, 0)
+    dd.arrow:SetRotation(-math.pi / 2)
     return dd
 end
 

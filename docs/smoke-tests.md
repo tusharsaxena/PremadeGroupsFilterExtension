@@ -551,11 +551,11 @@ EllesmereUI read took a shorter path; nothing should look different.
   color, a missing reload request, or a Lua error. Result:
 - **SKIN-41. The panel's dropdowns are flat (PG-D1).** Open PGF's dialog on Dungeons with the panel
   showing, on Ka0s Default → Server regions, Playstyle, Composition and the Presets dropdown each draw
-  a flat dark box with the skin's edge and one small Ka0s chevron at the right end, the look of the
+  a flat dark box with the skin's edge and one small gold triangle at the right end, the look of the
   dropdown in `/pgfe skin`: no gold button and no stock bevel. Each still opens its menu, its text reads
-  up to the chevron and is not clipped, and its height matches Save beside it. The boxes keep no
+  up to the triangle and is not clipped, and its height matches Save beside it. The boxes keep no
   hover art now, as the skin picker's has none (this replaces APPLY-19's hover-art line). With
-  `/pgfe skin` open, pick other skins in turn (Glass, Ember, WoW Default) → box and chevron take each
+  `/pgfe skin` open, pick other skins in turn (Glass, Ember, WoW Default) → box and triangle take each
   skin's colors live. Tick *Ignore settings panel* → they stay skinned. With EllesmereUI painting the
   panel → one arrow only, EllesmereUI's. Fail: a gold button or bevel left, two arrows, a triangle on
   the wrong side or pointing the wrong way, a color that lags a pick, or a Lua error. Result:
@@ -575,10 +575,13 @@ EllesmereUI read took a shorter path; nothing should look different.
   carry the Ka0s tick and the selected color, in the skin's body face. A tick keeps a multi-select
   open and the button's summary updates behind it. With no presets, Presets lists one row, *No
   presets saved*, and picking it changes nothing. Save a preset, then reopen → it is
-  listed; pick it → the options load and the button reads its name. Open a menu, then collapse the
-  panel by its band, or press Escape on PGF's dialog → the menu closes with it. With EllesmereUI
+  listed; pick it → the options load and the button reads its name. Save one with a 32-letter name
+  and pick it → the button holds one line, cut short before the arrow, never wrapped. Open a menu,
+  then collapse the panel by its band, or press Escape on PGF's dialog → the menu closes with it. With
+  EllesmereUI
   painting the panel → one arrow on each dropdown, and the menu in EllesmereUI's derived colors. Fail:
-  a Blizzard menu, a menu left floating, a selection that does not reach the filters, or a Lua error.
+  a Blizzard menu, a menu left floating, a wrapped button label, a selection that does not reach the
+  filters, or a Lua error.
   Result:
 - **SKIN-44. The tooltip and input roles (cause L8).** Under Ka0s Default, hover any option → the
   name is white over a gold body, as before. Under Ember → name and body change with the skin. On

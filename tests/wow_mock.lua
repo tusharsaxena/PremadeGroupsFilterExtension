@@ -284,6 +284,7 @@ local function build()
         -- A texture's file (the min/max button's chevron, PG-02 of the skin fonts and feedback run).
         f.SetTexture = function(self, path) self.__texture = path; return self end
         f.SetRotation = function(self, radians) self.__rotation = radians; return self end
+        f.SetWordWrap = function(self, on) self.__wordWrap = on; return self end
         f.SetDesaturated = function(self, on) self.__desaturated = on; return self end
         f.IsDesaturated = function(self) return self.__desaturated == true end
         f.GetTexture = function(self) return self.__texture end

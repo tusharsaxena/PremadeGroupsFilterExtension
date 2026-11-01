@@ -340,6 +340,8 @@ end)
 
 -- ── the dropdowns: the skin picker's look (PG-D1) ───────────────────────────────────────────────
 
+local ARROW_ART = "Interface\\ChatFrame\\ChatFrameExpandArrow"
+
 local function dropdowns(f)
     return { f.regionSelect, f.playstyleSelect, f.compositionSelect, f.presetDropdown }
 end
@@ -355,7 +357,11 @@ test("skin: every panel dropdown is the library's, owned by this addon, with its
         assertEqual(dd.__height, 26, "the row pitch")
         local c = dd.arrow.__vertexColor
         assertTrue(close(c[1], r) and close(c[2], g) and close(c[3], b), "the arrow wears icon.arrow")
-        assertTrue(dd.arrow.__texture:find("chevron-down", 1, true) ~= nil, "the Ka0s mark")
+        assertEqual(dd.arrow.__texture, ARROW_ART, "the arrow's shape is left alone (L10)")
+        assertTrue(close(dd.arrow.__rotation, -math.pi / 2), "turned to point down")
+        assertEqual(dd.arrow.__points[1][4], -8, "8px in from the right end")
+        assertEqual(dd.text.__wordWrap, false, "a long name stays on one line")
+        assertEqual(dd.text.__points[#dd.text.__points][4], -20, "and stops at the arrow")
         assertTrue(dd.__check:find("confirm", 1, true) ~= nil, "the Ka0s tick")
     end
 end)
@@ -370,7 +376,7 @@ test("skin: a dropdown follows a live switch and stays under Ignore settings pan
     assertTrue(close(c[1], r) and close(c[2], g) and close(c[3], b), "Ember's arrow color replayed")
     NS.ApplySkinIgnore(true, false)
     assertTrue(dd.arrow:IsShown(), "the panel is a window: the Scope toggle leaves it skinned")
-    assertTrue(dd.arrow.__texture:find("chevron-down", 1, true) ~= nil)
+    assertEqual(dd.arrow.__texture, ARROW_ART)
 end)
 
 test("skin: without the library the dropdowns are the client's template and its art", function()
@@ -451,6 +457,25 @@ test("skin: the level and copy boxes wear the input role, like the Age box, in e
         local lr, lg, lb = Skin:Color(OWNER, "text.body")
         sameColor(f.copyLabel.__textColor, lr, lg, lb, def.key .. ": the copy label")
     end
+end)
+
+test("skin: a skin with no input.text gives the boxes text.body", function()
+    -- text.body is faked too, because Ka0s Default's two are the same gray.
+    -- red under: dimText without its text.body arm.
+    local NS = setup()
+    local f = NS.Panel.frame
+    NS.Filters.Get().smartKeyLevel = false
+    NS.Filters.Get().keyTargeting = true
+    local real = NS.SkinColor
+    NS.SkinColor = function(name)
+        if name == "input.text" then return nil end
+        if name == "text.body" then return 0.1, 0.2, 0.3 end
+        return real(name)
+    end
+    NS.Panel.Refresh()
+    NS.SkinColor = real
+    sameColor(f.levelBox.__textColor, 0.1, 0.2, 0.3, "the level box")
+    sameColor(f.rangeBox.__textColor, 0.1, 0.2, 0.3, "the copy box")
 end)
 
 test("skin: the title follows title.align on a switch", function()

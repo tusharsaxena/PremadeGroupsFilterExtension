@@ -403,7 +403,7 @@ Total.
 - skin seam: each host-copy skin token is the live library's Ka0s Default value
 - skin seam: the descriptor reaches LibSharedMedia, so the panel preloads the faces it previews
 
-### test_skin.lua (22)
+### test_skin.lua (23)
 
 - skin: under Ka0s Default the one panel is painted through the facade, every widget and label
 - skin: the colors the panel writes under Ka0s Default are its exact pixels
@@ -424,6 +424,7 @@ Total.
 - skin: while EllesmereUI paints the panel its own arrow is the only one
 - skin: a tooltip's name and body keep Ka0s Default's pixels and take the roles in every other skin
 - skin: the level and copy boxes wear the input role, like the Age box, in every skin
+- skin: a skin with no input.text gives the boxes text.body
 - skin: the title follows title.align on a switch
 - skin: a pick while stood down builds nothing; the stand-up shows the same panel in the new skin
 - skin: modules/Panel.lua types no color: no literal SetTextColor, tooltip color or markup
@@ -603,7 +604,7 @@ Total.
 | test_layers.lua | 8 |
 | test_settings_layout.lua | 13 |
 | test_skinsetup.lua | 21 |
-| test_skin.lua | 22 |
+| test_skin.lua | 23 |
 | test_skin_picker.lua | 16 |
 | test_skin_eui.lua | 16 |
 | test_skin_outline.lua | 10 |
@@ -618,4 +619,4 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | Skipped | 1 |
-| **Total** | **468** |
+| **Total** | **469** |

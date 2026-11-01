@@ -161,14 +161,18 @@ test("panel: every checkbox has a tooltip, and its label hovers and clicks as th
 end)
 
 test("panel: the Presets dropdown lists the presets, picks one, and an empty list picks nothing", function()
-    -- red under: rows built once at build (a preset saved later never shows), or the empty row
-    -- handed to Panel.SelectPreset.
+    -- red under: rows built once at build (a preset saved later never shows), the empty row handed
+    -- to Panel.SelectPreset, or rows left past the list's end (a deleted preset stays as a ghost).
     local NS = T.enableAddon{}
     local f = NS.Panel.Create(); NS.Panel.Refresh()
     local dd = f.presetDropdown
     assertEqual(ddText(dd), NS.L.PRESET_NONE)
     assertEqual(#dd._options, 1); assertEqual(dd._options[1].label, NS.L.PRESET_EMPTY)
+    local picked, select = 0, NS.Panel.SelectPreset
+    NS.Panel.SelectPreset = function() picked = picked + 1 end
     dd:SetValue(dd._options[1].value, dd._options[1].label); dd.onSelect(dd._options[1].value)
+    NS.Panel.SelectPreset = select
+    assertEqual(picked, 0, "the empty row selects nothing")
     assertEqual(ddText(dd), NS.L.PRESET_NONE, "the empty row picks nothing")
     NS.Presets.Save("Alpha"); NS.Presets.Save("Beta"); NS.Panel.Refresh()
     local names = {}
@@ -177,6 +181,9 @@ test("panel: the Presets dropdown lists the presets, picks one, and an empty lis
     dd:SetValue("Beta", "Beta"); dd.onSelect("Beta")
     assertEqual(NS.Presets.GetSelected(), "Beta")
     assertEqual(ddText(dd), "Beta")
+    NS.Presets.Delete("Beta"); NS.Panel.Refresh()
+    assertEqual(#dd._options, 1, "no ghost row for the deleted preset")
+    assertEqual(dd._options[1].label, "Alpha")
 end)
 
 test("panel: the shared menu closes when the panel hides or collapses", function()
