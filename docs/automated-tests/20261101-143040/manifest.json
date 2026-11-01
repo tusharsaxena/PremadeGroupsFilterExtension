@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "addon": "PremadeGroupsFilterExtension",
+  "addonVersion": "1.0.0",
+  "run": "20261101-143040",
+  "startedAt": "2026-11-01T14:30:40+05:30",
+  "durationMs": 23745,
+  "label": "FS-PG full skinning, LibKa0s v1.85.0",
+  "release": null,
+  "git": { "sha": "e5ba7dd0ee803bbf9be22be8508774b79227162e", "branch": "feat/2026-11-01-full-skinning", "dirty": false },
+  "host": { "lua": "Lua 5.1.5  Copyright (C) 1994-2012 Lua.org, PUC-Rio", "luacheck": "Luacheck: 1.2.0", "lizard": "1.24.0", "timingSource": "date +%s%3N" },
+  "suites": {
+    "lint": { "status": "pass", "durationMs": 4994, "warnings": 0, "errors": 0, "files": 70, "gating": true, "gates": { "commit": true, "release": true } },
+    "tests": { "status": "pass", "durationMs": 12379, "passed": 468, "failed": 0, "skipped": 1, "total": 469, "gating": true, "gates": { "commit": true, "release": true } },
+    "perf": { "status": "pass", "durationMs": 983, "scenarios": 6, "gating": false, "gates": { "commit": false, "release": true } },
+    "complexity": { "status": "pass", "durationMs": 2926, "warnings": 0, "maxCcn": 14, "nloc": 9941, "functions": 1465, "avgCcn": 2.0, "avgNloc": 5.8, "avgToken": 52.2, "warnFunRatio": 0.00, "warnNlocRatio": 0.00, "bandFiles": 1, "overCapFiles": 0, "blindFiles": 0, "crashedFiles": 0, "gating": false, "gates": { "commit": false, "release": true } }
+  },
+  "verdict": "green"
+}

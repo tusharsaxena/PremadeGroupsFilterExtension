@@ -1,0 +1,54 @@
+{
+  "addon": "PremadeGroupsFilterExtension",
+  "buckets": {
+    "applicantRowPaint": {
+      "apiPerIter": 5.2000,
+      "bytesPerIter": 160.3770,
+      "calls": 1000,
+      "maxMs": 0.0028,
+      "totalMs": 2.8330
+    },
+    "combatEvents": {
+      "apiPerIter": 143,
+      "bytesPerIter": 28129.0710,
+      "calls": 1000,
+      "maxMs": 0.2355,
+      "totalMs": 235.5290
+    },
+    "envNoPR": {
+      "apiPerIter": 1.2000,
+      "bytesPerIter": 80.0950,
+      "calls": 1000,
+      "maxMs": 0.0038,
+      "totalMs": 3.8430
+    },
+    "envStoodDown": {
+      "apiPerIter": 0,
+      "bytesPerIter": 0,
+      "calls": 1000,
+      "maxMs": 0.0007,
+      "totalMs": 0.7420
+    },
+    "envWithPR": {
+      "apiPerIter": 0,
+      "bytesPerIter": 0,
+      "calls": 1000,
+      "maxMs": 0.0014,
+      "totalMs": 1.4090
+    },
+    "searchRowPaint": {
+      "apiPerIter": 5.2000,
+      "bytesPerIter": 160.5610,
+      "calls": 1000,
+      "maxMs": 0.0037,
+      "totalMs": 3.7350
+    }
+  },
+  "failures": [],
+  "interface": 0,
+  "label": "FS-PG full skinning, LibKa0s v1.85.0",
+  "schema": 1,
+  "source": "offline",
+  "timestamp": 1793523661,
+  "version": "1.0.0"
+}
