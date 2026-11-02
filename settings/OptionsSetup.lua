@@ -72,6 +72,7 @@ if not lib then
     H.HideSkinPicker       = function() end
     -- LibKa0s v1.82.0 (OptionsSkinPicker 3): `/pgfe skin`'s act; without the library nothing opens.
     H.SkinVerb             = function() return nil, "absent" end
+    H.SkinNotice = function() return nil, "unavailable" end
     -- A label's font (LibKa0s v1.85.0, OptionsWidgets minor 43), owed by every Options stub. No
     -- library, no widget to set it on.
     H.LabelFont            = function() end

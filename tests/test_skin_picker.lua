@@ -86,6 +86,7 @@ end)
 test("skin picker: a profile that has seen it shows nothing at login", function()
     local NS, _, m = T.bootAddon()
     set(NS, PATH, true)
+    NS.db.global.skinNotice = 99   -- the one-time notice (SG-L3) is the other route to a picker
     local calls = spy(NS)
     T.settleSkinLogin(m)
     NS.addon:OnEnable()
