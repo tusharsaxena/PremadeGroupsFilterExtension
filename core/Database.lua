@@ -7,7 +7,7 @@ local _, NS = ...
 -- default at logout and would backfill it onto a legacy account.
 
 -- The runner's target: the highest step below.
-NS.SCHEMA_VERSION = 2
+NS.SCHEMA_VERSION = 3
 
 --- True when EllesmereUI is here to skin with: the library provider's `eui` condition
 --- (EllesmereUI.RegisterSkin and its Blizzard Skin child loaded), read at OnInitialize, which
@@ -45,10 +45,37 @@ local function migrateEUISkin(db)
     end
 end
 
+-- 2 -> 3 (R3-FRIZ): LibKa0s v1.85.0 deleted Ka0s Friz Quadrata TT (R3-L7) and WoW Default draws Ka0s
+-- Ubuntu in its place (R3-L6). Every stored string naming the deleted face, at any depth (the skin's
+-- Font override), moves to its successor in every profile. Blizzard's own "Friz Quadrata TT" stays.
+local RETIRED_FONTS = { ["Ka0s Friz Quadrata TT"] = "Ka0s Ubuntu" }
+
+--- Moves every string naming a retired face, at any depth of `t`, to its successor. Answers how many moved.
+function NS.RetireFonts(t)
+    local n = 0
+    for k, v in pairs(t) do
+        if type(v) == "table" then
+            n = n + NS.RetireFonts(v)
+        elseif RETIRED_FONTS[v] then
+            t[k], n = RETIRED_FONTS[v], n + 1
+        end
+    end
+    return n
+end
+
+local function retireFonts(db)
+    local profiles = db and db.sv and db.sv.profiles
+    if type(profiles) ~= "table" then return end
+    for _, p in pairs(profiles) do
+        if type(p) == "table" then NS.RetireFonts(p) end
+    end
+end
+
 -- Each step is idempotent against a fresh default database.
 NS.MIGRATIONS = {
     [1] = function(_db) end,  -- 0 -> 1: the stamp itself; nothing to reshape
     [2] = migrateEUISkin,     -- 1 -> 2: profile.euiSkin -> profile.skin.source (PG-06)
+    [3] = retireFonts,        -- 2 -> 3: a stored Ka0s Friz Quadrata TT -> Ka0s Ubuntu (R3-FRIZ)
 }
 
 function NS:RunMigrations()

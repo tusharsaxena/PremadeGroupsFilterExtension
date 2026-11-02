@@ -406,6 +406,10 @@ Total.
 - skin seam: each host-copy skin token is the live library's Ka0s Default value
 - skin seam: the descriptor reaches LibSharedMedia, so the panel preloads the faces it previews
 
+### test_launcher_skin_entry.lua (1)
+
+- launcher descriptor passes openSkinPicker, which runs the skin verb
+
 ### test_skin.lua (23)
 
 - skin: under Ka0s Default the one panel is painted through the facade, every widget and label
@@ -451,7 +455,7 @@ Total.
 - skin tools: a host release is chained onto the skin's restore, both run
 - skin tools: the debug console is painted for this owner
 
-### test_skin_eui.lua (16)
+### test_skin_eui.lua (17)
 
 - eui migration: with EllesmereUI, every profile but an explicit false moves to skin.source eui
 - eui migration: without EllesmereUI every profile keeps the Ka0s source
@@ -469,6 +473,7 @@ Total.
 - eui: the min/max button is EllesmereUI's box with the chevron, never a worded PageButton
 - eui diagnostics: the skin section names the key the library draws by, in every state
 - eui diagnostics: the skin section reports the choice and the library's EllesmereUI gate
+- friz migration: a stored Ka0s Friz Quadrata TT moves to Ka0s Ubuntu in every profile, Blizzard's Friz kept
 
 ### test_skin_outline.lua (10)
 
@@ -657,9 +662,10 @@ Total.
 | test_layers.lua | 8 |
 | test_settings_layout.lua | 13 |
 | test_skinsetup.lua | 21 |
+| test_launcher_skin_entry.lua | 1 |
 | test_skin.lua | 23 |
 | test_skin_picker.lua | 16 |
-| test_skin_eui.lua | 16 |
+| test_skin_eui.lua | 17 |
 | test_skin_outline.lua | 10 |
 | test_skin_verb.lua | 6 |
 | test_reset.lua | 5 |
@@ -674,4 +680,4 @@ Total.
 | test_skin_values.lua | 3 |
 | test_skin_switch.lua | 41 |
 | Skipped | 1 |
-| **Total** | **516** |
+| **Total** | **518** |

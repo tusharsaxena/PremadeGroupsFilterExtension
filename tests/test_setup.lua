@@ -46,7 +46,7 @@ end)
 test("setup: migrations stamp the schema version", function()
     local NS = T.bootAddon()
     assertEqual(NS.addon.db.global.schemaVersion, NS.SCHEMA_VERSION)
-    assertEqual(NS.SCHEMA_VERSION, 2, "2: profile.euiSkin carried to skin.source (PG-06)")
+    assertEqual(NS.SCHEMA_VERSION, 3, "3: a stored Ka0s Friz Quadrata TT moved to Ka0s Ubuntu (R3-FRIZ)")
 end)
 
 test("setup: the Master controls rows are in the schema, frameless", function()

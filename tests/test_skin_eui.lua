@@ -39,7 +39,7 @@ test("eui migration: with EllesmereUI, every profile but an explicit false moves
     local NS, _, profiles = migrated({
         Default = { panelCollapsed = true }, On = { euiSkin = true }, Off = { euiSkin = false },
     })
-    assertEqual(NS.addon.db.global.schemaVersion, 2)
+    assertEqual(NS.addon.db.global.schemaVersion, 3)
     assertEqual(source(profiles.Default), "eui", "no key: the old default, on")
     assertEqual(source(profiles.On), "eui")
     assertEqual(source(profiles.Off), nil, "an explicit false keeps the Ka0s source")
@@ -246,4 +246,19 @@ test("eui diagnostics: the skin section reports the choice and the library's Ell
     assertTrue(text:find("skin applied=eui:ka0s stored=eui:ka0s", 1, true) ~= nil, text)
     assertTrue(text:find("EllesmereUI conditions eui=true, master=true, own=true, facade=true", 1, true) ~= nil, text)
     assertTrue(text:find("EllesmereUI ok=true painted=true refused=none", 1, true) ~= nil, text)
+end)
+
+-- R3-FRIZ: LibKa0s v1.85.0 deleted Ka0s Friz Quadrata TT (R3-L7); v3 moves a stored pick of it to Ka0s
+-- Ubuntu in every profile. red under: no v3 step, one that walks the active profile only, or one that
+-- rewrites Blizzard's own "Friz Quadrata TT".
+test("friz migration: a stored Ka0s Friz Quadrata TT moves to Ka0s Ubuntu in every profile, Blizzard's Friz kept", function()
+    local NS, _, profiles = migrated({
+        Default = { skin = { font = "Ka0s Friz Quadrata TT" } }, Alt = { skin = { font = "Ka0s Friz Quadrata TT" } },
+        Plain = { skin = { font = "Friz Quadrata TT" } },
+    }, false)
+    assertEqual(NS.addon.db.global.schemaVersion, 3)
+    assertEqual(profiles.Default.skin.font, "Ka0s Ubuntu", "the active profile's override")
+    assertEqual(profiles.Alt.skin.font, "Ka0s Ubuntu", "another profile's override")
+    assertEqual(profiles.Plain.skin.font, "Friz Quadrata TT", "Blizzard's own Friz stays")
+    assertEqual(NS.RetireFonts(profiles.Alt), 0, "a second pass moves nothing")
 end)

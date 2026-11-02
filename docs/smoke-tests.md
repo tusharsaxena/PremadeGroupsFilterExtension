@@ -24,6 +24,7 @@ takes the next free number in its theme and a retired number is never reused.
 | SKIN-1..10 | EllesmereUI skin (retired) | The record of the addon's own EllesmereUI bridge, retired by the skinning rollout's PG-06 (2026-10-29); EllesmereUI is now the library's `eui` skin source |
 | SKIN-11..33 | Skins | The skinning rollout (2026-10-29) and its library follow-ups (2026-10-30): Ka0s Default's look, the Skin tab, the first-run picker, the attached panel, the settings pages and the debug console under every skin, fonts, profiles, the copy, stand-down, the `euiSkin` migration, EllesmereUI on and off, diagnostics, the launcher, a degraded install, the panel under the Scope switches |
 | SKIN-43..47 | Skins | The full skinning run (2026-11-01, LibKa0s v1.85.0): the Ka0s menu on the panel's dropdowns, the tooltip and input roles, the marks, the unknown realm's tag |
+| SKIN-48 | Skins | The owner's third smoke round (R3-FRIZ): a stored pick of the deleted Ka0s Friz Quadrata TT lands on Ka0s Ubuntu |
 | SKIN-34..42 | Skins | The skin fonts and feedback run (2026-10-30, LibKa0s v1.82.0): the Font outline setting, the panel's text and the Font outline's default, the new faces, the attached panel's width parity across skins, the collapse button's chevron and place; the findings remediation's re-anchor check, the panel's flat dropdowns and the one media picker |
 
 ## Before you start
@@ -603,6 +604,11 @@ EllesmereUI read took a shorter path; nothing should look different.
   `opts.stock` and keeps no `dd.arrow` of its own for the stock dropdown template; the library's flat
   dropdown is the only paint. Repeat SKIN-41 on Ka0s Default and Ember → the same flat box and one triangle.
   Fail: a gold button, two arrows, or a Lua error. Result:
+- **SKIN-48. A stored pick of the deleted Friz lands on Ka0s Ubuntu (R3-FRIZ, schema 3).** Before updating,
+  set the Skin tab's **Font** to *Ka0s Friz Quadrata TT* in two profiles and log out. Update and fully
+  restart the client (a new font file) → the filter panel draws in Ubuntu and the Font row reads *Ka0s
+  Ubuntu*; switch to the other profile → the same. Fail: the game's default face, or the row still naming
+  Ka0s Friz Quadrata TT. Result:
 
 ## Frame layering
 
@@ -678,3 +684,5 @@ and SKIN-34 to SKIN-39, each recorded on its `Result:` line.
 Owed from the findings remediation (`docs/2026-10-31-FINDINGS_REMEDIATION/`): SKIN-40, SKIN-41, SKIN-42, PANEL-5.
 
 Owed from the full skinning run (Ka0sAddonsCommonTasks `docs/2026-11-01-FULL_SKINNING/`, LibKa0s v1.85.0): SKIN-43, SKIN-44, SKIN-45, SKIN-46, SKIN-47, and APPLY-17, APPLY-19 and SKIN-17, whose expected results changed with it.
+
+Owed from the owner's third smoke round (Ka0sAddonsCommonTasks `docs/2026-11-02-SMOKE_ROUND3/`, R3-FRIZ): SKIN-48.
