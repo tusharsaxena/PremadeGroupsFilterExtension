@@ -216,7 +216,7 @@ substitute its numbers.
   open, *Any* unticks, the button reads e.g. `OCE, CHI`; click *Any* → the menu stays open and every
   region unticks, the button reads `Any`. Tick every region one by one → on the last one the
   regions untick, *Any* is ticked and the button reads `Any` (never `5 selected`). Same for
-  Playstyle; three long names read `3 selected`. Result:
+  Playstyle; three long names read `3 selected`. Result: Passed (owner, 2026-11-02)
 - **APPLY-18. Playstyle.** Playstyle on with Relaxed ticked, Apply → the block holds `( relaxed )`;
   hover a few listings → each is listed as Relaxed. Result: pass (owner-marked 2026-10-10)
 - **APPLY-19. Tooltips.** Hover each checkbox row, on the box and on its label → a tooltip names
@@ -227,7 +227,7 @@ substitute its numbers.
   and Composition menus and hover each row, *Any* included → the row names the entry and says what it
   does (OCE: Oceanic realms, in the Sydney data center); the button's own tooltip no longer lists the
   entries. No tooltip sticks after the pointer leaves or the menu closes.
-  Result:
+  Result: Passed (owner, 2026-11-02)
 - **APPLY-20. Smart key level.** On a character that never used the addon, *Smart* is ticked and
   the panel matches the owner's defaults: Toggle, Untimed dungeons, Smart, Server regions, Playstyle and
   Composition ticked (all three dropdowns read Any); Experienced leader and Max group age (15)
@@ -404,7 +404,7 @@ Default, and a player who wants the client's look picks **WoW Default** (SKIN-11
   dungeons in the skin's accent and the others gray; PGF minimized or unsupported shows the gray
   note. Hover any option → the tooltip's title and body take the skin's tooltip colors and the
   tooltip frame is Blizzard's. Open each dropdown → the menu wears the skin (SKIN-43). *Save as* and
-  *Delete* → the popups are stock and draw over the panel (LAYER-2). Result:
+  *Delete* → the popups are stock and draw over the panel (LAYER-2). Result: Passed (owner, 2026-11-02)
 - **SKIN-18. The settings pages under each skin (PG-01, PG-04).** Untick **Ignore settings panel**,
   then walk the landing page, every General tab (Region tags: its headings, preview lines, color
   pickers in their rows and the reset button; Filters: the switch and its lines) and the Profiles
@@ -585,25 +585,25 @@ EllesmereUI read took a shorter path; nothing should look different.
   painting the panel → one arrow on each dropdown, and the menu in EllesmereUI's derived colors. Fail:
   a Blizzard menu, a menu left floating, a wrapped button label, a selection that does not reach the
   filters, or a Lua error.
-  Result:
+  Result: Passed (owner, 2026-11-02)
 - **SKIN-44. The tooltip and input roles (cause L8).** Under Ka0s Default, hover any option → the
   name is white over a gold body, as before. Under Ember → name and body change with the skin. On
   Ka0s Default the level box with Smart off, the copy box and the *Copy into search box* label read
   the same 0.9 gray as the Age box and the other labels (they were white). Under Ember the same three
-  match their neighbors. Fail: a box brighter than the Age box beside it, or a Lua error. Result:
+  match their neighbors. Fail: a box brighter than the Age box beside it, or a Lua error. Result: Passed (owner, 2026-11-02)
 - **SKIN-45. The library's marks and the degraded install (cause L6, v1.85.0's icons line).** Scope
   cleared, walk the settings pages → the marks the library draws beside skinned controls show, none
   blank, under every skin. The minimap button's tooltip words follow the skin (L1). Fail: a blank
-  square where a mark should be, which is how a name missing from `LibKa0s icons:` shows. Result:
+  square where a mark should be, which is how a name missing from `LibKa0s icons:` shows. Result: Passed (owner, 2026-11-02)
 - **SKIN-46. The unknown realm's tag (the typed-value gate).** On a listing whose leader's realm the map
   does not know, the row leads with a gray `?`. Under Ka0s Default it is the same gray as before; under
   Ember the next repaint of the list draws it in the skin's disabled color. Fail: a `?` that stays
-  `9d9d9d` under another skin, or a Lua error. Result:
+  `9d9d9d` under another skin, or a Lua error. Result: Passed (owner, 2026-11-02)
 
 - **SKIN-47. The library paints the panel's dropdowns alone (SF-PG-1, LibKa0s #71).** The addon passes no
   `opts.stock` and keeps no `dd.arrow` of its own for the stock dropdown template; the library's flat
   dropdown is the only paint. Repeat SKIN-41 on Ka0s Default and Ember → the same flat box and one triangle.
-  Fail: a gold button, two arrows, or a Lua error. Result:
+  Fail: a gold button, two arrows, or a Lua error. Result: Passed (owner, 2026-11-02)
 - **SKIN-48. A stored pick of the deleted Friz lands on Ka0s Ubuntu (R3-FRIZ, schema 3).** Before updating,
   set the Skin tab's **Font** to *Ka0s Friz Quadrata TT* in two profiles and log out. Update and fully
   restart the client (a new font file) → the filter panel draws in Ubuntu and the Font row reads *Ka0s
@@ -686,3 +686,5 @@ Owed from the findings remediation (`docs/2026-10-31-FINDINGS_REMEDIATION/`): SK
 Owed from the full skinning run (Ka0sAddonsCommonTasks `docs/2026-11-01-FULL_SKINNING/`, LibKa0s v1.85.0): SKIN-43, SKIN-44, SKIN-45, SKIN-46, SKIN-47, and APPLY-17, APPLY-19 and SKIN-17, whose expected results changed with it.
 
 Owed from the owner's third smoke round (Ka0sAddonsCommonTasks `docs/2026-11-02-SMOKE_ROUND3/`, R3-FRIZ): SKIN-48.
+
+On 2026-11-02 the owner reported that every check on the smoke lists of the full skinning run and its smoke feedback batch (Ka0sAddonsCommonTasks `docs/2026-11-01-FULL_SKINNING/` and `docs/2026-11-01-SMOKE_FEEDBACK/`) passed, apart from DpsRace's clock font, the skinned look of the AceGUI Dropdown and the Ka0sMedia_Font and Ka0sMedia_Statusbar pickers, FadeNineSlice and IconBorder (`docs/2026-11-02-SMOKE_ROUND3/`, R3-SMOKE). Passed, recorded on each `Result:` line as `Passed (owner, 2026-11-02)`: APPLY-17, APPLY-19, SKIN-17, SKIN-43, SKIN-44, SKIN-45, SKIN-46 and SKIN-47.
