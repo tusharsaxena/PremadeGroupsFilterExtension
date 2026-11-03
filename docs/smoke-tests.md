@@ -618,10 +618,11 @@ EllesmereUI read took a shorter path; nothing should look different.
   press outside it, a Font press that needs a second click, or a Lua error. Result:
 
 - **SKIN-50. The title and the collapse arrow share the band's middle (R5-PG1, images 42 and 43).** Open PGF
-  on Dungeons. Under Ka0s Default, then Ember, WoW Midnight, Glass and WoW Default → the title's letters
+  on Dungeons. Under each of the nine skins in turn, Ember and High Contrast first (their title faces are
+  the furthest off their own line box, so they show a face-level offset if there is one), then Ka0s
+  Default, Obsidian, Azeroth, Glass, WoW Default, WoW Midnight and WoW Forever → the title's letters
   (ignore the descenders of "p" and "G") and the arrow's chevron are centered on the same line, the
-  middle of the header band, within 1 px. Ember and High Contrast first: their title faces are the
-  furthest off their own line box, so they show a face-level offset if there is one. Collapse and
+  middle of the header band, within 1 px. Collapse and
   expand → the same. With EllesmereUI painting the panel → both on the middle of EllesmereUI's bar.
   `/dump PremadeGroupsFilterExtensionPanel.TitleContainer.TitleText:GetPoint(1)` → `CENTER`, a frame, `CENTER`,
   0, 0. Fail: the title visibly above or below the arrow in any skin, or a Lua error. Result:

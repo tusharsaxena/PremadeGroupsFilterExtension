@@ -423,7 +423,8 @@ if not Skin then
         -- BarGloss draws nothing: no skin, no gloss. HoverArt leaves the client's art.
         "HudTextColor", "HudLabelColor", "BarFillColor", "HudShadow", "BarGloss", "HoverArt",
         -- LibKa0s v1.85.0 round 5 (Skin 16, SkinPaintExtras 17): Band answers nil, there being no
-        -- Shell band to hold, and Header places nothing, so the template's own anchors stand.
+        -- Shell band to hold, and Header places nothing: modules/Panel.lua's
+        -- centerTitle and placeHeader put the title and the arrow on Ka0s Default's band instead.
         "Band", "Header",
     }) do S[name] = noop end
 
