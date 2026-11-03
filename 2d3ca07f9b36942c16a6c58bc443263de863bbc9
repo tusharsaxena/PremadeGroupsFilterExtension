@@ -1,0 +1,6 @@
+R5-PG2 independent review (2026-11-03): PASS, no defects.
+- Cause confirmed: LibKa0s P.layBand/shellBands lay the band inset px down (flat win.borderSize, else 1; EUI 0) at title.height, so a collapsed height of h alone left the band inset px below the frame. Owner image pixels agree (61: 2 rows of the band gradient continue past the 3-row gold bottom edge; 59: 1-2 rows past Ka0s Default's edge).
+- Fix collapsedHeight = inset + h + inset, read live off S.Band; expandedHeight, headerClickHeight and the body offset unchanged; no bottomBar on the panel's Shell, so nothing else sits at the bottom.
+- Red without the fix (scratch copy, HEAD~1 Panel.lua): the all-skins test and 3 test_panel cases fail. With the height and band-bottom asserts disabled, the texture walk alone still fails (a texture reaches 31px down a 30px panel), so it is a real paint check, not only a height pin.
+- Gate fresh: 520 passed, 0 failed, 1 skipped; luacheck 0/0 in 72 files; Panel.lua 1192, test_skin.lua 659 lines; CRLF kept.
+- SKIN-51 blank Result, steps and the 32px Ka0s Default dump correct; added to the round 5 owed line.
