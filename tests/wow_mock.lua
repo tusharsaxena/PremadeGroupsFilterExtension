@@ -346,6 +346,20 @@ local function build()
                 f.TitleContainer = decorate(M.__stubFrame()) -- the title text's container
                 f.TitleContainer.TitleText = decorate(M.__stubFrame())
                 f.TitleContainer.TitleText.__objType = "FontString"
+                -- The template's own title anchors (PortraitFrameTemplate, Blizzard
+                -- SharedUIPanelTemplates.xml): the container 58px in from the left (the portrait's
+                -- room) and 24px from the right, 1px down and 20px high; the text TOP 5px down
+                -- inside it, spanning it. Seeded so a host that never re-anchors the text keeps a TOP
+                -- anchor here, as it does in the client (R5-PG1, images 42 and 43). From the
+                -- template's XML as the investigation read it (no client source is in the repo);
+                -- the owner's screenshots, title about 4px high, match it.
+                local tc = f.TitleContainer
+                tc:SetPoint("TOPLEFT", f, "TOPLEFT", 58, -1)
+                tc:SetPoint("TOPRIGHT", f, "TOPRIGHT", -24, -1)
+                tc:SetHeight(20)
+                tc.TitleText:SetPoint("TOP", tc, "TOP", 0, -5)
+                tc.TitleText:SetPoint("LEFT", tc, "LEFT")
+                tc.TitleText:SetPoint("RIGHT", tc, "RIGHT")
             end
             -- MaximizeMinimizeButtonFrameTemplate's two arrow buttons (parentKeys in its XML).
             if template == "MaximizeMinimizeButtonFrameTemplate" then

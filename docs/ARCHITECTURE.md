@@ -299,8 +299,10 @@ library's:
   `tests/test_skin_eui.lua`).
 - **The paint.** Once EllesmereUI paints the owner (`NS.SkinEUIPainted()`), the panel's recorded
   primitives go to EllesmereUI's facade. The panel keeps the host geometry: 24px check buttons, flush
-  under the dialog, and a collapsed height of EllesmereUI's 25px shell bar (`EUI_SHELL_HEADER_H`,
-  `modules/Panel.lua`), with the min/max button centered on that bar. The min/max arrows are the
+  under the dialog, and a collapsed height of EllesmereUI's 25px shell bar, with the title and the
+  min/max button centered on that bar. The bar's geometry is the library's: `S.Band(f)` lays the band
+  frame flush and 25px high under that source, `modules/Panel.lua`'s `bandRect` reads it back, and
+  `S.Header` anchors the title and the button to it at y 0 (R5-PG1, LibKa0s v1.85.0 round 5). The min/max arrows are the
   skin's `Button` box under the addon's own chevrons, never `PageButton`: EllesmereUI's facade takes
   `"<"` or `">"` only and drew `"up"` / `"down"` as the words. Before EllesmereUI paints, the `eui` source draws the stored skin (the
   library's live fallback), Ka0s Default unless the player chose another. The diagnostics' skin

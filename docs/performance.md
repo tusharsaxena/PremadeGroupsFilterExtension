@@ -29,7 +29,8 @@ stays reserved and unregistered) and no suspend contract. `libs/LibKa0s/` stays 
   PGF's own re-filter. It is a player action, and it refuses in combat.
 - **Panel:** `Panel.Refresh` runs on show and on a widget change. The frame is built once, lazily.
   A refresh allocates about 7.6 KB in `tests/perf.lua`, most of it the readout's strings. It
-  re-anchors the collapse button only when the skin's title band moved, and only an owner on the
+  re-anchors the header's click band (and, without the library, the collapse button) only when the
+  skin's title band moved; with the library, `S.Header` places the button and the title on a switch, and only an owner on the
   `eui` source, or waiting on a reload, pays for `GetEUIStatus`'s tables (about 1.2 KB).
 
 ## The combat-path sweep (criterion (a))

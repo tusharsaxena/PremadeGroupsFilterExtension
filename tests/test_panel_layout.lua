@@ -568,6 +568,35 @@ test("panel: the title is centered on the whole header", function()
     assertEqual(x1, -x2, "the same inset on both sides"); assertEqual(y1, y2)
 end)
 
+-- R5-PG1 (Ka0sAddonsCommonTasks docs/2026-11-03-SMOKE_ROUND5, images 42 and 43): the template anchors
+-- TitleText TOP 5px down its 20px container (tests/wow_mock.lua seeds it), which sat the title about
+-- 4px above the arrow. Without the library there is no band frame for S.Header to place it on, so the
+-- host's own header is Ka0s Default's band: the container 1px down and 30px high, the title LEFT and
+-- RIGHT on it (its middle), and the arrow RIGHT at the same middle. tests/test_skin.lua pins the
+-- library's placement in every skin.
+test("panel: without the library the title and the arrow share Ka0s Default's band middle", function()
+    -- red under: centerTitle moving only the container (the title keeps the template's TOP), or the
+    -- arrow left unanchored when S.Header is the degraded no-op.
+    local NS = T.enableAddon{ skip = T.loadAddon.libFiles }
+    local f = NS.Panel.Create(); NS.Panel.Refresh()
+    assertEqual(f.band, nil, "no band frame without the library")
+    local tc, title = f.TitleContainer, f.TitleContainer.TitleText
+    assertEqual(tc.__height, 30, "the container is the band's height")
+    local _, _, _, _, ty = tc:GetPoint(1)
+    assertEqual(ty, -1, "1px down, the band's top")
+    assertEqual(#title.__points, 2, "LEFT and RIGHT, no TOP")
+    for i = 1, 2 do
+        local p, rel, rp, _, y = title:GetPoint(i)
+        assertTrue(p == "LEFT" or p == "RIGHT", "point " .. tostring(p))
+        assertTrue(rel == tc); assertEqual(rp, p); assertEqual(y, 0)
+    end
+    local mm = f.MaximizeMinimizeFrame
+    assertEqual(#mm.__points, 1)
+    local p, rel, rp, x, y = mm:GetPoint(1)
+    assertEqual(p, "RIGHT"); assertTrue(rel == f); assertEqual(rp, "TOPRIGHT")
+    assertEqual(x, -(1 + 4)); assertEqual(y, -(1 + 30 / 2), "the band's middle, the title's too")
+end)
+
 -- Owner request: with "Untimed dungeons at key level" off, the copy box and its label are dimmed and
 -- the box disabled; ticked again, both come back.
 test("panel: the copy box and its label dim, disable and empty while key targeting is off", function()

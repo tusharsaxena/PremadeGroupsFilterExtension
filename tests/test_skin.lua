@@ -205,8 +205,8 @@ end)
 -- the skin's title band (the band Shell draws: `win.borderSize` in from a flat edge, else 1, and
 -- `title.height` tall), 4px in from the right; the header's click band covers the band up to it.
 test("skin: the min/max button is one size and centered on the title band in every skin", function()
-    -- red under: the CloseButton anchor (no TOPRIGHT point on the frame, no size), or a fixed offset
-    -- that ignores the skin's edge and band height.
+    -- red under: the CloseButton anchor (no size), or a click band that ignores the skin's edge and
+    -- band height.
     local NS, _, Skin = setup()
     local f = NS.Panel.frame
     local mm = f.MaximizeMinimizeFrame
@@ -225,11 +225,7 @@ test("skin: the min/max button is one size and centered on the title band in eve
             local p, rel = btn:GetPoint(1)
             assertEqual(p, "CENTER"); assertTrue(rel == mm, def.key .. ": the button on its frame")
         end
-        assertEqual(#mm.__points, 1, def.key .. ": one anchor")
-        local p, rel, rp, x, y = mm:GetPoint(1)
-        assertEqual(p, "TOPRIGHT"); assertTrue(rel == f, def.key .. ": on the panel"); assertEqual(rp, "TOPRIGHT")
-        assertEqual(x, -(inset + 4), def.key .. ": x")
-        assertEqual(y, -(inset + (h - 20) / 2), def.key .. ": y, centered on the band")
+        -- Where it sits on the band (RIGHT 4px in, y 0) is the R5-PG1 case below.
         local _, _, _, _, bodyTop = f.body:GetPoint(1)
         assertEqual(f.headerClick.__height, math.min(inset + h, -bodyTop),
             def.key .. ": the click band covers the title band")
@@ -240,8 +236,59 @@ test("skin: the min/max button is one size and centered on the title band in eve
     assertEqual(n, 9, "every registered skin")
 end)
 
+-- R5-PG1 of Ka0sAddonsCommonTasks docs/2026-11-03-SMOKE_ROUND5 (owner item 5, images 42 and 43): the
+-- title sat about 4px above the arrow. The arrow was centered on the band, but the title kept
+-- PortraitFrameTemplate's own anchor, TOP 5px down a 20px container at y -1, because centerTitle moved
+-- only the container. Both now hang on S.Band(f), the band frame Shell lays (LibKa0s SkinPaintExtras
+-- 17), through S.Header, at y 0: the title by `title.align`, the arrow RIGHT 4px in. A LEFT, CENTER or
+-- RIGHT point at y 0 on the band IS its vertical middle; the glyphs' own baseline is the smoke check.
+local ON_MIDDLE = { LEFT = true, CENTER = true, RIGHT = true }
+
+local function assertOnBand(region, band, what)
+    assertTrue(#region.__points >= 1, what .. ": anchored")
+    for i = 1, #region.__points do
+        local p, rel, rp, _, y = region:GetPoint(i)
+        assertTrue(ON_MIDDLE[p] == true, what .. ": point " .. tostring(p) .. " is LEFT, CENTER or RIGHT, never TOP")
+        assertTrue(rel == band, what .. ": anchored to the band")
+        assertEqual(rp, p, what .. ": to the band's own " .. tostring(p))
+        assertEqual(y, 0, what .. ": at y 0, the band's middle")
+    end
+end
+
+test("skin: the title and the min/max button are centered on the band in every skin", function()
+    -- red under: the template's TOP anchor left on TitleText (centerTitle moving only its container),
+    -- or the arrow placed by the host's own copy of the band's arithmetic instead of on the band.
+    local NS, _, Skin = setup()
+    local f = NS.Panel.frame
+    local title, mm = f.TitleContainer.TitleText, f.MaximizeMinimizeFrame
+    local n = 0
+    for _, def in ipairs(Skin:Skins()) do
+        NS.ApplySkinChoice("ka0s", def.key)
+        n = n + 1
+        local style = Skin:Token(OWNER, "win.borderStyle") or "flat"
+        local inset = style == "flat" and Skin:Token(OWNER, "win.borderSize") or 1
+        local h = Skin:Token(OWNER, "title.height") or 30
+        local band = NS.Skin.Band(f)
+        assertTrue(band ~= nil, def.key .. ": the band frame")
+        local bp, brel, _, bx, by = band:GetPoint(1)
+        assertEqual(bp, "TOPLEFT"); assertTrue(brel == f, def.key .. ": the band on the panel")
+        assertEqual(bx, inset, def.key .. ": the band's inset"); assertEqual(by, -inset, def.key .. ": its top")
+        assertEqual(band:GetHeight(), h, def.key .. ": the band's height")
+        assertOnBand(title, band, def.key .. ": the title")
+        assertEqual(#title.__points, 1, def.key .. ": the title's one anchor")
+        local align = Skin:Token(OWNER, "title.align") or "CENTER"
+        assertEqual((title:GetPoint(1)), align, def.key .. ": the title by title.align")
+        assertEqual(title.__justifyH, align, def.key .. ": and justified to it")
+        assertOnBand(mm, band, def.key .. ": the min/max button")
+        assertEqual(#mm.__points, 1, def.key .. ": the button's one anchor")
+        local mp, _, _, mx = mm:GetPoint(1)
+        assertEqual(mp, "RIGHT"); assertEqual(mx, -4, def.key .. ": 4px in from the band's right end")
+    end
+    assertEqual(n, 9, "every registered skin")
+end)
+
 test("skin: a Refresh re-anchors the min/max button only when the band moved", function()
-    -- red under: placeMinMax's ClearAllPoints and SetPoint running on every layout, which is what
+    -- red under: placeHeader's ClearAllPoints and SetPoint running on every layout, which is what
     -- tests/perf.lua's combatEvents ceiling caught.
     local NS, _, Skin = setup()
     local f = NS.Panel.frame
@@ -479,20 +526,25 @@ test("skin: a skin with no input.text gives the boxes text.body", function()
 end)
 
 test("skin: the title follows title.align on a switch", function()
-    -- Every shipped skin says CENTER, so this skin's answer is faked at the facade.
-    -- red under: S.Text alone, which reads no title.align (L9).
-    local NS = setup()
+    -- Every shipped skin says CENTER, so a skin that aligns LEFT is registered here, as LibKa0s's own
+    -- tests/test_header_band.lua does. Since R5-PG1 the anchor and the justify are S.Header's, which
+    -- reads the library's resolved tokens, so faking the facade's Token no longer reaches them.
+    -- red under: S.Text alone, which reads no title.align (L9), or a title left on the template's TOP.
+    local NS, _, Skin = setup()
     local f = NS.Panel.frame
     local title = f.TitleContainer.TitleText
-    local justified
-    title.SetJustifyH = function(_, a) justified = a end
-    local real = NS.Skin.Token
-    NS.Skin.Token = function(name) if name == "title.align" then return "LEFT" end return real(name) end
-    NS.Panel.Refresh()
-    NS.Skin.Token = real
-    assertEqual(justified, "LEFT")
-    NS.Panel.Refresh()
-    assertEqual(justified, "CENTER", "and back")
+    Skin:RegisterSkin({ key = "titleLeft", label = "Title left", tokens = { ["title.align"] = "LEFT" } })
+    NS.ApplySkinChoice("ka0s", "titleLeft")
+    local band = NS.Skin.Band(f)
+    local p, rel, rp, x, y = title:GetPoint(1)
+    assertEqual(p, "LEFT"); assertTrue(rel == band, "on the band"); assertEqual(rp, "LEFT")
+    assertEqual(x, 24, "the title's inset, clear of the band's left end"); assertEqual(y, 0)
+    assertEqual(title.__justifyH, "LEFT")
+    NS.ApplySkinChoice("ka0s", "ka0s")
+    p, rel, rp, x, y = title:GetPoint(1)
+    assertEqual(p, "CENTER", "and back"); assertTrue(rel == band); assertEqual(rp, "CENTER")
+    assertEqual(x, 0); assertEqual(y, 0)
+    assertEqual(title.__justifyH, "CENTER")
 end)
 
 -- ── stand-down ──────────────────────────────────────────────────────────────────────────────────

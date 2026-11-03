@@ -784,9 +784,6 @@ end
 -- ── layout and collapse ─────────────────────────────────────────────────────────────────────────
 
 -- Collapsed, the panel shows only its title strip: the skin's title band and the arrow.
--- The collapsed height while EllesmereUI paints this owner: EllesmereUI's Shell draws a 25px top bar
--- whatever the Ka0s `title.height` token says (host geometry, the rollout's DECISIONS D4).
-local EUI_SHELL_HEADER_H = 25
 -- Ka0s Default's title band, for a facade that names none (the degraded one, without the library).
 local HEADER_H    = 30
 -- The min/max button (PG-02 of the skin fonts and feedback run, ruling D-20): one size in every
@@ -806,20 +803,24 @@ local function syncMinMax(f, collapsed)
     if collapsed then mm:SetMaximizedLook() else mm:SetMinimizedLook() end
 end
 
--- The skin's title band as S.Shell draws it, read live so a switch moves what sits on it: its top
--- inset (`win.borderSize` in from a flat edge, else 1: SkinPaint.lua's shellBands) and its height
--- (`title.height`); EllesmereUI's 25px shell bar flush with the top once EllesmereUI paints this owner.
-local function titleBand()
-    if NS.SkinEUIPainted() then return 0, EUI_SHELL_HEADER_H end
-    local S = NS.Skin
-    local h = S.Token("title.height")
-    local inset = (S.Token("win.borderStyle") or "flat") == "flat" and S.Token("win.borderSize") or 1
-    return type(inset) == "number" and inset or 1, type(h) == "number" and h or HEADER_H
+-- The title band's inset and height, read off the band frame itself, S.Band(f) (LibKa0s
+-- SkinPaintExtras 17, R5-PG1): Shell lays it on every paint `win.borderSize` in from a flat edge,
+-- else 1, `title.height` high, and flush and 25px high while EllesmereUI paints this owner. The
+-- library is the one place that geometry is worked out. Read live, so a switch moves what sits on
+-- it. Without the library there is no band frame, and the band is Ka0s Default's: 1 in, HEADER_H.
+local function bandRect(f)
+    local band = f.band
+    if band then
+        local _, _, _, x = band:GetPoint(1)
+        local h = band:GetHeight()
+        if type(x) == "number" and type(h) == "number" and h > 0 then return x, h end
+    end
+    return 1, HEADER_H
 end
 
 -- The collapsed height: the band's height (a switch to a skin with another band refolds).
-local function collapsedHeight()
-    local _, h = titleBand()
+local function collapsedHeight(f)
+    local _, h = bandRect(f)
     return h
 end
 
@@ -842,18 +843,21 @@ local function headerClickHeight(inset, h)
     return math.min(inset + h, -BODY_TOP)
 end
 
--- The button centered on the band, ARROW_PAD in from its right end, the same box in every skin; the
--- header's click band covers the band up to it. Anchored only when the band moved: every Refresh
--- lands here, and nothing else anchors these two frames.
-local function placeMinMax(f)
+-- The header's click band covers the band up to the button. With the library the button and the
+-- title are S.Header's (paint), which places them again on every switch; without it there is no
+-- band frame, so the button is put on Ka0s Default's band middle here, RIGHT at y = the band's
+-- middle, as S.Header would. Anchored only when the band moved: every Refresh lands here.
+local function placeHeader(f)
     local mm = f.MaximizeMinimizeFrame
     if not mm then return end
     tintChevrons(mm)
-    local inset, h = titleBand()
+    local inset, h = bandRect(f)
     if f.placedInset == inset and f.placedBand == h then return end
     f.placedInset, f.placedBand = inset, h
-    mm:ClearAllPoints()
-    mm:SetPoint("TOPRIGHT", f, "TOPRIGHT", -(inset + ARROW_PAD), -(inset + (h - ARROW_BTN) / 2))
+    if not f.band then
+        mm:ClearAllPoints()
+        mm:SetPoint("RIGHT", f, "TOPRIGHT", -(inset + ARROW_PAD), -(inset + h / 2))
+    end
     local hc = f.headerClick
     if not hc then return end
     hc:ClearAllPoints()
@@ -862,26 +866,11 @@ local function placeMinMax(f)
     hc:SetHeight(headerClickHeight(inset, h))
 end
 
--- The title follows `title.align`: TitleText spans its container, so the justify is what places it.
--- Every shipped skin's is CENTER, the fallback for a facade that names none. S.TitleBar is the one
--- primitive that reads the token, but it would fill the band S.Shell already drew, and that band's
--- fill is translucent.
-local function alignTitle(f)
-    local tc = f.TitleContainer
-    local title = type(tc) == "table" and tc.TitleText
-    if not title then return end
-    local align = NS.Skin.Token("title.align") or "CENTER"
-    if f.titleAlign == align then return end
-    f.titleAlign = align
-    title:SetJustifyH(align)
-end
-
 local function applyLayout(f)
     local collapsed = NS.addon.db.profile.panelCollapsed == true
     local ok, missing = NS.Bridge.Check()
-    f:SetHeight(collapsed and collapsedHeight() or f.expandedHeight)
-    placeMinMax(f)
-    alignTitle(f)
+    f:SetHeight(collapsed and collapsedHeight(f) or f.expandedHeight)
+    placeHeader(f)
     syncArrows(f)
     syncMinMax(f, collapsed)
     f.body:SetShown(ok and not collapsed)
@@ -921,8 +910,9 @@ end
 
 -- PGF's MaximizeMinimize wiring (UI/Dialog.lua OnLoad and MaximizeMinimize), on our own frame. The
 -- template's close button would hide the panel under a dialog that stays open, so it is hidden and
--- the toggle takes its place, sized and placed on the title band by placeMinMax (applyLayout), not
--- on the close button's template anchor (image-48..51 had it off the band, differently per skin).
+-- the toggle takes its place, sized here and placed on the title band by S.Header (paint; placeHeader
+-- without the library), not on the close button's template anchor (image-48..51 had it off the band,
+-- differently per skin).
 local function buildMinMax(f)
     if f.CloseButton then f.CloseButton:Hide() end
     local mm = CreateFrame("Frame", nil, f, "MaximizeMinimizeButtonFrameTemplate")
@@ -936,7 +926,7 @@ local function buildMinMax(f)
 end
 
 -- The header strip toggles too (owner request): a click anywhere on the title band does what the
--- arrow does. It spans the band from the left edge to just short of the arrow (placeMinMax), so the
+-- arrow does. It spans the band from the left edge to just short of the arrow (placeHeader), so the
 -- arrow keeps its own click; the title text above it takes no mouse, so clicks reach this button.
 local function buildHeaderClick(f)
     local b = CreateFrame("Button", nil, f)
@@ -955,10 +945,16 @@ end
 local BUILDERS = { buildActiveRow, buildKeyRow, buildRegionRow, buildPlaystyleRow, buildCompositionRow, buildLeaderRow,
     buildAgeRow, buildPresetRow, buildActionRow }
 
--- PortraitFrameBaseTemplate starts its TitleContainer 58px in from the left (room for the portrait,
--- hidden here) but only 24px in from the right (Blizzard SharedUIPanelTemplates.xml), so the title
--- sat ~17px right of center. Re-anchored 24px in on both sides: even on the whole header, and still
--- clear of the min/max button. Where the text sits inside it is the skin's (alignTitle).
+-- PortraitFrameTemplateMinimizable starts its TitleContainer 58px in from the left (room for the
+-- portrait, hidden here) but only 24px in from the right (Blizzard SharedUIPanelTemplates.xml), so
+-- the title sat ~17px right of center. Re-anchored 24px in on both sides: even on the whole header,
+-- and still clear of the min/max button.
+--
+-- The template also anchors TitleText TOP 5px down that 20px container, which left the text about
+-- 4px above the arrow on the 30px band (R5-PG1, images 42 and 43). So the container takes Ka0s
+-- Default's band (1px down, HEADER_H high) and the text LEFT and RIGHT on it, which is its vertical
+-- middle: the degraded install's header. With the library, S.Header (paint) then anchors the text to
+-- the band frame itself by `title.align`, in every skin.
 local TITLE_INSET = 24
 
 local function centerTitle(f)
@@ -967,6 +963,12 @@ local function centerTitle(f)
     tc:ClearAllPoints()
     tc:SetPoint("TOPLEFT", f, "TOPLEFT", TITLE_INSET, -1)
     tc:SetPoint("TOPRIGHT", f, "TOPRIGHT", -TITLE_INSET, -1)
+    tc:SetHeight(HEADER_H)
+    local title = tc.TitleText
+    if type(title) ~= "table" or not title.ClearAllPoints then return end
+    title:ClearAllPoints()
+    title:SetPoint("LEFT", tc, "LEFT", 0, 0)
+    title:SetPoint("RIGHT", tc, "RIGHT", 0, 0)
 end
 
 -- A host-matched surface (frame-layering-§1): the panel takes PGF's dialog strata by reading it,
@@ -1007,7 +1009,7 @@ local function paint(f)
     S.Shell(f, { stock = { f.Bg, f.TopTileStreaks } })
     local title = type(f.TitleContainer) == "table" and f.TitleContainer.TitleText
     if title then S.Text(title, "title") end
-    -- The arrows: the skin's button box under the chevrons buildMinMax drew (tinted by placeMinMax).
+    -- The arrows: the skin's button box under the chevrons buildMinMax drew (tinted by placeHeader).
     -- Not S.PageButton: EllesmereUI's facade takes "<" or ">" only and draws "up" and "down" as the
     -- words (image-33/34), and the in-client arrow it draws is rotated art, not the icon set's.
     local mm = f.MaximizeMinimizeFrame
@@ -1015,6 +1017,12 @@ local function paint(f)
         S.Button(mm.MinimizeButton)
         S.Button(mm.MaximizeButton)
     end
+    -- The header on the band (R5-PG1): S.Band is the band Shell lays, as a frame (nil without the
+    -- library); S.Header anchors the title by `title.align` and the arrow RIGHT ARROW_PAD in, both at
+    -- y 0 on the band, so both sit on its middle. Recorded, so every switch lays and places them again.
+    f.band = S.Band(f)
+    S.Header(f, { title = title or nil, inset = TITLE_INSET,
+        right = mm and { { frame = mm, width = ARROW_BTN, x = ARROW_PAD } } or nil })
     S.Checkbox(f.activeCheck, { borderInset = CHECK_INSET })
     for _, cb in pairs(f.checks) do S.Checkbox(cb, { borderInset = CHECK_INSET }) end
     for _, box in ipairs({ f.levelBox, f.ageBox, f.rangeBox }) do S.EditBox(box) end

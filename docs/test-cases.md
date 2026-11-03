@@ -316,7 +316,7 @@ Total.
 - panel: Apply leaves focus alone; Enter in the copy box focuses the search box
 - panel: visibility logs on change only, and again after a stand-down
 
-### test_panel_layout.lua (36)
+### test_panel_layout.lua (37)
 
 - panel: the min/max arrows are chevron icons on the skin's button, expanded up and collapsed down
 - panel: the regions and playstyle dropdowns are 225 wide, right-aligned in one column
@@ -350,6 +350,7 @@ Total.
 - panel: unticking Use the extension's filters removes the block; ticking writes it back
 - panel: presets never switch the extension on or off
 - panel: the title is centered on the whole header
+- panel: without the library the title and the arrow share Ka0s Default's band middle
 - panel: the copy box and its label dim, disable and empty while key targeting is off
 - panel: the panel's frame level is above PGF's dialog and its border
 - panel: the title is the full addon name, and the copy box centers its range
@@ -410,7 +411,7 @@ Total.
 
 - launcher descriptor passes openSkinPicker, which runs the skin verb
 
-### test_skin.lua (23)
+### test_skin.lua (24)
 
 - skin: under Ka0s Default the one panel is painted through the facade, every widget and label
 - skin: the colors the panel writes under Ka0s Default are its exact pixels
@@ -421,6 +422,7 @@ Total.
 - skin: the panel's geometry: 24px check buttons on the rows' centers, flush under the dialog
 - skin: collapsed, the panel folds to the skin's title band, Ka0s Default's included
 - skin: the min/max button is one size and centered on the title band in every skin
+- skin: the title and the min/max button are centered on the band in every skin
 - skin: a Refresh re-anchors the min/max button only when the band moved
 - skin: the panel writes the skin's colors: locked boxes, the dimmed label, the readout
 - skin: a pick after the panel is built rewrites the colors the panel reads from tokens
@@ -658,12 +660,12 @@ Total.
 | test_bridge.lua | 18 |
 | test_apply.lua | 33 |
 | test_panel.lua | 49 |
-| test_panel_layout.lua | 36 |
+| test_panel_layout.lua | 37 |
 | test_layers.lua | 8 |
 | test_settings_layout.lua | 13 |
 | test_skinsetup.lua | 21 |
 | test_launcher_skin_entry.lua | 1 |
-| test_skin.lua | 23 |
+| test_skin.lua | 24 |
 | test_skin_picker.lua | 16 |
 | test_skin_eui.lua | 17 |
 | test_skin_outline.lua | 10 |
@@ -680,4 +682,4 @@ Total.
 | test_skin_values.lua | 3 |
 | test_skin_switch.lua | 41 |
 | Skipped | 1 |
-| **Total** | **518** |
+| **Total** | **520** |

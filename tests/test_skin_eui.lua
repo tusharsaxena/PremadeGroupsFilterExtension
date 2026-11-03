@@ -198,8 +198,16 @@ test("eui: the min/max button is EllesmereUI's box with the chevron, never a wor
         assertEqual(btn.chevron.__texture, NS.Icon(icon), icon .. ": the chevron, on top")
         assertTrue(btn.chevronHolder.__parent == btn, icon .. ": a child frame, not a region EllesmereUI fades")
     end
-    local p, _, _, x, y = mm:GetPoint(1)
-    assertEqual(p, "TOPRIGHT"); assertEqual(x, -4); assertEqual(y, -(25 - 20) / 2)
+    -- On the band frame (R5-PG1), which the library lays flush at the top and 25px high under the
+    -- EllesmereUI source: RIGHT 4px in at y 0, its middle.
+    local band = NS.Skin.Band(f)
+    local _, _, _, bx, by = band:GetPoint(1)
+    assertEqual(bx, 0); assertEqual(by, 0); assertEqual(band:GetHeight(), 25)
+    local p, rel, rp, x, y = mm:GetPoint(1)
+    assertEqual(p, "RIGHT"); assertTrue(rel == band, "on the band"); assertEqual(rp, "RIGHT")
+    assertEqual(x, -4); assertEqual(y, 0)
+    local tp, trel, _, _, ty = f.TitleContainer.TitleText:GetPoint(1)
+    assertEqual(tp, "CENTER"); assertTrue(trel == band, "the title on the band too"); assertEqual(ty, 0)
 end)
 
 -- ── diagnostics ──────────────────────────────────────────────────────────────────────────────────
