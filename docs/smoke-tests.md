@@ -25,6 +25,7 @@ takes the next free number in its theme and a retired number is never reused.
 | SKIN-11..33 | Skins | The skinning rollout (2026-10-29) and its library follow-ups (2026-10-30): Ka0s Default's look, the Skin tab, the first-run picker, the attached panel, the settings pages and the debug console under every skin, fonts, profiles, the copy, stand-down, the `euiSkin` migration, EllesmereUI on and off, diagnostics, the launcher, a degraded install, the panel under the Scope switches |
 | SKIN-43..47 | Skins | The full skinning run (2026-11-01, LibKa0s v1.85.0): the Ka0s menu on the panel's dropdowns, the tooltip and input roles, the marks, the unknown realm's tag |
 | SKIN-48 | Skins | The owner's third smoke round (R3-FRIZ): a stored pick of the deleted Ka0s Friz Quadrata TT lands on Ka0s Ubuntu |
+| SKIN-49.. | Skins | The owner's fifth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND5/`): the skin list's outside-press close, the panel's header centering |
 | SKIN-34..42 | Skins | The skin fonts and feedback run (2026-10-30, LibKa0s v1.82.0): the Font outline setting, the panel's text and the Font outline's default, the new faces, the attached panel's width parity across skins, the collapse button's chevron and place; the findings remediation's re-anchor check, the panel's flat dropdowns and the one media picker |
 
 ## Before you start
@@ -610,6 +611,12 @@ EllesmereUI read took a shorter path; nothing should look different.
   Ubuntu*; switch to the other profile → the same. Fail: the game's default face, or the row still naming
   Ka0s Friz Quadrata TT. Result:
 
+- **SKIN-49. The skin list closes on an outside press (R5-RV, LibKa0s R5-L4).** `/pgfe skin` → open the skin
+  list. Press the picker window's body → the list closes. Open it again and press the game world → it closes.
+  Open it again and press the **Font** dropdown → the list closes and the Font list opens. Repeat from
+  `/pgfe config` → General → **Skin**. Escape still closes the window. Fail: a list that stays open after a
+  press outside it, a Font press that needs a second click, or a Lua error. Result:
+
 ## Frame layering
 
 The panel takes PGF's dialog strata by reading it, and a PGFE StaticPopup shown while the panel is
@@ -688,3 +695,5 @@ Owed from the full skinning run (Ka0sAddonsCommonTasks `docs/2026-11-01-FULL_SKI
 Owed from the owner's third smoke round (Ka0sAddonsCommonTasks `docs/2026-11-02-SMOKE_ROUND3/`, R3-FRIZ): SKIN-48.
 
 On 2026-11-02 the owner reported that every check on the smoke lists of the full skinning run and its smoke feedback batch (Ka0sAddonsCommonTasks `docs/2026-11-01-FULL_SKINNING/` and `docs/2026-11-01-SMOKE_FEEDBACK/`) passed, apart from DpsRace's clock font, the skinned look of the AceGUI Dropdown and the Ka0sMedia_Font and Ka0sMedia_Statusbar pickers, FadeNineSlice and IconBorder (`docs/2026-11-02-SMOKE_ROUND3/`, R3-SMOKE). Passed, recorded on each `Result:` line as `Passed (owner, 2026-11-02)`: APPLY-17, APPLY-19, SKIN-17, SKIN-43, SKIN-44, SKIN-45, SKIN-46 and SKIN-47.
+
+Owed from the owner's fifth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND5/`): SKIN-49.
