@@ -57,6 +57,7 @@ a name gone from `global.presets` as none.
 | `schemaVersion` | `0` | Never the current version (savedvariables-§1); the runner stamps it |
 | `presets` | `{}` | `[name] = <copy of char.filters>`; owner `modules/Presets.lua` |
 | `minimap` | `{ hide = false }` | LibDBIcon's own table; the *Minimap button* row inverts `hide` |
+| `skinNotice` | none | The one-time skin notice's record (LibKa0s `O.SkinNotice`, SG-L3): the notice version this account has seen, a number, written by the library through `core/SkinSetup.lua`'s `noticeStore`, including while stood down. Account-wide, so a profile switch never shows the notice twice |
 
 Session-only, never stored: `NS.State.debug` (the console's logging flag).
 

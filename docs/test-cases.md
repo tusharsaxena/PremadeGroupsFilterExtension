@@ -441,7 +441,7 @@ Total.
 ### test_skin_picker.lua (16)
 
 - skin picker: skin.pickerSeen defaults to false, a skip-render row on the Skin tab
-- skin picker: the spec names this owner, its seams, the General page's Skin tab, and no eye (neither `onPreview` nor `spec.preview`)
+- skin picker: the spec names this owner, its seams, the General page's Skin tab, and no eye
 - skin picker: it shows once at login on an unseen profile, scheduling nothing
 - skin picker: a profile that has seen it shows nothing at login
 - skin picker: in combat a start waits for PLAYER_REGEN_ENABLED, once, on a private frame

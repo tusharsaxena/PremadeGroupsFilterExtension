@@ -76,7 +76,7 @@ table and the load-order reasoning: [`module-map.md`](module-map.md).
 (`core/DebugLogSetup.lua`), Launcher (`core/LauncherSetup.lua`), Lifecycle
 (`core/LifecycleSetup.lua`), Schema (`settings/SchemaSetup.lua`), Options
 (`settings/OptionsSetup.lua`), Slash (`settings/Slash.lua`), Widgets (`core/WidgetsSetup.lua`). Vendored and not wired: Bus, Pool, Item,
-Perf (the performance-§12 exemption), Glow, Sim, Toast. Ace3, LibSharedMedia, LibDataBroker and LibDBIcon are vendored under `libs/` too
+Perf (the performance-§12 exemption), Glow, Sim, Toast, Charts. Ace3, LibSharedMedia, LibDataBroker and LibDBIcon are vendored under `libs/` too
 (`DEPENDENCIES.md`).
 
 The feature modules, one purpose each:
@@ -205,7 +205,10 @@ The first-run skin picker's combat retry is not a feature event either: when `NS
 private frame, unregistered and let go of when it fires and by the stand-down (`NS.HideSkinPicker`),
 so a stood-down addon is registered for nothing and keeps no retry frame; the next held start makes its
 own. The picker itself shows from `OnEnable` and after every profile
-event, on a profile whose `skin.pickerSeen` is false, never while stood down.
+event, on a profile whose `skin.pickerSeen` is false, never while stood down. Before it, `NS.MaybeShowSkinPicker`
+asks the library's one-time skin notice (`NS.MaybeShowSkinNotice`, SG-L3; its record is
+`global.skinNotice`). A notice refused for combat is asked again on a 5 s one-shot `C_Timer.After`
+(`NOTICE_RETRY`, one at a time) until combat ends, again with no event registered.
 
 EllesmereUI's skin callback is not this addon's: LibKa0s-Skin-1.0 registers the owner with
 `EllesmereUI.RegisterSkin` when `core/SkinSetup.lua` calls `RegisterOwner` at file load, and takes
