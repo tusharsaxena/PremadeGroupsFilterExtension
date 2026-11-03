@@ -1,0 +1,4 @@
+R6-NAME review (independent adversarial, 2026-11-04): PASS.
+- Touches README.md only, one line: the title, now '# Premade Groups Filter Extension'. CRLF kept in the working tree.
+- Per inputs/OWNER_ANSWERS.md (README only, in-game names keep Ka0s), the FAQ path 'Settings -> AddOns -> Ka0s Premade Groups Filter Extension -> General' correctly stays: the TOC Title, SchemaSetup BRAND and locale PANEL_TITLE still read 'Ka0s Premade Groups Filter Extension'. No other README prose names the addon with Ka0s; badge/skins/Ka0s Default/LibKa0s are not the addon's name.
+- No gate test pins the README name; fresh gate 520/0/1, luacheck 0/0.
