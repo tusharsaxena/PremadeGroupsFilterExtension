@@ -189,14 +189,94 @@ test("skin: the panel's geometry: 24px check buttons on the rows' centers, flush
     assertEqual(f.headerArt, nil, "no metal header copies")
 end)
 
-test("skin: collapsed, the panel folds to the skin's title band, Ka0s Default's included", function()
+-- R5-PG2 of Ka0sAddonsCommonTasks docs/2026-11-03-SMOKE_ROUND5 (images 59 to 61: Ka0s Default, Ember,
+-- WoW Midnight): collapsed, a strip of the band's color showed below the bottom border in every skin.
+-- The panel folded to the band's height alone, but Shell lays the band `inset` down from the top
+-- (the flat edge's `win.borderSize`, else 1) and draws the edge inside the frame, so the band ran
+-- `inset` px past the frame's bottom, under and then below the bottom edge. Collapsed, the panel is
+-- the band plus its edge on both sides, inset + title.height + inset, and nothing it draws reaches
+-- below its own bottom.
+--
+-- The depth of a region's top and bottom below the panel's top, resolved from its anchors (a region
+-- with none fills its parent, as SetAllPoints, which the mock does not record, does).
+local function depthOf(rel, rp, f, H, extent)
+    local top, bottom = 0, H
+    if rel ~= nil and rel ~= f then top, bottom = extent(rel) end
+    if rp:find("TOP", 1, true) then return top end
+    if rp:find("BOTTOM", 1, true) then return bottom end
+    return (top + bottom) / 2
+end
+
+local function extentFn(f, H)
+    local extent
+    extent = function(r)
+        local points = r.__points or {}
+        if #points == 0 then
+            local parent = r.__parent
+            if parent == nil or parent == f then return 0, H end
+            return extent(parent)
+        end
+        local top, bottom, mid
+        for i = 1, #points do
+            local p, rel, rp, _, y = r:GetPoint(i)
+            local d = depthOf(rel or r.__parent, rp or p, f, H, extent) - (y or 0)
+            if p:find("TOP", 1, true) then top = d
+            elseif p:find("BOTTOM", 1, true) then bottom = d
+            else mid = d end
+        end
+        local h = r.__height or 0
+        if top and not bottom then bottom = top + h end
+        if bottom and not top then top = bottom - h end
+        if mid and not top then top, bottom = mid - h / 2, mid + h / 2 end
+        return top, bottom
+    end
+    return extent
+end
+
+-- Every shown, unfaded texture under the panel: its own regions and its shown child frames'.
+local function paintedTextures(frame, out)
+    out = out or {}
+    for _, r in ipairs({ frame:GetRegions() }) do
+        if r.__objType == "Texture" and r:IsShown() and (r.__alpha or 1) > 0 then out[#out + 1] = r end
+    end
+    for _, c in ipairs(frame.__children or {}) do
+        if c.__objType ~= "FontString" and c.__objType ~= "Texture" and c:IsShown() then
+            paintedTextures(c, out)
+        end
+    end
+    return out
+end
+
+test("skin: collapsed, the panel is exactly the band and its edges, nothing below it, in every skin", function()
+    -- red under: collapsedHeight answering the band's height alone, which leaves the band `inset`
+    -- px past the frame's bottom (1 in Ka0s Default, 2 in the 2px-edge skins).
     local NS, _, Skin = setup()
     local f = NS.Panel.frame
     NS.addon.db.profile.panelCollapsed = true
     NS.Panel.Refresh()
-    assertEqual(f.__height, Skin:Token(OWNER, "title.height"))
-    NS.ApplySkinChoice("ka0s", "obsidian")
-    assertEqual(f.__height, Skin:Token(OWNER, "title.height"))
+    local n = 0
+    for _, def in ipairs(Skin:Skins()) do
+        NS.ApplySkinChoice("ka0s", def.key)
+        n = n + 1
+        local style = Skin:Token(OWNER, "win.borderStyle") or "flat"
+        local inset = style == "flat" and Skin:Token(OWNER, "win.borderSize") or 1
+        local h = Skin:Token(OWNER, "title.height") or 30
+        local H = f.__height
+        assertEqual(H, inset + h + inset, def.key .. ": the band plus its edge above and below")
+        assertFalse(f.body:IsShown(), def.key .. ": the body is hidden")
+        local extent = extentFn(f, H)
+        local _, bandBottom = extent(f.band)
+        assertEqual(bandBottom, H - inset, def.key .. ": the band ends where the bottom edge starts")
+        local seen = 0
+        for _, t in ipairs(paintedTextures(f)) do
+            local top, bottom = extent(t)
+            seen = seen + 1
+            assertTrue(top >= 0 and bottom <= H, def.key .. ": a texture reaches " .. bottom
+                .. "px down a " .. H .. "px panel")
+        end
+        assertTrue(seen >= 2, def.key .. ": the walk found the band and the fill")
+    end
+    assertEqual(n, 9, "every registered skin")
 end)
 
 -- PG-02 of the skin fonts and feedback run (ruling D-20, image-48..51): the min/max button had no

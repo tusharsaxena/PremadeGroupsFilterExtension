@@ -157,6 +157,9 @@ order that CallbackHandler's fan-out does not promise. There are three reaction 
 - **`NS.Skin.OnLooksChanged`** (`modules/Panel.lua`, registered when the panel is built): the
   library fires it after a skin change repainted the recorded frames, and the panel refreshes, which
   re-writes the colors it reads from tokens and refolds a collapsed panel to the new title band.
+  Collapsed, the panel is the band plus its edge above and below, `inset + title.height + inset`
+  (`collapsedHeight`, R5-PG2): Shell lays the band `inset` down and draws the edge inside the frame,
+  so the band's height alone left a strip of the band below the bottom edge.
 
 ## Slash Commands
 

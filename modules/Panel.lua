@@ -818,10 +818,13 @@ local function bandRect(f)
     return 1, HEADER_H
 end
 
--- The collapsed height: the band's height (a switch to a skin with another band refolds).
+-- The collapsed height: the band plus the edge above and below it, inset + h + inset (a switch to a
+-- skin with another band refolds). Shell lays the band `inset` down and draws the edge inside the
+-- frame, so the band's height alone ran the band `inset` px past the bottom edge (R5-PG2, images 59
+-- to 61: a strip below the border in every skin). EllesmereUI's bar is flush: 0 + 25 + 0.
 local function collapsedHeight(f)
-    local _, h = bandRect(f)
-    return h
+    local inset, h = bandRect(f)
+    return inset + h + inset
 end
 
 local function tintChevron(btn, r, g, b, a)

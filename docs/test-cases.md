@@ -420,7 +420,7 @@ Total.
 - skin: a skin pick never shows a hidden panel, and the panel reads the stored filters
 - skin: a pick before the panel exists builds the one panel, painted
 - skin: the panel's geometry: 24px check buttons on the rows' centers, flush under the dialog
-- skin: collapsed, the panel folds to the skin's title band, Ka0s Default's included
+- skin: collapsed, the panel is exactly the band and its edges, nothing below it, in every skin
 - skin: the min/max button is one size and centered on the title band in every skin
 - skin: the title and the min/max button are centered on the band in every skin
 - skin: a Refresh re-anchors the min/max button only when the band moved

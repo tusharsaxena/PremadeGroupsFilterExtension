@@ -423,11 +423,11 @@ test("panel: collapse folds to the title bar and is remembered in the profile", 
     f.MaximizeMinimizeFrame.__onMinimized()
     assertTrue(NS.addon.db.profile.panelCollapsed)
     assertFalse(f.body:IsShown())
-    assertEqual(f.__height, 30, "Ka0s Default's title band")
+    assertEqual(f.__height, 1 + 30 + 1, "Ka0s Default's title band and its 1px edges (R5-PG2)")
     f.MaximizeMinimizeFrame.__onMaximized()
     assertFalse(NS.addon.db.profile.panelCollapsed)
     assertTrue(f.body:IsShown())
-    assertTrue(f.__height > 30)
+    assertTrue(f.__height > 32)
 end)
 
 -- Review F-010: a profile switch carries its own panelCollapsed; the attached panel follows it.
@@ -438,7 +438,7 @@ test("panel: a profile switch refreshes the attached panel's layout", function()
     NS.addon.db.profile.panelCollapsed = true
     NS.addon:OnProfileChanged(nil, nil, "Other")
     -- red under: drop the Panel.Refresh call in PGFE's reloadProfile
-    assertFalse(f.body:IsShown()); assertEqual(f.__height, 30)
+    assertFalse(f.body:IsShown()); assertEqual(f.__height, 1 + 30 + 1)
 end)
 
 test("panel: preset Save as stores a named preset; Load refills the widgets", function()
@@ -541,7 +541,7 @@ test("panel: collapsed shows only the skin's title band; no metal header copies 
     local f = NS.Panel.Create()
     assertEqual(f.headerArt, nil)
     f.MaximizeMinimizeFrame.__onMinimized()
-    assertEqual(f.__height, 30)
+    assertEqual(f.__height, 1 + 30 + 1, "the band and its edges")
     assertFalse(f.body:IsShown())
     NS.addon.db.profile.panelCollapsed = false
     NS.Panel.Refresh()

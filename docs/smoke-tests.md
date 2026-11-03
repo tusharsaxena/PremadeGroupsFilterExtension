@@ -626,6 +626,14 @@ EllesmereUI read took a shorter path; nothing should look different.
   expand → the same. With EllesmereUI painting the panel → both on the middle of EllesmereUI's bar.
   `/dump PremadeGroupsFilterExtensionPanel.TitleContainer.TitleText:GetPoint(1)` → `CENTER`, a frame, `CENTER`,
   0, 0. Fail: the title visibly above or below the arrow in any skin, or a Lua error. Result:
+- **SKIN-51. Collapsed, the panel is only the header band and its edges (R5-PG2, images 59 to 61).** Open
+  PGF on Dungeons and collapse the panel. Under each of the nine skins in turn, Ka0s Default, Ember and WoW
+  Midnight first (the owner's images), then Obsidian, Azeroth, Glass, High Contrast, WoW Default and WoW
+  Forever → the bottom border is the panel's last line: no strip of black, body or band color shows
+  below it, and the band fills the space between the top and bottom borders. Expand and collapse again →
+  the same. With EllesmereUI painting the panel → the collapsed panel is EllesmereUI's 25px bar, nothing
+  below it. `/dump PremadeGroupsFilterExtensionPanel:GetHeight()` collapsed under Ka0s Default → 32.
+  Fail: any strip below the bottom border in any skin, or a Lua error. Result:
 
 ## Frame layering
 
@@ -706,4 +714,4 @@ Owed from the owner's third smoke round (Ka0sAddonsCommonTasks `docs/2026-11-02-
 
 On 2026-11-02 the owner reported that every check on the smoke lists of the full skinning run and its smoke feedback batch (Ka0sAddonsCommonTasks `docs/2026-11-01-FULL_SKINNING/` and `docs/2026-11-01-SMOKE_FEEDBACK/`) passed, apart from DpsRace's clock font, the skinned look of the AceGUI Dropdown and the Ka0sMedia_Font and Ka0sMedia_Statusbar pickers, FadeNineSlice and IconBorder (`docs/2026-11-02-SMOKE_ROUND3/`, R3-SMOKE). Passed, recorded on each `Result:` line as `Passed (owner, 2026-11-02)`: APPLY-17, APPLY-19, SKIN-17, SKIN-43, SKIN-44, SKIN-45, SKIN-46 and SKIN-47.
 
-Owed from the owner's fifth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND5/`): SKIN-49, SKIN-50.
+Owed from the owner's fifth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND5/`): SKIN-49, SKIN-50, SKIN-51.
