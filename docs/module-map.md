@@ -1,7 +1,7 @@
 # Module map — Ka0s Premade Groups Filter Extension
 
 Every non-vendored file, in TOC load order, with its one responsibility. Vendored: `libs/` (Ace3,
-LibStub, CallbackHandler, LibSharedMedia, LibDataBroker, LibDBIcon, LibKa0s v1.84.0) and
+LibStub, CallbackHandler, LibSharedMedia, LibDataBroker, LibDBIcon, LibKa0s v1.85.0) and
 `tests/_kit/` (the LibKa0s test kit) — never edited here.
 
 ## Load order and why
@@ -45,6 +45,7 @@ Profiles page. The constraints that fix the order:
 | `core/SkinSetup.lua` | `LibKa0s-Skin-1.0`: the skin owner (the folder) registered at file load, `NS.Skin` (the facade, or a degraded one answering Ka0s Default), the `skin.*` read and write seams and apply functions, `NS.SkinColor` / `NS.SkinEscape`, EllesmereUI's status as the `eui` provider sees it, the owner-bound AceGUI painters, and the first-run skin picker |
 | `core/Constants.lua` | `NS.Constants.LAYERS`: the one layers table, every strata and level offset the addon sets, with the whole stack in its header comment (frame-layering-§5) |
 | `core/MediaSetup.lua` | `LibKa0s-Media-1.0`: `NS.Icon`, `NS.MediaFont`, the LSM registration |
+| `core/WidgetsSetup.lua` | `LibKa0s-Widgets-1.0`: `NS.MakeDropdown`, `NS.CloseMenu`, the attached panel's flat dropdowns and the shared menu |
 | `core/Compat.lua` | `LibKa0s-Compat-1.0`: the spec readers |
 | `core/EnvSetup.lua` | `LibKa0s-Env-1.0`: `NS.Meta`, `NS.Version` |
 | `core/PGFE.lua` | The AceAddon object, lifecycle (`OnInitialize`, `OnEnable`), `NS.StandDown` / `NS.StandUp`, the `[Init]` summary |
@@ -80,5 +81,6 @@ Profiles page. The constraints that fix the order:
 | `tests/prose_waivers.lua` | Per-file, per-word waivers for the kit's prose gate (realm names) |
 | `tests/perf.lua` | The offline performance scenarios (`lua tests/perf.lua`): env hook, row painters, stood-down hook, `combatEvents`. Outside the green gate; ships under the performance-§12 exemption ([`performance.md`](performance.md)) |
 | `tests/panel_helpers.lua` | What `test_panel.lua` and `test_panel_layout.lua` share: the season seed, a dropdown's menu entries, typing into a box. Not a suite |
+| `tests/skin_surfaces.lua` | The painted surfaces the kit's `test_skin_switch` flips, one instance of the addon of their own. Not a suite |
 | `tests/test_*.lua` | One suite per module plus the standard's named suites; the attached panel has two, `test_panel.lua` and `test_panel_layout.lua` |
 | `tools/realm_map_diff.py` | Diffs `defaults/Realms.lua` against an installed PremadeRegions ([`realm-map-maintenance.md`](realm-map-maintenance.md)) |

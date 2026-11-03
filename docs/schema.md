@@ -57,15 +57,17 @@ a name gone from `global.presets` as none.
 | `schemaVersion` | `0` | Never the current version (savedvariables-§1); the runner stamps it |
 | `presets` | `{}` | `[name] = <copy of char.filters>`; owner `modules/Presets.lua` |
 | `minimap` | `{ hide = false }` | LibDBIcon's own table; the *Minimap button* row inverts `hide` |
+| `skinNotice` | none | The one-time skin notice's record (LibKa0s `O.SkinNotice`, SG-L3): the notice version this account has seen, a number, written by the library through `core/SkinSetup.lua`'s `noticeStore`, including while stood down. Account-wide, so a profile switch never shows the notice twice |
 
 Session-only, never stored: `NS.State.debug` (the console's logging flag).
 
 ## Migrations
 
-`NS.SCHEMA_VERSION = 2`. Steps in `core/Database.lua`'s `NS.MIGRATIONS`, run by `NS:RunMigrations()`
+`NS.SCHEMA_VERSION = 3`. Steps in `core/Database.lua`'s `NS.MIGRATIONS`, run by `NS:RunMigrations()`
 right after `AceDB:New` and on every profile event.
 
 | Step | What it does |
 |---|---|
 | 0 → 1 | The stamp itself; nothing to reshape |
 | 1 → 2 | The skinning rollout's PG-06: every profile's `euiSkin` (the retired EllesmereUI bridge's switch, default `true`) is carried to `skin.source = "eui"` when it was not an explicit `false` and EllesmereUI is present (the library provider's `eui` condition at `OnInitialize`), then deleted. Walks `db.sv.profiles` raw, so an absent key reads as the old default |
+| 2 → 3 | R3-FRIZ: LibKa0s v1.85.0 deleted `Ka0s Friz Quadrata TT` (R3-L7) and WoW Default draws `Ka0s Ubuntu` in its place (R3-L6). `NS.RetireFonts` moves every stored string naming the deleted face, at any depth (the skin's Font override), to `Ka0s Ubuntu` in every profile. Blizzard's own `Friz Quadrata TT` stays |

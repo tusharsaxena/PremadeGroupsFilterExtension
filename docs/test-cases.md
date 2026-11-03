@@ -190,10 +190,11 @@ Total.
 - envinject: a protected leader name injects no region
 - envinject: a spec refresh logs the keywords once, and again only when they change
 
-### test_regiontags.lua (13)
+### test_regiontags.lua (14)
 
 - regiontags: a search row gets the leader's colored region in front of its activity
 - regiontags: a leader on the player's own realm, an unknown realm, an unsupported portal
+- regiontags: the unknown realm's mark follows the skin, and keeps its bytes without the library
 - regiontags: EU realms are tagged by language
 - regiontags: an applicant gets their region in front of their name
 - regiontags: a painter the client lacks is skipped, the other still installs
@@ -315,18 +316,23 @@ Total.
 - panel: Apply leaves focus alone; Enter in the copy box focuses the search box
 - panel: visibility logs on change only, and again after a stand-down
 
-### test_panel_layout.lua (31)
+### test_panel_layout.lua (37)
 
 - panel: the min/max arrows are chevron icons on the skin's button, expanded up and collapsed down
 - panel: the regions and playstyle dropdowns are 225 wide, right-aligned in one column
-- panel: each menu opens with Any and a divider; Any is ticked with nothing ticked and clears
+- panel: each menu opens with Any; Any is ticked with nothing ticked and clears
 - panel: ticking every option stores Any and the button reads Any
 - panel: a stored all-ticked set reads Any; a tick then selects that option alone
 - panel: the readout is one row high, so the rows below keep the same pitch
 - panel: a readout too wide for its row closes the gaps to one space
 - panel: every checkbox has a tooltip, and its label hovers and clicks as the box
+- panel: the Presets dropdown lists the presets, picks one, and an empty list picks nothing
+- panel: the shared menu closes when the panel hides or collapses
 - panel: every number box, button and the copy box and its label have a tooltip
-- panel: each dropdown and every menu entry has a tooltip
+- panel: each dropdown has a tooltip, and every multi-select entry has its own
+- panel: Any sits above a divider in the library's menu, as in the client's
+- panel: a menu row's tooltip stays quiet while stood down
+- panel: without the library each dropdown and every menu entry keeps the client's tooltip
 - panel: tooltips stay quiet while stood down
 - panel: presets: one row, the dropdown up to three equal buttons right-aligned
 - panel: Apply and Clear share one width, with extra space above their row
@@ -344,6 +350,7 @@ Total.
 - panel: unticking Use the extension's filters removes the block; ticking writes it back
 - panel: presets never switch the extension on or off
 - panel: the title is centered on the whole header
+- panel: without the library the title and the arrow share Ka0s Default's band middle
 - panel: the copy box and its label dim, disable and empty while key targeting is off
 - panel: the panel's frame level is above PGF's dialog and its border
 - panel: the title is the full addon name, and the copy box centers its range
@@ -400,7 +407,11 @@ Total.
 - skin seam: each host-copy skin token is the live library's Ka0s Default value
 - skin seam: the descriptor reaches LibSharedMedia, so the panel preloads the faces it previews
 
-### test_skin.lua (19)
+### test_launcher_skin_entry.lua (1)
+
+- launcher descriptor passes openSkinPicker, which runs the skin verb
+
+### test_skin.lua (24)
 
 - skin: under Ka0s Default the one panel is painted through the facade, every widget and label
 - skin: the colors the panel writes under Ka0s Default are its exact pixels
@@ -409,16 +420,21 @@ Total.
 - skin: a skin pick never shows a hidden panel, and the panel reads the stored filters
 - skin: a pick before the panel exists builds the one panel, painted
 - skin: the panel's geometry: 24px check buttons on the rows' centers, flush under the dialog
-- skin: collapsed, the panel folds to the skin's title band, Ka0s Default's included
+- skin: collapsed, the panel is exactly the band and its edges, nothing below it, in every skin
 - skin: the min/max button is one size and centered on the title band in every skin
+- skin: the title and the min/max button are centered on the band in every skin
 - skin: a Refresh re-anchors the min/max button only when the band moved
 - skin: the panel writes the skin's colors: locked boxes, the dimmed label, the readout
 - skin: a pick after the panel is built rewrites the colors the panel reads from tokens
 - skin: with Ignore settings panel on, the panel's labels and title still wear the skin
-- skin: every panel dropdown drops the template's art and draws the skin's glyph arrow
-- skin: the dropdown glyph follows a live switch and stays under Ignore settings panel
-- skin: without the library the dropdowns keep the template's art and no glyph shows
+- skin: every panel dropdown is the library's, owned by this addon, with its menu and marks
+- skin: a dropdown follows a live switch and stays under Ignore settings panel
+- skin: without the library the dropdowns are the client's template and its art
 - skin: while EllesmereUI paints the panel its own arrow is the only one
+- skin: a tooltip's name and body keep Ka0s Default's pixels and take the roles in every other skin
+- skin: the level and copy boxes wear the input role, like the Age box, in every skin
+- skin: a skin with no input.text gives the boxes text.body
+- skin: the title follows title.align on a switch
 - skin: a pick while stood down builds nothing; the stand-up shows the same panel in the new skin
 - skin: modules/Panel.lua types no color: no literal SetTextColor, tooltip color or markup
 
@@ -441,7 +457,7 @@ Total.
 - skin tools: a host release is chained onto the skin's restore, both run
 - skin tools: the debug console is painted for this owner
 
-### test_skin_eui.lua (16)
+### test_skin_eui.lua (17)
 
 - eui migration: with EllesmereUI, every profile but an explicit false moves to skin.source eui
 - eui migration: without EllesmereUI every profile keeps the Ka0s source
@@ -459,6 +475,7 @@ Total.
 - eui: the min/max button is EllesmereUI's box with the chevron, never a worded PageButton
 - eui diagnostics: the skin section names the key the library draws by, in every state
 - eui diagnostics: the skin section reports the choice and the library's EllesmereUI gate
+- friz migration: a stored Ka0s Friz Quadrata TT moves to Ka0s Ubuntu in every profile, Blizzard's Friz kept
 
 ### test_skin_outline.lua (10)
 
@@ -573,6 +590,56 @@ Total.
 - lizard sighted: parity names every file whose counts differ, and only those
 - lizard sighted: lizard lists every function of a hazard fixture once it is sanitized
 
+### test_skin_values.lua (3)
+
+- skin values: every host row carries its file, substring, why and cause id
+- skin values: no typed value outside the kit's categories and the host's rows
+- skin values: the check is falsifiable, a planted value of each shape is reported
+
+### test_skin_switch.lua (41)
+
+- skin switch: the check is falsifiable, a surface that redraws a literal is reported
+- skin switch: the window's bands and edge changes
+- skin switch: the window's bands and edge changes with the Scope ignored
+- skin switch: the title changes
+- skin switch: the title changes with the Scope ignored
+- skin switch: the collapse button's box changes
+- skin switch: the collapse button's box changes with the Scope ignored
+- skin switch: the collapse button's chevron changes
+- skin switch: the collapse button's chevron changes with the Scope ignored
+- skin switch: the expand button's chevron changes
+- skin switch: the expand button's chevron changes with the Scope ignored
+- skin switch: a check button changes
+- skin switch: a check button changes with the Scope ignored
+- skin switch: a row's label changes
+- skin switch: a row's label changes with the Scope ignored
+- skin switch: the locked level box changes
+- skin switch: the locked level box changes with the Scope ignored
+- skin switch: the open copy box changes
+- skin switch: the open copy box changes with the Scope ignored
+- skin switch: the copy label changes
+- skin switch: the copy label changes with the Scope ignored
+- skin switch: the dungeon readout changes
+- skin switch: the dungeon readout changes with the Scope ignored
+- skin switch: the unsupported-portal note changes
+- skin switch: the unsupported-portal note changes with the Scope ignored
+- skin switch: the unsupported-PGF note changes
+- skin switch: the unsupported-PGF note changes with the Scope ignored
+- skin switch: a dropdown's button changes
+- skin switch: a dropdown's button changes with the Scope ignored
+- skin switch: the Presets dropdown's button changes
+- skin switch: the Presets dropdown's button changes with the Scope ignored
+- skin switch: an action button changes
+- skin switch: an action button changes with the Scope ignored
+- skin switch: a panel tooltip's name and body changes
+- skin switch: a panel tooltip's name and body changes with the Scope ignored
+- skin switch: the Any row's tooltip changes
+- skin switch: the Any row's tooltip changes with the Scope ignored
+- skin switch: a menu entry's tooltip changes
+- skin switch: a menu entry's tooltip changes with the Scope ignored
+- skin switch: the unknown realm's tag on a Blizzard row changes
+- skin switch: the unknown realm's tag on a Blizzard row changes with the Scope ignored
+
 ## Totals
 
 | Suite | Cases |
@@ -589,17 +656,18 @@ Total.
 | test_filters.lua | 12 |
 | test_presets.lua | 9 |
 | test_envinject.lua | 14 |
-| test_regiontags.lua | 13 |
+| test_regiontags.lua | 14 |
 | test_bridge.lua | 18 |
 | test_apply.lua | 33 |
 | test_panel.lua | 49 |
-| test_panel_layout.lua | 31 |
+| test_panel_layout.lua | 37 |
 | test_layers.lua | 8 |
 | test_settings_layout.lua | 13 |
 | test_skinsetup.lua | 21 |
-| test_skin.lua | 19 |
+| test_launcher_skin_entry.lua | 1 |
+| test_skin.lua | 24 |
 | test_skin_picker.lua | 16 |
-| test_skin_eui.lua | 16 |
+| test_skin_eui.lua | 17 |
 | test_skin_outline.lua | 10 |
 | test_skin_verb.lua | 6 |
 | test_reset.lua | 5 |
@@ -611,5 +679,7 @@ Total.
 | test_layout_cap.lua | 13 |
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
+| test_skin_values.lua | 3 |
+| test_skin_switch.lua | 41 |
 | Skipped | 1 |
-| **Total** | **462** |
+| **Total** | **520** |

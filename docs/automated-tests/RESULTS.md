@@ -32,6 +32,10 @@ archaeology, for the same reason a skip is never a pass (`automated-tests-§4`).
 
 | Run | Commit | Tree | Version | Lint w/e | Files | Tests | Perf | NLOC | Funcs | Avg NLOC | Avg CCN | Max CCN | CCN warn | Verdict |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| [`20261104-042256`](20261104-042256/) | `ba5a536` | clean | 1.0.0 | 0/0 | 72 | 520/1/521 | pass | 10314 | 1511 | 5.9 | 2.1 | 18 | 1 | **green** |
+| [`20261102-023410`](20261102-023410/) | `99d7869` | clean | 1.0.0 | 0/0 | 71 | 516/1/517 | pass | 10097 | 1495 | 5.8 | 2.0 | 14 | 0 | **green** |
+| [`20261101-201349`](20261101-201349/) | `e638513` | clean | 1.0.0 | 0/0 | 71 | 516/1/517 | pass | 10097 | 1495 | 5.8 | 2.0 | 14 | 0 | **green** |
+| [`20261101-143040`](20261101-143040/) | `e5ba7dd` | clean | 1.0.0 | 0/0 | 70 | 468/1/469 | pass | 9941 | 1465 | 5.8 | 2.0 | 14 | 0 | **green** |
 | [`20261101-025325`](20261101-025325/) | `9da00b9` | clean | 1.0.0 | 0/0 | 69 | 462/1/463 | pass | 9716 | 1430 | 5.8 | 2.0 | 14 | 0 | **green** |
 | [`20261101-001036`](20261101-001036/) | `91b79e3` | clean | 1.0.0 | 0/0 | 69 | 458/1/459 | pass | 9642 | 1419 | 5.8 | 2.0 | 14 | 0 | **green** |
 | [`20261031-212020`](20261031-212020/) | `2c97779` | clean | 1.0.0 | 0/0 | 69 | 456/1/457 | pass | 9598 | 1416 | 5.8 | 2.0 | 14 | 0 | **green** |
@@ -44,18 +48,18 @@ archaeology, for the same reason a skip is never a pass (`automated-tests-§4`).
 
 ## Test suite
 
-**463 cases** — 462 passed, 0 failed, 1 skipped. The generated inventory
-[`20261101-025325/test-cases.md`](20261101-025325/test-cases.md) is the authority on which cases existed at this run;
+**521 cases** — 520 passed, 0 failed, 1 skipped. The generated inventory
+[`20261104-042256/test-cases.md`](20261104-042256/test-cases.md) is the authority on which cases existed at this run;
 `docs/test-cases.md` is that same list at HEAD.
 
-Moved **459 → 463** since the previous run.
+Moved **517 → 521** since the previous run.
 
 **1 case(s) reported a `skip`.** A skip is counted in the total and never in `passed`, and at
 the release gate it is NOT EVALUATED rather than passed (`automated-tests-§3`).
 
 ## Lint
 
-**0 warnings / 0 errors over 69 files** (`luacheck .`).
+**0 warnings / 0 errors over 72 files** (`luacheck .`).
 
 Read that figure with its scope attached: `.luacheckrc` excludes 6 path(s) from it — `libs/`, `docs/audits/`, `docs/reviews/`, `docs/revendor/`, `_dev/`, `tests/_kit/` —
 so nothing under them is in the count above. A `0/0` that never moves is partly a statement about
@@ -65,24 +69,24 @@ to whoever thinks to open `.luacheckrc`.
 ## Perf
 
 **6 scenarios** from `tests/perf.lua`; the measurements are in
-[`20261101-025325/perf.json`](20261101-025325/perf.json).
+[`20261104-042256/perf.json`](20261104-042256/perf.json).
 
 | `scenario` | `iters` | `ms/iter` | `api/iter` | `bytes/iter` |
 |---|---|---|---|---|
-| `envNoPR` | 1000 | 0.00424 | 1.20 | 80.1 |
-| `envWithPR` | 1000 | 0.00111 | 0.00 | 0.0 |
-| `envStoodDown` | 1000 | 0.00055 | 0.00 | 0.0 |
-| `searchRowPaint` | 1000 | 0.00351 | 5.20 | 160.6 |
-| `applicantRowPaint` | 1000 | 0.00407 | 5.20 | 160.4 |
-| `combatEvents` | 1000 | 0.24903 | 143.00 | 28113.1 |
+| `envNoPR` | 1000 | 0.00214 | 1.20 | 80.1 |
+| `envWithPR` | 1000 | 0.00122 | 0.00 | 0.0 |
+| `envStoodDown` | 1000 | 0.00064 | 0.00 | 0.0 |
+| `searchRowPaint` | 1000 | 0.00444 | 5.20 | 161.3 |
+| `applicantRowPaint` | 1000 | 0.00314 | 5.20 | 161.1 |
+| `combatEvents` | 1000 | 0.18733 | 143.00 | 28129.1 |
 
 `perf` never fails a run and never blocks a commit — it is recorded, read and compared, not
 thresholded (`performance-§9`). It does gate the **tag** (`automated-tests-§3`).
 
 ## Complexity watch list
 
-Current as of [`20261101-025325`](20261101-025325/) — **this run's measurement, not its diff.** Max CCN **14** across 1430
-functions, **0** of them warned on; 1 file(s) in the 1000–1500 band and 0 over the 1500 cap
+Current as of [`20261104-042256`](20261104-042256/) — **this run's measurement, not its diff.** Max CCN **18** across 1511
+functions, **1** of them warned on; 1 file(s) in the 1000–1500 band and 0 over the 1500 cap
 (`layout-§1`).
 
 Every row below is generated from this run's own `lizard` output. **The `Disposition` column is
@@ -94,14 +98,13 @@ cell is this file saying something crossed and nobody has ruled on it yet.
 
 | Function | CCN | Location | Disposition |
 |---|---|---|---|
-
-None.
+| `extent` | 18 | `tests/test_skin.lua` | **Peel next.** This is new in R5-PG2 (2d3ca07). It is a test helper with genuine anchor-resolution branching. Hoist the per-point TOP/BOTTOM/middle classification and the height completion into local helpers before the next tag. |
 
 ### Files by `layout-§1` band
 
 | Band | File | LOC | Disposition |
 |---|---|---|---|
-| 1000–1500 (on notice) | `modules/Panel.lua` | 1063 | on notice: cohesive, the row builders, layout and paint of the one attached panel frame; split the row builders out before it reaches 1500 lines |
+| 1000–1500 (on notice) | `modules/Panel.lua` | 1192 | on notice: cohesive, the row builders, layout and paint of the one attached panel frame; split the row builders out before it reaches 1500 lines |
 
 `lizard` counts every `and`/`or` short-circuit as a decision, so in Lua a run of
 `t.k = rec.k or D.k` defaulting lines scores high with no visible branching at all: a large CCN

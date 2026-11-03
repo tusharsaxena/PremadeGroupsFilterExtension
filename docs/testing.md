@@ -34,7 +34,9 @@ Named suites the standard requires: `test_surface_parity` (testing-§8), `test_v
 `T.enableAddon()` and the kit recorders, with the six feature events pinned by name and the
 library's `perf` hold taken as a test-only second holder). Kit suites, declared by
 directory: `test_eol`, `test_prose`, `test_layout_cap`, `test_diagnostics_contract`,
-`test_lizard_sighted`.
+`test_lizard_sighted`, `test_skin_values` and `test_skin_switch` (skinning-§1, kit revision 50). The
+typed-value gate has no allow rows here (`Kit.skinValues` in `tests/run.lua`); the switch test's
+surfaces are declared in `tests/skin_surfaces.lua`, and a surface left out of that list is not tested.
 
 `test_glyphs` wires the kit's display-glyph guard (`T.assertDisplayGlyphs`, kit revision 45): every
 string literal outside `libs/` and `tests/` carries only characters every shipped skin face draws.

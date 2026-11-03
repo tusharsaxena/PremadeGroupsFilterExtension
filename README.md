@@ -1,10 +1,10 @@
-# Ka0s Premade Groups Filter Extension
+# Premade Groups Filter Extension
 
 ![WoW](https://img.shields.io/badge/WoW-Midnight_12.1.5-purple)
 ![CurseForge Version](https://img.shields.io/curseforge/v/1736636)
 ![License](https://img.shields.io/badge/License-MIT-orange)
 ![Standard](https://img.shields.io/badge/Ka0s-WoW_Addon_Standard-yellow)
-![Tests](https://img.shields.io/badge/Tests-462%2F462_passing-green)
+![Tests](https://img.shields.io/badge/Tests-520%2F520_passing-green)
 
 A small companion to [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter)
 for Mythic+. You type the key level you want to push (or let Smart pick it), and it ticks every
@@ -121,7 +121,8 @@ The addon extends [Premade Groups Filter](https://www.curseforge.com/wow/addons/
 by Bernhard Saumweber. PremadeRegions was the reference for the realm-to-region list.
 
 The addon's own icons come from [Open Iconic](https://github.com/iconic/open-iconic) by Waybury
-(MIT): the debug console's clear, copy and close buttons, the skin picker's settings gear, and the
-attached panel's collapse and expand chevrons. Only
+(MIT): the debug console's clear, copy and close buttons, the skin picker's settings gear, the
+attached panel's collapse and expand chevrons, and the small marks LibKa0s draws beside skinned
+controls. Only
 the icons the addon draws are shipped. They are bundled inside the LibKa0s payload, with their
 license text beside them.

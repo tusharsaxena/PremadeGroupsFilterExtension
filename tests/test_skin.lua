@@ -85,8 +85,8 @@ test("skin: under Ka0s Default the one panel is painted through the facade, ever
 end)
 
 test("skin: the colors the panel writes under Ka0s Default are its exact pixels", function()
-    -- red under: a token whose Ka0s Default value is not today's (white labels and boxes, 0.5 gray
-    -- dimmed, ffd100 / 808080 readout markup, white tooltip names over a gold body).
+    -- red under: a token whose Ka0s Default value is not today's (0.9 gray boxes and labels, the
+    -- input role, 0.5 gray dimmed, ffd100 / 808080 readout markup, white tooltip names over a gold body).
     local NS, m = setup()
     local f = NS.Panel.frame
     NS.Filters.Get().smartKeyLevel = true
@@ -95,7 +95,7 @@ test("skin: the colors the panel writes under Ka0s Default are its exact pixels"
     NS.Filters.Get().smartKeyLevel = false
     NS.Panel.Refresh()
     local c = f.levelBox.__textColor
-    assertEqual(c[1], 1); assertEqual(c[2], 1); assertEqual(c[3], 1)
+    assertEqual(c[1], 0.9); assertEqual(c[2], 0.9); assertEqual(c[3], 0.9)
     assertEqual(c[4], nil, "an opaque color is passed as three components, as before")
     m.mapTable = { 586, 587 }
     m.mapUIInfo[586] = { name = "D586", mapID = 586 }; m.seasonBest[586] = { intime = { level = 13 } }
@@ -189,14 +189,94 @@ test("skin: the panel's geometry: 24px check buttons on the rows' centers, flush
     assertEqual(f.headerArt, nil, "no metal header copies")
 end)
 
-test("skin: collapsed, the panel folds to the skin's title band, Ka0s Default's included", function()
+-- R5-PG2 of Ka0sAddonsCommonTasks docs/2026-11-03-SMOKE_ROUND5 (images 59 to 61: Ka0s Default, Ember,
+-- WoW Midnight): collapsed, a strip of the band's color showed below the bottom border in every skin.
+-- The panel folded to the band's height alone, but Shell lays the band `inset` down from the top
+-- (the flat edge's `win.borderSize`, else 1) and draws the edge inside the frame, so the band ran
+-- `inset` px past the frame's bottom, under and then below the bottom edge. Collapsed, the panel is
+-- the band plus its edge on both sides, inset + title.height + inset, and nothing it draws reaches
+-- below its own bottom.
+--
+-- The depth of a region's top and bottom below the panel's top, resolved from its anchors (a region
+-- with none fills its parent, as SetAllPoints, which the mock does not record, does).
+local function depthOf(rel, rp, f, H, extent)
+    local top, bottom = 0, H
+    if rel ~= nil and rel ~= f then top, bottom = extent(rel) end
+    if rp:find("TOP", 1, true) then return top end
+    if rp:find("BOTTOM", 1, true) then return bottom end
+    return (top + bottom) / 2
+end
+
+local function extentFn(f, H)
+    local extent
+    extent = function(r)
+        local points = r.__points or {}
+        if #points == 0 then
+            local parent = r.__parent
+            if parent == nil or parent == f then return 0, H end
+            return extent(parent)
+        end
+        local top, bottom, mid
+        for i = 1, #points do
+            local p, rel, rp, _, y = r:GetPoint(i)
+            local d = depthOf(rel or r.__parent, rp or p, f, H, extent) - (y or 0)
+            if p:find("TOP", 1, true) then top = d
+            elseif p:find("BOTTOM", 1, true) then bottom = d
+            else mid = d end
+        end
+        local h = r.__height or 0
+        if top and not bottom then bottom = top + h end
+        if bottom and not top then top = bottom - h end
+        if mid and not top then top, bottom = mid - h / 2, mid + h / 2 end
+        return top, bottom
+    end
+    return extent
+end
+
+-- Every shown, unfaded texture under the panel: its own regions and its shown child frames'.
+local function paintedTextures(frame, out)
+    out = out or {}
+    for _, r in ipairs({ frame:GetRegions() }) do
+        if r.__objType == "Texture" and r:IsShown() and (r.__alpha or 1) > 0 then out[#out + 1] = r end
+    end
+    for _, c in ipairs(frame.__children or {}) do
+        if c.__objType ~= "FontString" and c.__objType ~= "Texture" and c:IsShown() then
+            paintedTextures(c, out)
+        end
+    end
+    return out
+end
+
+test("skin: collapsed, the panel is exactly the band and its edges, nothing below it, in every skin", function()
+    -- red under: collapsedHeight answering the band's height alone, which leaves the band `inset`
+    -- px past the frame's bottom (1 in Ka0s Default, 2 in the 2px-edge skins).
     local NS, _, Skin = setup()
     local f = NS.Panel.frame
     NS.addon.db.profile.panelCollapsed = true
     NS.Panel.Refresh()
-    assertEqual(f.__height, Skin:Token(OWNER, "title.height"))
-    NS.ApplySkinChoice("ka0s", "obsidian")
-    assertEqual(f.__height, Skin:Token(OWNER, "title.height"))
+    local n = 0
+    for _, def in ipairs(Skin:Skins()) do
+        NS.ApplySkinChoice("ka0s", def.key)
+        n = n + 1
+        local style = Skin:Token(OWNER, "win.borderStyle") or "flat"
+        local inset = style == "flat" and Skin:Token(OWNER, "win.borderSize") or 1
+        local h = Skin:Token(OWNER, "title.height") or 30
+        local H = f.__height
+        assertEqual(H, inset + h + inset, def.key .. ": the band plus its edge above and below")
+        assertFalse(f.body:IsShown(), def.key .. ": the body is hidden")
+        local extent = extentFn(f, H)
+        local _, bandBottom = extent(f.band)
+        assertEqual(bandBottom, H - inset, def.key .. ": the band ends where the bottom edge starts")
+        local seen = 0
+        for _, t in ipairs(paintedTextures(f)) do
+            local top, bottom = extent(t)
+            seen = seen + 1
+            assertTrue(top >= 0 and bottom <= H, def.key .. ": a texture reaches " .. bottom
+                .. "px down a " .. H .. "px panel")
+        end
+        assertTrue(seen >= 2, def.key .. ": the walk found the band and the fill")
+    end
+    assertEqual(n, 9, "every registered skin")
 end)
 
 -- PG-02 of the skin fonts and feedback run (ruling D-20, image-48..51): the min/max button had no
@@ -205,8 +285,8 @@ end)
 -- the skin's title band (the band Shell draws: `win.borderSize` in from a flat edge, else 1, and
 -- `title.height` tall), 4px in from the right; the header's click band covers the band up to it.
 test("skin: the min/max button is one size and centered on the title band in every skin", function()
-    -- red under: the CloseButton anchor (no TOPRIGHT point on the frame, no size), or a fixed offset
-    -- that ignores the skin's edge and band height.
+    -- red under: the CloseButton anchor (no size), or a click band that ignores the skin's edge and
+    -- band height.
     local NS, _, Skin = setup()
     local f = NS.Panel.frame
     local mm = f.MaximizeMinimizeFrame
@@ -225,11 +305,7 @@ test("skin: the min/max button is one size and centered on the title band in eve
             local p, rel = btn:GetPoint(1)
             assertEqual(p, "CENTER"); assertTrue(rel == mm, def.key .. ": the button on its frame")
         end
-        assertEqual(#mm.__points, 1, def.key .. ": one anchor")
-        local p, rel, rp, x, y = mm:GetPoint(1)
-        assertEqual(p, "TOPRIGHT"); assertTrue(rel == f, def.key .. ": on the panel"); assertEqual(rp, "TOPRIGHT")
-        assertEqual(x, -(inset + 4), def.key .. ": x")
-        assertEqual(y, -(inset + (h - 20) / 2), def.key .. ": y, centered on the band")
+        -- Where it sits on the band (RIGHT 4px in, y 0) is the R5-PG1 case below.
         local _, _, _, _, bodyTop = f.body:GetPoint(1)
         assertEqual(f.headerClick.__height, math.min(inset + h, -bodyTop),
             def.key .. ": the click band covers the title band")
@@ -240,8 +316,59 @@ test("skin: the min/max button is one size and centered on the title band in eve
     assertEqual(n, 9, "every registered skin")
 end)
 
+-- R5-PG1 of Ka0sAddonsCommonTasks docs/2026-11-03-SMOKE_ROUND5 (owner item 5, images 42 and 43): the
+-- title sat about 4px above the arrow. The arrow was centered on the band, but the title kept
+-- PortraitFrameTemplate's own anchor, TOP 5px down a 20px container at y -1, because centerTitle moved
+-- only the container. Both now hang on S.Band(f), the band frame Shell lays (LibKa0s SkinPaintExtras
+-- 17), through S.Header, at y 0: the title by `title.align`, the arrow RIGHT 4px in. A LEFT, CENTER or
+-- RIGHT point at y 0 on the band IS its vertical middle; the glyphs' own baseline is the smoke check.
+local ON_MIDDLE = { LEFT = true, CENTER = true, RIGHT = true }
+
+local function assertOnBand(region, band, what)
+    assertTrue(#region.__points >= 1, what .. ": anchored")
+    for i = 1, #region.__points do
+        local p, rel, rp, _, y = region:GetPoint(i)
+        assertTrue(ON_MIDDLE[p] == true, what .. ": point " .. tostring(p) .. " is LEFT, CENTER or RIGHT, never TOP")
+        assertTrue(rel == band, what .. ": anchored to the band")
+        assertEqual(rp, p, what .. ": to the band's own " .. tostring(p))
+        assertEqual(y, 0, what .. ": at y 0, the band's middle")
+    end
+end
+
+test("skin: the title and the min/max button are centered on the band in every skin", function()
+    -- red under: the template's TOP anchor left on TitleText (centerTitle moving only its container),
+    -- or the arrow placed by the host's own copy of the band's arithmetic instead of on the band.
+    local NS, _, Skin = setup()
+    local f = NS.Panel.frame
+    local title, mm = f.TitleContainer.TitleText, f.MaximizeMinimizeFrame
+    local n = 0
+    for _, def in ipairs(Skin:Skins()) do
+        NS.ApplySkinChoice("ka0s", def.key)
+        n = n + 1
+        local style = Skin:Token(OWNER, "win.borderStyle") or "flat"
+        local inset = style == "flat" and Skin:Token(OWNER, "win.borderSize") or 1
+        local h = Skin:Token(OWNER, "title.height") or 30
+        local band = NS.Skin.Band(f)
+        assertTrue(band ~= nil, def.key .. ": the band frame")
+        local bp, brel, _, bx, by = band:GetPoint(1)
+        assertEqual(bp, "TOPLEFT"); assertTrue(brel == f, def.key .. ": the band on the panel")
+        assertEqual(bx, inset, def.key .. ": the band's inset"); assertEqual(by, -inset, def.key .. ": its top")
+        assertEqual(band:GetHeight(), h, def.key .. ": the band's height")
+        assertOnBand(title, band, def.key .. ": the title")
+        assertEqual(#title.__points, 1, def.key .. ": the title's one anchor")
+        local align = Skin:Token(OWNER, "title.align") or "CENTER"
+        assertEqual((title:GetPoint(1)), align, def.key .. ": the title by title.align")
+        assertEqual(title.__justifyH, align, def.key .. ": and justified to it")
+        assertOnBand(mm, band, def.key .. ": the min/max button")
+        assertEqual(#mm.__points, 1, def.key .. ": the button's one anchor")
+        local mp, _, _, mx = mm:GetPoint(1)
+        assertEqual(mp, "RIGHT"); assertEqual(mx, -4, def.key .. ": 4px in from the band's right end")
+    end
+    assertEqual(n, 9, "every registered skin")
+end)
+
 test("skin: a Refresh re-anchors the min/max button only when the band moved", function()
-    -- red under: placeMinMax's ClearAllPoints and SetPoint running on every layout, which is what
+    -- red under: placeHeader's ClearAllPoints and SetPoint running on every layout, which is what
     -- tests/perf.lua's combatEvents ceiling caught.
     local NS, _, Skin = setup()
     local f = NS.Panel.frame
@@ -274,8 +401,8 @@ test("skin: the panel writes the skin's colors: locked boxes, the dimmed label, 
     assertTrue(close(f.copyLabel.__textColor[1], dr), "the dimmed copy label is the skin's text.disabled")
     NS.Filters.Get().keyTargeting = true
     NS.Panel.Refresh()
-    local hr = Skin:Color(OWNER, "text.highlight")
-    assertTrue(close(f.copyLabel.__textColor[1], hr), "the copy label is the skin's text.highlight")
+    local hr = Skin:Color(OWNER, "text.body")
+    assertTrue(close(f.copyLabel.__textColor[1], hr), "the copy label is the skin's text.body")
     m.mapTable = { 586 }
     m.mapUIInfo[586] = { name = "D586", mapID = 586 }; m.seasonBest[586] = { intime = { level = 13 } }
     NS.Filters.Get().keyLevel = 14
@@ -340,31 +467,33 @@ end)
 
 -- ── the dropdowns: the skin picker's look (PG-D1) ───────────────────────────────────────────────
 
+local ARROW_ART = "Interface\\ChatFrame\\ChatFrameExpandArrow"
+
 local function dropdowns(f)
     return { f.regionSelect, f.playstyleSelect, f.compositionSelect, f.presetDropdown }
 end
 
-test("skin: every panel dropdown drops the template's art and draws the skin's glyph arrow", function()
-    -- red under: S.Dropdown handed no `stock` (its list knows no Background, the atlas stayed), or the
-    -- template's Arrow left as the painted arrow: that atlas is the whole gold button, tinted, not a
-    -- triangle (image 35 against the skin picker's image 36).
+test("skin: every panel dropdown is the library's, owned by this addon, with its menu and marks", function()
+    -- red under: the template's dropdown (the client's menu, cause A2), or a dropdown given no owner.
     local NS, _, Skin = setup()
     local r, g, b = Skin:Color(OWNER, "icon.arrow")
     for _, dd in ipairs(dropdowns(NS.Panel.frame)) do
-        assertEqual(dd.Background:GetAlpha(), 0, "the template's text holder is faded")
-        assertEqual(dd.Arrow:GetAlpha(), 0, "the template's gold button is faded")
-        local glyph = dd.arrow
-        assertTrue(glyph ~= nil and not rawequal(glyph, dd.Arrow), "the glyph is a texture of its own")
-        assertTrue(glyph:IsShown(), "the glyph shows")
-        assertEqual(glyph:GetAlpha(), 1)
-        assertTrue(glyph.__desaturated == true, "the library desaturated the glyph")
-        assertTrue(close(glyph.__vertexColor[1], r) and close(glyph.__vertexColor[2], g)
-            and close(glyph.__vertexColor[3], b), "the glyph wears icon.arrow")
-        assertEqual(glyph.__texture, "Interface\\ChatFrame\\ChatFrameExpandArrow")
+        assertEqual(dd.__owner, OWNER)
+        assertEqual(dd.__menuGen, nil, "no client menu")
+        assertTrue(dd.arrow:IsShown())
+        assertEqual(dd.__height, 26, "the row pitch")
+        local c = dd.arrow.__vertexColor
+        assertTrue(close(c[1], r) and close(c[2], g) and close(c[3], b), "the arrow wears icon.arrow")
+        assertEqual(dd.arrow.__texture, ARROW_ART, "the arrow's shape is left alone (L10)")
+        assertTrue(close(dd.arrow.__rotation, -math.pi / 2), "turned to point down")
+        assertEqual(dd.arrow.__points[1][4], -8, "8px in from the right end")
+        assertEqual(dd.text.__wordWrap, false, "a long name stays on one line")
+        assertEqual(dd.text.__points[#dd.text.__points][4], -20, "and stops at the arrow")
+        assertTrue(dd.__check:find("confirm", 1, true) ~= nil, "the Ka0s tick")
     end
 end)
 
-test("skin: the dropdown glyph follows a live switch and stays under Ignore settings panel", function()
+test("skin: a dropdown follows a live switch and stays under Ignore settings panel", function()
     -- red under: an arrow colored at build, or a dropdown given back by the Scope toggle (D-01).
     local NS, _, Skin = setup()
     local dd = NS.Panel.frame.presetDropdown
@@ -373,24 +502,25 @@ test("skin: the dropdown glyph follows a live switch and stays under Ignore sett
     local c = dd.arrow.__vertexColor
     assertTrue(close(c[1], r) and close(c[2], g) and close(c[3], b), "Ember's arrow color replayed")
     NS.ApplySkinIgnore(true, false)
-    assertEqual(dd.Arrow:GetAlpha(), 0, "the panel is a window: the Scope toggle leaves it skinned")
-    assertTrue(dd.arrow:IsShown())
+    assertTrue(dd.arrow:IsShown(), "the panel is a window: the Scope toggle leaves it skinned")
+    assertEqual(dd.arrow.__texture, ARROW_ART)
 end)
 
-test("skin: without the library the dropdowns keep the template's art and no glyph shows", function()
-    -- red under: a glyph over the stock gold button, or stock art faded with nothing to replace it.
+test("skin: without the library the dropdowns are the client's template and its art", function()
+    -- red under: no dropdown at all, which leaves the filters with no way to pick a region.
     local NS, _, m = T.enableAddon{ skip = T.loadAddon.libFiles }
     m.pgf.dialog.shown = true
     NS.Panel.UpdateVisibility()
     for _, dd in ipairs(dropdowns(NS.Panel.frame)) do
         assertEqual(dd.Arrow:GetAlpha(), 1, "the template's button stays")
         assertEqual(dd.Background:GetAlpha(), 1, "the template's text holder stays")
-        assertFalse(dd.arrow:IsShown(), "no second arrow")
+        assertEqual(dd.arrow, nil, "no second arrow")
     end
+    assertTrue(NS.Panel.frame.regionSelect.__menuGen ~= nil, "the client's menu")
 end)
 
 test("skin: while EllesmereUI paints the panel its own arrow is the only one", function()
-    -- red under: the Ka0s glyph left showing beside the arrow WSkin.Dropdown draws.
+    -- red under: the library's arrow left showing beside the arrow WSkin.Dropdown draws.
     local NS, _, m = T.enableAddon({ mock = function(mm) mm.installEUI() end })
     NS.SchemaRuntime.Set("skin.source", "eui")
     m.eui.dispatch(OWNER)
@@ -398,6 +528,103 @@ test("skin: while EllesmereUI paints the panel its own arrow is the only one", f
     NS.Panel.UpdateVisibility()
     assertTrue(NS.SkinEUIPainted(), "EllesmereUI painted the owner")
     for _, dd in ipairs(dropdowns(NS.Panel.frame)) do assertFalse(dd.arrow:IsShown(), "no second arrow") end
+end)
+
+-- ── roles (L8, L9) ──────────────────────────────────────────────────────────────────────────────
+
+--- What the tooltip setters drew for `widget`'s hover: the name's and the first body line's rgb.
+local function hoverColors(m, widget)
+    local name, body
+    local setText, addLine = m.GameTooltip.SetText, m.GameTooltip.AddLine
+    m.GameTooltip.SetText = function(_, _, r, g, b) name = { r, g, b } end
+    m.GameTooltip.AddLine = function(_, _, r, g, b) body = { r, g, b } end
+    widget:__fire("OnEnter")
+    m.GameTooltip.SetText, m.GameTooltip.AddLine = setText, addLine
+    return name, body
+end
+
+local function sameColor(got, r, g, b, what)
+    assertTrue(close(got[1], r) and close(got[2], g) and close(got[3], b), what)
+end
+
+test("skin: a tooltip's name and body keep Ka0s Default's pixels and take the roles in every other skin", function()
+    -- red under: the crossed gtip.value and gtip.title (L8), or a body line that stayed gold under
+    -- a skin whose tooltip body is not.
+    local NS, m, Skin = setup()
+    local b = NS.Panel.frame.applyButton
+    local name, body = hoverColors(m, b)
+    sameColor(name, 1, 1, 1, "Ka0s Default's name is white")
+    sameColor(body, 1, 0.82, 0, "Ka0s Default's body is gold")
+    for _, def in ipairs(Skin:Skins()) do
+        if def.key ~= "ka0s" then
+            NS.ApplySkinChoice("ka0s", def.key)
+            local tr, tg, tb = Skin:Color(OWNER, "gtip.title")
+            local lr, lg, lb = Skin:Color(OWNER, "gtip.line")
+            name, body = hoverColors(m, b)
+            sameColor(name, tr, tg, tb, def.key .. ": the name is gtip.title")
+            sameColor(body, lr, lg, lb, def.key .. ": the body is gtip.line")
+        end
+    end
+end)
+
+test("skin: the level and copy boxes wear the input role, like the Age box, in every skin", function()
+    -- red under: text.highlight written over S.EditBox's color (L8), or a skin with no input.text
+    -- handing SetTextColor a nil.
+    local NS, _, Skin = setup()
+    local f = NS.Panel.frame
+    NS.Filters.Get().smartKeyLevel = false
+    NS.Filters.Get().keyTargeting = true
+    NS.Panel.Refresh()
+    for _, def in ipairs(Skin:Skins()) do
+        NS.ApplySkinChoice("ka0s", def.key)
+        local r, g, b = Skin:Color(OWNER, "input.text")
+        if r == nil then r, g, b = Skin:Color(OWNER, "text.body") end
+        sameColor(f.levelBox.__textColor, r, g, b, def.key .. ": the level box")
+        sameColor(f.rangeBox.__textColor, r, g, b, def.key .. ": the copy box")
+        local lr, lg, lb = Skin:Color(OWNER, "text.body")
+        sameColor(f.copyLabel.__textColor, lr, lg, lb, def.key .. ": the copy label")
+    end
+end)
+
+test("skin: a skin with no input.text gives the boxes text.body", function()
+    -- text.body is faked too, because Ka0s Default's two are the same gray.
+    -- red under: dimText without its text.body arm.
+    local NS = setup()
+    local f = NS.Panel.frame
+    NS.Filters.Get().smartKeyLevel = false
+    NS.Filters.Get().keyTargeting = true
+    local real = NS.SkinColor
+    NS.SkinColor = function(name)
+        if name == "input.text" then return nil end
+        if name == "text.body" then return 0.1, 0.2, 0.3 end
+        return real(name)
+    end
+    NS.Panel.Refresh()
+    NS.SkinColor = real
+    sameColor(f.levelBox.__textColor, 0.1, 0.2, 0.3, "the level box")
+    sameColor(f.rangeBox.__textColor, 0.1, 0.2, 0.3, "the copy box")
+end)
+
+test("skin: the title follows title.align on a switch", function()
+    -- Every shipped skin says CENTER, so a skin that aligns LEFT is registered here, as LibKa0s's own
+    -- tests/test_header_band.lua does. Since R5-PG1 the anchor and the justify are S.Header's, which
+    -- reads the library's resolved tokens, so faking the facade's Token no longer reaches them.
+    -- red under: S.Text alone, which reads no title.align (L9), or a title left on the template's TOP.
+    local NS, _, Skin = setup()
+    local f = NS.Panel.frame
+    local title = f.TitleContainer.TitleText
+    Skin:RegisterSkin({ key = "titleLeft", label = "Title left", tokens = { ["title.align"] = "LEFT" } })
+    NS.ApplySkinChoice("ka0s", "titleLeft")
+    local band = NS.Skin.Band(f)
+    local p, rel, rp, x, y = title:GetPoint(1)
+    assertEqual(p, "LEFT"); assertTrue(rel == band, "on the band"); assertEqual(rp, "LEFT")
+    assertEqual(x, 24, "the title's inset, clear of the band's left end"); assertEqual(y, 0)
+    assertEqual(title.__justifyH, "LEFT")
+    NS.ApplySkinChoice("ka0s", "ka0s")
+    p, rel, rp, x, y = title:GetPoint(1)
+    assertEqual(p, "CENTER", "and back"); assertTrue(rel == band); assertEqual(rp, "CENTER")
+    assertEqual(x, 0); assertEqual(y, 0)
+    assertEqual(title.__justifyH, "CENTER")
 end)
 
 -- ── stand-down ──────────────────────────────────────────────────────────────────────────────────

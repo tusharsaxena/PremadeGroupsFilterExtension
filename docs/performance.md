@@ -6,8 +6,9 @@ deviations`). No `core/PerfSetup.lua`, no `PremadeGroupsFilterExtensionPerfDB`, 
 stays reserved and unregistered) and no suspend contract. `libs/LibKa0s/` stays vendored whole,
 `Perf.lua` included.
 
-- **Criterion (a)** holds, and the sweep below is its proof: no `OnUpdate` handler, no timer of
-  any kind, and no event handler doing more than occasional work in combat.
+- **Criterion (a)** holds, and the sweep below is its proof: no `OnUpdate` handler, no repeating
+  ticker (the two `C_Timer.After` sites below are one-shots), and no event handler doing more than
+  occasional work in combat.
 - **Criterion (b)** applies too. The capture windows open on the player's combat state
   (performance-§7), and this addon's hot paths run while the player browses the Group Finder, so
   every declared bucket would read `0.000` by construction.
@@ -29,31 +30,34 @@ stays reserved and unregistered) and no suspend contract. `libs/LibKa0s/` stays 
   PGF's own re-filter. It is a player action, and it refuses in combat.
 - **Panel:** `Panel.Refresh` runs on show and on a widget change. The frame is built once, lazily.
   A refresh allocates about 7.6 KB in `tests/perf.lua`, most of it the readout's strings. It
-  re-anchors the collapse button only when the skin's title band moved, and only an owner on the
+  re-anchors the header's click band (and, without the library, the collapse button) only when the
+  skin's title band moved; with the library, `S.Header` places the button and the title on a switch, and only an owner on the
   `eui` source, or waiting on a reload, pays for `GetEUIStatus`'s tables (about 1.2 KB).
 
 ## The combat-path sweep (criterion (a))
 
 Swept with `grep -rn -E 'RegisterEvent|RegisterUnitEvent|OnUpdate|C_Timer|NewTicker|ScheduleTimer|ScheduleRepeatingTimer|hooksecurefunc|HookScript|SetScript'`
 over every file outside `libs/`, `tests/` and `docs/`. The search found no `OnUpdate`, ticker,
-repeating timer or AceTimer (removed, C-35). The one `C_Timer` read is `C_Timer.After` in
-`settings/OptionsSetup.lua:114`, the settings color picker's 50 ms drag throttle: one call per
-drag step, on a player action. There are two registration sites, and every hook runs on a player
+repeating timer or AceTimer (removed, C-35). There are two one-shot `C_Timer.After` sites. One is
+`settings/OptionsSetup.lua:119`, the settings color picker's 50 ms drag throttle: one call per
+drag step, on a player action. The other is the skin notice's combat retry in
+`core/SkinSetup.lua:354-359` (see the table). There are two registration sites, and every hook runs on a player
 UI action.
 
 | Site | Hit | Work per event or call | Runs in combat? |
 |---|---|---|---|
 | `core/PGFE.lua:41` | `registerFeatureEvents`, through `NS.SafeRegisterEvent` (`core/CoreSetup.lua:56-80`) | The feature registration site. It registers the 6 `NS.FEATURE_EVENTS` rows below on enable and stand-up, and unregisters them on stand-down | — |
 | `modules/EnvInject.lua:85-86` | `ACTIVE_PLAYER_SPECIALIZATION_CHANGED`, `PLAYER_SPECIALIZATION_CHANGED` | `RefreshPlayer`: 3 calls (spec index, spec info, `UnitClass`) | Rare (a spec change) |
-| `modules/Panel.lua:1003-1005` | `CHALLENGE_MODE_MAPS_UPDATE`, `CHALLENGE_MODE_COMPLETED`, `MYTHIC_PLUS_CURRENT_AFFIX_UPDATE` | `OnPanelSeasonData`: Smart level, then the readout rebuilt over 8 dungeons. 34 calls, about 8 KB | Rare (a season-data reply, a completed key, an affix change) |
-| `modules/Panel.lua:1006` | `PLAYER_ENTERING_WORLD` | Re-arms the season request, then `Panel.UpdateVisibility` (the readout as above). 35 calls | At a loading screen |
+| `modules/Panel.lua:1163-1165` | `CHALLENGE_MODE_MAPS_UPDATE`, `CHALLENGE_MODE_COMPLETED`, `MYTHIC_PLUS_CURRENT_AFFIX_UPDATE` | `OnPanelSeasonData`: Smart level, then the readout rebuilt over 8 dungeons. 34 calls, about 8 KB | Rare (a season-data reply, a completed key, an affix change) |
+| `modules/Panel.lua:1166` | `PLAYER_ENTERING_WORLD` | Re-arms the season request, then `Panel.UpdateVisibility` (the readout as above). 35 calls | At a loading screen |
 | `core/PGFE.lua:116-118` | AceDB `OnProfileChanged` / `Copied` / `Reset` | Migrations, panel refresh, the latch re-read | Player action |
 | `core/PGFBridge.lua:173` | `hooksecurefunc(PGF, "PutPremadeRegionInfo")` | `EnvInject.Apply`, above: 1.2 calls and 80 bytes per result, 0 while stood down | Only while PGF filters a search the player started |
 | `core/PGFBridge.lua:184-186` | `SwitchToPanel`, dialog `OnShow` / `OnHide` | `Panel.UpdateVisibility` | Player action |
-| `modules/RegionTags.lua:102` | `LFGListSearchEntry_Update`, `LFGListApplicationViewer_UpdateApplicantMember` | One row tag: 5.2 calls, 160 bytes | Only while the Group Finder repaints |
-| `modules/Panel.lua:111-120` | Tooltip `OnEnter` / `OnLeave` | Fill and show `GameTooltip`; hide it | Player action |
+| `modules/RegionTags.lua:107` | `LFGListSearchEntry_Update`, `LFGListApplicationViewer_UpdateApplicantMember` | One row tag: 5.2 calls, 160 bytes | Only while the Group Finder repaints |
+| `modules/Panel.lua:117-128` | Tooltip `OnEnter` / `OnLeave` | Fill and show `GameTooltip`; hide it | Player action |
 | `modules/Panel.lua`, `settings/Panel.lua` | `SetScript` / `HookScript` on the addon's own widgets (click, edit box, focus, settings `OnShow`) | One handler per player action | Player action |
-| `core/SkinSetup.lua:311` | `PLAYER_REGEN_ENABLED` on a private one-shot frame (D11) | Registered only while the first-run skin picker is held in combat; it unregisters and drops its frame when it fires, then shows the picker once. The stand-down drops it the same way | Once, as combat ends |
+| `core/SkinSetup.lua:320` | `PLAYER_REGEN_ENABLED` on a private one-shot frame (D11) | Registered only while the first-run skin picker is held in combat; it unregisters and drops its frame when it fires, then shows the picker once. The stand-down drops it the same way | Once, as combat ends |
+| `core/SkinSetup.lua:354-359` | `C_Timer.After(NOTICE_RETRY, …)`, the skin notice's combat retry (SG-L3) | Only while the library's skin notice answers `combat`: one 5 s one-shot that asks again, and arms the next while combat lasts (one at a time, `noticeWaiting`). Once combat ends it shows the notice or nothing and stops | Every 5 s while a held notice waits |
 | `modules/Apply.lua:37` | `InCombatLockdown()` in `precheck` | Apply refuses in combat | Refused |
 
 `PLAYER_REGEN_DISABLED` and every other combat event are unregistered (the picker's one-shot

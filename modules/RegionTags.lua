@@ -47,7 +47,12 @@ end
 function RegionTags.Colored(key)
     return "|cff" .. RegionTags.Hex(key) .. NS.Regions.LABELS[key] .. "|r"
 end
-local UNKNOWN = "|cff9d9d9d?|r" -- a supported portal, a realm the map does not know
+
+--- The tag of a supported portal's realm the map does not know: the skin's mark, read at paint, so a
+--- switch reaches the next row Blizzard repaints.
+local function unknownTag()
+    return NS.SkinEscape("pg.regionUnknown") .. "?|r"
+end
 
 local function active()
     if NS.IsStoodDown() or PremadeRegions then return false end
@@ -61,7 +66,7 @@ end
 function RegionTags.Tag(name)
     if type(name) ~= "string" or not NS.IsConcatSafe(name) or not NS.Regions.GetPortal() then return nil end
     local key = NS.Regions.GetRegion(name)
-    if not key then return UNKNOWN end
+    if not key then return unknownTag() end
     return RegionTags.Colored(key)
 end
 

@@ -14,8 +14,9 @@ local _, NS = ...
 -- addon is not stood down; built lazily the first time it is wanted. Collapsed, only the title
 -- strip is left.
 --
--- Every option has a hover tooltip. A checkbox's hit rect is stretched over its label, so hovering
--- or clicking the label acts on the box.
+-- Every option has a hover tooltip, and so does every multi-select menu entry, through the library
+-- menu's `tooltip` row option. A checkbox's hit rect is stretched over its label, so hovering or clicking the
+-- label acts on the box.
 --
 -- No code here calls SetText on a Blizzard frame: every SetText below lands on a frame or font
 -- string this file created. Searching goes through Apply.Run{ search = true }, called only from the
@@ -67,15 +68,17 @@ local BUTTON_GAP    = 4
 local BUTTON_PAD    = 20          -- a button's width past its text
 local READOUT_PULL  = 6           -- the dungeon readout sits this much closer under the key-level row
 local ACTION_GAP    = 8           -- the extra space under the Toggle row, around the Presets row and above Apply
-local DROPDOWN_H    = 26          -- WowStyle1DropdownTemplate's height when the client does not say
+local DROPDOWN_H    = 26          -- every dropdown's height, WowStyle1DropdownTemplate's when the client does not say
 local ACTION_W      = 88          -- Apply and Clear, at least
 local SELECT_W      = 225         -- the regions, playstyle and composition dropdowns
 local PRESET_BUTTON_MIN_W = 64     -- Save / Save as / Delete never narrower than this
--- A dropdown's arrow, as LibKa0s's skin picker draws its own: the client's arrow art turned to point
--- down, a fixed size, in from the right end. Its color is the skin's (paint).
+-- A dropdown's arrow: the client's arrow art turned to point down, a fixed size, in from the right
+-- end. Its color is the skin's. An icon's shape is not skin data (cause L10, on the Leave list), so
+-- the art stays this one: the menu is what cause A2 moved onto the library.
 local GLYPH_ART     = "Interface\\ChatFrame\\ChatFrameExpandArrow"
 local GLYPH_SIZE    = 12
 local GLYPH_PAD     = 8
+local NO_PRESET     = ""          -- the value of the Presets menu's "no presets" row: picks nothing
 -- The readout's two colors: a dungeon still to time in the accent, a timed one disabled. Read from
 -- the skin at write time (ffd100 and 808080 on Ka0s Default, NS.SkinEscape's byte rounding).
 local TARGETED_TOKEN, NOT_TARGETED_TOKEN = "text.accent", "text.disabled"
@@ -97,15 +100,15 @@ end
 
 -- ── tooltips ────────────────────────────────────────────────────────────────────────────────────
 
--- The option's name in white, then what it does, wrapped, in gold: the Blizzard settings convention.
--- The lines take the skin's tooltip colors (skinning-§7; the frame stays GameTooltip's). The names
--- read crossed on purpose: the name is `gtip.value` (white) and the body `gtip.title` (gold), the
--- exact pixels of Ka0s Default.
+-- The option's name, then what it does, wrapped: white and gold under Ka0s Default, the Blizzard
+-- settings convention. The lines take the skin's tooltip roles (skinning-§7; the frame stays
+-- GameTooltip's): the name is the owner token `pg.tipName`, which keeps that white and follows
+-- `gtip.title` elsewhere, and the body `gtip.line`, a tooltip's body line in every skin.
 local function fillTooltip(tip, title, text)
-    local tr, tg, tb = NS.SkinColor("gtip.value")
+    local tr, tg, tb = NS.SkinColor("pg.tipName")
     tip:SetText(title, tr, tg, tb)
     if text then
-        local r, g, b = NS.SkinColor("gtip.title")
+        local r, g, b = NS.SkinColor("gtip.line")
         tip:AddLine(text, r, g, b, true)
     end
 end
@@ -125,14 +128,27 @@ local function tooltip(widget, title, text)
     end)
 end
 
--- A dropdown button or a menu entry (Blizzard_Menu SetTooltip): the menu owns, shows and hides the
--- tooltip; this only fills it. A WowStyle1DropdownTemplate's own OnEnter/OnLeave drive its hover art,
--- so a dropdown never gets the script hooks above.
+-- The client's dropdown, with the library absent: a button or a menu entry (Blizzard_Menu
+-- SetTooltip), where the menu owns, shows and hides the tooltip and this only fills it. A
+-- WowStyle1DropdownTemplate's own OnEnter/OnLeave drive its hover art, so it never gets the script
+-- hooks above.
 local function menuTooltip(obj, title, text)
     obj:SetTooltip(function(tip)
         if stoodDown() then return end
         fillTooltip(tip, title, text)
     end)
+end
+
+-- The library's menu row (the row options of W.ContextMenu, LibKa0s-Widgets-1.0 minor 21, which a
+-- dropdown's options share): a `tooltip` renderer, so the lines take the same two roles as every
+-- other tooltip here. The library takes it off with the row and with the menu.
+local function rowTooltip(title, text)
+    return function(row)
+        if stoodDown() then return end
+        GameTooltip:SetOwner(row, "ANCHOR_RIGHT")
+        fillTooltip(GameTooltip, title, text)
+        GameTooltip:Show()
+    end
 end
 
 -- ── small builders ──────────────────────────────────────────────────────────────────────────────
@@ -218,16 +234,20 @@ end
 local function isSmart() return NS.Filters.Get().smartKeyLevel == true end
 
 -- With Smart on the level box is locked: no focus, no typing, grayed text. The mouse stays on so
--- its tooltip still says why. The two colors are the skin's (white and 0.5 gray on Ka0s Default),
--- written after S.EditBox's own text color, and again on every Refresh, which a skin switch runs.
-local function dimText(fs, dim)
-    fs:SetTextColor(NS.SkinColor(dim and "text.disabled" or "text.highlight"))
+-- its tooltip still says why. Locked, the box takes `text.disabled` over S.EditBox's own text color;
+-- unlocked it takes that color back, `input.text`, the same as the Age box beside it. `role` is the
+-- string's own color while lit: `input.text` for a box and `text.body` for a label. A skin may
+-- leave `input.text` unset. Written again on every Refresh, which a skin switch runs.
+local function dimText(fs, dim, role)
+    local r, g, b, a = NS.SkinColor(dim and "text.disabled" or role)
+    if r == nil then r, g, b, a = NS.SkinColor("text.body") end
+    fs:SetTextColor(r, g, b, a)
 end
 
 local function setLocked(box, on)
     if on then box:ClearFocus() end
     box:SetEnabled(not on)
-    dimText(box, on)
+    dimText(box, on, "input.text")
 end
 
 -- ── row builders (each returns the next row's y) ────────────────────────────────────────────────
@@ -338,37 +358,49 @@ local function buildKeyRow(f, body, y)
     return y - 2 * ROW_H + READOUT_PULL
 end
 
--- ── dropdown arrows ─────────────────────────────────────────────────────────────────────────────
+-- ── dropdowns ───────────────────────────────────────────────────────────────────────────────────
+--
+-- The library's flat dropdown, its skinned menu and its tick (core/WidgetsSetup.lua), under the
+-- panel's own arrow. DROPDOWN_H keeps the row pitch and the height the Presets buttons take. The
+-- label stays on one line, as a client dropdown's does, and stops at the arrow: the Presets button
+-- is the row's narrow slot and a preset's name may run to 32 letters. With the library absent each
+-- dropdown is the client's template, its art and menu as Blizzard draws them.
 
--- WowStyle1DropdownTemplate has no arrow to tint: its Arrow is the atlas of a whole gold button. So
--- each dropdown carries a glyph under `dd.arrow`, the field S.Dropdown colors ahead of `dd.Arrow`, and
--- the template's art goes in the call's `stock` (paint). Hidden until syncGlyphs says the Ka0s skin
--- paints this owner.
-local function addGlyph(dd)
-    local t = dd:CreateTexture(nil, "OVERLAY")
-    t:SetSize(GLYPH_SIZE, GLYPH_SIZE)
-    t:SetPoint("RIGHT", dd, "RIGHT", -GLYPH_PAD, 0)
-    t:SetTexture(GLYPH_ART)
-    t:SetRotation(-math.pi / 2)
-    t:Hide()
-    dd.arrow = t
+local function flatDropdown(parent, width)
+    local dd = NS.MakeDropdown(parent, width, GLYPH_ART)
+    if not dd then return nil end
+    dd:SetHeight(DROPDOWN_H)
+    dd.text:SetWordWrap(false)
+    dd.text:SetPoint("RIGHT", -(GLYPH_PAD + GLYPH_SIZE), 0)
+    dd.arrow:ClearAllPoints()
+    dd.arrow:SetPoint("RIGHT", dd, "RIGHT", -GLYPH_PAD, 0)
+    dd.arrow:SetRotation(-math.pi / 2)
+    return dd
 end
 
--- Without the library the template's button stays, and EllesmereUI draws its own arrow, so the glyph
--- shows only under a Ka0s skin.
-local function syncGlyphs(f)
-    local on = NS.Skin.IsEnabled() and not NS.SkinEUIPainted()
-    for _, dd in ipairs(f.dropdowns) do dd.arrow:SetShown(on) end
+local function stockDropdown(parent)
+    return CreateFrame("DropdownButton", nil, parent, "WowStyle1DropdownTemplate")
+end
+
+-- EllesmereUI draws its own arrow on the dropdowns it paints, so the library's hides then.
+local function syncArrows(f)
+    local shown = not NS.SkinEUIPainted()
+    for _, dd in ipairs(f.dropdowns) do
+        if dd.arrow then dd.arrow:SetShown(shown) end
+    end
 end
 
 -- ── multi-select dropdowns (server regions, playstyle) ──────────────────────────────────────────
 --
--- A checkbox list in a Blizzard dropdown (Blizzard_Menu CreateCheckbox), right-aligned on its row so
--- every dropdown shares one column. An Any entry heads the list, above a divider: checked when the
--- selection means Any (none ticked, or every one ticked, Filters.IsAny), and a click on it clears the
--- selection. A checkbox answers MenuResponse.Refresh, so the menu stays open and every entry's tick
--- is re-read. The button shows our own summary (OverrideText), not the menu's selection text: Any,
--- the labels when they fit, else a count.
+-- A multi-select in the library's menu, right-aligned on its row so every dropdown shares one column.
+-- An Any entry heads the list: ticked when the selection means Any (none ticked, or every one
+-- ticked, Filters.IsAny), and a click on it clears the selection. The menu stays open and re-reads
+-- every entry's tick. The stored filters are the selection, so each row answers through `isActive`
+-- and writes through `dd.presets`, and the library's own `_selected` stays empty. The button shows our
+-- own summary, not the library's: Any, the labels when they fit, else a count, written after its
+-- UpdateMultiLabel (onMultiSelect runs last). Every entry has its tooltip and the Any entry sits above
+-- a divider, in the library's menu and, with the library absent, in the client's (Blizzard_Menu
+-- CreateCheckbox).
 
 local SELECT_TEXT_MAX = 30
 
@@ -388,17 +420,56 @@ local function selectionSummary(selected, total, labels)
     return text
 end
 
--- spec = { keys = fn() -> ordered keys, labels = { [key] = text }, tips = { [key] = text },
---          isOn = fn(key), toggle = fn(key), clear = fn(), selected = fn() -> ordered selected keys }
+local function flatMulti(dd, spec, h)
+    dd:SetMulti(true)
+    local options = {
+        { value = "all", label = L.SELECT_ANY, isActive = h.isAny,
+          tooltip = rowTooltip(L.SELECT_ANY, L.SELECT_ANY_TOOLTIP) },
+        { divider = true },
+    }
+    local writes = { all = h.setAny }
+    for _, key in ipairs(spec.keys()) do
+        local text = spec.labels[key] or key
+        options[#options + 1] = {
+            value = key, label = text,
+            isActive = function() return h.isOn(key) end,
+            tooltip = rowTooltip(text, spec.tips[key]),
+        }
+        writes[key] = function() h.setOn(key) end
+    end
+    dd.presets = writes
+    dd.onMultiSelect = h.refreshText
+    dd:SetOptions(options)
+    tooltip(dd, spec.title, spec.tip)
+end
+
+local function stockMulti(dd, spec, h)
+    dd:SetupMenu(function(_, root)
+        menuTooltip(root:CreateCheckbox(L.SELECT_ANY, h.isAny, h.setAny), L.SELECT_ANY, L.SELECT_ANY_TOOLTIP)
+        root:CreateDivider()
+        for _, key in ipairs(spec.keys()) do
+            local text = spec.labels[key] or key
+            menuTooltip(root:CreateCheckbox(text, h.isOn, h.setOn, key), text, spec.tips[key])
+        end
+    end)
+    menuTooltip(dd, spec.title, spec.tip)
+end
+
+-- spec = { title = text, tip = text, keys = fn() -> ordered keys, labels = { [key] = text },
+--          tips = { [key] = text }, isOn = fn(key), toggle = fn(key), clear = fn(),
+--          selected = fn() -> ordered selected keys }
 local function multiSelect(body, y, spec)
-    local dd = CreateFrame("DropdownButton", nil, body, "WowStyle1DropdownTemplate")
-    dd:SetWidth(SELECT_W)
+    local flat = flatDropdown(body, SELECT_W)
+    local dd = flat or stockDropdown(body)
+    if not flat then dd:SetWidth(SELECT_W) end
     dd:SetPoint("TOPRIGHT", 0, y)
-    addGlyph(dd)
     local function isAny() return NS.Filters.IsAny(spec.selected(), anyTotal(spec)) end
     -- An all-ticked set reads as Any, so its entries show unticked, as an empty one's do.
     local function isOn(key) return spec.isOn(key) and not isAny() end
-    local function refreshText() dd:OverrideText(selectionSummary(spec.selected(), anyTotal(spec), spec.labels)) end
+    local function refreshText()
+        local text = selectionSummary(spec.selected(), anyTotal(spec), spec.labels)
+        if flat then dd.text:SetText(text) else dd:OverrideText(text) end
+    end
     local function respond(write, key)
         if not stoodDown() then
             write(key)
@@ -406,16 +477,12 @@ local function multiSelect(body, y, spec)
         end
         return MenuResponse and MenuResponse.Refresh
     end
-    local function setOn(key) return respond(spec.toggle, key) end
-    local function setAny() return respond(spec.clear) end
-    dd:SetupMenu(function(_, root)
-        menuTooltip(root:CreateCheckbox(L.SELECT_ANY, isAny, setAny), L.SELECT_ANY, L.SELECT_ANY_TOOLTIP)
-        root:CreateDivider()
-        for _, key in ipairs(spec.keys()) do
-            local text = spec.labels[key] or key
-            menuTooltip(root:CreateCheckbox(text, isOn, setOn, key), text, spec.tips[key])
-        end
-    end)
+    local handlers = {
+        isAny = isAny, isOn = isOn, refreshText = refreshText,
+        setOn = function(key) return respond(spec.toggle, key) end,
+        setAny = function() return respond(spec.clear) end,
+    }
+    if flat then flatMulti(dd, spec, handlers) else stockMulti(dd, spec, handlers) end
     dd.RefreshSummary = refreshText
     return dd
 end
@@ -431,6 +498,7 @@ local function buildRegionRow(f, body, y)
     local portal = NS.Regions.GetPortal()
     local keys = (portal and NS.Regions.KEYS[portal]) or {}
     f.regionSelect = multiSelect(body, y, {
+        title = L.REGIONS, tip = L.REGIONS_SELECT_TOOLTIP,
         keys = function() return keys end,
         labels = NS.Regions.LABELS,
         tips = keyedTips(keys, "REGION_TIP_"),
@@ -439,7 +507,6 @@ local function buildRegionRow(f, body, y)
         clear = function() NS.Filters.ClearRegions(portal) end,
         selected = function() return NS.Filters.SelectedRegions(portal) end,
     })
-    menuTooltip(f.regionSelect, L.REGIONS, L.REGIONS_SELECT_TOOLTIP)
     f.regionSelect:SetShown(portal ~= nil)
     f.regionsUnsupported = body:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
     f.regionsUnsupported:SetPoint("TOPRIGHT", 0, y - 5)
@@ -461,6 +528,7 @@ end
 local function buildPlaystyleRow(f, body, y)
     checkRow(f, body, "playstyleEnabled", L.PLAYSTYLE, y, L.PLAYSTYLE_TOOLTIP)
     f.playstyleSelect = multiSelect(body, y, {
+        title = L.PLAYSTYLE, tip = L.PLAYSTYLE_SELECT_TOOLTIP,
         keys = function() return NS.Filters.PLAYSTYLES end,
         labels = playstyleLabels(),
         tips = keyedTips(NS.Filters.PLAYSTYLES, "PLAYSTYLE_TIP_"),
@@ -469,7 +537,6 @@ local function buildPlaystyleRow(f, body, y)
         clear = NS.Filters.ClearPlaystyles,
         selected = NS.Filters.SelectedPlaystyles,
     })
-    menuTooltip(f.playstyleSelect, L.PLAYSTYLE, L.PLAYSTYLE_SELECT_TOOLTIP)
     return y - SELECT_ROW_H
 end
 
@@ -479,6 +546,7 @@ local function buildCompositionRow(f, body, y)
     checkRow(f, body, "compositionEnabled", L.COMPOSITION, y, L.COMPOSITION_TOOLTIP)
     local keys = NS.Filters.COMPOSITION
     f.compositionSelect = multiSelect(body, y, {
+        title = L.COMPOSITION, tip = L.COMPOSITION_SELECT_TOOLTIP,
         keys = function() return keys end,
         labels = { noSameSpec = L.NO_SAME_SPEC, noSameClassRole = L.NO_SAME_CLASSROLE },
         tips = { noSameSpec = L.NO_SAME_SPEC_TOOLTIP, noSameClassRole = L.NO_SAME_CLASSROLE_TOOLTIP },
@@ -488,7 +556,6 @@ local function buildCompositionRow(f, body, y)
         clear = NS.Filters.ClearComposition,
         selected = NS.Filters.SelectedComposition,
     })
-    menuTooltip(f.compositionSelect, L.COMPOSITION, L.COMPOSITION_SELECT_TOOLTIP)
     return y - SELECT_ROW_H
 end
 
@@ -514,6 +581,37 @@ end
 
 local function isSelectedPreset(name) return name == NS.Presets.GetSelected() end
 
+local presetRows = {}
+
+-- Row `i` of the menu, refilled: Refresh runs on every season event, so it allocates no row twice.
+local function presetRow(i, value, text)
+    local row = presetRows[i] or {}
+    presetRows[i] = row
+    row.value, row.label = value, text
+end
+
+-- The library's single-select menu, its rows refilled on every Refresh: a preset saved or deleted on
+-- another character shows here. An empty list reads as one row that picks nothing.
+local function syncPresets(dd)
+    local names = NS.Presets.List()
+    for i, name in ipairs(names) do presetRow(i, name, name) end
+    if #names == 0 then presetRow(1, NO_PRESET, L.PRESET_EMPTY) end
+    for i = math.max(#names, 1) + 1, #presetRows do presetRows[i] = nil end
+    dd:SetOptions(presetRows)
+    local selected = NS.Presets.GetSelected()
+    dd:SetValue(selected, selected or L.PRESET_NONE)
+end
+
+local function flatPresets(dd)
+    dd.onSelect = function(name)
+        if name ~= NO_PRESET then Panel.SelectPreset(name) end
+        syncPresets(dd)
+    end
+    dd.RefreshPresets = syncPresets
+    syncPresets(dd)
+    tooltip(dd, L.PRESETS, L.PRESETS_TOOLTIP)
+end
+
 local function presetMenu(_, root)
     local names = NS.Presets.List()
     if #names == 0 then
@@ -523,6 +621,13 @@ local function presetMenu(_, root)
     for _, name in ipairs(names) do
         root:CreateRadio(name, isSelectedPreset, Panel.SelectPreset, name)
     end
+end
+
+local function stockPresets(dd)
+    dd:SetDefaultText(L.PRESET_NONE)
+    dd:SetupMenu(presetMenu)
+    dd.RefreshPresets = dd.GenerateMenu
+    menuTooltip(dd, L.PRESETS, L.PRESETS_TOOLTIP)
 end
 
 local function saveAs(name)
@@ -587,13 +692,11 @@ local function buildPresetRow(f, body, y)
     local row = { f.saveButton, f.saveAsButton, f.deleteButton }
     sameWidth(row, PRESET_BUTTON_MIN_W)
     rightAligned(row, y)
-    local dd = CreateFrame("DropdownButton", nil, body, "WowStyle1DropdownTemplate")
+    local flat = flatDropdown(body, SELECT_W)
+    local dd = flat or stockDropdown(body)
     dd:SetPoint("TOPLEFT", 4, y)
     dd:SetPoint("RIGHT", f.saveButton, "LEFT", -BUTTON_GAP, 0)
-    addGlyph(dd)
-    dd:SetDefaultText(L.PRESET_NONE)
-    dd:SetupMenu(presetMenu)
-    menuTooltip(dd, L.PRESETS, L.PRESETS_TOOLTIP)
+    if flat then flatPresets(dd) else stockPresets(dd) end
     f.presetDropdown = dd
     local h = dd:GetHeight()
     h = (type(h) == "number" and h > 0) and h or DROPDOWN_H
@@ -655,7 +758,7 @@ end
 -- Their tooltips still show.
 local function setCopyEnabled(f, on)
     setLocked(f.rangeBox, not on)
-    dimText(f.copyLabel, not on)
+    dimText(f.copyLabel, not on, "text.body")
 end
 
 -- Apply leaves keyboard focus alone: taking it into the copy box held the keyboard (movement, chat)
@@ -681,9 +784,6 @@ end
 -- ── layout and collapse ─────────────────────────────────────────────────────────────────────────
 
 -- Collapsed, the panel shows only its title strip: the skin's title band and the arrow.
--- The collapsed height while EllesmereUI paints this owner: EllesmereUI's Shell draws a 25px top bar
--- whatever the Ka0s `title.height` token says (host geometry, the rollout's DECISIONS D4).
-local EUI_SHELL_HEADER_H = 25
 -- Ka0s Default's title band, for a facade that names none (the degraded one, without the library).
 local HEADER_H    = 30
 -- The min/max button (PG-02 of the skin fonts and feedback run, ruling D-20): one size in every
@@ -703,21 +803,28 @@ local function syncMinMax(f, collapsed)
     if collapsed then mm:SetMaximizedLook() else mm:SetMinimizedLook() end
 end
 
--- The skin's title band as S.Shell draws it, read live so a switch moves what sits on it: its top
--- inset (`win.borderSize` in from a flat edge, else 1: SkinPaint.lua's shellBands) and its height
--- (`title.height`); EllesmereUI's 25px shell bar flush with the top once EllesmereUI paints this owner.
-local function titleBand()
-    if NS.SkinEUIPainted() then return 0, EUI_SHELL_HEADER_H end
-    local S = NS.Skin
-    local h = S.Token("title.height")
-    local inset = (S.Token("win.borderStyle") or "flat") == "flat" and S.Token("win.borderSize") or 1
-    return type(inset) == "number" and inset or 1, type(h) == "number" and h or HEADER_H
+-- The title band's inset and height, read off the band frame itself, S.Band(f) (LibKa0s
+-- SkinPaintExtras 17, R5-PG1): Shell lays it on every paint `win.borderSize` in from a flat edge,
+-- else 1, `title.height` high, and flush and 25px high while EllesmereUI paints this owner. The
+-- library is the one place that geometry is worked out. Read live, so a switch moves what sits on
+-- it. Without the library there is no band frame, and the band is Ka0s Default's: 1 in, HEADER_H.
+local function bandRect(f)
+    local band = f.band
+    if band then
+        local _, _, _, x = band:GetPoint(1)
+        local h = band:GetHeight()
+        if type(x) == "number" and type(h) == "number" and h > 0 then return x, h end
+    end
+    return 1, HEADER_H
 end
 
--- The collapsed height: the band's height (a switch to a skin with another band refolds).
-local function collapsedHeight()
-    local _, h = titleBand()
-    return h
+-- The collapsed height: the band plus the edge above and below it, inset + h + inset (a switch to a
+-- skin with another band refolds). Shell lays the band `inset` down and draws the edge inside the
+-- frame, so the band's height alone ran the band `inset` px past the bottom edge (R5-PG2, images 59
+-- to 61: a strip below the border in every skin). EllesmereUI's bar is flush: 0 + 25 + 0.
+local function collapsedHeight(f)
+    local inset, h = bandRect(f)
+    return inset + h + inset
 end
 
 local function tintChevron(btn, r, g, b, a)
@@ -739,18 +846,21 @@ local function headerClickHeight(inset, h)
     return math.min(inset + h, -BODY_TOP)
 end
 
--- The button centered on the band, ARROW_PAD in from its right end, the same box in every skin; the
--- header's click band covers the band up to it. Anchored only when the band moved: every Refresh
--- lands here, and nothing else anchors these two frames.
-local function placeMinMax(f)
+-- The header's click band covers the band up to the button. With the library the button and the
+-- title are S.Header's (paint), which places them again on every switch; without it there is no
+-- band frame, so the button is put on Ka0s Default's band middle here, RIGHT at y = the band's
+-- middle, as S.Header would. Anchored only when the band moved: every Refresh lands here.
+local function placeHeader(f)
     local mm = f.MaximizeMinimizeFrame
     if not mm then return end
     tintChevrons(mm)
-    local inset, h = titleBand()
+    local inset, h = bandRect(f)
     if f.placedInset == inset and f.placedBand == h then return end
     f.placedInset, f.placedBand = inset, h
-    mm:ClearAllPoints()
-    mm:SetPoint("TOPRIGHT", f, "TOPRIGHT", -(inset + ARROW_PAD), -(inset + (h - ARROW_BTN) / 2))
+    if not f.band then
+        mm:ClearAllPoints()
+        mm:SetPoint("RIGHT", f, "TOPRIGHT", -(inset + ARROW_PAD), -(inset + h / 2))
+    end
     local hc = f.headerClick
     if not hc then return end
     hc:ClearAllPoints()
@@ -762,9 +872,9 @@ end
 local function applyLayout(f)
     local collapsed = NS.addon.db.profile.panelCollapsed == true
     local ok, missing = NS.Bridge.Check()
-    f:SetHeight(collapsed and collapsedHeight() or f.expandedHeight)
-    placeMinMax(f)
-    syncGlyphs(f)
+    f:SetHeight(collapsed and collapsedHeight(f) or f.expandedHeight)
+    placeHeader(f)
+    syncArrows(f)
     syncMinMax(f, collapsed)
     f.body:SetShown(ok and not collapsed)
     f.unsupported:SetShown(not ok and not collapsed)
@@ -775,6 +885,7 @@ end
 local function setCollapsed(on)
     if not Panel.frame then return end
     if not stoodDown() then NS.addon.db.profile.panelCollapsed = on and true or false end
+    if on then NS.CloseMenu() end   -- the menu is a shared popup: hiding its row does not reach it
     applyLayout(Panel.frame)
 end
 
@@ -802,8 +913,9 @@ end
 
 -- PGF's MaximizeMinimize wiring (UI/Dialog.lua OnLoad and MaximizeMinimize), on our own frame. The
 -- template's close button would hide the panel under a dialog that stays open, so it is hidden and
--- the toggle takes its place, sized and placed on the title band by placeMinMax (applyLayout), not
--- on the close button's template anchor (image-48..51 had it off the band, differently per skin).
+-- the toggle takes its place, sized here and placed on the title band by S.Header (paint; placeHeader
+-- without the library), not on the close button's template anchor (image-48..51 had it off the band,
+-- differently per skin).
 local function buildMinMax(f)
     if f.CloseButton then f.CloseButton:Hide() end
     local mm = CreateFrame("Frame", nil, f, "MaximizeMinimizeButtonFrameTemplate")
@@ -817,7 +929,7 @@ local function buildMinMax(f)
 end
 
 -- The header strip toggles too (owner request): a click anywhere on the title band does what the
--- arrow does. It spans the band from the left edge to just short of the arrow (placeMinMax), so the
+-- arrow does. It spans the band from the left edge to just short of the arrow (placeHeader), so the
 -- arrow keeps its own click; the title text above it takes no mouse, so clicks reach this button.
 local function buildHeaderClick(f)
     local b = CreateFrame("Button", nil, f)
@@ -836,10 +948,16 @@ end
 local BUILDERS = { buildActiveRow, buildKeyRow, buildRegionRow, buildPlaystyleRow, buildCompositionRow, buildLeaderRow,
     buildAgeRow, buildPresetRow, buildActionRow }
 
--- PortraitFrameBaseTemplate starts its TitleContainer 58px in from the left (room for the portrait,
--- hidden here) but only 24px in from the right (Blizzard SharedUIPanelTemplates.xml), so the title
--- sat ~17px right of center. Re-anchored 24px in on both sides: centered on the whole header, and
--- still clear of the min/max button.
+-- PortraitFrameTemplateMinimizable starts its TitleContainer 58px in from the left (room for the
+-- portrait, hidden here) but only 24px in from the right (Blizzard SharedUIPanelTemplates.xml), so
+-- the title sat ~17px right of center. Re-anchored 24px in on both sides: even on the whole header,
+-- and still clear of the min/max button.
+--
+-- The template also anchors TitleText TOP 5px down that 20px container, which left the text about
+-- 4px above the arrow on the 30px band (R5-PG1, images 42 and 43). So the container takes Ka0s
+-- Default's band (1px down, HEADER_H high) and the text LEFT and RIGHT on it, which is its vertical
+-- middle: the degraded install's header. With the library, S.Header (paint) then anchors the text to
+-- the band frame itself by `title.align`, in every skin.
 local TITLE_INSET = 24
 
 local function centerTitle(f)
@@ -848,6 +966,12 @@ local function centerTitle(f)
     tc:ClearAllPoints()
     tc:SetPoint("TOPLEFT", f, "TOPLEFT", TITLE_INSET, -1)
     tc:SetPoint("TOPRIGHT", f, "TOPRIGHT", -TITLE_INSET, -1)
+    tc:SetHeight(HEADER_H)
+    local title = tc.TitleText
+    if type(title) ~= "table" or not title.ClearAllPoints then return end
+    title:ClearAllPoints()
+    title:SetPoint("LEFT", tc, "LEFT", 0, 0)
+    title:SetPoint("RIGHT", tc, "RIGHT", 0, 0)
 end
 
 -- A host-matched surface (frame-layering-§1): the panel takes PGF's dialog strata by reading it,
@@ -864,7 +988,7 @@ end
 -- ── the paint ───────────────────────────────────────────────────────────────────────────────────
 
 -- Every font string of `frame`, the role each takes: the dimmed notes `disabled`, the copy label its
--- face only (its color is dimText's), every other label and the readout `body`. Bare S.Text, never
+-- face only (`body` or dimmed, dimText's), every other label and the readout `body`. Bare S.Text, never
 -- `{ panel = true }`: the panel is a window, so it keeps the skin under Ignore settings panel (D-01).
 local function paintTexts(S, f, frame)
     for _, r in ipairs({ frame:GetRegions() }) do
@@ -888,7 +1012,7 @@ local function paint(f)
     S.Shell(f, { stock = { f.Bg, f.TopTileStreaks } })
     local title = type(f.TitleContainer) == "table" and f.TitleContainer.TitleText
     if title then S.Text(title, "title") end
-    -- The arrows: the skin's button box under the chevrons buildMinMax drew (tinted by placeMinMax).
+    -- The arrows: the skin's button box under the chevrons buildMinMax drew (tinted by placeHeader).
     -- Not S.PageButton: EllesmereUI's facade takes "<" or ">" only and draws "up" and "down" as the
     -- words (image-33/34), and the in-client arrow it draws is rotated art, not the icon set's.
     local mm = f.MaximizeMinimizeFrame
@@ -896,11 +1020,15 @@ local function paint(f)
         S.Button(mm.MinimizeButton)
         S.Button(mm.MaximizeButton)
     end
+    -- The header on the band (R5-PG1): S.Band is the band Shell lays, as a frame (nil without the
+    -- library); S.Header anchors the title by `title.align` and the arrow RIGHT ARROW_PAD in, both at
+    -- y 0 on the band, so both sit on its middle. Recorded, so every switch lays and places them again.
+    f.band = S.Band(f)
+    S.Header(f, { title = title or nil, inset = TITLE_INSET,
+        right = mm and { { frame = mm, width = ARROW_BTN, x = ARROW_PAD } } or nil })
     S.Checkbox(f.activeCheck, { borderInset = CHECK_INSET })
     for _, cb in pairs(f.checks) do S.Checkbox(cb, { borderInset = CHECK_INSET }) end
     for _, box in ipairs({ f.levelBox, f.ageBox, f.rangeBox }) do S.EditBox(box) end
-    -- `stock`: S.Dropdown's own list knows neither of the template's two art regions by name (image 35).
-    for _, dd in ipairs(f.dropdowns) do S.Dropdown(dd, { stock = { dd.Background, dd.Arrow } }) end
     for _, b in ipairs({ f.saveButton, f.saveAsButton, f.deleteButton, f.applyButton, f.clearButton }) do
         S.Button(b)
     end
@@ -929,6 +1057,7 @@ local function buildFrame(dialog)
     f.expandedHeight = -BODY_TOP - y + BODY_BOTTOM
     f.dropdowns = { f.regionSelect, f.playstyleSelect, f.compositionSelect, f.presetDropdown }
     f.unsupported = label(f, "", 14, BODY_TOP, "GameFontDisable")
+    f:HookScript("OnHide", function() NS.CloseMenu() end)
     buildMinMax(f)
     buildHeaderClick(f)
     paint(f)
@@ -979,7 +1108,7 @@ function Panel.Refresh()
     local selected = NS.Presets.GetSelected() ~= nil
     f.saveButton:SetEnabled(selected)
     f.deleteButton:SetEnabled(selected)
-    f.presetDropdown:GenerateMenu()
+    f.presetDropdown:RefreshPresets()
     updateReadout(f)
     updateRange(f)
     applyLayout(f)

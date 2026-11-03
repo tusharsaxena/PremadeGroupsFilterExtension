@@ -53,6 +53,7 @@ NS.Launcher = lib:New({
 
     openSettings = function() NS.addon:OpenSettings() end,
 
+    openSkinPicker = function() if NS.RunSkinVerb then NS.RunSkinVerb() end end,
     isEnabled  = function() return NS.SchemaRuntime and NS.SchemaRuntime.Get("enabled") ~= false end,
     setEnabled = function(on) NS.addon:SlashEnabled(on) end,
 

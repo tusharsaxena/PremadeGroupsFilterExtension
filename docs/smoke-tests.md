@@ -12,7 +12,7 @@ takes the next free number in its theme and a retired number is never reused.
 |---|---|---|
 | INSTALL-1..3 | Install | Load with and without PGF, reload, first run |
 | SLASH-1..4 | Slash | `/pgfe` verbs, help, the long alias, `/pgfe skin` |
-| PANEL-1..5 | Settings panel | Landing page, General page, Defaults, the General page's layout after item 020, the Filters tab's note line |
+| PANEL-1..6 | Settings panel | Landing page, General page, Defaults, the General page's layout after item 020, the Filters tab's note line, Master controls after the Sim checkbox re-cut |
 | PROFILE-1..2 | Profiles | The Profiles page and `/pgfe profile` |
 | STATE-1..2 | Enable / disable | Stand-down and stand-up |
 | COMBAT-1..2 | Combat | Apply refusal, settings panel in combat |
@@ -23,6 +23,10 @@ takes the next free number in its theme and a retired number is never reused.
 | LOC-1..2 | Non-English client | Realm-name and dungeon-name seams on a deDE/frFR client |
 | SKIN-1..10 | EllesmereUI skin (retired) | The record of the addon's own EllesmereUI bridge, retired by the skinning rollout's PG-06 (2026-10-29); EllesmereUI is now the library's `eui` skin source |
 | SKIN-11..33 | Skins | The skinning rollout (2026-10-29) and its library follow-ups (2026-10-30): Ka0s Default's look, the Skin tab, the first-run picker, the attached panel, the settings pages and the debug console under every skin, fonts, profiles, the copy, stand-down, the `euiSkin` migration, EllesmereUI on and off, diagnostics, the launcher, a degraded install, the panel under the Scope switches |
+| SKIN-43..47 | Skins | The full skinning run (2026-11-01, LibKa0s v1.85.0): the Ka0s menu on the panel's dropdowns, the tooltip and input roles, the marks, the unknown realm's tag |
+| SKIN-48 | Skins | The owner's third smoke round (R3-FRIZ): a stored pick of the deleted Ka0s Friz Quadrata TT lands on Ka0s Ubuntu |
+| SKIN-49.. | Skins | The owner's fifth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND5/`): the skin list's outside-press close, the panel's header centering |
+| SKIN-52.. | Skins | The owner's sixth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND6/`): the skin picker's preview contract, which this addon does not take (no eye, no preview mode) |
 | SKIN-34..42 | Skins | The skin fonts and feedback run (2026-10-30, LibKa0s v1.82.0): the Font outline setting, the panel's text and the Font outline's default, the new faces, the attached panel's width parity across skins, the collapse button's chevron and place; the findings remediation's re-anchor check, the panel's flat dropdowns and the one media picker |
 
 ## Before you start
@@ -92,6 +96,12 @@ season. Know your best timed level per dungeon (the Mythic+ tab) before the APPL
   still follows it. `/pgfe list` does not show the line; **Defaults** → Yes raises no error. Fail: the
   line missing, drawn twice, or too faint to read.
   Result:
+- **PANEL-6. Master controls after the Sim checkbox re-cut (R6-RV2, LibKa0s OptionsCompose minor 19).**
+  This addon has no sim mode and passes no sim hooks, so the re-vendored composer must draw the tab it
+  drew. Settings → General → *Master controls* under Ka0s Default and one other skin → Enable, Debug
+  console, Minimap button and *Reset all settings*, in the same places as before; no *Sim mode* box and
+  no *Test mode* box. Tick and untick each box once → it toggles as before; `/pgfe list` unchanged.
+  Fail: a Sim mode or Test mode box, a moved or missing row, or a Lua error. Result:
 
 ## Profiles
 
@@ -210,20 +220,22 @@ substitute its numbers.
 - **APPLY-16. (Removed.)** The Min leader M+ score row is gone: PGF's own *M+ Rating* row covers the
   leader's rating. The panel has no such row, and Apply writes no `mprating` clause. Result: pass (owner-marked 2026-10-10)
 - **APPLY-17. Multi-select dropdowns.** Open the Server regions dropdown → *Any* (ticked) heads
-  the list above a divider, then this portal's regions as checkboxes; tick two → the menu stays
+  the Ka0s menu, a divider under it, then this portal's regions; tick two → the menu stays
   open, *Any* unticks, the button reads e.g. `OCE, CHI`; click *Any* → the menu stays open and every
   region unticks, the button reads `Any`. Tick every region one by one → on the last one the
   regions untick, *Any* is ticked and the button reads `Any` (never `5 selected`). Same for
-  Playstyle; three long names read `3 selected`. Result: pass (owner-marked 2026-10-10)
+  Playstyle; three long names read `3 selected`. Result: Passed (owner, 2026-11-02)
 - **APPLY-18. Playstyle.** Playstyle on with Relaxed ticked, Apply → the block holds `( relaxed )`;
   hover a few listings → each is listed as Relaxed. Result: pass (owner-marked 2026-10-10)
 - **APPLY-19. Tooltips.** Hover each checkbox row, on the box and on its label → a tooltip names
   the option and says what it does (Untimed dungeons, Smart, Server regions, Playstyle,
   Composition, Experienced leader, Max group age); clicking the label
-  toggles the box. Hover the three number boxes, the three dropdown buttons, every entry in the
-  Server regions and Playstyle menus (e.g. OCE → Oceanic realms, Sydney data center), Save, Save
-  as…, Delete, Apply, Clear and the copy field → each has a tooltip. The dropdowns' hover art still
-  works and no tooltip sticks after the pointer leaves. Result: pass (owner-marked 2026-10-10)
+  toggles the box. Hover the three number boxes, the four dropdown buttons, Save, Save
+  as…, Delete, Apply, Clear and the copy field → each has a tooltip. Open the Server regions, Playstyle
+  and Composition menus and hover each row, *Any* included → the row names the entry and says what it
+  does (OCE: Oceanic realms, in the Sydney data center); the button's own tooltip no longer lists the
+  entries. No tooltip sticks after the pointer leaves or the menu closes.
+  Result: Passed (owner, 2026-11-02)
 - **APPLY-20. Smart key level.** On a character that never used the addon, *Smart* is ticked and
   the panel matches the owner's defaults: Toggle, Untimed dungeons, Smart, Server regions, Playstyle and
   Composition ticked (all three dropdowns read Any); Experienced leader and Max group age (15)
@@ -399,8 +411,8 @@ Default, and a player who wants the client's look picks **WoW Default** (SKIN-11
   label dim when there is no range; Save and Delete gray when disabled; the readout's targeted
   dungeons in the skin's accent and the others gray; PGF minimized or unsupported shows the gray
   note. Hover any option → the tooltip's title and body take the skin's tooltip colors and the
-  tooltip frame is Blizzard's. Open each dropdown → the menu is Blizzard's. *Save as* and *Delete* →
-  the popups are stock and draw over the panel (LAYER-2). Result: pass (owner-marked 2026-10-30)
+  tooltip frame is Blizzard's. Open each dropdown → the menu wears the skin (SKIN-43). *Save as* and
+  *Delete* → the popups are stock and draw over the panel (LAYER-2). Result: Passed (owner, 2026-11-02)
 - **SKIN-18. The settings pages under each skin (PG-01, PG-04).** Untick **Ignore settings panel**,
   then walk the landing page, every General tab (Region tags: its headings, preview lines, color
   pickers in their rows and the reset button; Filters: the switch and its lines) and the Profiles
@@ -567,6 +579,84 @@ EllesmereUI read took a shorter path; nothing should look different.
   the first click selects and closes, and the row reads it. Reset both. Fail: a stock pull-out, a
   blank row on the first open, or a Lua error. Result:
 
+- **SKIN-43. The panel's menus are the Ka0s menu (cause A2).** Open PGF on Dungeons. Open Server
+  regions, Playstyle, Composition and Presets under Ka0s Default, then under Ember and Glass → each
+  menu is the flat Ka0s menu in the skin's fill, edge, hover and text, never Blizzard's; ticked rows
+  carry the Ka0s tick and the selected color, in the skin's body face. A tick keeps a multi-select
+  open and the button's summary updates behind it. Hover a multi-select row → its tooltip, in the
+  skin's tooltip colors; the divider under *Any* is the skin's. With no presets, Presets lists one row, *No
+  presets saved*, and picking it changes nothing. Save a preset, then reopen → it is
+  listed; pick it → the options load and the button reads its name. Save one with a 32-letter name
+  and pick it → the button holds one line, cut short before the arrow, never wrapped. Open a menu,
+  then collapse the panel by its band, or press Escape on PGF's dialog → the menu closes with it. With
+  EllesmereUI
+  painting the panel → one arrow on each dropdown, and the menu in EllesmereUI's derived colors. Fail:
+  a Blizzard menu, a menu left floating, a wrapped button label, a selection that does not reach the
+  filters, or a Lua error.
+  Result: Passed (owner, 2026-11-02)
+- **SKIN-44. The tooltip and input roles (cause L8).** Under Ka0s Default, hover any option → the
+  name is white over a gold body, as before. Under Ember → name and body change with the skin. On
+  Ka0s Default the level box with Smart off, the copy box and the *Copy into search box* label read
+  the same 0.9 gray as the Age box and the other labels (they were white). Under Ember the same three
+  match their neighbors. Fail: a box brighter than the Age box beside it, or a Lua error. Result: Passed (owner, 2026-11-02)
+- **SKIN-45. The library's marks and the degraded install (cause L6, v1.85.0's icons line).** Scope
+  cleared, walk the settings pages → the marks the library draws beside skinned controls show, none
+  blank, under every skin. The minimap button's tooltip words follow the skin (L1). Fail: a blank
+  square where a mark should be, which is how a name missing from `LibKa0s icons:` shows. Result: Passed (owner, 2026-11-02)
+- **SKIN-46. The unknown realm's tag (the typed-value gate).** On a listing whose leader's realm the map
+  does not know, the row leads with a gray `?`. Under Ka0s Default it is the same gray as before; under
+  Ember the next repaint of the list draws it in the skin's disabled color. Fail: a `?` that stays
+  `9d9d9d` under another skin, or a Lua error. Result: Passed (owner, 2026-11-02)
+
+- **SKIN-47. The library paints the panel's dropdowns alone (SF-PG-1, LibKa0s #71).** The addon passes no
+  `opts.stock` and keeps no `dd.arrow` of its own for the stock dropdown template; the library's flat
+  dropdown is the only paint. Repeat SKIN-41 on Ka0s Default and Ember → the same flat box and one triangle.
+  Fail: a gold button, two arrows, or a Lua error. Result: Passed (owner, 2026-11-02)
+- **SKIN-48. A stored pick of the deleted Friz lands on Ka0s Ubuntu (R3-FRIZ, schema 3).** Before updating,
+  set the Skin tab's **Font** to *Ka0s Friz Quadrata TT* in two profiles and log out. Update and fully
+  restart the client (a new font file) → the filter panel draws in Ubuntu and the Font row reads *Ka0s
+  Ubuntu*; switch to the other profile → the same. Fail: the game's default face, or the row still naming
+  Ka0s Friz Quadrata TT. Result:
+
+- **SKIN-49. The skin list closes on an outside press (R5-RV, LibKa0s R5-L4).** `/pgfe skin` → open the skin
+  list. Press the picker window's body → the list closes. Open it again and press the game world → it closes.
+  Open it again and press the **Font** dropdown → the list closes and the Font list opens. Repeat from
+  `/pgfe config` → General → **Skin**. Escape still closes the window. Fail: a list that stays open after a
+  press outside it, a Font press that needs a second click, or a Lua error. Result:
+
+- **SKIN-50. The title and the collapse arrow share the band's middle (R5-PG1, images 42 and 43).** Open PGF
+  on Dungeons. Under each of the nine skins in turn, Ember and High Contrast first (their title faces are
+  the furthest off their own line box, so they show a face-level offset if there is one), then Ka0s
+  Default, Obsidian, Azeroth, Glass, WoW Default, WoW Midnight and WoW Forever → the title's letters
+  (ignore the descenders of "p" and "G") and the arrow's chevron are centered on the same line, the
+  middle of the header band, within 1 px. Collapse and
+  expand → the same. With EllesmereUI painting the panel → both on the middle of EllesmereUI's bar.
+  `/dump PremadeGroupsFilterExtensionPanel.TitleContainer.TitleText:GetPoint(1)` → `CENTER`, a frame, `CENTER`,
+  0, 0. Fail: the title visibly above or below the arrow in any skin, or a Lua error. Result:
+- **SKIN-51. Collapsed, the panel is only the header band and its edges (R5-PG2, images 59 to 61).** Open
+  PGF on Dungeons and collapse the panel. Under each of the nine skins in turn, Ka0s Default, Ember and WoW
+  Midnight first (the owner's images), then Obsidian, Azeroth, Glass, High Contrast, WoW Default and WoW
+  Forever → the bottom border is the panel's last line: no strip of black, body or band color shows
+  below it, and the band fills the space between the top and bottom borders. Expand and collapse again →
+  the same. With EllesmereUI painting the panel → the collapsed panel is EllesmereUI's 25px bar, nothing
+  below it. `/dump PremadeGroupsFilterExtensionPanel:GetHeight()` collapsed under Ka0s Default → 32.
+  Fail: any strip below the bottom border in any skin, or a Lua error. Result:
+
+- **SKIN-52. The re-vendored picker, every close route (R6-RV, LibKa0s OptionsSkinPicker minor 11).** With
+  PGF's dialog closed, `/pgfe skin` → the picker shows in front, with no eye and a settings gear, and nothing
+  else opens. Pick another skin, then close the picker by each route in turn, reopening it with
+  `/pgfe skin` each time: the close control, Escape, the gear (it opens General on its **Skin** tab), and
+  **Apply** last. After each close but Apply → the stored skin is worn again (`/pgfe get skin.skin`
+  unchanged); after Apply → the pick is stored. Repeat with PGF open on Dungeons → the same, and the
+  attached panel previews the pick while the picker is up. Fail: an eye, a window or mode that turns on
+  with the picker, a close that leaves the pick worn but unstored, or a Lua error. Result:
+- **SKIN-53. No preview mode: the documented no-preview addon (R6-PV).** PGFE's mode is *none*. With PGF's
+  dialog closed, `/pgfe skin` → the picker shows with no eye, and no window, test mode or unlock turns on;
+  PGF's dialog stays closed. Close it by the close control → nothing to put back, nothing else changes.
+  Open PGF on Dungeons, then `/pgfe skin` → the same: no eye, the attached panel stays as it was, and
+  closing leaves PGF's dialog and the panel open. Fail: an eye, anything that opens or closes with the
+  picker, or a Lua error. Result:
+
 ## Frame layering
 
 The panel takes PGF's dialog strata by reading it, and a PGFE StaticPopup shown while the panel is
@@ -639,3 +729,13 @@ On 2026-10-31 the owner reported that every check of the skin fonts and feedback
 and SKIN-34 to SKIN-39, each recorded on its `Result:` line.
 
 Owed from the findings remediation (`docs/2026-10-31-FINDINGS_REMEDIATION/`): SKIN-40, SKIN-41, SKIN-42, PANEL-5.
+
+Owed from the full skinning run (Ka0sAddonsCommonTasks `docs/2026-11-01-FULL_SKINNING/`, LibKa0s v1.85.0): SKIN-43, SKIN-44, SKIN-45, SKIN-46, SKIN-47, and APPLY-17, APPLY-19 and SKIN-17, whose expected results changed with it.
+
+Owed from the owner's third smoke round (Ka0sAddonsCommonTasks `docs/2026-11-02-SMOKE_ROUND3/`, R3-FRIZ): SKIN-48.
+
+On 2026-11-02 the owner reported that every check on the smoke lists of the full skinning run and its smoke feedback batch (Ka0sAddonsCommonTasks `docs/2026-11-01-FULL_SKINNING/` and `docs/2026-11-01-SMOKE_FEEDBACK/`) passed, apart from DpsRace's clock font, the skinned look of the AceGUI Dropdown and the Ka0sMedia_Font and Ka0sMedia_Statusbar pickers, FadeNineSlice and IconBorder (`docs/2026-11-02-SMOKE_ROUND3/`, R3-SMOKE). Passed, recorded on each `Result:` line as `Passed (owner, 2026-11-02)`: APPLY-17, APPLY-19, SKIN-17, SKIN-43, SKIN-44, SKIN-45, SKIN-46 and SKIN-47.
+
+Owed from the owner's fifth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND5/`): SKIN-49, SKIN-50, SKIN-51.
+
+Owed from the owner's sixth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND6/`): SKIN-52, SKIN-53, PANEL-6.

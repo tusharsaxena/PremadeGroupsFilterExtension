@@ -6,6 +6,7 @@ local T = _G.PGFE_TEST
 local test, assertEqual, assertTrue, assertFalse = T.test, T.assertEqual, T.assertTrue, T.assertFalse
 local H = dofile("tests/panel_helpers.lua")
 local seasonFromScreenshot, menuEntries, typeInto = H.seasonFromScreenshot, H.menuEntries, H.typeInto
+local ddText = H.ddText
 
 -- The lines a tooltip fill function writes (a dropdown's or a menu entry's SetTooltip).
 local function tipLines(fn)
@@ -63,20 +64,19 @@ test("panel: the regions and playstyle dropdowns are 225 wide, right-aligned in 
     end
 end)
 
-test("panel: each menu opens with Any and a divider; Any is ticked with nothing ticked and clears", function()
-    local NS, _, m = T.enableAddon{}
-    m.MenuResponse = { Refresh = 2 }
+test("panel: each menu opens with Any; Any is ticked with nothing ticked and clears", function()
+    local NS = T.enableAddon{}
     NS.Panel.Create(); NS.Panel.Refresh()
     for _, dd in ipairs({ NS.Panel.frame.regionSelect, NS.Panel.frame.playstyleSelect }) do
         local e = menuEntries(dd)
-        assertEqual(e.order[1], "any"); assertEqual(e.order[2], "divider")
+        assertEqual(dd._options[1].value, "all", "Any heads the list")
         assertEqual(e.any.text, NS.L.SELECT_ANY)
         assertTrue(e.any.isOn())
         e[1].set(e[1].data)
         assertFalse(e.any.isOn()); assertTrue(e[1].isOn(e[1].data))
-        assertEqual(e.any.set(), 2, "the menu stays open")
+        e.any.set()
         assertTrue(e.any.isOn()); assertFalse(e[1].isOn(e[1].data))
-        assertEqual(dd:GetText(), NS.L.SELECT_ANY)
+        assertEqual(ddText(dd), NS.L.SELECT_ANY)
     end
     assertEqual(next(NS.Filters.Get().playstyles), nil)
     assertEqual(next(NS.Filters.Get().regions), nil)
@@ -91,12 +91,12 @@ test("panel: ticking every option stores Any and the button reads Any", function
     for i = 1, #e do e[i].set(e[i].data) end
     -- red under: drop the isFull clear after the toggle in Filters' toggleIn
     assertEqual(next(NS.Filters.Get().playstyles), nil, "the full set is stored as Any")
-    assertEqual(dd:GetText(), NS.L.SELECT_ANY)
+    assertEqual(ddText(dd), NS.L.SELECT_ANY)
     assertTrue(e.any.isOn())
     local r = menuEntries(NS.Panel.frame.regionSelect)
     for i = 1, #r do r[i].set(r[i].data) end
     assertEqual(#NS.Filters.SelectedRegions("US"), 0)
-    assertEqual(NS.Panel.frame.regionSelect:GetText(), NS.L.SELECT_ANY)
+    assertEqual(ddText(NS.Panel.frame.regionSelect), NS.L.SELECT_ANY)
 end)
 
 test("panel: a stored all-ticked set reads Any; a tick then selects that option alone", function()
@@ -106,12 +106,12 @@ test("panel: a stored all-ticked set reads Any; a tick then selects that option 
     NS.Panel.Refresh()
     local dd = NS.Panel.frame.playstyleSelect
     -- red under: summarize only an empty selection as Any in Panel's selectionSummary
-    assertEqual(dd:GetText(), NS.L.SELECT_ANY)
+    assertEqual(ddText(dd), NS.L.SELECT_ANY)
     local e = menuEntries(dd)
     assertTrue(e.any.isOn()); assertFalse(e[2].isOn(e[2].data))
     e[2].set(e[2].data)
     assertEqual(table.concat(NS.Filters.SelectedPlaystyles(), ","), "relaxed")
-    assertEqual(dd:GetText(), NS.L.PLAYSTYLE_RELAXED)
+    assertEqual(ddText(dd), NS.L.PLAYSTYLE_RELAXED)
 end)
 
 -- Owner report (screenshot): the readout sat a full extra gap above the Server regions row.
@@ -160,6 +160,47 @@ test("panel: every checkbox has a tooltip, and its label hovers and clicks as th
     assertEqual(f.checks.compositionEnabled.__hitRect[2], -(11 + #NS.L.COMPOSITION * 6))
 end)
 
+test("panel: the Presets dropdown lists the presets, picks one, and an empty list picks nothing", function()
+    -- red under: rows built once at build (a preset saved later never shows), the empty row handed
+    -- to Panel.SelectPreset, or rows left past the list's end (a deleted preset stays as a ghost).
+    local NS = T.enableAddon{}
+    local f = NS.Panel.Create(); NS.Panel.Refresh()
+    local dd = f.presetDropdown
+    assertEqual(ddText(dd), NS.L.PRESET_NONE)
+    assertEqual(#dd._options, 1); assertEqual(dd._options[1].label, NS.L.PRESET_EMPTY)
+    local picked, select = 0, NS.Panel.SelectPreset
+    NS.Panel.SelectPreset = function() picked = picked + 1 end
+    dd:SetValue(dd._options[1].value, dd._options[1].label); dd.onSelect(dd._options[1].value)
+    NS.Panel.SelectPreset = select
+    assertEqual(picked, 0, "the empty row selects nothing")
+    assertEqual(ddText(dd), NS.L.PRESET_NONE, "the empty row picks nothing")
+    NS.Presets.Save("Alpha"); NS.Presets.Save("Beta"); NS.Panel.Refresh()
+    local names = {}
+    for i, o in ipairs(dd._options) do names[i] = o.label end
+    assertEqual(table.concat(names, ","), "Alpha,Beta")
+    dd:SetValue("Beta", "Beta"); dd.onSelect("Beta")
+    assertEqual(NS.Presets.GetSelected(), "Beta")
+    assertEqual(ddText(dd), "Beta")
+    NS.Presets.Delete("Beta"); NS.Panel.Refresh()
+    assertEqual(#dd._options, 1, "no ghost row for the deleted preset")
+    assertEqual(dd._options[1].label, "Alpha")
+end)
+
+test("panel: the shared menu closes when the panel hides or collapses", function()
+    -- The popup is parented to UIParent, so nothing the panel hides reaches it.
+    -- red under: no NS.CloseMenu on the panel's OnHide, or on the collapse.
+    local NS, _, m = T.enableAddon{}
+    local W = m.LibStub("LibKa0s-Widgets-1.0")
+    local closed, real = 0, W.CloseMenu
+    W.CloseMenu = function() closed = closed + 1; return real() end
+    local f = NS.Panel.Create(); NS.Panel.Refresh()
+    f:__fire("OnHide")
+    assertEqual(closed, 1, "the panel's OnHide")
+    f.headerClick:__fire("OnClick")
+    assertEqual(closed, 2, "the collapse")
+    W.CloseMenu = real
+end)
+
 test("panel: every number box, button and the copy box and its label have a tooltip", function()
     local NS, _, m = T.enableAddon{}
     local f = NS.Panel.Create()
@@ -174,23 +215,80 @@ test("panel: every number box, button and the copy box and its label have a tool
     assertEqual(hoverLines(m, f.levelBox)[1], NS.L.KEY_TARGETING)
 end)
 
-test("panel: each dropdown and every menu entry has a tooltip", function()
+--- The lines a menu row's `tooltip` renderer draws, and the owner it gives GameTooltip.
+local function rowTipLines(m, row, frame)
+    local lines = {}
+    local setText, addLine = m.GameTooltip.SetText, m.GameTooltip.AddLine
+    m.GameTooltip.SetText = function(_, t) lines[#lines + 1] = t end
+    m.GameTooltip.AddLine = function(_, t) lines[#lines + 1] = t end
+    row.tooltip(frame, row)
+    m.GameTooltip.SetText, m.GameTooltip.AddLine = setText, addLine
+    return lines, m.GameTooltip:GetOwner()
+end
+
+test("panel: each dropdown has a tooltip, and every multi-select entry has its own", function()
+    -- red under: an entry's `tooltip` dropped from flatMulti, or the button carrying the entries again.
     local NS, _, m = T.enableAddon{}
+    m.currentRegion = 1
+    local f = NS.Panel.Create()
+    local lines = hoverLines(m, f.regionSelect)
+    assertEqual(lines[1], NS.L.REGIONS)
+    assertEqual(lines[2], NS.L.REGIONS_SELECT_TOOLTIP, "the button says what the dropdown is, no more")
+    local frame = m.CreateFrame("Button")
+    local regions = menuEntries(f.regionSelect)
+    local any, owner = rowTipLines(m, regions.any.row, frame)
+    assertEqual(any[1], NS.L.SELECT_ANY); assertEqual(any[2], NS.L.SELECT_ANY_TOOLTIP)
+    assertTrue(owner == frame, "the hovered row owns the tooltip")
+    assertEqual(rowTipLines(m, regions[1].row, frame)[2], "Oceanic realms, in the Sydney data center.")
+    for _, e in ipairs(regions) do
+        assertEqual(rowTipLines(m, e.row, frame)[2], NS.L["REGION_TIP_" .. e.data:upper()], e.data)
+    end
+    for _, e in ipairs(menuEntries(f.playstyleSelect)) do
+        assertEqual(rowTipLines(m, e.row, frame)[2], NS.L["PLAYSTYLE_TIP_" .. e.data:upper()], e.data)
+    end
+    local comp = menuEntries(f.compositionSelect)
+    assertEqual(rowTipLines(m, comp[1].row, frame)[1], NS.L.NO_SAME_SPEC)
+    assertEqual(rowTipLines(m, comp[1].row, frame)[2], NS.L.NO_SAME_SPEC_TOOLTIP)
+    assertEqual(hoverLines(m, f.presetDropdown)[2], NS.L.PRESETS_TOOLTIP)
+    -- Every region of both portals has its line.
+    for _, keys in pairs(NS.Regions.KEYS) do
+        for _, key in ipairs(keys) do assertTrue(isLocaleString(NS.L["REGION_TIP_" .. key:upper()]), key) end
+    end
+end)
+
+test("panel: Any sits above a divider in the library's menu, as in the client's", function()
+    -- red under: the { divider = true } row dropped from flatMulti.
+    local NS, _, m = T.enableAddon{}
+    m.currentRegion = 1
+    local f = NS.Panel.Create()
+    for _, dd in ipairs({ f.regionSelect, f.playstyleSelect, f.compositionSelect }) do
+        local order = menuEntries(dd).order
+        assertEqual(order[1], "any"); assertEqual(order[2], "divider"); assertEqual(order[3], "entry")
+    end
+end)
+
+test("panel: a menu row's tooltip stays quiet while stood down", function()
+    -- red under: the stoodDown gate dropped from rowTooltip.
+    local NS, _, m = T.enableAddon{}
+    m.currentRegion = 1
+    local f = NS.Panel.Create()
+    local row = menuEntries(f.regionSelect).any.row
+    NS.addon:OnSlashCommand("disable")
+    assertEqual(#rowTipLines(m, row, m.CreateFrame("Button")), 0)
+end)
+
+test("panel: without the library each dropdown and every menu entry keeps the client's tooltip", function()
+    local NS, _, m = T.enableAddon{ skip = T.loadAddon.libFiles }
     m.currentRegion = 1
     local f = NS.Panel.Create()
     for _, dd in ipairs({ f.regionSelect, f.playstyleSelect, f.presetDropdown }) do
         assertEqual(#tipLines(dd.__tooltip), 2)
     end
     local regions = menuEntries(f.regionSelect)
+    assertEqual(regions.order[1], "any"); assertEqual(regions.order[2], "divider")
     assertEqual(tipLines(regions.any.tooltip)[2], NS.L.SELECT_ANY_TOOLTIP)
     assertEqual(tipLines(regions[1].tooltip)[1], "OCE")
     assertEqual(tipLines(regions[1].tooltip)[2], "Oceanic realms, in the Sydney data center.")
-    for _, e in ipairs(regions) do assertTrue(isLocaleString(tipLines(e.tooltip)[2]), e.data) end
-    for _, e in ipairs(menuEntries(f.playstyleSelect)) do assertTrue(isLocaleString(tipLines(e.tooltip)[2]), e.data) end
-    -- Every region of both portals has its line.
-    for _, keys in pairs(NS.Regions.KEYS) do
-        for _, key in ipairs(keys) do assertTrue(isLocaleString(NS.L["REGION_TIP_" .. key:upper()]), key) end
-    end
 end)
 
 test("panel: tooltips stay quiet while stood down", function()
@@ -199,7 +297,7 @@ test("panel: tooltips stay quiet while stood down", function()
     NS.addon:OnSlashCommand("disable")
     -- red under: drop the stand-down return in Panel's tooltip
     assertEqual(#hoverLines(m, f.checks.keyTargeting), 0)
-    assertEqual(#tipLines(f.regionSelect.__tooltip), 0)
+    assertEqual(#hoverLines(m, f.regionSelect), 0)
 end)
 
 local function hasText(parent, text)
@@ -370,7 +468,7 @@ test("panel: a fresh character sees the owner's default panel", function()
     assertFalse(f.levelBox:IsEnabled(), "Smart locks the level box")
     assertEqual(f.ageBox:GetText(), "15")
     for _, dd in ipairs({ f.regionSelect, f.playstyleSelect, f.compositionSelect }) do
-        assertEqual(dd:GetText(), NS.L.SELECT_ANY)
+        assertEqual(ddText(dd), NS.L.SELECT_ANY)
     end
 end)
 
@@ -395,12 +493,11 @@ end)
 
 -- Owner request: the two composition boxes become one multi-select with Any.
 test("panel: Composition is one dropdown; Any clears, both ticked stays both (not Any)", function()
-    local NS, _, m = T.enableAddon{}
-    m.MenuResponse = { Refresh = 2 }
+    local NS = T.enableAddon{}
     local f = NS.Panel.Create(); NS.Panel.Refresh()
     assertEqual(f.checks.noSameSpec, nil); assertEqual(f.checks.noSameClassRole, nil)
     local dd = f.compositionSelect
-    assertEqual(dd:GetText(), NS.L.SELECT_ANY)
+    assertEqual(ddText(dd), NS.L.SELECT_ANY)
     local entries = menuEntries(dd)
     local any = entries.any
     assertEqual(#entries, 2)
@@ -409,11 +506,11 @@ test("panel: Composition is one dropdown; Any clears, both ticked stays both (no
     local filt = NS.Filters.Get()
     -- red under: allIsAny left true for composition (both ticked would read and clear as Any)
     assertTrue(filt.noSameSpec); assertTrue(filt.noSameClassRole)
-    assertTrue(dd:GetText() ~= NS.L.SELECT_ANY)
+    assertTrue(ddText(dd) ~= NS.L.SELECT_ANY)
     assertFalse(any.isOn())
     any.set()
     assertFalse(filt.noSameSpec); assertFalse(filt.noSameClassRole)
-    assertEqual(dd:GetText(), NS.L.SELECT_ANY)
+    assertEqual(ddText(dd), NS.L.SELECT_ANY)
 end)
 
 -- Owner request: a "Use the extension's filters" box as the first option, on by default; unticked it
@@ -471,6 +568,35 @@ test("panel: the title is centered on the whole header", function()
     assertEqual(x1, -x2, "the same inset on both sides"); assertEqual(y1, y2)
 end)
 
+-- R5-PG1 (Ka0sAddonsCommonTasks docs/2026-11-03-SMOKE_ROUND5, images 42 and 43): the template anchors
+-- TitleText TOP 5px down its 20px container (tests/wow_mock.lua seeds it), which sat the title about
+-- 4px above the arrow. Without the library there is no band frame for S.Header to place it on, so the
+-- host's own header is Ka0s Default's band: the container 1px down and 30px high, the title LEFT and
+-- RIGHT on it (its middle), and the arrow RIGHT at the same middle. tests/test_skin.lua pins the
+-- library's placement in every skin.
+test("panel: without the library the title and the arrow share Ka0s Default's band middle", function()
+    -- red under: centerTitle moving only the container (the title keeps the template's TOP), or the
+    -- arrow left unanchored when S.Header is the degraded no-op.
+    local NS = T.enableAddon{ skip = T.loadAddon.libFiles }
+    local f = NS.Panel.Create(); NS.Panel.Refresh()
+    assertEqual(f.band, nil, "no band frame without the library")
+    local tc, title = f.TitleContainer, f.TitleContainer.TitleText
+    assertEqual(tc.__height, 30, "the container is the band's height")
+    local _, _, _, _, ty = tc:GetPoint(1)
+    assertEqual(ty, -1, "1px down, the band's top")
+    assertEqual(#title.__points, 2, "LEFT and RIGHT, no TOP")
+    for i = 1, 2 do
+        local p, rel, rp, _, y = title:GetPoint(i)
+        assertTrue(p == "LEFT" or p == "RIGHT", "point " .. tostring(p))
+        assertTrue(rel == tc); assertEqual(rp, p); assertEqual(y, 0)
+    end
+    local mm = f.MaximizeMinimizeFrame
+    assertEqual(#mm.__points, 1)
+    local p, rel, rp, x, y = mm:GetPoint(1)
+    assertEqual(p, "RIGHT"); assertTrue(rel == f); assertEqual(rp, "TOPRIGHT")
+    assertEqual(x, -(1 + 4)); assertEqual(y, -(1 + 30 / 2), "the band's middle, the title's too")
+end)
+
 -- Owner request: with "Untimed dungeons at key level" off, the copy box and its label are dimmed and
 -- the box disabled; ticked again, both come back.
 test("panel: the copy box and its label dim, disable and empty while key targeting is off", function()
@@ -488,7 +614,7 @@ test("panel: the copy box and its label dim, disable and empty while key targeti
     assertEqual(f.rangeBox:GetText(), "")
     cb:SetChecked(true); cb:__fire("OnClick")
     assertTrue(f.rangeBox:IsEnabled())
-    assertEqual(f.copyLabel.__textColor[1], 1)
+    assertEqual(f.copyLabel.__textColor[1], 0.9, "the same body color as the labels beside it")
     assertEqual(f.rangeBox:GetText(), NS.Targeting.RangeText(NS.Filters.Get().keyLevel), "the range comes back")
 end)
 

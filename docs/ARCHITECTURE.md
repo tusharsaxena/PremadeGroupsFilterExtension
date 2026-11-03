@@ -31,7 +31,7 @@ child), its third-party skinning and this addon's Third-Party Addons entry are o
 ([`superpowers/plans/2026-10-09-eui-skin.md`](superpowers/plans/2026-10-09-eui-skin.md)) was
 retired by the skinning rollout (2026-10-29).
 
-Built to the Ka0s WoW Addon Standard: Ace3, vendored `LibKa0s` v1.84.0 (one setup file per adopted
+Built to the Ka0s WoW Addon Standard: Ace3, vendored `LibKa0s` v1.85.0 (one setup file per adopted
 major), schema-driven master settings, the launcher, one stand-down latch, headless tests and
 luacheck. Retail only (`## Interface: 120105`). The design is
 [`superpowers/specs/2026-10-09-m-plus-v0.1-design.md`](superpowers/specs/2026-10-09-m-plus-v0.1-design.md)
@@ -75,8 +75,8 @@ table and the load-order reasoning: [`module-map.md`](module-map.md).
 (`core/MediaSetup.lua`), Compat (`core/Compat.lua`), Env (`core/EnvSetup.lua`), DebugLog
 (`core/DebugLogSetup.lua`), Launcher (`core/LauncherSetup.lua`), Lifecycle
 (`core/LifecycleSetup.lua`), Schema (`settings/SchemaSetup.lua`), Options
-(`settings/OptionsSetup.lua`), Slash (`settings/Slash.lua`). Vendored and not wired: Bus, Pool, Item,
-Widgets, Perf (the performance-§12 exemption), Glow, Sim, Toast. Ace3, LibSharedMedia, LibDataBroker and LibDBIcon are vendored under `libs/` too
+(`settings/OptionsSetup.lua`), Slash (`settings/Slash.lua`), Widgets (`core/WidgetsSetup.lua`). Vendored and not wired: Bus, Pool, Item,
+Perf (the performance-§12 exemption), Glow, Sim, Toast, Charts. Ace3, LibSharedMedia, LibDataBroker and LibDBIcon are vendored under `libs/` too
 (`DEPENDENCIES.md`).
 
 The feature modules, one purpose each:
@@ -84,7 +84,7 @@ The feature modules, one purpose each:
 | Unit | File | Purpose |
 |---|---|---|
 | PGF bridge | `core/PGFBridge.lua` | The only file that touches PGF internals (see [PGF seams](#pgf-seams)) |
-| Skin seam | `core/SkinSetup.lua` | The LibKa0s-Skin-1.0 owner (the folder), the `skin.*` write seam, the first-run skin picker, and EllesmereUI as the library's `eui` provider reports it (see [EllesmereUI seams](#ellesmereui-seams)) |
+| Skin seam | `core/SkinSetup.lua` | The LibKa0s-Skin-1.0 owner (the folder), the `skin.*` write seam, the first-run skin picker, and EllesmereUI as the library's `eui` provider reports it (see [EllesmereUI seams](#ellesmereui-seams)). The picker's spec passes no `spec.preview` and no `onPreview`, so it draws no eye and enters no preview mode: the addon has no window of its own (the standard's documented no-preview addon) |
 | Realm data | `defaults/Realms.lua` | `NS.RealmLists`: realm display names per portal and region bucket ([`realm-map-maintenance.md`](realm-map-maintenance.md)) |
 | Regions | `modules/Regions.lua` | Portal detection, realm normalization, leader name → region key |
 | Season | `modules/Season.lua` | Current-season dungeons: cmID, name, short keyword, best timed level |
@@ -157,6 +157,9 @@ order that CallbackHandler's fan-out does not promise. There are three reaction 
 - **`NS.Skin.OnLooksChanged`** (`modules/Panel.lua`, registered when the panel is built): the
   library fires it after a skin change repainted the recorded frames, and the panel refreshes, which
   re-writes the colors it reads from tokens and refolds a collapsed panel to the new title band.
+  Collapsed, the panel is the band plus its edge above and below, `inset + title.height + inset`
+  (`collapsedHeight`, R5-PG2): Shell lays the band `inset` down and draws the edge inside the frame,
+  so the band's height alone left a strip of the band below the bottom edge.
 
 ## Slash Commands
 
@@ -202,7 +205,10 @@ The first-run skin picker's combat retry is not a feature event either: when `NS
 private frame, unregistered and let go of when it fires and by the stand-down (`NS.HideSkinPicker`),
 so a stood-down addon is registered for nothing and keeps no retry frame; the next held start makes its
 own. The picker itself shows from `OnEnable` and after every profile
-event, on a profile whose `skin.pickerSeen` is false, never while stood down.
+event, on a profile whose `skin.pickerSeen` is false, never while stood down. Before it, `NS.MaybeShowSkinPicker`
+asks the library's one-time skin notice (`NS.MaybeShowSkinNotice`, SG-L3; its record is
+`global.skinNotice`). A notice refused for combat is asked again on a 5 s one-shot `C_Timer.After`
+(`NOTICE_RETRY`, one at a time) until combat ends, again with no event registered.
 
 EllesmereUI's skin callback is not this addon's: LibKa0s-Skin-1.0 registers the owner with
 `EllesmereUI.RegisterSkin` when `core/SkinSetup.lua` calls `RegisterOwner` at file load, and takes
@@ -299,8 +305,10 @@ library's:
   `tests/test_skin_eui.lua`).
 - **The paint.** Once EllesmereUI paints the owner (`NS.SkinEUIPainted()`), the panel's recorded
   primitives go to EllesmereUI's facade. The panel keeps the host geometry: 24px check buttons, flush
-  under the dialog, and a collapsed height of EllesmereUI's 25px shell bar (`EUI_SHELL_HEADER_H`,
-  `modules/Panel.lua`), with the min/max button centered on that bar. The min/max arrows are the
+  under the dialog, and a collapsed height of EllesmereUI's 25px shell bar, with the title and the
+  min/max button centered on that bar. The bar's geometry is the library's: `S.Band(f)` lays the band
+  frame flush and 25px high under that source, `modules/Panel.lua`'s `bandRect` reads it back, and
+  `S.Header` anchors the title and the button to it at y 0 (R5-PG1, LibKa0s v1.85.0 round 5). The min/max arrows are the
   skin's `Button` box under the addon's own chevrons, never `PageButton`: EllesmereUI's facade takes
   `"<"` or `">"` only and drew `"up"` / `"down"` as the words. Before EllesmereUI paints, the `eui` source draws the stored skin (the
   library's live fallback), Ka0s Default unless the player chose another. The diagnostics' skin

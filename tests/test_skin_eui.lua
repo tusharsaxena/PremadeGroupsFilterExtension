@@ -39,7 +39,7 @@ test("eui migration: with EllesmereUI, every profile but an explicit false moves
     local NS, _, profiles = migrated({
         Default = { panelCollapsed = true }, On = { euiSkin = true }, Off = { euiSkin = false },
     })
-    assertEqual(NS.addon.db.global.schemaVersion, 2)
+    assertEqual(NS.addon.db.global.schemaVersion, 3)
     assertEqual(source(profiles.Default), "eui", "no key: the old default, on")
     assertEqual(source(profiles.On), "eui")
     assertEqual(source(profiles.Off), nil, "an explicit false keeps the Ka0s source")
@@ -198,8 +198,16 @@ test("eui: the min/max button is EllesmereUI's box with the chevron, never a wor
         assertEqual(btn.chevron.__texture, NS.Icon(icon), icon .. ": the chevron, on top")
         assertTrue(btn.chevronHolder.__parent == btn, icon .. ": a child frame, not a region EllesmereUI fades")
     end
-    local p, _, _, x, y = mm:GetPoint(1)
-    assertEqual(p, "TOPRIGHT"); assertEqual(x, -4); assertEqual(y, -(25 - 20) / 2)
+    -- On the band frame (R5-PG1), which the library lays flush at the top and 25px high under the
+    -- EllesmereUI source: RIGHT 4px in at y 0, its middle.
+    local band = NS.Skin.Band(f)
+    local _, _, _, bx, by = band:GetPoint(1)
+    assertEqual(bx, 0); assertEqual(by, 0); assertEqual(band:GetHeight(), 25)
+    local p, rel, rp, x, y = mm:GetPoint(1)
+    assertEqual(p, "RIGHT"); assertTrue(rel == band, "on the band"); assertEqual(rp, "RIGHT")
+    assertEqual(x, -4); assertEqual(y, 0)
+    local tp, trel, _, _, ty = f.TitleContainer.TitleText:GetPoint(1)
+    assertEqual(tp, "CENTER"); assertTrue(trel == band, "the title on the band too"); assertEqual(ty, 0)
 end)
 
 -- ── diagnostics ──────────────────────────────────────────────────────────────────────────────────
@@ -246,4 +254,19 @@ test("eui diagnostics: the skin section reports the choice and the library's Ell
     assertTrue(text:find("skin applied=eui:ka0s stored=eui:ka0s", 1, true) ~= nil, text)
     assertTrue(text:find("EllesmereUI conditions eui=true, master=true, own=true, facade=true", 1, true) ~= nil, text)
     assertTrue(text:find("EllesmereUI ok=true painted=true refused=none", 1, true) ~= nil, text)
+end)
+
+-- R3-FRIZ: LibKa0s v1.85.0 deleted Ka0s Friz Quadrata TT (R3-L7); v3 moves a stored pick of it to Ka0s
+-- Ubuntu in every profile. red under: no v3 step, one that walks the active profile only, or one that
+-- rewrites Blizzard's own "Friz Quadrata TT".
+test("friz migration: a stored Ka0s Friz Quadrata TT moves to Ka0s Ubuntu in every profile, Blizzard's Friz kept", function()
+    local NS, _, profiles = migrated({
+        Default = { skin = { font = "Ka0s Friz Quadrata TT" } }, Alt = { skin = { font = "Ka0s Friz Quadrata TT" } },
+        Plain = { skin = { font = "Friz Quadrata TT" } },
+    }, false)
+    assertEqual(NS.addon.db.global.schemaVersion, 3)
+    assertEqual(profiles.Default.skin.font, "Ka0s Ubuntu", "the active profile's override")
+    assertEqual(profiles.Alt.skin.font, "Ka0s Ubuntu", "another profile's override")
+    assertEqual(profiles.Plain.skin.font, "Friz Quadrata TT", "Blizzard's own Friz stays")
+    assertEqual(NS.RetireFonts(profiles.Alt), 0, "a second pass moves nothing")
 end)

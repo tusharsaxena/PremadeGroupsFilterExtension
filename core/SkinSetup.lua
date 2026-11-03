@@ -57,11 +57,13 @@ local addonName, NS = ...
 --   NS.SkinEUIPainted()     true once EllesmereUI painted this owner this session: modules/Panel.lua
 --                           folds to EllesmereUI's shell bar and seats the arrow on it then.
 --
--- No owner tokens (skinning-§1): every color the addon draws under Ka0s Default is a library token's
--- exact value (the M0 inventory's PG-G1..G3 were refuted, Ka0sAddonsCommonTasks
--- docs/2026-10-29-SKINNING_ROLLOUT/01_INVENTORY.md), so RegisterOwner carries no `tokens` table.
--- A color a later surface needs that no library token holds is added here, as `pg.<name>` with its
--- Ka0s Default `default` and a `follow` role token, in the same change.
+-- Two owner tokens (skinning-§1): `pg.tipName`, a panel tooltip's option name, which Ka0s Default
+-- draws white, the Blizzard settings convention, where `gtip.title` is gold, and every other skin
+-- follows `gtip.title` (cause L8); and `pg.regionUnknown`, the `?` tag of a realm the map does not
+-- know, which keeps Ka0s Default's 9d9d9d and follows `text.disabled`. Every other color the addon draws under Ka0s Default is a library token's
+-- exact value. A color a later surface needs that no library token holds is added to
+-- OWNER_TOKENS, as `pg.<name>` with its Ka0s Default `default` and a `follow` role token, in the
+-- same change.
 --
 -- ── WHERE IT LOADS ───────────────────────────────────────────────────────────────────────────
 --
@@ -99,13 +101,19 @@ local DEFAULT = "ka0s"
 -- entry to the live library's Ka0s Default value: a copy that drifts goes red there. A surface
 -- converted to a token adds the token here in the same change.
 NS.SKIN_FALLBACK = {
-    ["title.text"]     = { 1, 0.82, 0, 1 },
-    ["text.body"]      = { 0.9, 0.9, 0.9, 1 },
-    ["text.accent"]    = { 1, 0.82, 0, 1 },
-    ["text.highlight"] = { 1, 1, 1, 1 },
-    ["text.disabled"]  = { 0.5, 0.5, 0.5, 1 },
-    ["gtip.title"]     = { 1, 0.82, 0, 1 },
-    ["gtip.value"]     = { 1, 1, 1, 1 },
+    ["title.text"]    = { 1, 0.82, 0, 1 },
+    ["text.body"]     = { 0.9, 0.9, 0.9, 1 },
+    ["text.accent"]   = { 1, 0.82, 0, 1 },
+    ["text.disabled"] = { 0.5, 0.5, 0.5, 1 },
+    ["input.text"]    = { 0.9, 0.9, 0.9, 1 },
+    ["gtip.line"]     = { 1, 0.82, 0, 1 },
+    ["pg.tipName"]    = { 1, 1, 1, 1 },
+    ["pg.regionUnknown"] = { 157 / 255, 157 / 255, 157 / 255, 1 },
+}
+
+local OWNER_TOKENS = {
+    ["pg.tipName"] = { default = { 1, 1, 1, 1 }, follow = "gtip.title" },
+    ["pg.regionUnknown"] = { default = { 157 / 255, 157 / 255, 157 / 255, 1 }, follow = "text.disabled" },
 }
 
 --- A color token's components AS A CALL SITE WRITES THEM: r, g, b for an opaque color and r, g, b,
@@ -234,6 +242,7 @@ end
 -- NO EYE (X6). The attached panel shows only under Premade Groups Filter's dialog, and the addon has
 -- no window of its own and no test mode to preview in, so `onPreview` is omitted and the picker
 -- draws no eye; the gear opens the General page on its Skin tab (key "Appearance").
+-- `spec.preview` (OptionsSkinPicker minor 11) is omitted too: the documented no-preview addon (R6-PV).
 --
 -- QUEUED. One picker is up at a time across every Ka0s addon: while another addon's is up,
 -- O.SkinPicker queues this one and answers nil, "queued", which NS.MaybeShowSkinPicker passes
@@ -314,6 +323,51 @@ function NS.MaybeShowSkinPicker()
     return O.SkinPicker(NS.SkinPickerSpec())
 end
 
+-- ── the one-time skin notice (LibKa0s OptionsSkinPicker minor 9, SG-L3) ────────────────────────
+-- A release that wants every account to learn skins exist raises lib.SKIN_NOTICE_VERSION. The first
+-- addon to ask in a session claims the notice and shows the picker; every other addon records the
+-- version and stays quiet. The record is `db.global.skinNotice`, a number: account-wide, so a profile
+-- switch never shows it twice. In combat nothing is claimed; it asks again every NOTICE_RETRY seconds until combat ends.
+local NOTICE_RETRY = 5   -- seconds between asks while the player is in combat
+local noticeWaiting = false
+
+local function noticeGlobal()
+    local d = NS.db or (NS.addon and NS.addon.db)
+    return d and d.global or nil
+end
+
+local noticeStore = {
+    get = function() local g = noticeGlobal(); return g and g.skinNotice or nil end,
+    set = function(v) local g = noticeGlobal(); if g then g.skinNotice = v end end,
+}
+
+function NS.MaybeShowSkinNotice()
+    local O = options()
+    if not (O and type(O.SkinNotice) == "function" and noticeGlobal()) then return nil, "unavailable" end
+    if NS.IsStoodDown and NS.IsStoodDown() then
+        -- A stood-down addon shows nothing, but a seen record still silences the rest (SG-L3).
+        O.SkinNotice(nil, noticeStore, true)
+        return nil, "standdown"
+    end
+    local spec = NS.SkinPickerSpec()
+    local frame, why = O.SkinNotice(spec, noticeStore)
+    if why == "combat" and not noticeWaiting and type(_G.C_Timer) == "table" and _G.C_Timer.After then
+        noticeWaiting = true
+        _G.C_Timer.After(NOTICE_RETRY, function()
+            noticeWaiting = false
+            NS.MaybeShowSkinNotice()
+        end)
+    end
+    return frame, why
+end
+
+local pickerFirstRun = NS.MaybeShowSkinPicker
+function NS.MaybeShowSkinPicker()
+    local frame, why = NS.MaybeShowSkinNotice()
+    if frame or why == "queued" then return frame, why end
+    return pickerFirstRun()
+end
+
 --- `/pgfe skin` (LibKa0s v1.82.0, OptionsSkinPicker minor 3, ruling D-16): O.SkinVerb with the spec
 --- the first-run start builds, so it shows the picker a new profile shows whatever skin.pickerSeen
 --- says. The library prints its own lines (combat on every call, queued, unavailable); without
@@ -365,7 +419,14 @@ if not Skin then
         "GetAccentColor", "GetPanelColor", "GetFont",
         "TitleBar", "Divider", "Footer", "Card", "Slider", "NavItem", "Drawer", "ListRow", "MenuFrame",
         "Tooltip", "Strip", "Cover", "Text", "ChartStyle", "BarStyle", "IconBorder", "GlowColor",
-        "BarTexture",
+        "BarTexture", "Mark",
+        -- LibKa0s v1.85.0: nil is each getter's degraded answer, and this addon draws none of them.
+        -- BarGloss draws nothing: no skin, no gloss. HoverArt leaves the client's art.
+        "HudTextColor", "HudLabelColor", "BarFillColor", "HudShadow", "BarGloss", "HoverArt",
+        -- LibKa0s v1.85.0 round 5 (Skin 16, SkinPaintExtras 17): Band answers nil, there being no
+        -- Shell band to hold, and Header places nothing: modules/Panel.lua's
+        -- centerTitle and placeHeader put the title and the arrow on Ka0s Default's band instead.
+        "Band", "Header",
     }) do S[name] = noop end
 
     S.Token = function(name) return NS.SKIN_FALLBACK[name] end
@@ -398,6 +459,26 @@ if not Skin then
         local n = tonumber(size)
         return (n and n > 0) and n or 12
     end
+    -- LibKa0s v1.85.0 (SkinPaintExtras minor 9): a string a caller concatenates, so never nil. The
+    -- same markup in the art's own color, there being no tint to read.
+    S.MarkText = function(path, size)
+        size = size or 14
+        return ("|T%s:%d:%d|t"):format(path, size, size)
+    end
+    -- LibKa0s v1.85.0 (SkinPaintExtras minor 16): no skin to defer to, so the three stored values.
+    S.BarBorder = function(style, show, size) return style, show, size end
+    -- LibKa0s v1.85.0 (SkinPaintExtras minor 14): the one member that must draw; the Options
+    -- document's stub. Both shadow arms are written, so the off arm clears.
+    S.HudFont = function(fs, opts)
+        opts = type(opts) == "table" and opts or {}
+        local face = opts.face
+        if type(face) ~= "string" or face == "" then face = _G.STANDARD_TEXT_FONT end
+        if type(face) ~= "string" then return nil end
+        fs:SetFont(face, S.HudFontSize(opts.size), S.FontFlags(opts.flags))
+        local on = opts.shadow and true or false
+        fs:SetShadowColor(0, 0, 0, on and 1 or 0)
+        fs:SetShadowOffset(on and 1 or 0, on and -1 or 0)
+    end
 
     NS.Skin = S
     function NS.ApplySkinChoice() return false, false end
@@ -420,6 +501,7 @@ Skin:RegisterOwner(addonName, {
     label = BRAND,
     get = NS.SkinChoice,
     set = NS.WriteSkinChoice,
+    tokens = OWNER_TOKENS,
 })
 
 -- The one line a reload request earns on the path that has no popup of its own (a profile event
