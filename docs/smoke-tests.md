@@ -26,6 +26,7 @@ takes the next free number in its theme and a retired number is never reused.
 | SKIN-43..47 | Skins | The full skinning run (2026-11-01, LibKa0s v1.85.0): the Ka0s menu on the panel's dropdowns, the tooltip and input roles, the marks, the unknown realm's tag |
 | SKIN-48 | Skins | The owner's third smoke round (R3-FRIZ): a stored pick of the deleted Ka0s Friz Quadrata TT lands on Ka0s Ubuntu |
 | SKIN-49.. | Skins | The owner's fifth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND5/`): the skin list's outside-press close, the panel's header centering |
+| SKIN-52.. | Skins | The owner's sixth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND6/`): the skin picker's preview contract, which this addon does not take (no eye, no preview mode) |
 | SKIN-34..42 | Skins | The skin fonts and feedback run (2026-10-30, LibKa0s v1.82.0): the Font outline setting, the panel's text and the Font outline's default, the new faces, the attached panel's width parity across skins, the collapse button's chevron and place; the findings remediation's re-anchor check, the panel's flat dropdowns and the one media picker |
 
 ## Before you start
@@ -635,6 +636,15 @@ EllesmereUI read took a shorter path; nothing should look different.
   below it. `/dump PremadeGroupsFilterExtensionPanel:GetHeight()` collapsed under Ka0s Default → 32.
   Fail: any strip below the bottom border in any skin, or a Lua error. Result:
 
+- **SKIN-52. The re-vendored picker, every close route (R6-RV, LibKa0s OptionsSkinPicker minor 11).** With
+  PGF's dialog closed, `/pgfe skin` → the picker shows in front, with no eye and a settings gear, and nothing
+  else opens. Pick another skin, then close the picker by each route in turn, reopening it with
+  `/pgfe skin` each time: the close control, Escape, the gear (it opens General on its **Skin** tab), and
+  **Apply** last. After each close but Apply → the stored skin is worn again (`/pgfe get skin.skin`
+  unchanged); after Apply → the pick is stored. Repeat with PGF open on Dungeons → the same, and the
+  attached panel previews the pick while the picker is up. Fail: an eye, a window or mode that turns on
+  with the picker, a close that leaves the pick worn but unstored, or a Lua error. Result:
+
 ## Frame layering
 
 The panel takes PGF's dialog strata by reading it, and a PGFE StaticPopup shown while the panel is
@@ -715,3 +725,5 @@ Owed from the owner's third smoke round (Ka0sAddonsCommonTasks `docs/2026-11-02-
 On 2026-11-02 the owner reported that every check on the smoke lists of the full skinning run and its smoke feedback batch (Ka0sAddonsCommonTasks `docs/2026-11-01-FULL_SKINNING/` and `docs/2026-11-01-SMOKE_FEEDBACK/`) passed, apart from DpsRace's clock font, the skinned look of the AceGUI Dropdown and the Ka0sMedia_Font and Ka0sMedia_Statusbar pickers, FadeNineSlice and IconBorder (`docs/2026-11-02-SMOKE_ROUND3/`, R3-SMOKE). Passed, recorded on each `Result:` line as `Passed (owner, 2026-11-02)`: APPLY-17, APPLY-19, SKIN-17, SKIN-43, SKIN-44, SKIN-45, SKIN-46 and SKIN-47.
 
 Owed from the owner's fifth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND5/`): SKIN-49, SKIN-50, SKIN-51.
+
+Owed from the owner's sixth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND6/`): SKIN-52.
