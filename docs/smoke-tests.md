@@ -12,7 +12,7 @@ takes the next free number in its theme and a retired number is never reused.
 |---|---|---|
 | INSTALL-1..3 | Install | Load with and without PGF, reload, first run |
 | SLASH-1..4 | Slash | `/pgfe` verbs, help, the long alias, `/pgfe skin` |
-| PANEL-1..5 | Settings panel | Landing page, General page, Defaults, the General page's layout after item 020, the Filters tab's note line |
+| PANEL-1..6 | Settings panel | Landing page, General page, Defaults, the General page's layout after item 020, the Filters tab's note line, Master controls after the Sim checkbox re-cut |
 | PROFILE-1..2 | Profiles | The Profiles page and `/pgfe profile` |
 | STATE-1..2 | Enable / disable | Stand-down and stand-up |
 | COMBAT-1..2 | Combat | Apply refusal, settings panel in combat |
@@ -96,6 +96,12 @@ season. Know your best timed level per dungeon (the Mythic+ tab) before the APPL
   still follows it. `/pgfe list` does not show the line; **Defaults** → Yes raises no error. Fail: the
   line missing, drawn twice, or too faint to read.
   Result:
+- **PANEL-6. Master controls after the Sim checkbox re-cut (R6-RV2, LibKa0s OptionsCompose minor 19).**
+  This addon has no sim mode and passes no sim hooks, so the re-vendored composer must draw the tab it
+  drew. Settings → General → *Master controls* under Ka0s Default and one other skin → Enable, Debug
+  console, Minimap button and *Reset all settings*, in the same places as before; no *Sim mode* box and
+  no *Test mode* box. Tick and untick each box once → it toggles as before; `/pgfe list` unchanged.
+  Fail: a Sim mode or Test mode box, a moved or missing row, or a Lua error. Result:
 
 ## Profiles
 
@@ -732,4 +738,4 @@ On 2026-11-02 the owner reported that every check on the smoke lists of the full
 
 Owed from the owner's fifth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND5/`): SKIN-49, SKIN-50, SKIN-51.
 
-Owed from the owner's sixth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND6/`): SKIN-52, SKIN-53.
+Owed from the owner's sixth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND6/`): SKIN-52, SKIN-53, PANEL-6.
