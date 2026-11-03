@@ -84,7 +84,7 @@ The feature modules, one purpose each:
 | Unit | File | Purpose |
 |---|---|---|
 | PGF bridge | `core/PGFBridge.lua` | The only file that touches PGF internals (see [PGF seams](#pgf-seams)) |
-| Skin seam | `core/SkinSetup.lua` | The LibKa0s-Skin-1.0 owner (the folder), the `skin.*` write seam, the first-run skin picker, and EllesmereUI as the library's `eui` provider reports it (see [EllesmereUI seams](#ellesmereui-seams)) |
+| Skin seam | `core/SkinSetup.lua` | The LibKa0s-Skin-1.0 owner (the folder), the `skin.*` write seam, the first-run skin picker, and EllesmereUI as the library's `eui` provider reports it (see [EllesmereUI seams](#ellesmereui-seams)). The picker's spec passes no `spec.preview` and no `onPreview`, so it draws no eye and enters no preview mode: the addon has no window of its own (the standard's documented no-preview addon) |
 | Realm data | `defaults/Realms.lua` | `NS.RealmLists`: realm display names per portal and region bucket ([`realm-map-maintenance.md`](realm-map-maintenance.md)) |
 | Regions | `modules/Regions.lua` | Portal detection, realm normalization, leader name → region key |
 | Season | `modules/Season.lua` | Current-season dungeons: cmID, name, short keyword, best timed level |

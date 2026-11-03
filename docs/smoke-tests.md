@@ -644,6 +644,12 @@ EllesmereUI read took a shorter path; nothing should look different.
   unchanged); after Apply → the pick is stored. Repeat with PGF open on Dungeons → the same, and the
   attached panel previews the pick while the picker is up. Fail: an eye, a window or mode that turns on
   with the picker, a close that leaves the pick worn but unstored, or a Lua error. Result:
+- **SKIN-53. No preview mode: the documented no-preview addon (R6-PV).** PGFE's mode is *none*. With PGF's
+  dialog closed, `/pgfe skin` → the picker shows with no eye, and no window, test mode or unlock turns on;
+  PGF's dialog stays closed. Close it by the close control → nothing to put back, nothing else changes.
+  Open PGF on Dungeons, then `/pgfe skin` → the same: no eye, the attached panel stays as it was, and
+  closing leaves PGF's dialog and the panel open. Fail: an eye, anything that opens or closes with the
+  picker, or a Lua error. Result:
 
 ## Frame layering
 
@@ -726,4 +732,4 @@ On 2026-11-02 the owner reported that every check on the smoke lists of the full
 
 Owed from the owner's fifth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND5/`): SKIN-49, SKIN-50, SKIN-51.
 
-Owed from the owner's sixth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND6/`): SKIN-52.
+Owed from the owner's sixth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND6/`): SKIN-52, SKIN-53.

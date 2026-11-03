@@ -242,6 +242,7 @@ end
 -- NO EYE (X6). The attached panel shows only under Premade Groups Filter's dialog, and the addon has
 -- no window of its own and no test mode to preview in, so `onPreview` is omitted and the picker
 -- draws no eye; the gear opens the General page on its Skin tab (key "Appearance").
+-- `spec.preview` (OptionsSkinPicker minor 11) is omitted too: the documented no-preview addon (R6-PV).
 --
 -- QUEUED. One picker is up at a time across every Ka0s addon: while another addon's is up,
 -- O.SkinPicker queues this one and answers nil, "queued", which NS.MaybeShowSkinPicker passes

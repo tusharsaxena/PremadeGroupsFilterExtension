@@ -57,7 +57,9 @@ end)
 
 test("skin picker: the spec names this owner, its seams, the General page's Skin tab, and no eye", function()
     -- red under: a set that is not the write seam (a pick would never reach the profile), a page or
-    -- tab key the gear cannot open, or an eye with nothing to preview in (X6).
+    -- tab key the gear cannot open, or an eye with nothing to preview in (X6), whether the one-shot
+    -- onPreview or OptionsSkinPicker minor 11's spec.preview mode contract (R6-PV: the documented
+    -- no-preview addon, so a fresh show enters no mode and a close restores nothing).
     local NS = T.enableAddon()
     local spec = NS.SkinPickerSpec()
     assertEqual(spec.owner, OWNER)
@@ -66,6 +68,7 @@ test("skin picker: the spec names this owner, its seams, the General page's Skin
     assertEqual(spec.page, "general", "the key settings/Panel.lua registered the General page under")
     assertEqual(spec.tab, "Appearance", "the Skin tab's key")
     assertEqual(spec.onPreview, nil, "no window or test mode to preview in: no eye")
+    assertEqual(spec.preview, nil, "no preview mode to enter, toggle or restore: no eye (R6-PV)")
     assertEqual(type(spec.onClose), "function")
 end)
 
