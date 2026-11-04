@@ -1,1 +1,3 @@
 Reviewer fix for R7-PG (tooltip truthfulness); red-first case added; gate 539/0/1, luacheck 0/0.
+
+Second independent review (R7, 2026-11-04): tooltip fix verified (f.alone-based function text, SetMotionScriptsWhileDisabled); its case in tests/test_testmode.lua covers the minimized dialog. No defects.
