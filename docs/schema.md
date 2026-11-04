@@ -59,7 +59,9 @@ a name gone from `global.presets` as none.
 | `minimap` | `{ hide = false }` | LibDBIcon's own table; the *Minimap button* row inverts `hide` |
 | `skinNotice` | none | The one-time skin notice's record (LibKa0s `O.SkinNotice`, SG-L3): the notice version this account has seen, a number, written by the library through `core/SkinSetup.lua`'s `noticeStore`, including while stood down. Account-wide, so a profile switch never shows the notice twice |
 
-Session-only, never stored: `NS.State.debug` (the console's logging flag).
+Session-only, never stored: `NS.State.debug` (the console's logging flag) and the test mode's flag,
+`modules/Panel.lua`'s `testMode`, read and written through the session row `state.testMode`
+(`Panel.IsTestMode` / `Panel.SetTestMode`; R7-PG), so a `/reload` always starts with it off.
 
 ## Migrations
 

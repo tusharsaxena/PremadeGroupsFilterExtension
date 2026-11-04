@@ -78,10 +78,11 @@ PGF then evaluates the expression, including the addon's block, against that env
 ## The attached panel
 
 `modules/Panel.lua`. `Panel.UpdateVisibility()` runs from the dialog hook (`SwitchToPanel`,
-`OnShow`, `OnHide`), on `PLAYER_ENTERING_WORLD` and on stand-up. It shows the panel iff the addon is
+`OnShow`, `OnHide`), on `PLAYER_ENTERING_WORLD` and on stand-up. It shows the panel docked iff the addon is
 not stood down, the dialog is shown, and its active panel is the dungeon panel (on Dungeons and not
-minimized); the frame is built on the
-first call that wants it. Every show runs `Panel.Refresh()`, which first recomputes the Smart level
+minimized); otherwise, while the session-only test mode is on (`state.testMode`, R7-PG), it shows the
+panel alone, UIParent's child centered at the docked width, with Apply and Clear disabled; the frame
+is built on the first call that wants it. A test-mode change runs it too. Every show runs `Panel.Refresh()`, which first recomputes the Smart level
 (`Filters.ApplySmartLevel`, when on and not stood down), then reads `char.filters` into the widgets
 (the level box locked and grayed under Smart), rebuilds the best-timed readout (one line, its gaps closed to one space when it overflows; gold for
 targets, gray otherwise, and "loading…" while season data is missing) and the copy box, and lays the frame out (collapsed: the title strip only, the height of the skin's
