@@ -1,0 +1,1 @@
+R7-PG2 independent review (2026-11-04): the reviewer's own test fix for fe487b9. Verified red with dock()'s SetScale(1) removed (2 cases fail), green on the branch: 544/0/1, luacheck 0/0. Test-only; no code or doc change.
