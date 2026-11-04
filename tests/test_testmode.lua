@@ -148,6 +148,20 @@ test("test mode: alone, Apply and Clear are disabled and their tooltips say why"
     assertEqual(f.__title, NS.L.PANEL_TITLE_TEST, "the title marks the test mode")
 end)
 
+test("test mode: alone beside a minimized PGF dialog, the tooltips do not call the window closed", function()
+    -- red under: a disabled-button tooltip that says PGF's window is closed while it is open, only
+    -- minimized or on another category, so the panel shows alone beside it (R7-PG review).
+    local NS, m = closedDialog()
+    m.pgf.dialog.shown = true
+    m.pgf.dialog.activePanel = { name = "mini" }
+    run(NS, m, "test")
+    assertTrue(isAlone(NS, m), "alone: the dialog does not show the panel")
+    for _, b in ipairs({ NS.Panel.frame.applyButton, NS.Panel.frame.clearButton }) do
+        local tip = hoverLines(m, b)
+        assertFalse(tostring(tip[2]):find("closed", 1, true) ~= nil, "no claim the window is closed")
+    end
+end)
+
 test("test mode: alone, the panel shows the current filters", function()
     local NS, m = closedDialog()
     NS.Filters.Set("smartKeyLevel", false)

@@ -500,7 +500,7 @@ Total.
 - skin verb: refused while the addon is disabled, and no picker shows
 - skin verb: without LibKa0s the verb prints the library-absent line
 
-### test_testmode.lua (17)
+### test_testmode.lua (18)
 
 - test mode: /pgfe test shows the panel alone, centered on UIParent, and again puts it away
 - test mode: /pgfe test on and off set it, and repeat calls change nothing
@@ -509,6 +509,7 @@ Total.
 - test mode: the Master controls box is a session row whose write is the mode
 - test mode: Reset all settings ends it
 - test mode: alone, Apply and Clear are disabled and their tooltips say why
+- test mode: alone beside a minimized PGF dialog, the tooltips do not call the window closed
 - test mode: alone, the panel shows the current filters
 - test mode: opening PGF's dialog docks the panel normally, closing it shows it alone again
 - test mode: with PGF's dialog open it changes nothing on screen
@@ -691,7 +692,7 @@ Total.
 | test_skin_eui.lua | 17 |
 | test_skin_outline.lua | 10 |
 | test_skin_verb.lua | 6 |
-| test_testmode.lua | 17 |
+| test_testmode.lua | 18 |
 | test_reset.lua | 5 |
 | test_diagnostics.lua | 6 |
 | test_glyphs.lua | 3 |
@@ -704,4 +705,4 @@ Total.
 | test_skin_values.lua | 3 |
 | test_skin_switch.lua | 41 |
 | Skipped | 1 |
-| **Total** | **538** |
+| **Total** | **539** |

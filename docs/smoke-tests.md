@@ -117,7 +117,8 @@ Finder. Headless stand-ins: the `test mode:` cases (`tests/test_testmode.lua`).
   *Ka0s Premade Groups Filter Extension (test mode)*, with your current filters (key level, regions,
   presets, the readout). Change a filter, collapse and expand it → it works as under PGF. Hover
   **Apply** and **Clear** → both are grayed out and their tooltips say Premade Groups Filter's window
-  is closed. `/pgfe test` again → "Test mode off." and the panel is gone. `/pgfe test on`, `/pgfe test
+  is not showing its Dungeons filters. Open PGF's window and minimize it → the panel stays alone and
+  the tooltips say the same, never that the window is closed. `/pgfe test` again → "Test mode off." and the panel is gone. `/pgfe test on`, `/pgfe test
   on`, `/pgfe test off` → on, still on, off. `/pgfe test maybe` → one line naming `on|off`. `/reload`
   with test mode on → it is off after the reload. Fail: the panel not showing, Apply or Clear
   clickable, the mode surviving a reload, or a Lua error. Result:
