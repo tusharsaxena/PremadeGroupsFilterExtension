@@ -55,7 +55,10 @@ test("setup: the Master controls rows are in the schema, frameless", function()
     assertTrue(H.FindSchema("enabled") ~= nil)
     assertTrue(H.FindSchema("state.debugConsole") ~= nil)
     assertTrue(H.FindSchema("global.minimap.shown") ~= nil)
-    for _, absent in ipairs({ "scale", "alpha", "locked", "visibility", "state.testMode" }) do
+    -- The test mode (R7-PG), a session row. red under: drop testModePath from MasterControls.
+    local testRow = H.FindSchema("state.testMode")
+    assertTrue(testRow ~= nil and testRow.sessionOnly == true, "state.testMode is a session row")
+    for _, absent in ipairs({ "scale", "alpha", "locked", "visibility" }) do
         assertEqual(H.FindSchema(absent), nil, absent .. " is not a row")
     end
 end)
@@ -66,7 +69,8 @@ end)
 test("setup: Master controls holds only the canonical rows", function()
     local NS = T.newAddon()
     local H = NS.addon.Settings.Helpers
-    local canonical = { enabled = true, ["state.debugConsole"] = true, ["global.minimap.shown"] = true }
+    local canonical = { enabled = true, ["state.debugConsole"] = true, ["global.minimap.shown"] = true,
+        ["state.testMode"] = true }
     for _, row in ipairs(NS.addon.Settings.Schema) do
         if row.group == H.MASTER_GROUP then
             assertTrue(canonical[row.path], tostring(row.path) .. " is not a Master controls row")

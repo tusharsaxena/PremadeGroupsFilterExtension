@@ -1,6 +1,10 @@
 local _, NS = ...
 -- modules/Panel.lua — the filter panel attached under PGF's dialog.
 --
+-- TEST MODE (R7-PG): `/pgfe test`, the Master controls box, the launcher entry and the skin picker's
+-- preview turn on a session-only mode (THE TEST MODE, below) that shows the panel ALONE, centered on
+-- UIParent, while PGF's dialog does not show it, looking exactly as it does docked (R7-PG2).
+--
 -- Rows are stacked top-down by the builders below; each input sits a fixed gap to the right of its
 -- own label, so a longer (or translated) label pushes its input along instead of under it, and the
 -- expanded height is measured from the stack. The dropdowns share one right-aligned column.
@@ -10,8 +14,8 @@ local _, NS = ...
 -- filter rows (PGF UI/Templates.xml PremadeGroupsFilterBasicTemplate: a check button and a
 -- GameFontHighlight title at x+35) (ratified: docs/ARCHITECTURE.md -> Documented deviations), and
 -- painted by the skin (below). Anchored across the dialog's bottom edge,
--- so its width follows PGF's. Shown only while the dialog is shown on the Dungeons category and the
--- addon is not stood down; built lazily the first time it is wanted. Collapsed, only the title
+-- so its width follows PGF's. Shown while the dialog is shown on the Dungeons category, or alone in
+-- the test mode, and never while the addon is stood down; built lazily the first time it is wanted. Collapsed, only the title
 -- strip is left.
 --
 -- Every option has a hover tooltip, and so does every multi-select menu entry, through the library
@@ -40,6 +44,7 @@ NS.Panel = Panel
 
 local L = NS.L
 local LEVEL = NS.Constants.LAYERS.LEVEL   -- the panel's level band: core/Constants.lua
+local STRATA = NS.Constants.LAYERS.STRATA -- the panel alone (test mode): core/Constants.lua
 
 local FRAME_NAME    = "PremadeGroupsFilterExtensionPanel"
 local BORDER_LAYOUT = "ButtonFrameTemplateNoPortraitMinimizable"
@@ -114,12 +119,13 @@ local function fillTooltip(tip, title, text)
 end
 
 -- A hover tooltip on a widget this file built. HookScript, not SetScript: UIPanelButtonTemplate
--- has its own OnEnter/OnLeave, which keep running.
+-- has its own OnEnter/OnLeave, which keep running. `text` may be a function, read at each hover (Apply
+-- and Clear say why they are disabled while the panel shows alone).
 local function tooltip(widget, title, text)
     widget:HookScript("OnEnter", function(self)
         if stoodDown() then return end
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        fillTooltip(GameTooltip, title, text)
+        fillTooltip(GameTooltip, title, type(text) == "function" and text() or text)
         GameTooltip:Show()
     end)
     widget:HookScript("OnLeave", function()
@@ -763,17 +769,25 @@ end
 
 -- Apply leaves keyboard focus alone: taking it into the copy box held the keyboard (movement, chat)
 -- until the player clicked away (owner request). Clicking the copy box selects its text; then
--- Ctrl+C, Enter (focus jumps to the search box), Ctrl+V, Enter.
+-- Ctrl+C, Enter (focus jumps to the search box), Ctrl+V, Enter. While the panel shows alone (test
+-- mode) both are disabled, since both act on PGF's dialog, and their tooltips, which a disabled button
+-- still draws (SetMotionScriptsWhileDisabled), say so.
 local function buildActionRow(f, body, y)
     y = y - ACTION_GAP
-    f.applyButton = button(body, L.APPLY, L.APPLY_TOOLTIP, function()
+    f.applyButton = button(body, L.APPLY, function()
+        return f.alone and L.TEST_MODE_APPLY_TOOLTIP or L.APPLY_TOOLTIP
+    end, function()
         reportResult(NS.Apply.Run{ search = true })
         Panel.Refresh()
     end)
-    f.clearButton = button(body, L.CLEAR, L.CLEAR_TOOLTIP, function()
+    f.clearButton = button(body, L.CLEAR, function()
+        return f.alone and L.TEST_MODE_CLEAR_TOOLTIP or L.CLEAR_TOOLTIP
+    end, function()
         NS.Apply.Report(NS.Apply.Clear())
         Panel.Refresh()
     end)
+    f.applyButton:SetMotionScriptsWhileDisabled(true)
+    f.clearButton:SetMotionScriptsWhileDisabled(true)
     sameWidth({ f.applyButton, f.clearButton }, ACTION_W)
     f.applyButton:SetPoint("TOPLEFT", 4, y)
     f.clearButton:SetPoint("LEFT", f.applyButton, "RIGHT", BUTTON_GAP, 0)
@@ -879,7 +893,8 @@ local function applyLayout(f)
     f.body:SetShown(ok and not collapsed)
     f.unsupported:SetShown(not ok and not collapsed)
     if not ok then f.unsupported:SetText(L.PGF_UNSUPPORTED:format(missing)) end
-    f.applyButton:SetEnabled(ok and NS.Filters.IsActive())
+    f.applyButton:SetEnabled(ok and NS.Filters.IsActive() and not f.alone)
+    f.clearButton:SetEnabled(not f.alone)
 end
 
 local function setCollapsed(on)
@@ -1036,7 +1051,50 @@ local function paint(f)
     paintTexts(S, f, f.body)
 end
 
--- Flush under the dialog: a flat window sits on its rect.
+-- DOCKED: flush under the dialog, its child, so it shows and hides with it, at the dialog's width
+-- and effective scale; a flat window sits on its rect, in the dialog's strata and level band.
+-- ALONE (test mode): UIParent's child, centered, at STRATA.ALONE so the skin picker (DIALOG)
+-- previewing on it stays in front, and otherwise exactly the docked panel (R7-PG2, smoke round 7
+-- images 71 to 74): the same title, header, paint and rows, at the docked width and scale. The width
+-- is the one it last showed docked at, else the dungeon panel's (Bridge.DockedWidth), else
+-- DOCKED_W; never the hidden dialog's GetWidth, which is PGF's template 300 until the dialog shows
+-- the dungeon panel, and the rows, built for 420, overlapped at it. The scale is the dialog's
+-- effective scale over UIParent's (the dialog is a PVEFrame child), read live: a hidden frame still
+-- answers it. The skin's paint is all anchored to the frame (S.Shell's bands, S.Band, S.Header), so it
+-- moves with it; Panel.UpdateVisibility refreshes the layout after every switch.
+local DOCKED_W = 420   -- PGF UI/DungeonPanel.lua:110, when the bridge cannot say
+local function dock(f, dialog)
+    f:SetParent(dialog)
+    layerWithDialog(f, dialog)
+    f:SetScale(1)
+    f:ClearAllPoints()
+    f:SetPoint("TOPLEFT", dialog, "BOTTOMLEFT", 0, 0)
+    f:SetPoint("TOPRIGHT", dialog, "BOTTOMRIGHT", 0, 0)
+    f.alone = false
+end
+
+local function positive(n) return type(n) == "number" and n > 0 and n or nil end
+
+local function effectiveScale(frame)
+    return frame and type(frame.GetEffectiveScale) == "function" and positive(frame:GetEffectiveScale())
+end
+
+-- The dialog's effective scale over UIParent's: the scale the docked panel drew at.
+local function dockedScale(dialog)
+    local d, ui = effectiveScale(dialog), effectiveScale(UIParent)
+    return (d and ui) and d / ui or 1
+end
+
+local function standAlone(f, dialog)
+    f:SetParent(UIParent)
+    f:SetFrameStrata(STRATA.ALONE)
+    f:SetScale(dockedScale(dialog))
+    f:ClearAllPoints()
+    f:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    f:SetWidth(f.dockedWidth or NS.Bridge.DockedWidth() or DOCKED_W)
+    f.alone = true
+end
+
 local function buildFrame(dialog)
     local f = CreateFrame("Frame", FRAME_NAME, dialog, "PortraitFrameTemplateMinimizable")
     layerWithDialog(f, dialog)
@@ -1045,8 +1103,7 @@ local function buildFrame(dialog)
     f:SetTitle(L.PANEL_TITLE)
     centerTitle(f)
     f:EnableMouse(true)
-    f:SetPoint("TOPLEFT", dialog, "BOTTOMLEFT", 0, 0)
-    f:SetPoint("TOPRIGHT", dialog, "BOTTOMRIGHT", 0, 0)
+    dock(f, dialog)
     f.checks = {}
     local body = CreateFrame("Frame", nil, f)
     body:SetPoint("TOPLEFT", 12, BODY_TOP)
@@ -1114,18 +1171,92 @@ function Panel.Refresh()
     applyLayout(f)
 end
 
---- Shown iff the dialog is shown, maximized, on the Dungeons category (its active panel is the
---- dungeon panel) and the addon is not stood down. The
---- Bridge.HookDialog callback; also runs on PLAYER_ENTERING_WORLD.
-function Panel.UpdateVisibility()
-    local want = not stoodDown() and NS.Bridge.IsDialogShown() and NS.Bridge.IsDungeonCategory()
+-- ── THE TEST MODE (R7-PG; preview-mode, skinning-§10) ──────────────────────────────────────────
+--
+-- Session-only: the flag lives here and never in SavedVariables. Every surface writes the schema's
+-- session row `state.testMode` (settings/Schema.lua), whose set is Panel.SetTestMode, so the verb,
+-- the Master controls box, the launcher entry and the skin picker's preview stay one switch. While it
+-- is on and the dialog does not show the panel, the panel shows alone (standAlone) with the current
+-- filters; the dialog showing it docks it as before, and the mode stays on. Refused in combat and
+-- ended when combat starts: PLAYER_REGEN_DISABLED is heard on a private frame registered only while
+-- the mode is on, so nothing listens in combat at rest (the performance-§12 exemption). Reset all
+-- settings ends it (the row's default), and so does the stand-down.
+local testMode = false
+local combatWatch
+
+local function endOnCombat()
+    if not testMode then return end
+    NS.SchemaRuntime.Set("state.testMode", false)
+    NS.Print(L.TEST_MODE_COMBAT_END)
+end
+
+local function watchCombat(on)
+    if on then
+        if not combatWatch then
+            combatWatch = CreateFrame("Frame")
+            combatWatch:SetScript("OnEvent", endOnCombat)
+        end
+        NS.SafeRegisterEvent(combatWatch, "PLAYER_REGEN_DISABLED", nil, NS.rejectedEvents)
+    elseif combatWatch then
+        combatWatch:UnregisterAllEvents()
+    end
+end
+
+--- Is the test mode on? The Test mode box, the launcher and the picker's isActive read this.
+function Panel.IsTestMode() return testMode end
+
+--- Does PGF's dialog show the panel: shown, maximized, on the Dungeons category (its active panel
+--- is the dungeon panel), the addon standing up?
+local function dialogShowsPanel()
+    return not stoodDown() and NS.Bridge.IsDialogShown() and NS.Bridge.IsDungeonCategory()
         and NS.Bridge.IsDungeonPanelActive()
+end
+
+--- Is the panel on screen, or is the dialog showing it (built on its next visibility pass)? The
+--- picker's isShown: a panel the dialog shows needs no test mode under the picker.
+function Panel.IsShown()
+    if dialogShowsPanel() then return true end
+    return Panel.frame ~= nil and Panel.frame:IsShown() == true
+end
+
+--- Turn the test mode on or off. Answers true, or false and the line saying why it is refused
+--- (stood down, in combat, or no PGF dialog to build the panel from). Reached through the schema
+--- seam's `state.testMode` row, never called by a surface directly.
+function Panel.SetTestMode(on)
+    on = on and true or false
+    if on == testMode then return true end
+    if on then
+        if stoodDown() then return false, nil end
+        if InCombatLockdown() then return false, L.TEST_MODE_COMBAT end
+        if not Panel.Create() then return false, L.TEST_MODE_NO_DIALOG end
+    end
+    testMode = on
+    watchCombat(on)
+    NS.Debug("Panel", "test mode %s", on and "on" or "off")
+    Panel.UpdateVisibility()
+    return true
+end
+
+--- Shown docked iff the dialog shows it (dialogShowsPanel); else shown alone while the test mode is
+--- on; else hidden, and docked again. The Bridge.HookDialog callback; also runs on
+--- PLAYER_ENTERING_WORLD and on every test-mode change.
+function Panel.UpdateVisibility()
+    local docked = dialogShowsPanel()
+    local alone = not docked and testMode and not stoodDown()
+    local want = docked or alone
     if want and not Panel.frame then Panel.Create() end
     if not Panel.frame then return end
     local f = Panel.frame
+    local dialog = NS.Bridge.GetDialog()
+    if alone and not f.alone then standAlone(f, dialog)
+    elseif not alone and f.alone then dock(f, dialog) end
+    -- Docked and shown, the dialog's width is the panel's: kept for the panel alone (standAlone).
+    if docked then
+        f.dockedWidth = positive(type(dialog.GetWidth) == "function" and dialog:GetWidth()) or f.dockedWidth
+    end
     f:SetShown(want and true or false)
     -- Written on a change only: the dialog hook and PLAYER_ENTERING_WORLD re-run this often.
-    NS.DebugChanged("panel.vis", "Panel", want and "shown" or "hidden")
+    NS.DebugChanged("panel.vis", "Panel", alone and "shown alone (test mode)" or want and "shown" or "hidden")
     if want then Panel.Refresh() end
 end
 
@@ -1176,7 +1307,13 @@ NS.STAND_DOWN[#NS.STAND_DOWN + 1] = function()
         end
         if o then GameTooltip:Hide() end
     end
-    if Panel.frame then Panel.frame:Hide() end
+    -- The test mode ends with the addon (its watch let go of), and the panel docks again.
+    testMode = false
+    watchCombat(false)
+    if Panel.frame then
+        if Panel.frame.alone then dock(Panel.frame, NS.Bridge.GetDialog()) end
+        Panel.frame:Hide()
+    end
     -- Re-arm the visibility line, so the stand-up's "shown" is written rather than held as a
     -- repeat. DebugForget is on the instance only (core/DebugLogSetup.lua publishes no bare name).
     NS.DebugLog.DebugForget("panel.vis")

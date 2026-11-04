@@ -28,11 +28,24 @@ local function deepcopy(v)
     return c
 end
 
--- Session-only rows: storage is the console's own flag, never SavedVariables.
+-- The test mode's row (R7-PG): modules/Panel.lua holds the flag. A refused start (combat, no PGF
+-- dialog) prints why; one refused because the addon is stood down says nothing, as a feature row does.
+local TEST_MODE = {
+    get = function() return NS.Panel ~= nil and NS.Panel.IsTestMode() end,
+    set = function(v)
+        local ok, why = NS.Panel.SetTestMode(v)
+        if not ok and why then pout(why) end
+    end,
+}
+
+-- Session-only rows: storage is the console's or the panel's own flag, never SavedVariables.
 local SESSION = {
     ["state.debugConsole"] = function()
         local DL = NS.DebugLog
         return DL and DL.ConsoleCheckbox and DL:ConsoleCheckbox() or nil
+    end,
+    ["state.testMode"] = function()
+        return NS.Panel and NS.Panel.SetTestMode and TEST_MODE or nil
     end,
 }
 

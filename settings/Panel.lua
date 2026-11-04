@@ -13,12 +13,13 @@ local addonName, NS = ...
 -- positionable frame of its own -- the filter panel is anchored to PGF's dialog -- so the block is
 -- frameless (no scale, alpha, lock or reset position) and carries no visibility row: when the panel
 -- shows is decided by PGF's dialog and category, not by a setting (ratified: docs/ARCHITECTURE.md
--- -> Documented deviations). It has no test mode.
+-- -> Documented deviations). Its test mode (R7-PG) shows that panel on its own: the Test mode box.
 
 local PGFE     = NS.addon
 local Settings = PGFE.Settings
 local Helpers  = Settings.Helpers
 local C        = NS.C
+local L        = NS.L
 
 -- The landing page's logo: a larger render of the launcher logo, in the same folder.
 local MAIN_LOGO_TEXTURE = ("Interface\\AddOns\\%s\\media\\logos\\premadegroupsfilterextension.logo.tga"):format(addonName)
@@ -57,7 +58,11 @@ local MASTER_ROWS, MASTER_TAIL = Helpers.MasterControls{
     omit             = { visibility = true },
     debugConsolePath = "state.debugConsole",
     minimapPath      = "global.minimap.shown",
-    defaults         = { enabled = C.PROFILE.enabled, debugConsole = false },
+    -- The test mode (R7-PG): a session row whose set is modules/Panel.lua's switch
+    -- (settings/Schema.lua binds it). Frameless packing: it opens its own line.
+    testModePath     = "state.testMode",
+    notes            = { testMode = L["Here it shows the filter panel on its own in the middle of the screen, with your current filters. Apply and Clear need Premade Groups Filter's window, so they wait until you open it."] },
+    defaults         = { enabled = C.PROFILE.enabled, debugConsole = false, testMode = false },
     onResetAll       = showResetPopup,
 }
 
@@ -82,7 +87,6 @@ NS.SchemaRuntime.AddRows(MASTER_ROWS, 1)
 -- sits second. The filter options themselves are on the attached
 -- panel, not in the schema (settings/Schema.lua), so the tab says where in a note row: text in the
 -- schema, with no path, so `/pgfe list` and the resets skip it (LibKa0s Options, the `note` row).
-local L = NS.L
 local FILTER_GROUP = L["Filters"]
 local REGION_GROUP = L["Region tags"]
 local FILTER_ROWS = {

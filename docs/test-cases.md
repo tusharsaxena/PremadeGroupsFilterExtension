@@ -356,10 +356,11 @@ Total.
 - panel: the title is the full addon name, and the copy box centers its range
 - panel: a click on the header strip collapses and expands, like the arrow
 
-### test_layers.lua (8)
+### test_layers.lua (9)
 
 - layers: one table names the strata and every level offset
 - layers: the panel takes PGF's dialog strata by reading it, never a literal
+- layers: alone in test mode the panel is HIGH, under the skin picker; docked it reads the host again
 - layers: a host that cannot answer its strata leaves the panel inheriting it
 - layers: the panel's level band (L, chrome L+1, widgets L+2)
 - layers: a popup shown over the visible panel is lifted, and put back to what it was
@@ -441,7 +442,7 @@ Total.
 ### test_skin_picker.lua (16)
 
 - skin picker: skin.pickerSeen defaults to false, a skip-render row on the Skin tab
-- skin picker: the spec names this owner, its seams, the General page's Skin tab, and no eye
+- skin picker: the spec names this owner, its seams, the General page's Skin tab, and the test-mode eye
 - skin picker: it shows once at login on an unseen profile, scheduling nothing
 - skin picker: a profile that has seen it shows nothing at login
 - skin picker: in combat a start waits for PLAYER_REGEN_ENABLED, once, on a private frame
@@ -498,6 +499,32 @@ Total.
 - skin verb: in combat every call prints the library's gray line and shows nothing
 - skin verb: refused while the addon is disabled, and no picker shows
 - skin verb: without LibKa0s the verb prints the library-absent line
+
+### test_testmode.lua (23)
+
+- test mode: /pgfe test shows the panel alone, centered on UIParent, and again puts it away
+- test mode: /pgfe test on and off set it, and repeat calls change nothing
+- test mode: the verb is refused while the addon is disabled
+- test mode: the help lists the verb, right after skin
+- test mode: the Master controls box is a session row whose write is the mode
+- test mode: Reset all settings ends it
+- test mode: alone, Apply and Clear are disabled and their tooltips say why
+- test mode: alone beside a minimized PGF dialog, the tooltips do not call the window closed
+- test mode: alone, the panel shows the current filters
+- test mode: opening PGF's dialog docks the panel normally, closing it shows it alone again
+- test mode: alone, the panel takes the docked width, not the hidden dialog's template width
+- test mode: alone, the panel takes the width it was last docked at
+- test mode: alone, the panel takes the dialog's effective scale; docked again, its own
+- test mode: alone, the header is the docked one: the plain title centered, the arrow, the band
+- test mode: docking again restores the docked anchors, scale, title, header and buttons
+- test mode: with PGF's dialog open it changes nothing on screen
+- test mode: refused in combat, ended when combat starts, and nothing registered at rest
+- test mode: the stand-down ends it and leaves the panel docked
+- test mode: the launcher passes the Test mode pair, onto the verb's switch
+- test mode: the picker's spec.preview is the test mode, entered and left through the seam
+- test mode: /pgfe skin with the panel hidden turns it on, and every close puts it back
+- test mode: with PGF's dialog open, /pgfe skin and its close change nothing
+- test mode: the eye toggles it, and a mode the player turned on stays after the close
 
 ### test_reset.lua (5)
 
@@ -661,7 +688,7 @@ Total.
 | test_apply.lua | 33 |
 | test_panel.lua | 49 |
 | test_panel_layout.lua | 37 |
-| test_layers.lua | 8 |
+| test_layers.lua | 9 |
 | test_settings_layout.lua | 13 |
 | test_skinsetup.lua | 21 |
 | test_launcher_skin_entry.lua | 1 |
@@ -670,6 +697,7 @@ Total.
 | test_skin_eui.lua | 17 |
 | test_skin_outline.lua | 10 |
 | test_skin_verb.lua | 6 |
+| test_testmode.lua | 23 |
 | test_reset.lua | 5 |
 | test_diagnostics.lua | 6 |
 | test_glyphs.lua | 3 |
@@ -682,4 +710,4 @@ Total.
 | test_skin_values.lua | 3 |
 | test_skin_switch.lua | 41 |
 | Skipped | 1 |
-| **Total** | **520** |
+| **Total** | **544** |

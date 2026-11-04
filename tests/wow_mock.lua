@@ -259,6 +259,8 @@ local function build()
         end
         f.GetRegions = function(self) return unpack(self.__regions) end
         f.GetParent = function(self) return self.__parent end
+        -- The test mode (R7-PG) moves the panel between PGF's dialog and UIParent.
+        f.SetParent = function(self, p) self.__parent = p; return self end
         f.GetObjectType = function(self) return self.__objType or "Frame" end
         f.IsObjectType = function(self, t) return (self.__objType or "Frame") == t end
         -- A test-armed geometry (__setGeom, the kit's opt-in) wins; else what the code set.
@@ -273,6 +275,9 @@ local function build()
         f.SetFrameLevel = function(self, l) self.__level = l; return self end
         f.GetFrameLevel = function(self) return self.__level or 1 end
         f.GetEffectiveScale = function() return 1 end
+        -- The panel alone takes the docked effective scale (R7-PG2).
+        f.SetScale = function(self, sc) self.__scale = sc; return self end
+        f.GetScale = function(self) return self.__scale or 1 end
         f.SetColorTexture = function(self, r, g, b, a) self.__color = { r, g, b, a }; return self end
         -- One table per texture, refilled: tests/perf.lua's bytes are the addon's, not this mock's.
         f.SetVertexColor = function(self, r, g, b, a)

@@ -66,7 +66,7 @@ Profiles page. The constraints that fix the order:
 | `modules/EnvInject.lua` | The PGF env post-hook body and the player's cached spec keywords; installs the hook at load |
 | `modules/RegionTags.lua` | The region tag on Group Finder rows and applicants; installs its two Blizzard hooks at load |
 | `modules/Apply.lua` | Apply / Clear orchestration: prechecks, validation, targeting, expression merge, bridge writes, search |
-| `modules/Panel.lua` | The panel attached under PGF's dialog, one frame painted through the skin under every skin and EllesmereUI; installs the dialog hook at load |
+| `modules/Panel.lua` | The panel attached under PGF's dialog, one frame painted through the skin under every skin and EllesmereUI; the session-only test mode that shows it alone (`Panel.SetTestMode`, R7-PG); installs the dialog hook at load |
 | `modules/Diagnostics.lua` | The sections of `/pgfe diagnostics` (`NS.Diagnostics.Sections()`, wired as the DebugLog descriptor's `diagnostics` hook in `core/DebugLogSetup.lua`) |
 | `settings/SchemaSetup.lua` | `LibKa0s-Schema-1.0` or its host stub |
 | `settings/Schema.lua` | The write seam (`NS.SchemaRuntime`), the closure stamping for session and global rows (`Settings.StampClosureRows`), schema validation, defaults assembly and the reset. Declares no rows: `settings/Panel.lua` adds every row at load |

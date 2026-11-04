@@ -4,7 +4,7 @@
 ![CurseForge Version](https://img.shields.io/curseforge/v/1736636)
 ![License](https://img.shields.io/badge/License-MIT-orange)
 ![Standard](https://img.shields.io/badge/Ka0s-WoW_Addon_Standard-yellow)
-![Tests](https://img.shields.io/badge/Tests-520%2F520_passing-green)
+![Tests](https://img.shields.io/badge/Tests-544%2F544_passing-green)
 
 A small companion to [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter)
 for Mythic+. You type the key level you want to push (or let Smart pick it), and it ticks every
@@ -36,7 +36,10 @@ Filter has to be installed; without it this addon doesn't load.
 
 Open Premade Groups Filter's dialog on the dungeon category during a Mythic+ search. The panel sits
 right under it and follows it: switch category, minimize or close the dialog and the panel goes too.
-Click the panel's title strip to fold it down when it's in the way.
+Click the panel's title strip to fold it down when it's in the way. To look at the panel without the
+Group Finder, type `/pgfe test`: it shows on its own in the middle of the screen with your current
+filters until you type `/pgfe test` again. **Apply** and **Clear** stay grayed out there, because they
+need Premade Groups Filter's window; open it and the panel docks under it as usual.
 
 Type a key level, or leave **Smart** ticked and the addon picks the lowest level where at least one
 dungeon is still untimed. The panel lists your best timed level in each dungeon this season, with the
@@ -53,7 +56,10 @@ Filter choices are saved per character, and presets load on any character. **Use
 filters** switches the filtering off without turning the addon off.
 
 The panel and the debug console wear one of nine Ka0s skins, picked when you first log in or later on
-Settings → General → **Skin**; `/pgfe skin` brings the picker back. That tab also sets the font, with
+Settings → General → **Skin**. `/pgfe skin` opens the skin picker at any time: hover or select a skin
+to preview it on the panel, which the picker shows on its own in test mode when the Group Finder is
+closed (the eye turns that test mode on or off), then press **Apply** to keep it, or close the picker
+to put everything back. That tab also sets the font, with
 each name in the list drawn in its own face. Every profile starts on Ka0s Default; pick **WoW Default** for the
 game's own look. The settings pages stay in the game's look unless you untick **Ignore settings
 panel** there. If you use EllesmereUI, pick it as the skin source on the Skin tab and the panel takes your EllesmereUI theme once EllesmereUI's
@@ -121,7 +127,7 @@ The addon extends [Premade Groups Filter](https://www.curseforge.com/wow/addons/
 by Bernhard Saumweber. PremadeRegions was the reference for the realm-to-region list.
 
 The addon's own icons come from [Open Iconic](https://github.com/iconic/open-iconic) by Waybury
-(MIT): the debug console's clear, copy and close buttons, the skin picker's settings gear, the
+(MIT): the debug console's clear, copy and close buttons, the skin picker's settings gear and preview eye, the
 attached panel's collapse and expand chevrons, and the small marks LibKa0s draws beside skinned
 controls. Only
 the icons the addon draws are shipped. They are bundled inside the LibKa0s payload, with their

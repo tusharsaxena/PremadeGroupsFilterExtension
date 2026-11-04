@@ -29,6 +29,11 @@ return function(env)
     for i, id in ipairs(cmIDs) do panel.Dungeons["Dungeon" .. i] = { cmId = id } end
     function panel:Init(state) self.state = state; calls.init = calls.init + 1 end
     function panel:TriggerFilterExpressionChange() calls.trigger = calls.trigger + 1 end
+    -- The width the dialog takes on this panel: dialogWidth = 420 (UI/DungeonPanel.lua:110), answered
+    -- by GetDesiredDialogWidth (UI/DungeonPanel.lua:384-386), which SwitchToPanel sets it to
+    -- (UI/Dialog.lua:200-202).
+    panel.dialogWidth = 420
+    function panel:GetDesiredDialogWidth() return self.dialogWidth end
     env.PremadeGroupsFilterDungeonPanel = panel
 
     local state = { c2f4 = { enabled = true, dungeon = {} } }
@@ -38,6 +43,12 @@ return function(env)
     dialog.activePanel = panel
     panel.state = state.c2f4.dungeon
     function dialog:IsShown() return self.shown end
+    -- The dialog's width (the dungeon panel's while it shows it; PGF's template Size x=300,
+    -- UI/Dialog.xml:7, before then and on every other panel) and its effective scale (a PVEFrame
+    -- child, UI/Dialog.lua:33).
+    dialog.width, dialog.scale = 420, 1
+    function dialog:GetWidth() return self.width end
+    function dialog:GetEffectiveScale() return self.scale end
     function dialog:HookScript() end
     function dialog:SwitchToPanel() end
     env.PremadeGroupsFilterDialog = dialog
