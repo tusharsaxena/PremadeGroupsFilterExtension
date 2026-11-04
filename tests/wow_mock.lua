@@ -275,6 +275,9 @@ local function build()
         f.SetFrameLevel = function(self, l) self.__level = l; return self end
         f.GetFrameLevel = function(self) return self.__level or 1 end
         f.GetEffectiveScale = function() return 1 end
+        -- The panel alone takes the docked effective scale (R7-PG2).
+        f.SetScale = function(self, sc) self.__scale = sc; return self end
+        f.GetScale = function(self) return self.__scale or 1 end
         f.SetColorTexture = function(self, r, g, b, a) self.__color = { r, g, b, a }; return self end
         -- One table per texture, refilled: tests/perf.lua's bytes are the addon's, not this mock's.
         f.SetVertexColor = function(self, r, g, b, a)

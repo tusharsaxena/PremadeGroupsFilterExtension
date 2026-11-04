@@ -131,7 +131,7 @@ test("test mode: Reset all settings ends it", function()
     assertFalse(NS.Panel.frame:IsShown())
 end)
 
--- ── alone: Apply disabled, the title says so ─────────────────────────────────────────────────────
+-- ── alone: Apply disabled, the plain title ─────────────────────────────────────────────────────
 
 test("test mode: alone, Apply and Clear are disabled and their tooltips say why", function()
     -- red under: an Apply left enabled with no PGF dialog to search with, or a disabled button that
@@ -145,7 +145,7 @@ test("test mode: alone, Apply and Clear are disabled and their tooltips say why"
     assertEqual(tip[2], NS.L.TEST_MODE_APPLY_TOOLTIP, "Apply says why")
     tip = hoverLines(m, f.clearButton)
     assertEqual(tip[2], NS.L.TEST_MODE_CLEAR_TOOLTIP, "Clear says why")
-    assertEqual(f.__title, NS.L.PANEL_TITLE_TEST, "the title marks the test mode")
+    assertEqual(f.__title, NS.L.PANEL_TITLE, "the docked panel's plain title: the grayed buttons mark the mode")
 end)
 
 test("test mode: alone beside a minimized PGF dialog, the tooltips do not call the window closed", function()
@@ -186,6 +186,94 @@ test("test mode: opening PGF's dialog docks the panel normally, closing it shows
     m.pgf.dialog.shown = false
     NS.Panel.UpdateVisibility()
     assertTrue(isAlone(NS, m), "alone again")
+end)
+
+-- ── alone, it looks like the docked panel (R7-PG2, smoke round 7 images 71 to 74) ──────────────────
+--
+-- In the client the panel alone came up narrower than docked: standAlone took PGF's dialog's width,
+-- and a dialog that is not showing the dungeon panel is still at its template's Size x=300
+-- (UI/Dialog.xml:7; SwitchToPanel sets 420 only on the dungeon panel, UI/Dialog.lua:200-202), so the
+-- rows built for 420 overlapped (the dropdowns over their labels, the copy label over Clear) and the
+-- "(test mode)" title ran into the arrow. Alone it now takes the docked width (the last one it was
+-- docked at, else the dungeon panel's desired width) and the dialog's effective scale.
+
+--- The title band and the header as docked: the skin's Shell, Band and Header recorded on the panel,
+--- the band on the panel, the title and the arrow on the band's middle.
+local function assertDockedHeader(NS, m, what)
+    local f = NS.Panel.frame
+    local Skin = m.LibStub("LibKa0s-Skin-1.0")
+    local calls = Skin.painted[f] and Skin.painted[f].calls or {}
+    assertTrue(calls.Shell ~= nil and calls.Header ~= nil and calls.Band ~= nil, what .. ": the skin's window paint")
+    local band = NS.Skin.Band(f)
+    local _, brel = band:GetPoint(1)
+    assertTrue(brel == f, what .. ": the title band on the panel")
+    local title = f.TitleContainer.TitleText
+    local p, rel, _, _, y = title:GetPoint(1)
+    assertEqual(p, "CENTER", what .. ": the title centered")
+    assertTrue(rel == band and y == 0, what .. ": on the band's middle")
+    local mp, mrel, _, mx = f.MaximizeMinimizeFrame:GetPoint(1)
+    assertTrue(mp == "RIGHT" and mrel == band and mx == -4, what .. ": the arrow where it sits docked")
+end
+
+test("test mode: alone, the panel takes the docked width, not the hidden dialog's template width", function()
+    -- red under: standAlone reading the dialog's GetWidth, which is PGF's template 300 until the
+    -- dialog shows the dungeon panel (the owner's images 71 and 72).
+    local NS, m = closedDialog()
+    m.pgf.dialog.width = 300
+    run(NS, m, "test")
+    assertTrue(isAlone(NS, m))
+    assertEqual(NS.Panel.frame:GetWidth(), 420, "the dungeon panel's dialog width, as docked")
+end)
+
+test("test mode: alone, the panel takes the width it was last docked at", function()
+    -- red under: a width read off the dialog after it hid and went back to another panel's width.
+    local NS, m = closedDialog()
+    m.pgf.dialog.shown, m.pgf.dialog.width = true, 450
+    NS.Panel.UpdateVisibility()
+    m.pgf.dialog.shown, m.pgf.dialog.width = false, 300
+    run(NS, m, "test")
+    assertEqual(NS.Panel.frame:GetWidth(), 450, "the docked width it showed at")
+end)
+
+test("test mode: alone, the panel takes the dialog's effective scale; docked again, its own", function()
+    -- red under: a panel on UIParent at UIParent's scale, while docked it drew at PGF's dialog's.
+    local NS, m = closedDialog()
+    m.pgf.dialog.scale = 0.9
+    local uiScale = m.UIParent.GetEffectiveScale
+    m.UIParent.GetEffectiveScale = function() return 1.5 end
+    run(NS, m, "test")
+    local alone = NS.Panel.frame:GetScale()
+    m.pgf.dialog.shown = true
+    NS.Panel.UpdateVisibility()
+    local docked = NS.Panel.frame:GetScale()
+    m.UIParent.GetEffectiveScale = uiScale
+    assertTrue(math.abs(alone - 0.6) < 1e-9, "the dialog's effective scale over UIParent's: " .. tostring(alone))
+    assertEqual(docked, 1, "docked, the dialog's child at its own scale again")
+end)
+
+test("test mode: alone, the header is the docked one: the plain title centered, the arrow, the band", function()
+    -- red under: the "(test mode)" title (it cannot fit the band), or a switch that leaves the header
+    -- off the skin's band.
+    local NS, m = closedDialog()
+    run(NS, m, "test")
+    assertEqual(NS.Panel.frame.__title, NS.L.PANEL_TITLE, "the plain title")
+    assertEqual(rawget(NS.L, "PANEL_TITLE_TEST"), nil, "no test-mode title string")
+    assertDockedHeader(NS, m, "alone")
+end)
+
+test("test mode: docking again restores the docked anchors, scale, title, header and buttons", function()
+    local NS, m = closedDialog()
+    m.pgf.dialog.width, m.pgf.dialog.scale = 300, 0.8
+    run(NS, m, "test")
+    local f = NS.Panel.frame
+    assertEqual(f:GetWidth(), 420)
+    m.pgf.dialog.shown, m.pgf.dialog.width = true, 420
+    NS.Panel.UpdateVisibility()
+    assertTrue(isDocked(NS, m), "docked")
+    assertEqual(f:GetScale(), 1, "its own scale")
+    assertEqual(f.__title, NS.L.PANEL_TITLE)
+    assertTrue(f.applyButton:IsEnabled() and f.clearButton:IsEnabled(), "Apply and Clear work")
+    assertDockedHeader(NS, m, "docked")
 end)
 
 test("test mode: with PGF's dialog open it changes nothing on screen", function()

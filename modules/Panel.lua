@@ -3,7 +3,7 @@ local _, NS = ...
 --
 -- TEST MODE (R7-PG): `/pgfe test`, the Master controls box, the launcher entry and the skin picker's
 -- preview turn on a session-only mode (THE TEST MODE, below) that shows the panel ALONE, centered on
--- UIParent, while PGF's dialog does not show it.
+-- UIParent, while PGF's dialog does not show it, looking exactly as it does docked (R7-PG2).
 --
 -- Rows are stacked top-down by the builders below; each input sits a fixed gap to the right of its
 -- own label, so a longer (or translated) label pushes its input along instead of under it, and the
@@ -1051,29 +1051,47 @@ local function paint(f)
     paintTexts(S, f, f.body)
 end
 
--- DOCKED: flush under the dialog, its child, so it shows and hides with it; a flat window sits on
--- its rect, in the dialog's strata and level band. ALONE (test mode): UIParent's child, centered, the
--- dialog's width (ALONE_W when the dialog cannot say), the title marking the mode, at STRATA.ALONE so
--- the skin picker (DIALOG) previewing on it stays in front.
-local ALONE_W = 300
+-- DOCKED: flush under the dialog, its child, so it shows and hides with it, at the dialog's width
+-- and effective scale; a flat window sits on its rect, in the dialog's strata and level band.
+-- ALONE (test mode): UIParent's child, centered, at STRATA.ALONE so the skin picker (DIALOG)
+-- previewing on it stays in front, and otherwise exactly the docked panel (R7-PG2, smoke round 7
+-- images 71 to 74): the same title, header, paint and rows, at the docked width and scale. The width
+-- is the one it last showed docked at, else the dungeon panel's (Bridge.DockedWidth), else
+-- DOCKED_W; never the hidden dialog's GetWidth, which is PGF's template 300 until the dialog shows
+-- the dungeon panel, and the rows, built for 420, overlapped at it. The scale is the dialog's
+-- effective scale over UIParent's (the dialog is a PVEFrame child), read live: a hidden frame still
+-- answers it. The skin's paint is all anchored to the frame (S.Shell's bands, S.Band, S.Header), so it
+-- moves with it; Panel.UpdateVisibility refreshes the layout after every switch.
+local DOCKED_W = 420   -- PGF UI/DungeonPanel.lua:110, when the bridge cannot say
 local function dock(f, dialog)
     f:SetParent(dialog)
     layerWithDialog(f, dialog)
+    f:SetScale(1)
     f:ClearAllPoints()
     f:SetPoint("TOPLEFT", dialog, "BOTTOMLEFT", 0, 0)
     f:SetPoint("TOPRIGHT", dialog, "BOTTOMRIGHT", 0, 0)
-    f:SetTitle(L.PANEL_TITLE)
     f.alone = false
 end
 
+local function positive(n) return type(n) == "number" and n > 0 and n or nil end
+
+local function effectiveScale(frame)
+    return frame and type(frame.GetEffectiveScale) == "function" and positive(frame:GetEffectiveScale())
+end
+
+-- The dialog's effective scale over UIParent's: the scale the docked panel drew at.
+local function dockedScale(dialog)
+    local d, ui = effectiveScale(dialog), effectiveScale(UIParent)
+    return (d and ui) and d / ui or 1
+end
+
 local function standAlone(f, dialog)
-    local w = type(dialog.GetWidth) == "function" and dialog:GetWidth()
     f:SetParent(UIParent)
     f:SetFrameStrata(STRATA.ALONE)
+    f:SetScale(dockedScale(dialog))
     f:ClearAllPoints()
     f:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-    f:SetWidth((type(w) == "number" and w > 0) and w or ALONE_W)
-    f:SetTitle(L.PANEL_TITLE_TEST)
+    f:SetWidth(f.dockedWidth or NS.Bridge.DockedWidth() or DOCKED_W)
     f.alone = true
 end
 
@@ -1229,8 +1247,13 @@ function Panel.UpdateVisibility()
     if want and not Panel.frame then Panel.Create() end
     if not Panel.frame then return end
     local f = Panel.frame
-    if alone and not f.alone then standAlone(f, NS.Bridge.GetDialog())
-    elseif not alone and f.alone then dock(f, NS.Bridge.GetDialog()) end
+    local dialog = NS.Bridge.GetDialog()
+    if alone and not f.alone then standAlone(f, dialog)
+    elseif not alone and f.alone then dock(f, dialog) end
+    -- Docked and shown, the dialog's width is the panel's: kept for the panel alone (standAlone).
+    if docked then
+        f.dockedWidth = positive(type(dialog.GetWidth) == "function" and dialog:GetWidth()) or f.dockedWidth
+    end
     f:SetShown(want and true or false)
     -- Written on a change only: the dialog hook and PLAYER_ENTERING_WORLD re-run this often.
     NS.DebugChanged("panel.vis", "Panel", alone and "shown alone (test mode)" or want and "shown" or "hidden")

@@ -74,6 +74,18 @@ function Bridge.Check()
     return true
 end
 
+--- The width PGF's dialog takes while it shows the dungeon panel: the panel's
+--- GetDesiredDialogWidth (dialogWidth = 420, UI/DungeonPanel.lua:110, 384-386), which SwitchToPanel
+--- sets the dialog to (UI/Dialog.lua:200-202). The dialog's own GetWidth is that only while it is on
+--- the dungeon panel; before its first show and on every other panel it is the template's Size
+--- x=300 (UI/Dialog.xml:7) or 300 (UI/Dialog.lua:204). The test mode sizes the panel alone by it.
+--- @return number|nil
+function Bridge.DockedWidth()
+    local p = panel()
+    local w = p and type(p.GetDesiredDialogWidth) == "function" and p:GetDesiredDialogWidth()
+    return (type(w) == "number" and w > 0) and w or nil
+end
+
 function Bridge.IsDialogShown()
     local d = Bridge.GetDialog()
     return d ~= nil and d:IsShown() == true

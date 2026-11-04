@@ -18,7 +18,7 @@ takes the next free number in its theme and a retired number is never reused.
 | COMBAT-1..2 | Combat | Apply refusal, settings panel in combat |
 | DIAG-1..3 | Diagnostics | Debug console, the diagnostics report, the console icons |
 | DEGRADED-1 | Degraded install | LibKa0s absent |
-| TEST-1..4 | Test mode | `/pgfe test` (R7-PG, smoke round 7): the panel alone, Apply and Clear disabled, the dialog docking it, the box and the launcher entry, combat and the off switch |
+| TEST-1..5 | Test mode | `/pgfe test` (R7-PG, smoke round 7): the panel alone, Apply and Clear disabled, the dialog docking it, the box and the launcher entry, combat and the off switch, and the panel alone looking like the docked one (R7-PG2) |
 | APPLY-1..26 | Attached panel and Apply | The panel under PGF, targeting, regions, playstyle, composition, leader, age, presets, Clear, PGF minimized, collapse, layout, tooltips, Smart key level, filters toggle, row spacing, region tags, the season-data request, region colors |
 | LAYER-1..3 | Frame layering | The panel layered with PGF's dialog, PGFE popups lifted over the panel and put back |
 | LOC-1..2 | Non-English client | Realm-name and dungeon-name seams on a deDE/frFR client |
@@ -113,8 +113,9 @@ shows the attached panel on its own, so it can be seen (and a skin previewed on 
 Finder. Headless stand-ins: the `test mode:` cases (`tests/test_testmode.lua`).
 
 - **TEST-1. The panel alone.** With the Group Finder closed, `/pgfe test` → one chat line saying test
-  mode is on, and the filter panel shows in the middle of the screen, as wide as PGF's window, titled
-  *Ka0s Premade Groups Filter Extension (test mode)*, with your current filters (key level, regions,
+  mode is on, and the filter panel shows in the middle of the screen exactly as it looks docked under
+  PGF's window (TEST-5), with the plain title *Ka0s Premade Groups Filter Extension* (the grayed
+  **Apply** and **Clear** mark the mode, R7-PG2), with your current filters (key level, regions,
   presets, the readout). Change a filter, collapse and expand it → it works as under PGF. Hover
   **Apply** and **Clear** → both are grayed out and their tooltips say Premade Groups Filter's window
   is not showing its Dungeons filters. Open PGF's window and minimize it → the panel stays alone and
@@ -140,6 +141,15 @@ Finder. Headless stand-ins: the `test mode:` cases (`tests/test_testmode.lua`).
   → the panel is gone; `/pgfe test` → the one disabled line; the launcher's Test mode entry is grayed;
   `/pgfe enable` → nothing shows until you turn the mode on again. Fail: the panel staying up into
   combat, a start in combat, or a Lua error. Result:
+- **TEST-5. Alone, it looks like the docked panel (R7-PG2).** With the Group Finder closed, `/pgfe
+  test` → the panel looks like smoke round 7's screenshot 74 (Ka0sAddonsCommonTasks
+  `docs/2026-11-04-SMOKE_ROUND7/inputs/images/74.png`, the panel docked under PGF): the same width,
+  the header band with its gradient, the plain title centered and clear of the arrow, the same arrow,
+  and every row laid out as docked (the Server regions, Playstyle and Composition dropdowns clear of
+  their labels, *Copy into search box* clear of **Clear**, **Smart** inside the panel). Collapse and
+  expand it → the same strip and arrow as docked. Open the Group Finder on Dungeons → it docks with no
+  change of size; close it → alone again, the same. Fail: a narrower panel, overlapping rows, a title
+  running into the arrow, or a Lua error. Result:
 
 ## Profiles
 
@@ -694,7 +704,7 @@ EllesmereUI read took a shorter path; nothing should look different.
   eye and the test mode). Result:
 - **SKIN-53. The preview mode is test (R7-PG; R6-PV's no-preview case retired).** PGFE's mode is *test*.
   With PGF's dialog closed and test mode off, `/pgfe skin` → the picker shows with a lit eye, the
-  attached panel shows alone in the middle of the screen in test mode (its title says so), behind the
+  attached panel shows alone in the middle of the screen in test mode (Apply and Clear grayed), behind the
   picker, which stays in front, and PGF's dialog stays closed. Hover a skin → the panel previews it. Close it by the close control → the panel
   is gone and `/pgfe` → Master controls shows *Test mode* unticked. Open PGF on Dungeons, then `/pgfe
   skin` → the eye is dimmed, nothing opens or moves (the panel is already shown, docked), and closing
@@ -790,4 +800,4 @@ Owed from the owner's fifth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-
 
 Owed from the owner's sixth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND6/`): SKIN-52, SKIN-53, PANEL-6.
 
-Owed from the owner's seventh smoke round (Ka0sAddonsCommonTasks `docs/2026-11-04-SMOKE_ROUND7/`, R7-PG): TEST-1, TEST-2, TEST-3, TEST-4, SKIN-54, with SKIN-52, SKIN-53 and PANEL-6 rewritten for the test mode and SKIN-13's re-check.
+Owed from the owner's seventh smoke round (Ka0sAddonsCommonTasks `docs/2026-11-04-SMOKE_ROUND7/`, R7-PG): TEST-1, TEST-2, TEST-3, TEST-4, TEST-5 (R7-PG2), SKIN-54, with SKIN-52, SKIN-53 and PANEL-6 rewritten for the test mode and SKIN-13's re-check.
