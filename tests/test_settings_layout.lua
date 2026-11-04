@@ -15,6 +15,8 @@ local PINNED = {
     { "enabled",              "bool",  "true" },
     { "state.debugConsole",   "bool",  "false" },
     { "global.minimap.shown", "bool",  "true" },
+    -- R7-PG: the Test mode box, a session row (nothing stored), composed after Minimap button.
+    { "state.testMode",       "bool",  "false" },
     { "filtersActive",        "bool",  "true" },
     { "showRegionTags",       "bool",  "true" },
     { "regionColors.oce",     "color", "a330c9" },

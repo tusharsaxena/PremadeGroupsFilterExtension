@@ -259,6 +259,8 @@ local function build()
         end
         f.GetRegions = function(self) return unpack(self.__regions) end
         f.GetParent = function(self) return self.__parent end
+        -- The test mode (R7-PG) moves the panel between PGF's dialog and UIParent.
+        f.SetParent = function(self, p) self.__parent = p; return self end
         f.GetObjectType = function(self) return self.__objType or "Frame" end
         f.IsObjectType = function(self, t) return (self.__objType or "Frame") == t end
         -- A test-armed geometry (__setGeom, the kit's opt-in) wins; else what the code set.

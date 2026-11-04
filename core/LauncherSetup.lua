@@ -6,7 +6,8 @@ local addonName, NS = ...
 -- tooltip. This file supplies the seams: the logo, the brand label, where LibDBIcon's `hide` lives
 -- (db.global.minimap, shared with the Minimap button row) and the enable pair: it reads the stored
 -- `enabled` setting, the same accessor the Master-controls row reads (launcher-§1), not the latch,
--- and it writes through the same handler `/pgfe enable|disable` calls.
+-- and it writes through the same handler `/pgfe enable|disable` calls; the test pair reads the Test
+-- mode row's flag and toggles through `/pgfe test`'s handler.
 
 local lib = LibStub and LibStub("LibKa0s-Launcher-1.0", true)
 
@@ -56,6 +57,9 @@ NS.Launcher = lib:New({
     openSkinPicker = function() if NS.RunSkinVerb then NS.RunSkinVerb() end end,
     isEnabled  = function() return NS.SchemaRuntime and NS.SchemaRuntime.Get("enabled") ~= false end,
     setEnabled = function(on) NS.addon:SlashEnabled(on) end,
+    -- The test mode (R7-PG, launcher-§2): the Test mode row's own read, and `/pgfe test`'s toggle.
+    isTestMode     = function() return NS.Panel ~= nil and NS.Panel.IsTestMode() end,
+    toggleTestMode = function() NS.addon:ToggleTestMode() end,
 
     print         = function(line) NS.Print(line) end,
     debug         = function(tag, message) NS.Debug(tag, message) end,

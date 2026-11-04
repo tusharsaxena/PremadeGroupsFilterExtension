@@ -11,6 +11,7 @@ positional triples `{name, desc, fn}`, passed in.
 | `help` | Prints the command list | yes |
 | `config` | Opens the settings panel | yes |
 | `skin` | Opens the skin picker a new profile shows, whatever `skin.pickerSeen` says (`NS.RunSkinVerb`, the library's `O.SkinVerb`, LibKa0s v1.82.0); in combat the library's gray line on every call | no |
+| `test` | Toggles the test mode, `test on|off` sets it: `state.testMode` through the write seam, the row the Master controls box, the launcher's Test mode entry and the skin picker's preview write. The attached panel shows alone, centered on the screen with the current filters, while PGF's dialog does not show it; Apply and Clear are disabled then. Prints `TEST_MODE_ON` / `TEST_MODE_OFF` after a change; a refused start prints why (`TEST_MODE_COMBAT`, `TEST_MODE_NO_DIALOG`) | no |
 | `enable` / `disable` | Writes `enabled` through the write seam (the latch follows) | yes |
 | `version` | Prints the version | yes |
 | `list` / `get` / `set` / `reset` / `resetall` | The schema CLI | yes |
@@ -24,8 +25,8 @@ positional triples `{name, desc, fn}`, passed in.
 performance-§12 no-combat-path exemption, so no perf harness is wired. `/pgfe perf` answers with the
 library's unknown-command line and the index, the same enabled and disabled.
 
-`apply` and `clear` are feature verbs, refused with the library's disabled line while the addon is
-off. Their messages are the `MSG_*` keys in `locales/enUS.lua`, printed by `NS.Apply.Report`.
+`test`, `apply` and `clear` are feature verbs, refused with the library's disabled line while the addon
+is off. Their messages are the `MSG_*` keys in `locales/enUS.lua`, printed by `NS.Apply.Report`.
 
 With LibKa0s absent the host stub routes the verbs itself, the schema CLI names the missing library,
 and `enable` / `disable` / `profile` / `skin` print the library-absent line without writing.

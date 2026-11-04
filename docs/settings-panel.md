@@ -8,7 +8,7 @@ they live on the panel attached under PGF's dialog (`modules/Panel.lua`, describ
 | Page | Covers |
 |---|---|
 | Ka0s Premade Groups Filter Extension (landing) | Logo, the TOC notes, and the slash command list from `NS.COMMANDS` |
-| General | Master controls: enable, debug console, minimap button, reset all settings. Filters: Use the extension's filters, and a line saying where the filter options are. Region tags: Show region tags in the Group Finder, then every region tag's color, with a picker each. Skin: the library's Skin tab (source, skin, font and texture, font outline, scope, copy to every Ka0s addon) |
+| General | Master controls: enable, debug console, minimap button, test mode, reset all settings. Filters: Use the extension's filters, and a line saying where the filter options are. Region tags: Show region tags in the Group Finder, then every region tag's color, with a picker each. Skin: the library's Skin tab (source, skin, font and texture, font outline, scope, copy to every Ka0s addon) |
 | Profiles | AceDB profiles: switch, copy, delete, reset |
 
 ## Page → tab → row
@@ -29,6 +29,10 @@ re-render.
   - *Debug console* → `state.debugConsole` (session-only; the console window).
   - *Minimap button* → `global.minimap.shown`, inverted onto LibDBIcon's `global.minimap.hide`.
     Vetoed out of both resets (launcher-§3).
+  - *Test mode* → `state.testMode` (session-only; `modules/Panel.lua`'s switch, the one `/pgfe test`,
+    the launcher's Test mode entry and the skin picker's preview write; R7-PG). On its own line (the
+    frameless packing), with a note saying it shows the filter panel alone. *Reset all settings*
+    turns it off.
   - *Reset all settings* (button) → confirmation popup → profile reset.
 
   Master controls holds only those mandated rows (options-ui-§15); the two feature switches lead

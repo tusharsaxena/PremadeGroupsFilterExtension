@@ -55,11 +55,10 @@ test("skin picker: skin.pickerSeen defaults to false, a skip-render row on the S
     assertTrue(row.skipRender == true, "nothing draws it")
 end)
 
-test("skin picker: the spec names this owner, its seams, the General page's Skin tab, and no eye", function()
+test("skin picker: the spec names this owner, its seams, the General page's Skin tab, and the test-mode eye", function()
     -- red under: a set that is not the write seam (a pick would never reach the profile), a page or
-    -- tab key the gear cannot open, or an eye with nothing to preview in (X6), whether the one-shot
-    -- onPreview or OptionsSkinPicker minor 11's spec.preview mode contract (R6-PV: the documented
-    -- no-preview addon, so a fresh show enters no mode and a close restores nothing).
+    -- tab key the gear cannot open, the one-shot onPreview, or no spec.preview (R7-PG: the preview is
+    -- the test mode, OptionsSkinPicker minor 11's mode contract; tests/test_testmode.lua drives it).
     local NS = T.enableAddon()
     local spec = NS.SkinPickerSpec()
     assertEqual(spec.owner, OWNER)
@@ -67,8 +66,12 @@ test("skin picker: the spec names this owner, its seams, the General page's Skin
     assertTrue(rawequal(spec.set, NS.WriteSkinChoice), "set is the write seam")
     assertEqual(spec.page, "general", "the key settings/Panel.lua registered the General page under")
     assertEqual(spec.tab, "Appearance", "the Skin tab's key")
-    assertEqual(spec.onPreview, nil, "no window or test mode to preview in: no eye")
-    assertEqual(spec.preview, nil, "no preview mode to enter, toggle or restore: no eye (R6-PV)")
+    assertEqual(spec.onPreview, nil, "the mode contract, not the one-shot eye")
+    assertTrue(type(spec.preview) == "table", "a spec.preview (R7-PG)")
+    assertEqual(spec.preview.mode, "test", "the test mode is the preview")
+    for _, hook in ipairs({ "enter", "exit", "isActive", "isShown" }) do
+        assertEqual(type(spec.preview[hook]), "function", hook)
+    end
     assertEqual(type(spec.onClose), "function")
 end)
 

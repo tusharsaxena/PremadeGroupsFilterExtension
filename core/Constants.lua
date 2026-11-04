@@ -13,6 +13,7 @@ local _, NS = ...
 --                           at host level + LEVEL.ABOVE_HOST = L
 --     body, min/max arrow, header click, template   L + 1 (child default)
 --     body widgets (checks, edit boxes, dropdowns, buttons, hover frame)   L + 2
+--   the attached panel ALONE (test mode)   STRATA.ALONE (HIGH), under the skin picker (DIALOG)
 --   PGFE StaticPopups shown while the panel is visible   STRATA.POPUP, lifted and put back
 --                           (core/Popup.lua; a borrowed confirmation, T8)
 --   dropdown menus          FULLSCREEN_DIALOG (Blizzard_Menu)
@@ -29,6 +30,10 @@ NS.Constants.LAYERS = {
         -- A PGFE StaticPopup shown while the FULLSCREEN panel is visible: one strata above it, so
         -- the Save as edit box is never drawn under PGF's dialog or the panel.
         POPUP = "FULLSCREEN_DIALOG",
+        -- The panel ALONE, in the test mode (R7-PG): where other Ka0s windows sit, under the skin
+        -- picker (DIALOG) that previews on it and under StaticPopups. Docked again, it reads the
+        -- host's strata back.
+        ALONE = "HIGH",
     },
     LEVEL = {
         -- Over the host's level. A child defaults to its parent + 1, which is where PGF's own

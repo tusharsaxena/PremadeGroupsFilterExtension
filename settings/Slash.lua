@@ -15,9 +15,10 @@ local function helpers() return PGFE.Settings and PGFE.Settings.Helpers end
 local function trim(s) return (s or ""):gsub("^%s+", ""):gsub("%s+$", "") end
 
 local ENABLED_PATH = "enabled"
+local TEST_PATH    = "state.testMode"
 
 local Sl   -- forward-declared: the handlers below reach it at call time
-local runConfig, runDebug, runReset, runResetAll, runEnabled, runApply, runClear
+local runConfig, runDebug, runReset, runResetAll, runEnabled, runApply, runClear, runTest
 
 local COMMANDS = {
     {"help",     L["List available commands"],
@@ -27,6 +28,9 @@ local COMMANDS = {
     -- The reserved skin verb (LibKa0s v1.82.0's O.SkinVerb, ruling D-16): the picker on demand.
     {"skin",     L["Choose a skin: open the skin picker"],
         function() NS.RunSkinVerb() end},
+    -- The test mode (R7-PG): the attached panel on its own. A feature verb, refused while disabled.
+    {"test",     L["Test mode: show the filter panel on its own, without the Group Finder \226\128\148 `/pgfe test on|off`"],
+        function(rest) runTest(rest) end},
     {"enable",   L["Enable the addon"],
         function() runEnabled(true) end},
     {"disable",  L["Disable the addon"],
@@ -190,6 +194,28 @@ function runDebug(rest)
     if not DL then return NS.Print(L["Debug console not ready yet"]) end
     if not DL:DebugVerb(rest) then DL:Toggle() end
 end
+
+-- `test` toggles the test mode; `test on|off` sets it. The write goes through the schema seam's
+-- `state.testMode` row, the one the Master controls box, the launcher entry and the skin picker's
+-- preview write, so a refusal prints from the row and this line follows only a change that landed.
+function runTest(rest)
+    local word = trim(rest):lower()
+    local P, S = NS.Panel, NS.SchemaRuntime
+    if not (P and S and S.Set) then return NS.Print(CLI_MISSING) end
+    local on
+    if word == "on" then on = true
+    elseif word == "off" then on = false
+    elseif word == "" then on = not P.IsTestMode()
+    else
+        return NS.Print(L["|cffFFFF00%s|r takes on, off or nothing: |cffFFFF00%s|r."]
+            :format("/pgfe test", "/pgfe test on|off"))
+    end
+    S.Set(TEST_PATH, on)
+    if P.IsTestMode() == on then NS.Print(on and L.TEST_MODE_ON or L.TEST_MODE_OFF) end
+end
+
+--- The launcher's Test mode entry: the verb's own toggle.
+function PGFE:ToggleTestMode() runTest("") end
 
 -- `apply` / `clear`: modules/Apply.lua decides; this only prints its message.
 function runApply() NS.Apply.Report(NS.Apply.Run{ search = true }) end

@@ -27,6 +27,12 @@ L["List available commands"] = "List available commands"
 L["Open the Ka0s Premade Groups Filter Extension settings panel"] =
     "Open the Ka0s Premade Groups Filter Extension settings panel"
 L["Choose a skin: open the skin picker"] = "Choose a skin: open the skin picker"
+L["Test mode: show the filter panel on its own, without the Group Finder \226\128\148 `/pgfe test on|off`"] =
+    "Test mode: show the filter panel on its own, without the Group Finder \226\128\148 `/pgfe test on|off`"
+L["|cffFFFF00%s|r takes on, off or nothing: |cffFFFF00%s|r."] =
+    "|cffFFFF00%s|r takes on, off or nothing: |cffFFFF00%s|r."
+L["Here it shows the filter panel on its own in the middle of the screen, with your current filters. Apply and Clear need Premade Groups Filter's window, so they wait until you open it."] =
+    "Here it shows the filter panel on its own in the middle of the screen, with your current filters. Apply and Clear need Premade Groups Filter's window, so they wait until you open it."
 L["Enable the addon"]  = "Enable the addon"
 L["Disable the addon"] = "Disable the addon"
 L["Print the addon version"] = "Print the addon version"
@@ -67,6 +73,15 @@ L.MSG_INACTIVE     = "The extension's filters are off; tick Use the extension's 
 
 -- The attached panel (modules/Panel.lua; the key is a widget id, the value its text)
 L.PANEL_TITLE           = "Ka0s Premade Groups Filter Extension"
+L.PANEL_TITLE_TEST      = "Ka0s Premade Groups Filter Extension (test mode)"
+-- The test mode (modules/Panel.lua, settings/Slash.lua; R7-PG)
+L.TEST_MODE_ON          = "Test mode on: the filter panel shows on its own until you turn it off with /pgfe test. Apply and Clear wait for Premade Groups Filter's window."
+L.TEST_MODE_OFF         = "Test mode off."
+L.TEST_MODE_COMBAT      = "Test mode is not available in combat."
+L.TEST_MODE_COMBAT_END  = "Test mode ended: combat started."
+L.TEST_MODE_NO_DIALOG   = "Test mode is unavailable: Premade Groups Filter's window was not found."
+L.TEST_MODE_APPLY_TOOLTIP = "Test mode: Premade Groups Filter's window is closed, so there is nothing to search with. Open the Group Finder on Dungeons to apply these filters."
+L.TEST_MODE_CLEAR_TOOLTIP = "Test mode: Premade Groups Filter's window is closed, so there is no filter to clear. Open the Group Finder on Dungeons to clear it."
 L.PGF_UNSUPPORTED       = "This Premade Groups Filter version is not supported (%s not found)."
 L.FILTERS_ACTIVE        = "Use the extension's filters"
 L.FILTERS_ACTIVE_TOOLTIP = "Off: removes this addon's block from Premade Groups Filter's advanced filter, and Apply does nothing until you tick it again. Your own filter text and the dungeon ticks are left as they are. On: writes the block back from the filter panel's options. The same switch is on the filter panel and in Settings (General > Filters). Separate from Enable, which turns the whole addon off."

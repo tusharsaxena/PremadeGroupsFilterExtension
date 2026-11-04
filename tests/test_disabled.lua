@@ -268,6 +268,7 @@ local VERBS = {
     help        = { check = function(_, m) return #m.prints > 1 end },
     config      = { check = function(_, _, ctx) return ctx.opened.n == 1 end },
     skin        = { check = function(NS, m) return onlyLine(m, disabledLine(NS)) end },
+    test        = { check = function(NS, m) return onlyLine(m, disabledLine(NS)) and not NS.Panel.IsTestMode() end },
     enable      = { check = function(NS) return not NS.IsStoodDown() end },
     disable     = { check = function(NS, m) return NS.IsStoodDown() and #m.prints == 1 end },
     version     = { check = function(_, m) return m.prints[1] ~= nil and m.prints[1]:find("1.0.0", 1, true) ~= nil end },
@@ -399,10 +400,12 @@ test("disabled 8: left-click opens settings; the menu keeps Enabled, which write
 
     local menu = installMenu(m)
     obj.OnClick(nil, "RightButton")
-    assertEqual(#menu.boxes, 1, "the one entry this addon supplies")
+    assertEqual(#menu.boxes, 2, "the two entries this addon supplies: Enabled and Test mode (R7-PG)")
     local box = menu.boxes[1]
     assertEqual(box.label, "Enabled")
     assertTrue(box.enabled, "Enabled stays clickable while disabled")
+    assertTrue(menu.boxes[2].label:find("Test mode", 1, true) == 1, "Test mode, grayed")
+    assertFalse(menu.boxes[2].enabled, "Test mode drives a feature: grayed while disabled")
     assertFalse(box.isSelected(), "unchecked: the stored setting is false")
     assertEqual(#m.__svWrites(), 0, "opening the menu writes nothing")
 
@@ -453,7 +456,7 @@ end)
 
 -- ── step 10: one latch, both orders ─────────────────────────────────────────────────────────────
 
--- red under: replace the Lifecycle Set path in the `enabled` row's onChange (settings/Panel.lua:67) with a direct NS.StandUp()
+-- red under: replace the Lifecycle Set path in the `enabled` row's onChange (settings/Panel.lua:72) with a direct NS.StandUp()
 test("disabled 10: a perf hold then disable, and disable then a perf hold, share one latch", function()
     -- perf hold, then disable: releasing the perf hold leaves the disable standing.
     local NS, m, on = running()

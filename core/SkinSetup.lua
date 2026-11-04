@@ -239,16 +239,21 @@ end
 -- `skin.pickerSeen`, through NS.SchemaRuntime.Set. A close this addon makes itself
 -- (NS.HideSkinPicker: the stand-down, a profile event) is not the player's and writes nothing.
 --
--- NO EYE (X6). The attached panel shows only under Premade Groups Filter's dialog, and the addon has
--- no window of its own and no test mode to preview in, so `onPreview` is omitted and the picker
--- draws no eye; the gear opens the General page on its Skin tab (key "Appearance").
--- `spec.preview` (OptionsSkinPicker minor 11) is omitted too: the documented no-preview addon (R6-PV).
+-- THE PREVIEW (R7-PG; OptionsSkinPicker minor 11, skinning-§10). `spec.preview` is the test mode,
+-- mode "test": enter and exit write the schema's `state.testMode` row, the seam `/pgfe test`, the
+-- Master controls box and the launcher entry write; isActive is the mode, isShown the panel (on
+-- screen, or shown by PGF's dialog). So `/pgfe skin` with the panel hidden turns test mode on (the
+-- panel alone, centered), the eye toggles it, and every close puts it back as the picker found it;
+-- with PGF's dialog open the panel is already shown and nothing changes. No `onPreview`. The gear
+-- opens the General page on its Skin tab (key "Appearance"). Until R7-PG this was the documented
+-- no-preview addon (R6-PV).
 --
 -- QUEUED. One picker is up at a time across every Ka0s addon: while another addon's is up,
 -- O.SkinPicker queues this one and answers nil, "queued", which NS.MaybeShowSkinPicker passes
 -- through; it shows when the other closes.
 
 local PICKER_PATH = "skin.pickerSeen"
+local TEST_PATH   = "state.testMode"
 local pickerTarget       -- the one-shot PLAYER_REGEN_ENABLED frame, while a start is held
 local quietClose = false -- true while NS.HideSkinPicker takes the picker down
 
@@ -265,10 +270,24 @@ local function pickerClosed()
     if S then S.Set(PICKER_PATH, true) end
 end
 
+local function previewWrite(on)
+    local S = schema()
+    if S then S.Set(TEST_PATH, on) end
+end
+
+local PREVIEW = {
+    mode     = "test",
+    enter    = function() previewWrite(true) end,
+    exit     = function() previewWrite(false) end,
+    isActive = function() return NS.Panel ~= nil and NS.Panel.IsTestMode() end,
+    isShown  = function() return NS.Panel ~= nil and NS.Panel.IsShown() end,
+}
+
 function NS.SkinPickerSpec()
     return {
         owner = addonName, get = NS.SkinChoice, set = NS.WriteSkinChoice,
         page = "general", tab = "Appearance",
+        preview = PREVIEW,
         onClose = pickerClosed,
     }
 end

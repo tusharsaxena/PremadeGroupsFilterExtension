@@ -55,6 +55,24 @@ test("layers: the panel takes PGF's dialog strata by reading it, never a literal
     assertEqual(got.level, 25, "the dialog's level + ABOVE_HOST")
 end)
 
+-- R7-PG: alone (test mode) the panel sits under the skin picker (DIALOG), which it previews under,
+-- and docked again it takes the host's strata back.
+test("layers: alone in test mode the panel is HIGH, under the skin picker; docked it reads the host again", function()
+    local NS, m, restore = layered("FULLSCREEN", 20)
+    NS.addon.Settings.Helpers.HideSkinPicker()
+    m.pgf.dialog.shown = false
+    NS.addon:OnSlashCommand("test")
+    local alone = m.__layers(NS.Panel.frame)
+    NS.addon:OnSlashCommand("test")
+    local docked = m.__layers(NS.Panel.frame)
+    restore()
+    -- red under: standAlone keeping layerWithDialog (FULLSCREEN, over the DIALOG picker)
+    assertEqual(alone.strata, NS.Constants.LAYERS.STRATA.ALONE)
+    assertEqual(NS.Constants.LAYERS.STRATA.ALONE, "HIGH")
+    assertEqual(docked.strata, "FULLSCREEN", "the host's strata again")
+    assertEqual(docked.level, 25, "and its level band")
+end)
+
 test("layers: a host that cannot answer its strata leaves the panel inheriting it", function()
     local NS, m, restore = layered(nil, 20)
     local f = NS.Panel.Create()
