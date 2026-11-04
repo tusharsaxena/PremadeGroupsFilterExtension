@@ -262,15 +262,24 @@ test("test mode: alone, the header is the docked one: the plain title centered, 
 end)
 
 test("test mode: docking again restores the docked anchors, scale, title, header and buttons", function()
+    -- red under: a dock that leaves the alone scale on the panel. UIParent's mock answers no number
+    -- for GetEffectiveScale (so dockedScale falls back to 1), so it is armed here, or the alone scale
+    -- would already be 1 and the reset would go unchecked (R7-PG2 review).
     local NS, m = closedDialog()
     m.pgf.dialog.width, m.pgf.dialog.scale = 300, 0.8
+    local uiScale = m.UIParent.GetEffectiveScale
+    m.UIParent.GetEffectiveScale = function() return 1 end
     run(NS, m, "test")
     local f = NS.Panel.frame
-    assertEqual(f:GetWidth(), 420)
+    local width, alone = f:GetWidth(), f:GetScale()
     m.pgf.dialog.shown, m.pgf.dialog.width = true, 420
     NS.Panel.UpdateVisibility()
+    local docked = f:GetScale()
+    m.UIParent.GetEffectiveScale = uiScale
+    assertEqual(width, 420)
+    assertTrue(math.abs(alone - 0.8) < 1e-9, "alone at the dialog's scale first: " .. tostring(alone))
     assertTrue(isDocked(NS, m), "docked")
-    assertEqual(f:GetScale(), 1, "its own scale")
+    assertEqual(docked, 1, "its own scale")
     assertEqual(f.__title, NS.L.PANEL_TITLE)
     assertTrue(f.applyButton:IsEnabled() and f.clearButton:IsEnabled(), "Apply and Clear work")
     assertDockedHeader(NS, m, "docked")
