@@ -122,25 +122,25 @@ Finder. Headless stand-ins: the `test mode:` cases (`tests/test_testmode.lua`).
   the tooltips say the same, never that the window is closed. `/pgfe test` again → "Test mode off." and the panel is gone. `/pgfe test on`, `/pgfe test
   on`, `/pgfe test off` → on, still on, off. `/pgfe test maybe` → one line naming `on|off`. `/reload`
   with test mode on → it is off after the reload. Fail: the panel not showing, Apply or Clear
-  clickable, the mode surviving a reload, or a Lua error. Result:
+  clickable, the mode surviving a reload, or a Lua error. Result: Passed (owner, 2026-11-04)
 - **TEST-2. PGF's dialog docks it.** `/pgfe test`, then open the Group Finder on Dungeons → the panel
   jumps under PGF's dialog as usual, plain title, **Apply** works (press it: the search runs). Close the
   Group Finder → the panel is back in the middle, alone, Apply grayed. Open PGF on another category
   (Raids) → the panel stays alone in the middle. `/pgfe test` with PGF open on Dungeons → the panel
   stays where it is, docked. Fail: the panel left in the middle over an open dialog, Apply grayed while
-  docked, or a Lua error. Result:
+  docked, or a Lua error. Result: Passed (owner, 2026-11-04)
 - **TEST-3. The box and the launcher.** Settings → General → *Master controls*: the **Test mode** box,
   with a tooltip that says it shows the filter panel on its own. Tick it → the panel shows alone; untick
   → gone. `/pgfe test` → the box is ticked when the panel is reopened. Right-click the minimap button →
   a **Test mode** entry, checked while the mode is on, which toggles it; the button's tooltip reads
   `Test mode: On|Off`. With the mode on, General → *Reset all settings* → Yes → the mode is off.
-  Fail: the box, the entry and the verb disagreeing, or a Lua error. Result:
+  Fail: the box, the entry and the verb disagreeing, or a Lua error. Result: Passed (owner, 2026-11-04)
 - **TEST-4. Combat and the off switch.** In combat (a target dummy), `/pgfe test` → "Test mode is not
   available in combat.", nothing shows. Out of combat turn it on, then pull the dummy → "Test mode
   ended: combat started." and the panel is gone; the box reads off. With the mode on, `/pgfe disable`
   → the panel is gone; `/pgfe test` → the one disabled line; the launcher's Test mode entry is grayed;
   `/pgfe enable` → nothing shows until you turn the mode on again. Fail: the panel staying up into
-  combat, a start in combat, or a Lua error. Result:
+  combat, a start in combat, or a Lua error. Result: Passed (owner, 2026-11-04)
 - **TEST-5. Alone, it looks like the docked panel (R7-PG2).** With the Group Finder closed, `/pgfe
   test` → the panel looks like smoke round 7's screenshot 74 (Ka0sAddonsCommonTasks
   `docs/2026-11-04-SMOKE_ROUND7/inputs/images/74.png`, the panel docked under PGF): the same width,
@@ -149,7 +149,7 @@ Finder. Headless stand-ins: the `test mode:` cases (`tests/test_testmode.lua`).
   their labels, *Copy into search box* clear of **Clear**, **Smart** inside the panel). Collapse and
   expand it → the same strip and arrow as docked. Open the Group Finder on Dungeons → it docks with no
   change of size; close it → alone again, the same. Fail: a narrower panel, overlapping rows, a title
-  running into the arrow, or a Lua error. Result:
+  running into the arrow, or a Lua error. Result: Passed (owner, 2026-11-04)
 
 ## Profiles
 
@@ -701,7 +701,7 @@ EllesmereUI read took a shorter path; nothing should look different.
   is gone and test mode is off. Repeat with PGF open on Dungeons → the same, and the attached panel
   previews the pick under PGF while the picker is up. Fail: a close that leaves the pick worn but
   unstored, or the panel up after a close, or a Lua error. Expectation changed 2026-11-04 (R7-PG: the
-  eye and the test mode). Result:
+  eye and the test mode). Result: Passed (owner, 2026-11-04)
 - **SKIN-53. The preview mode is test (R7-PG; R6-PV's no-preview case retired).** PGFE's mode is *test*.
   With PGF's dialog closed and test mode off, `/pgfe skin` → the picker shows with a lit eye, the
   attached panel shows alone in the middle of the screen in test mode (Apply and Clear grayed), behind the
@@ -709,13 +709,13 @@ EllesmereUI read took a shorter path; nothing should look different.
   is gone and `/pgfe` → Master controls shows *Test mode* unticked. Open PGF on Dungeons, then `/pgfe
   skin` → the eye is dimmed, nothing opens or moves (the panel is already shown, docked), and closing
   leaves PGF's dialog and the panel open, test mode off. Fail: no eye, the panel left up after the close,
-  a mode turned on over the open dialog, or a Lua error. Expectation changed 2026-11-04 (R7-PG). Result:
+  a mode turned on over the open dialog, or a Lua error. Expectation changed 2026-11-04 (R7-PG). Result: Passed (owner, 2026-11-04)
 - **SKIN-54. The eye toggles test mode, and a mode you turned on stays (R7-PG).** With PGF's dialog
   closed, `/pgfe skin` → the panel shows alone. Click the eye → its tooltip changes and the panel goes
   away; click it again → the panel is back. Close the picker → the panel is gone (the picker found the
   mode off). Then `/pgfe test` first, and `/pgfe skin` → the eye is lit and nothing else moves; close the
   picker → the panel stays up in test mode until `/pgfe test` turns it off. Fail: the eye doing nothing,
-  a close that turns off a mode you turned on yourself, or a Lua error. Result:
+  a close that turns off a mode you turned on yourself, or a Lua error. Result: Passed (owner, 2026-11-04)
 
 ## Frame layering
 
@@ -798,6 +798,8 @@ On 2026-11-02 the owner reported that every check on the smoke lists of the full
 
 Owed from the owner's fifth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND5/`): SKIN-49, SKIN-50, SKIN-51.
 
-Owed from the owner's sixth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND6/`): SKIN-52, SKIN-53, PANEL-6.
+Owed from the owner's sixth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND6/`): PANEL-6 (SKIN-52 and SKIN-53, rewritten in the seventh round, passed 2026-11-04).
 
-Owed from the owner's seventh smoke round (Ka0sAddonsCommonTasks `docs/2026-11-04-SMOKE_ROUND7/`, R7-PG): TEST-1, TEST-2, TEST-3, TEST-4, TEST-5 (R7-PG2), SKIN-54, with SKIN-52, SKIN-53 and PANEL-6 rewritten for the test mode and SKIN-13's re-check.
+On 2026-11-04 the owner reported that every check of the seventh smoke round (Ka0sAddonsCommonTasks `docs/2026-11-04-SMOKE_ROUND7/`, R7-SMOKE, rows PG-1 to PG-12) passed: TEST-1, TEST-2, TEST-3, TEST-4, TEST-5 (R7-PG2), SKIN-52, SKIN-53 and SKIN-54, recorded on each `Result:` line as `Passed (owner, 2026-11-04)`.
+
+Still owed from the seventh smoke round (no round-7 row covered them): PANEL-6 as rewritten for the Test mode box, and SKIN-13's re-check.
