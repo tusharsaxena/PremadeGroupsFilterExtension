@@ -56,7 +56,10 @@ Filter choices are saved per character, and presets load on any character. **Use
 filters** switches the filtering off without turning the addon off.
 
 The panel and the debug console wear one of nine Ka0s skins, picked when you first log in or later on
-Settings → General → **Skin**; `/pgfe skin` brings the picker back. That tab also sets the font, with
+Settings → General → **Skin**. `/pgfe skin` opens the skin picker at any time: hover or select a skin
+to preview it on the panel, which the picker shows on its own in test mode when the Group Finder is
+closed (the eye turns that test mode on or off), then press **Apply** to keep it, or close the picker
+to put everything back. That tab also sets the font, with
 each name in the list drawn in its own face. Every profile starts on Ka0s Default; pick **WoW Default** for the
 game's own look. The settings pages stay in the game's look unless you untick **Ignore settings
 panel** there. If you use EllesmereUI, pick it as the skin source on the Skin tab and the panel takes your EllesmereUI theme once EllesmereUI's
