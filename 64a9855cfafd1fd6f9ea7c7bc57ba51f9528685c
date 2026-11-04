@@ -1,0 +1,1 @@
+Independent review (R7, 2026-11-04): R7-RD README Usage now names /pgfe skin, says hover/select previews, the eye toggles the test mode (the picker's mode here), Apply keeps, close restores; prose, no command table, R6-NAME display name kept. True to core/SkinSetup.lua's spec.preview. Badge updated to 539/539 in 9b8d640.
