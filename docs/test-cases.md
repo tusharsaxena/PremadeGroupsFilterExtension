@@ -59,13 +59,14 @@ Total.
 - setup: no pgfe.logo file remains
 - setup: the enable writes one [Init] PGF seams and hooks line
 
-### test_slash.lua (8)
+### test_slash.lua (9)
 
 - slash: NS.COMMANDS is ordered positional triples with every reserved verb
 - slash: /pgfe and /premadegroupsfilterextension are registered through AceConsole
 - slash: disable and enable write the Enable row through the write seam
 - slash: perf is reserved but not registered
 - slash: the library-absent stub pins the library's disabled line
+- slash: the library-absent stub's help rows are plain `cmd  desc`, no em dash
 - slash: the library-absent stub still answers version and refuses enable honestly
 - slash: player-facing lines go through NS.L (LibKa0s absent, the stub paths)
 - slash: player-facing lines go through NS.L (LibKa0s present)
@@ -674,7 +675,7 @@ Total.
 | test_harness.lua | 10 |
 | test_surface_parity.lua | 12 |
 | test_setup.lua | 20 |
-| test_slash.lua | 8 |
+| test_slash.lua | 9 |
 | test_disabled.lua | 14 |
 | test_regions.lua | 12 |
 | test_targeting.lua | 9 |
@@ -710,4 +711,4 @@ Total.
 | test_skin_values.lua | 3 |
 | test_skin_switch.lua | 41 |
 | Skipped | 1 |
-| **Total** | **544** |
+| **Total** | **545** |
