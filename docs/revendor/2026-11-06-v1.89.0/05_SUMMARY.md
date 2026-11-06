@@ -1,0 +1,9 @@
+# Summary
+
+- **Tag:** v1.85.0 -> v1.89.0 (pushed tag, commit `df00e5f`), base from the provenance line at `CLAUDE.md:52`, cross-checked against `63f3ed5`. Kit 50 -> 51. Moved minors: Toast 3 -> 4, Widgets 22 -> 23, DebugLogDiagnostics 6 -> 7, and the new major `LibKa0s-IconBrowser-1.0` (IconBrowserSources, IconBrowserWindow, IconBrowser at 1). No cross-major skew. No span bundle (3h prints nothing), no base correction (Step 0 `ok`), no refresh.
+- **For free (class A):** the diagnostics report names IconBrowser; flat `W.Dropdown` menus draw what minor 22 drew and `W.CloseMenu` still closes them; kit 51's CallbackHandler unregister guard.
+- **Blockers:** no contract change. One gate blocker: `tests/loader.lua`'s explicit XML-order list gains the three IconBrowser files, in the re-vendor commit.
+- **Icons:** `LibKa0s icons:` line kept (`chevron-down, chevron-up, clear, close, confirm, copy, eye, info, move, reset, settings, volume-high.`). The tag's `tools/prune-icons.lua`: 12 declared, kept 13 files, removed 5827. Shipped icons are byte-identical to the previous commit's, all Open Iconic, so the README credits do not move. No provenance split, no dead stub mirror.
+- **Adopted:** nothing in this addon (the plan's `V89A-*` items belong to DpsRace, MultiMeters and DropWatcher). **Declined:** nothing; no issue filed. Cascading-menu fields and the Toast stack: not applicable (no `W.ContextMenu` or Toast use site). IconBrowser: settled (no icon chooser). Undecided: none.
+- **Gate at the copy:** `ka0s-bounded luacheck .` 0 warnings / 0 errors in 73 files; `ka0s-bounded lua tests/run.lua` 545 passed, 0 failed, 1 skipped (546 total). Largest own file `modules/Panel.lua`, 1329 lines, under the 1500 cap.
+- **Left for sync-docs:** `docs/ARCHITECTURE.md:34` and `docs/module-map.md:4` still name the vendored LibKa0s as v1.85.0.
