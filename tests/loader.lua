@@ -13,6 +13,7 @@ local Loader = dofile("tests/_kit/loader.lua")
 -- measuring its own degradation stub (testing-§9, anti-pattern #48).
 local LIBKA0S = {
     "libs/LibKa0s/Core.lua",
+    "libs/LibKa0s/CorePixel.lua",
     "libs/LibKa0s/Env.lua",
     "libs/LibKa0s/Compat.lua",
     "libs/LibKa0s/Lifecycle.lua",
@@ -32,10 +33,13 @@ local LIBKA0S = {
     "libs/LibKa0s/SkinDefsOthers.lua",
     "libs/LibKa0s/SkinPaint.lua",
     "libs/LibKa0s/SkinPaintExtras.lua",
+    "libs/LibKa0s/SkinPaintHud.lua",
+    "libs/LibKa0s/SkinAceConfirm.lua",
     "libs/LibKa0s/SkinPaintControls.lua",
     "libs/LibKa0s/SkinEUI.lua",
     "libs/LibKa0s/SkinAce.lua",
     "libs/LibKa0s/Widgets.lua",
+    "libs/LibKa0s/WidgetsDropdown.lua",
     "libs/LibKa0s/WidgetsReorder.lua",
     "libs/LibKa0s/WidgetsDragHandle.lua",
     "libs/LibKa0s/WidgetsLineChart.lua",
