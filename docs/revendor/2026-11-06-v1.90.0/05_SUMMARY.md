@@ -1,0 +1,9 @@
+# Summary
+
+- **Tag:** v1.89.0 -> v1.90.0 (local tag, not pushed, commit `4485b8f`), base from the provenance line at `CLAUDE.md:52`, cross-checked against `c44ca60`. Kit 51 -> 51. Moved minors: Core 15 -> 16, Skin 16 -> 17, SkinPaint 18 -> 19, SkinPaintExtras 17 -> 18, Widgets 23 -> 24, WidgetsAutocomplete 7 -> 8, OptionsAppearance 6 -> 7. No cross-major skew. No span bundle (3h lists every vendored tag as recorded), no base correction (Step 0 `ok`), no refresh.
+- **For free (class A):** every `W.Dropdown` box and menu on the attached panel draws a one-physical-pixel edge at any UI scale (SF1-L1); a copy leaves a `keepScope` owner's Scope alone (SF1-L2).
+- **Blockers:** no contract change, no gate blocker.
+- **Icons:** `LibKa0s icons:` line kept (`chevron-down, chevron-up, clear, close, confirm, copy, eye, info, move, reset, settings, volume-high.`). The tag's `tools/prune-icons.lua`: 12 declared, kept 13 files, removed 5827. The shipped icons are byte-identical to the previous commit's, all Open Iconic, so the README credits do not move. No provenance split, no dead stub mirror.
+- **Adopted:** nothing. **Declined:** nothing; no issue filed. `keepScope`: not applicable (the Skin Tester's). Undecided: none.
+- **Gate at the copy:** `ka0s-bounded luacheck .` 0 warnings / 0 errors in 73 files; `ka0s-bounded lua tests/run.lua` 545 passed, 0 failed, 1 skipped (546 total). Largest own file `modules/Panel.lua`, 1329 lines, under the 1500 cap. Complexity (sighted shadow, non-gating): two functions above CCN 15, both older than this run and untouched by it: `Panel.UpdateVisibility` (`modules/Panel.lua:1243`, CCN 21, from R7-PG/R7-PG2) and the test helper `extent` (`tests/test_skin.lua:212`, CCN 18, from R5-PG2). Both are owed before the next tag.
+- **Left for sync-docs:** `docs/ARCHITECTURE.md:34` and `docs/module-map.md:4` still name the vendored LibKa0s as v1.85.0.
