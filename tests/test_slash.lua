@@ -80,6 +80,25 @@ test("slash: the library-absent stub pins the library's disabled line", function
     assertEqual(Sl:DisabledLine(), T.newAddon().SlashCommands:DisabledLine())
 end)
 
+-- slash-commands-§1: the stub MUST NOT copy FormatRow. A degraded help row prints `cmd  desc`
+-- plainly: two spaces, no gold command and no em dash.
+-- red under: helpRow joining the row with " — " (the library's separator, hand-copied)
+test("slash: the library-absent stub's help rows are plain `cmd  desc`, no em dash", function()
+    local NS = T.newAddon{ skip = T.loadAddon.libFiles }
+    local Sl = NS.SlashCommands
+    local rows, landing = Sl:HelpRows(), Sl:LandingRows()
+    assertEqual(#rows, #NS.COMMANDS)
+    assertEqual(#landing, #NS.COMMANDS)
+    for i, entry in ipairs(NS.COMMANDS) do
+        local plain = "/pgfe " .. entry[1] .. "  " .. entry[2]
+        assertEqual(landing[i], plain)
+        assertEqual(rows[i], "  " .. plain)
+        -- The joint after the verb, not the description: a description may carry its own dash.
+        assertFalse(landing[i]:sub(#("/pgfe " .. entry[1]) + 1):find("^ \226\128\148 ") ~= nil, landing[i])
+        assertFalse(landing[i]:find("|c", 1, true) ~= nil, landing[i])
+    end
+end)
+
 test("slash: the library-absent stub still answers version and refuses enable honestly", function()
     local NS, _, m = T.bootAddon{ skip = T.loadAddon.libFiles }
     m.prints = {}

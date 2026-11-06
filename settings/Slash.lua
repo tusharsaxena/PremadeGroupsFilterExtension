@@ -76,7 +76,8 @@ if not lib then
     local function profileAbsent() libraryAbsent("/pgfe profile") end
     local DISABLED_LINE_FORMAT = "%s is disabled \226\128\148 enable it with |cFFFFFF00%s|r"
 
-    local function helpRow(entry) return "/pgfe " .. entry[1] .. " — " .. entry[2] end
+    -- Plain `cmd  desc` (slash-commands-§1): the stub MUST NOT copy FormatRow's gold and em dash.
+    local function helpRow(entry) return "/pgfe " .. entry[1] .. "  " .. entry[2] end
 
     Sl = {
         OnSlash = function(_, msg)

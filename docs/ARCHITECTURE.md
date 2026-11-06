@@ -476,7 +476,7 @@ and `docs/investigations/`.
 | `slash-dispatch.md` | Present | 17 commands in `NS.COMMANDS` |
 | `profiles.md` | Present | The Profiles page ships in the options UI |
 | `debug.md` | Present | The diagnostics dump ships in every addon (debug-logging-§14) |
-| `midnight-quirks.md` | Not applicable | The addon carries no client-version workaround of its own |
+| `midnight-quirks.md` | Present | Always (documentation-§3): the vendored client-quirks catalog (client-quirks-§1); the addon's own section is empty |
 | `compat-layer.md` | Not applicable | `core/Compat.lua` publishes 2 shims, both supplied by `LibKa0s-Compat-1.0` (fewer than three addon-specific) |
 | `message-bus.md` | Not applicable | No AceEvent messages are defined |
 
