@@ -6,7 +6,7 @@
 ![Standard](https://img.shields.io/badge/Ka0s-WoW_Addon_Standard-yellow)
 ![Tests](https://img.shields.io/badge/Tests-545%2F545_passing-green)
 
-A small companion to [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter)
+Retail only. A small companion to [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter)
 for Mythic+. You type the key level you want to push (or let Smart pick it), and it ticks every
 dungeon you haven't timed at that level yet. It can also narrow the list to leaders from the server
 regions you pick and to the playstyles you want, hide groups that already have your spec or your

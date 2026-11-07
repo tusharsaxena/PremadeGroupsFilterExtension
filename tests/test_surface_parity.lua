@@ -66,6 +66,8 @@ test("parity: the Compat arm carries every library member the addon wires", func
     T.assertSurfaceParity(degraded.Compat, "LibKa0s-Compat-1.0", {
         "IsSecret", "CanAccess", "IsSafeKey",
         "GetSpellInfo", "GetSpellName", "GetSpellTexture", "GetSpellCooldown",
+        -- LibKa0s v1.92.0 (Compat minor 2) added these four client helpers. No caller here until the Forever port.
+        "IsForever", "IsRetail", "ClientKey", "ForClient",
     })
 end)
 

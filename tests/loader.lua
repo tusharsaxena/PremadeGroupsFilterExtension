@@ -61,6 +61,7 @@ local LIBKA0S = {
     "libs/LibKa0s/OptionsIdList.lua",
     "libs/LibKa0s/OptionsTabs.lua",
     "libs/LibKa0s/OptionsTabbed.lua",
+    "libs/LibKa0s/OptionsHeader.lua",
     "libs/LibKa0s/OptionsCombat.lua",
     "libs/LibKa0s/OptionsCompose.lua",
     "libs/LibKa0s/OptionsScroll.lua",
