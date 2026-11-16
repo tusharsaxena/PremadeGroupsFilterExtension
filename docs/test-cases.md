@@ -440,6 +440,15 @@ Total.
 - skin: a pick while stood down builds nothing; the stand-up shows the same panel in the new skin
 - skin: modules/Panel.lua types no color: no literal SetTextColor, tooltip color or markup
 
+### test_titlebar.lua (6)
+
+- title bar: every control on the filter panel's title band shows its tooltip, in every skin
+- title bar: the tooltip opens above its control (PlaceAttached), not below
+- title bar: a control's chevron rests in icon.tint and takes text.link on hover, in every skin
+- title bar: Ka0s Default and Obsidian tell the rest and hover colors apart
+- title bar: no tooltip while the addon is stood down
+- title bar: without the library each control still shows its tooltip above it
+
 ### test_skin_picker.lua (16)
 
 - skin picker: skin.pickerSeen defaults to false, a skip-render row on the Skin tab
@@ -668,6 +677,12 @@ Total.
 - skin switch: the unknown realm's tag on a Blizzard row changes
 - skin switch: the unknown realm's tag on a Blizzard row changes with the Scope ignored
 
+### test_client_globals.lua (3)
+
+- client globals: no call of a global a client lacks
+- client globals: every allowlist row has a reason and a finding to excuse
+- client globals: the check is falsifiable, a planted bare call is flagged for both clients
+
 ## Totals
 
 | Suite | Cases |
@@ -694,6 +709,7 @@ Total.
 | test_skinsetup.lua | 21 |
 | test_launcher_skin_entry.lua | 1 |
 | test_skin.lua | 24 |
+| test_titlebar.lua | 6 |
 | test_skin_picker.lua | 16 |
 | test_skin_eui.lua | 17 |
 | test_skin_outline.lua | 10 |
@@ -710,5 +726,6 @@ Total.
 | test_lizard_sighted.lua | 8 |
 | test_skin_values.lua | 3 |
 | test_skin_switch.lua | 41 |
+| test_client_globals.lua | 3 |
 | Skipped | 1 |
-| **Total** | **545** |
+| **Total** | **554** |

@@ -319,7 +319,12 @@ library's:
   frame flush and 25px high under that source, `modules/Panel.lua`'s `bandRect` reads it back, and
   `S.Header` anchors the title and the button to it at y 0 (R5-PG1, LibKa0s v1.85.0 round 5). The min/max arrows are the
   skin's `Button` box under the addon's own chevrons, never `PageButton`: EllesmereUI's facade takes
-  `"<"` or `">"` only and drew `"up"` / `"down"` as the words. Before EllesmereUI paints, the `eui` source draws the stored skin (the
+  `"<"` or `">"` only and drew `"up"` / `"down"` as the words. They are the panel's one title-bar
+  control, so they follow the title-bar rule of every Ka0s window (SR-PGFE, smoke round 1 of the
+  LibKa0s #75+ run): each chevron rests in `icon.tint` and takes `text.link` under the pointer, the
+  button's highlight kept, and each button shows a one-line tooltip (*Collapse*, *Expand*) above it
+  through `LibKa0s-Tooltip-1.0`'s `AttachTitleTip`, in the owner's `gtip.title`; without the library,
+  the same line by a relative point. The click band over the rest of the title takes no tooltip. Before EllesmereUI paints, the `eui` source draws the stored skin (the
   library's live fallback), Ka0s Default unless the player chose another. The diagnostics' skin
   section names the key the library draws the owner by from its public `Skin:DrawsKey(owner)`
   (LibKa0s v1.81.0), never the internal `__DrawsKey`. Leaving `eui` after a paint asks for a reload

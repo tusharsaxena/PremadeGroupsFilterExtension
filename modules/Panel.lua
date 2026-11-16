@@ -1,4 +1,4 @@
-local _, NS = ...
+local addonName, NS = ...
 -- modules/Panel.lua — the filter panel attached under PGF's dialog.
 --
 -- TEST MODE (R7-PG): `/pgfe test`, the Master controls box, the launcher entry and the skin picker's
@@ -841,17 +841,20 @@ local function collapsedHeight(f)
     return inset + h + inset
 end
 
-local function tintChevron(btn, r, g, b, a)
-    if btn and btn.chevron then btn.chevron:SetVertexColor(r, g, b, a) end
+-- A chevron's color, the title-bar rule of every Ka0s window (smoke round 1 of LIBKA0S_ISSUES_75_PLUS,
+-- ruling 4, SR-PGFE): the skin's `icon.tint` at rest and `text.link` under the pointer
+-- (`btn.chevronHot`, set by the hover pair in buildMinMax), over the button's own highlight, which
+-- stays. A skin that leaves the token alone leaves the art's white.
+local function tintChevron(btn)
+    if not (btn and btn.chevron) then return end
+    local r, g, b, a = NS.SkinColor(btn.chevronHot and "text.link" or "icon.tint")
+    if r == nil then return end
+    btn.chevron:SetVertexColor(r, g, b, a)
 end
 
--- The chevrons' color: the skin's `icon.arrow`, the color its own paging arrows take. A skin that
--- leaves the token alone leaves the art's white.
 local function tintChevrons(mm)
-    local r, g, b, a = NS.SkinColor("icon.arrow")
-    if r == nil then return end
-    tintChevron(mm.MinimizeButton, r, g, b, a)
-    tintChevron(mm.MaximizeButton, r, g, b, a)
+    tintChevron(mm.MinimizeButton)
+    tintChevron(mm.MaximizeButton)
 end
 
 -- The header's click band: the title band's depth, capped at the body's top so a click in the
@@ -926,6 +929,33 @@ local function sizeArrow(mm, btn, icon)
     btn.chevronHolder, btn.chevron = holder, t
 end
 
+-- A title-bar control's tooltip and hover color (rulings 3 and 4 of the same smoke round): one line,
+-- `words`, above the control in the owner's `gtip.title`, through LibKa0s-Tooltip-1.0's
+-- AttachTitleTip, and nothing while stood down. Without the library, the same line above the
+-- control by a relative point in the tooltip's own color. Hooked, so the template's pair still runs.
+local Tip = LibStub and LibStub("LibKa0s-Tooltip-1.0", true)
+
+local function titleTip(btn, words)
+    local function current() if not stoodDown() then return words end end
+    if Tip then Tip.AttachTitleTip(btn, current, addonName); return end
+    btn:HookScript("OnEnter", function(self)
+        if not current() then return end
+        GameTooltip:SetOwner(self, "ANCHOR_NONE")
+        GameTooltip:SetText(words, nil, nil, nil, nil, true)
+        GameTooltip:Show()
+        GameTooltip:ClearAllPoints()
+        GameTooltip:SetPoint("BOTTOM", self, "TOP", 0, 2)
+    end)
+    btn:HookScript("OnLeave", function() GameTooltip:Hide() end)
+end
+
+local function wireTitleControl(btn, words)
+    if not btn then return end
+    btn:HookScript("OnEnter", function(self) self.chevronHot = true; tintChevron(self) end)
+    btn:HookScript("OnLeave", function(self) self.chevronHot = nil; tintChevron(self) end)
+    titleTip(btn, words)
+end
+
 -- PGF's MaximizeMinimize wiring (UI/Dialog.lua OnLoad and MaximizeMinimize), on our own frame. The
 -- template's close button would hide the panel under a dialog that stays open, so it is hidden and
 -- the toggle takes its place, sized here and placed on the title band by S.Header (paint; placeHeader
@@ -938,6 +968,8 @@ local function buildMinMax(f)
     -- Expanded shows the collapse button (up), collapsed the expand one (down).
     sizeArrow(mm, mm.MinimizeButton, "chevron-up")
     sizeArrow(mm, mm.MaximizeButton, "chevron-down")
+    wireTitleControl(mm.MinimizeButton, L.PANEL_COLLAPSE_TIP)
+    wireTitleControl(mm.MaximizeButton, L.PANEL_EXPAND_TIP)
     mm:SetOnMaximizedCallback(function() setCollapsed(false) end)
     mm:SetOnMinimizedCallback(function() setCollapsed(true) end)
     f.MaximizeMinimizeFrame = mm -- which arrow shows is set by applyLayout
