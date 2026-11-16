@@ -40,6 +40,8 @@ if not lib then
     H.PageBanner           = function() end
     H.PageHeader           = function() end
     H.SubTabStrip          = function() end
+    -- LibKa0s v1.100.0 (OptionsNav 7): the side-tab rail; without the library it draws nothing.
+    H.SideTabs             = function() return nil end
     H.SetChromeHeight      = function() end
     H.__bannerBand         = function() end
     H.__tabBand            = function() end

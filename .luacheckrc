@@ -22,7 +22,7 @@ read_globals = {
   "_G", "LibStub", "hooksecurefunc",
   "C_AddOns", "C_ChallengeMode", "C_MythicPlus",
   "CreateFrame", "UIParent", "GameTooltip", "NineSliceUtil",
-  "InCombatLockdown", "GetCurrentRegion", "GetRealmName", "UnitClass",
+  "InCombatLockdown", "GetCurrentRegion", "GetRealmName", "UnitClass", "UnitName",
   "Settings", "PlaySound", "SOUNDKIT", "LFGListFrame", "MenuResponse", "C_LFGList", "C_Timer", "StaticPopup_Show", "StaticPopup_Hide", "YES", "NO",
   -- Premade Groups Filter (## Dependencies): read by core/PGFBridge.lua and modules/Diagnostics.lua
   -- (presence only).

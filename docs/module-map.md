@@ -46,7 +46,7 @@ Profiles page. The constraints that fix the order:
 | `core/Constants.lua` | `NS.Constants.LAYERS`: the one layers table, every strata and level offset the addon sets, with the whole stack in its header comment (frame-layering-§5) |
 | `core/MediaSetup.lua` | `LibKa0s-Media-1.0`: `NS.Icon`, `NS.MediaFont`, the LSM registration |
 | `core/WidgetsSetup.lua` | `LibKa0s-Widgets-1.0`: `NS.MakeDropdown`, `NS.CloseMenu`, the attached panel's flat dropdowns and the shared menu |
-| `core/Compat.lua` | `LibKa0s-Compat-1.0`: the spec readers |
+| `core/Compat.lua` | `LibKa0s-Compat-1.0`: the spec readers and the identity readers |
 | `core/EnvSetup.lua` | `LibKa0s-Env-1.0`: `NS.Meta`, `NS.Version` |
 | `core/PGFE.lua` | The AceAddon object, lifecycle (`OnInitialize`, `OnEnable`), `NS.StandDown` / `NS.StandUp`, the `[Init]` summary |
 | `core/Database.lua` | The schemaVersion migration runner |

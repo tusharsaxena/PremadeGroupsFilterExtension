@@ -61,6 +61,7 @@ Recorded here because the plan names them provisionally.
 | Slash registry | `NS.COMMANDS` (positional triples) and `NS.SlashCommands` (the dispatcher) | `apply` and `clear` sit in `settings/Slash.lua`'s table and delegate to `NS.Apply`. |
 | Feature events | append `{ "EVENT", "MethodName" }` to `NS.FEATURE_EVENTS` at file load | `core/PGFE.lua` registers the list on enable and stand-up and unregisters it on stand-down. Teardown/rebuild steps go in `NS.STAND_DOWN` / `NS.STAND_UP`. |
 | Spec readers | `NS.Compat.GetSpecialization()`, `NS.Compat.GetSpecializationInfo(i)` | `core/Compat.lua`, through `LibKa0s-Compat-1.0`; use these rather than the bare globals. |
+| Identity readers | `NS.Compat.RegionalNames()`, `NS.Compat.UnitCharacterName(unit)`, `NS.Compat.CharacterKey()`, `NS.Compat.RealmKey()` | `core/Compat.lua`, through `LibKa0s-Compat-1.0` (minor 4); no caller yet, and any character- or realm-keyed read uses these. |
 | Defaults | `NS.C.PROFILE`, `NS.C.CHAR_DEFAULTS`, `NS.C.GLOBAL_DEFAULTS` | `defaults/Profile.lua`; db at `NS.addon.db` (== `NS.db`). |
 | Perf | No Perf instance | performance-§12 exemption; the re-arm trigger is in `## Documented deviations`. |
 
@@ -477,7 +478,7 @@ and `docs/investigations/`.
 | `profiles.md` | Present | The Profiles page ships in the options UI |
 | `debug.md` | Present | The diagnostics dump ships in every addon (debug-logging-§14) |
 | `midnight-quirks.md` | Present | Always (documentation-§3): the vendored client-quirks catalog (client-quirks-§1); the addon's own section is empty |
-| `compat-layer.md` | Not applicable | `core/Compat.lua` publishes 2 shims, both supplied by `LibKa0s-Compat-1.0` (fewer than three addon-specific) |
+| `compat-layer.md` | Not applicable | `core/Compat.lua` publishes 6 shims, all supplied by `LibKa0s-Compat-1.0` (none addon-specific) |
 | `message-bus.md` | Not applicable | No AceEvent messages are defined |
 
 ### Verification and record (documentation-§3)
