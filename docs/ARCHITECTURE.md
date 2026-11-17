@@ -370,6 +370,34 @@ wearing `-` or `+`, its tooltip above it by a relative point, and no settings ma
 the library's too). The addon builds no `DragHandle`, so the drag strip's settings mark has nothing to
 turn on.
 
+## Tooltip placement
+
+Every tooltip this addon places itself follows standalone-windows *Tooltip placement* through
+`LibKa0s-Tooltip-1.0` (LibKa0s#92, adopted as AD-92-PGFE of Ka0sAddonsCommonTasks
+`docs/2026-11-17-LIBKA0S_V1_105_ADOPTION/`). No tooltip here is anchored at the cursor or offset from a
+corner of its control, and the addon's own Lua carries no `ANCHOR_*` owner but `ANCHOR_NONE` (pinned by
+`tests/test_tooltips.lua`). Each element is classified once:
+
+| Element | Class | Placement |
+|---|---|---|
+| Every option on the panel: a checkbox and its label, the three number boxes, the four dropdown buttons, Save, Save as..., Delete, Apply, Clear, the copy box and its label (`modules/Panel.lua`'s `tooltip`) | body (the panel's content is its controls; the chrome row names only the title band) | `PlaceBeside(GameTooltip, control, Panel.frame)`: beside the panel, right when it fits and otherwise left, top level with the control, `TIP_GAP` out. The window group is the panel alone, docked or alone in the test mode: PGF's dialog above it is PGF's, not this addon's. Owned at `ANCHOR_NONE`, filled, shown, then placed. Geometry unreadable or the library absent: centered above the control by a relative point (`BOTTOM` on its `TOP`, 2px), never the cursor |
+| An entry of a panel dropdown's menu (the library's `W.Dropdown`, `rowTooltip`) | body, with the menu frame as its window (body rule 6) | The renderer owns the tooltip by the row at `ANCHOR_NONE` and fills it; the library's `__rowTip` places it beside the menu |
+| The title band's marks, the collapse toggle and the settings mark (`W.HeaderButtons`) | chrome | The library's `PlaceAttached`, centered above the mark (*The title-bar marks*, above). Degraded (the library absent), the collapse toggle's tooltip is centered above it by a relative point (`core/WidgetsSetup.lua`'s `fallbackTip`), the chrome rule's shape |
+| The minimap button | launcher (launcher-§7) | The library's `PlaceLauncher` (Launcher minor 11), with no addon code |
+
+**Left as they are, out of the rule's scope** (standalone-windows, *What it does not bind*):
+
+- **The degraded dropdowns** (the library absent): the client's `WowStyle1DropdownTemplate` buttons and
+  the menu entries `Blizzard_Menu` draws. Their tooltips are placed by the client's menu code through
+  `SetTooltip` (`modules/Panel.lua`'s `menuTooltip` only fills them): a menu the client's menu system
+  draws.
+- **The settings pages** (`settings/`, `LibKa0s-Options-1.0` widgets on Blizzard's Settings canvas):
+  options-ui governs them.
+- **The launcher's right-click menu** (`MenuUtil.CreateContextMenu`, launcher-§2) and a LibDataBroker
+  display's bar: the client's menu and the display place those.
+- **PGF's dialog and Blizzard's Group Finder frames**, the listings' leader and group tooltips among
+  them: the client and PGF place them, and this addon writes no line onto them.
+
 ## Frame layering
 
 The strata and levels the addon chooses are named once, in `NS.Constants.LAYERS`

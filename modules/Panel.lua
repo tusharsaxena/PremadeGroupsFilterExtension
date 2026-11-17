@@ -118,15 +118,33 @@ local function fillTooltip(tip, title, text)
     end
 end
 
--- A hover tooltip on a widget this file built. HookScript, not SetScript: UIPanelButtonTemplate
--- has its own OnEnter/OnLeave, which keep running. `text` may be a function, read at each hover (Apply
--- and Clear say why they are disabled while the panel shows alone).
+-- WHERE A PANEL TOOLTIP OPENS (LibKa0s#92, AD-92-PGFE; standalone-windows, *Tooltip placement*).
+-- Every option on the panel is a BODY element: the panel's content is its controls, and the chrome
+-- row names only the title band and its marks (W.HeaderButtons places those, above the mark). So
+-- the tooltip opens beside the window group, the panel alone (PGF's dialog it docks under is PGF's,
+-- not this addon's), right of it when it fits and otherwise left, its top level with the hovered
+-- control, TIP_GAP out: LibKa0s-Tooltip-1.0's PlaceBeside, on a tooltip owned at ANCHOR_NONE. It
+-- was owned at the right-hand corner anchor, the corner offset the rule retires. With the library
+-- absent, or the geometry unreadable (nothing placed), it attaches centered above the control by a
+-- relative point, as the library's own fallback does; never the cursor.
+local function placeTip(tip, widget)
+    local Tip = LibStub and LibStub("LibKa0s-Tooltip-1.0", true)
+    if Tip and Tip.PlaceBeside(tip, widget, Panel.frame) then return end
+    tip:ClearAllPoints()
+    tip:SetPoint("BOTTOM", widget, "TOP", 0, 2)
+end
+
+-- A hover tooltip on a widget this file built: owned, filled, shown (so its size is known), then
+-- placed. HookScript, not SetScript: UIPanelButtonTemplate has its own OnEnter/OnLeave, which keep
+-- running. `text` may be a function, read at each hover (Apply and Clear say why they are disabled
+-- while the panel shows alone).
 local function tooltip(widget, title, text)
     widget:HookScript("OnEnter", function(self)
         if stoodDown() then return end
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetOwner(self, "ANCHOR_NONE")
         fillTooltip(GameTooltip, title, type(text) == "function" and text() or text)
         GameTooltip:Show()
+        placeTip(GameTooltip, self)
     end)
     widget:HookScript("OnLeave", function()
         if stoodDown() then return end
@@ -147,11 +165,14 @@ end
 
 -- The library's menu row (the row options of W.ContextMenu, LibKa0s-Widgets-1.0 minor 21, which a
 -- dropdown's options share): a `tooltip` renderer, so the lines take the same two roles as every
--- other tooltip here. The library takes it off with the row and with the menu.
+-- other tooltip here. The library takes it off with the row and with the menu, and PLACES it: a
+-- renderer's tooltip shown and owned by the row opens beside the menu, the entry's window (body rule
+-- 6; Widgets' __rowTip, LibKa0s#92). So it is owned at ANCHOR_NONE and anchored nowhere here; it was
+-- owned at the right-hand corner anchor, the corner offset the rule retires.
 local function rowTooltip(title, text)
     return function(row)
         if stoodDown() then return end
-        GameTooltip:SetOwner(row, "ANCHOR_RIGHT")
+        GameTooltip:SetOwner(row, "ANCHOR_NONE")
         fillTooltip(GameTooltip, title, text)
         GameTooltip:Show()
     end

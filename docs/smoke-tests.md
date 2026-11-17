@@ -19,7 +19,7 @@ takes the next free number in its theme and a retired number is never reused.
 | DIAG-1..3 | Diagnostics | Debug console, the diagnostics report, the console icons |
 | DEGRADED-1 | Degraded install | LibKa0s absent |
 | TEST-1..5 | Test mode | `/pgfe test` (R7-PG, smoke round 7): the panel alone, Apply and Clear disabled, the dialog docking it, the box and the launcher entry, combat and the off switch, and the panel alone looking like the docked one (R7-PG2) |
-| APPLY-1..26 | Attached panel and Apply | The panel under PGF, targeting, regions, playstyle, composition, leader, age, presets, Clear, PGF minimized, collapse, layout, tooltips, Smart key level, filters toggle, row spacing, region tags, the season-data request, region colors |
+| APPLY-1..27 | Attached panel and Apply | The panel under PGF, targeting, regions, playstyle, composition, leader, age, presets, Clear, PGF minimized, collapse, layout, tooltips, Smart key level, filters toggle, row spacing, region tags, the season-data request, region colors, where the panel's tooltips open (AD-92-PGFE) |
 | LAYER-1..3 | Frame layering | The panel layered with PGF's dialog, PGFE popups lifted over the panel and put back |
 | LOC-1..2 | Non-English client | Realm-name and dungeon-name seams on a deDE/frFR client |
 | SKIN-1..10 | EllesmereUI skin (retired) | The record of the addon's own EllesmereUI bridge, retired by the skinning rollout's PG-06 (2026-10-29); EllesmereUI is now the library's `eui` skin source |
@@ -287,6 +287,8 @@ substitute its numbers.
   does (OCE: Oceanic realms, in the Sydney data center); the button's own tooltip no longer lists the
   entries. No tooltip sticks after the pointer leaves or the menu closes.
   Result: Passed (owner, 2026-11-02)
+  Amended by AD-92-PGFE (LibKa0s#92): where each of these tooltips opens is APPLY-27's; the content
+  checked here is unchanged.
 - **APPLY-20. Smart key level.** On a character that never used the addon, *Smart* is ticked and
   the panel matches the owner's defaults: Toggle, Untimed dungeons, Smart, Server regions, Playstyle and
   Composition ticked (all three dropdowns read Any); Experienced leader and Max group age (15)
@@ -336,6 +338,21 @@ substitute its numbers.
   Open the color wheel and Cancel → the old color stays. `/pgfe set regionColors.oce 255 0 128` →
   pink; *Reset region tag colors* → every tag back to its default, other settings untouched. The color
   wheel shows no opacity slider. Result: pass (owner-marked 2026-10-23). Labels and placement changed by item 020 (2026-10-24): re-checked under PANEL-4, pass (owner-marked 2026-10-24).
+- **APPLY-27. The panel's tooltips open beside the panel (AD-92-PGFE, LibKa0s#92, standalone-windows
+  *Tooltip placement*).** Open PGF's dialog on Dungeons with the panel showing, expanded, under Ka0s
+  Default. Hover *Untimed dungeons* (the box, then its label), the key-level box, *Smart*, the Server
+  regions dropdown button, the Presets dropdown, Save, Apply, Clear and the copy box and its label →
+  each tooltip opens outside the panel's right edge, a hair (2px) off it, its top level with the
+  hovered control's top; moving the pointer along the control does not move it, and it covers none of
+  the panel's rows. The words are the same as before (APPLY-19). Drag the Group Finder (or move PGF's
+  dialog) so the panel's right edge is near the screen's right edge → the same tooltips open outside
+  the panel's left edge instead, never over the panel. Open the Server regions menu and hover *Any*
+  and OCE → each entry's tooltip opens beside the menu, right of it (left near the screen's edge),
+  level with the entry. `/pgfe test` with PGF's dialog closed → the panel alone shows the same
+  placements. Hover the collapse chevron and the gear → their tooltips stay centered above the mark
+  (SKIN-57). Degraded (DEGRADED-1's rename): an option's tooltip opens centered above it. Fail: a
+  tooltip at the pointer, hung off a control's corner over the next rows, over the panel, or a Lua
+  error. Result:
 
 ## EllesmereUI skin
 
@@ -852,6 +869,6 @@ On 2026-11-04 the owner reported that every check of the seventh smoke round (Ka
 
 Owed from smoke round 1 of the LibKa0s #75+ run (Ka0sAddonsCommonTasks `docs/2026-11-16-LIBKA0S_ISSUES_75_PLUS/`, SR-PGFE): SKIN-55.
 
-Owed from the LibKa0s v1.105.0 adoption run (Ka0sAddonsCommonTasks `docs/2026-11-17-LIBKA0S_V1_105_ADOPTION/`, AD-DS-PGFE): SKIN-56; and from its wave B (AD-86-PGFE): SKIN-57, with SKIN-38, SKIN-40 and SKIN-55 re-checked as amended.
+Owed from the LibKa0s v1.105.0 adoption run (Ka0sAddonsCommonTasks `docs/2026-11-17-LIBKA0S_V1_105_ADOPTION/`, AD-DS-PGFE): SKIN-56; from its wave B (AD-86-PGFE): SKIN-57, with SKIN-38, SKIN-40 and SKIN-55 re-checked as amended; and from its wave C (AD-92-PGFE): APPLY-27, with APPLY-19 re-checked as amended.
 
 Still owed from the seventh smoke round (no round-7 row covered them): PANEL-6 as rewritten for the Test mode box, and SKIN-13's re-check.
