@@ -11,7 +11,7 @@ local _, NS = ...
 --   debug console           DIALOG, toplevel (LibKa0s-DebugLog-1.0); its copy window FULLSCREEN
 --   the attached panel      the HOST's strata, read (host-matched surface, frame-layering-§1),
 --                           at host level + LEVEL.ABOVE_HOST = L
---     body, min/max arrow, header click, template   L + 1 (child default)
+--     body, collapse mark, settings mark, header click, template   L + 1 (child default)
 --     body widgets (checks, edit boxes, dropdowns, buttons, hover frame)   L + 2
 --   the attached panel ALONE (test mode)   STRATA.ALONE (HIGH), under the skin picker (DIALOG)
 --   PGFE StaticPopups shown while the panel is visible   STRATA.POPUP, lifted and put back

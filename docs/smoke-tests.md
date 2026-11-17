@@ -615,6 +615,11 @@ EllesmereUI read took a shorter path; nothing should look different.
   shell bar until the reload the game asks for; turn EllesmereUI's third-party skinning off and press
   a filter checkbox → the same reload request appears. Fail: a box left on the old band, a stale chevron
   color, a missing reload request, or a Lua error. Result:
+  Amended by AD-86-PGFE (LibKa0s#86): the box is retired. Read "the box" as the strip of two marks,
+  collapse then settings (SKIN-57): after each pick both marks stay centered on the new band, the
+  chevron and the gear take the skin's icon color, and the click band ends just short of the
+  collapse mark. Under EllesmereUI both marks stay on the 25px shell bar until the reload. Fail: a mark
+  left on the old band, a stale mark color, a missing reload request, or a Lua error.
 - **SKIN-41. The panel's dropdowns are flat (PG-D1).** Open PGF's dialog on Dungeons with the panel
   showing, on Ka0s Default → Server regions, Playstyle, Composition and the Presets dropdown each draw
   a flat dark box with the skin's edge and one small gold triangle at the right end, the look of the
