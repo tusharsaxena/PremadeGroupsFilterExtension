@@ -29,6 +29,7 @@ takes the next free number in its theme and a retired number is never reused.
 | SKIN-49.. | Skins | The owner's fifth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND5/`): the skin list's outside-press close, the panel's header centering |
 | SKIN-52.. | Skins | The owner's sixth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND6/`): the skin picker's preview contract; since the seventh round (`docs/2026-11-04-SMOKE_ROUND7/`, R7-PG) the test mode is the preview (SKIN-52 to SKIN-54) |
 | SKIN-55 | Skins | Smoke round 1 of the LibKa0s #75+ run (Ka0sAddonsCommonTasks `docs/2026-11-16-LIBKA0S_ISSUES_75_PLUS/`, SR-PGFE): the collapse button's tooltip and its rest and hover colors |
+| SKIN-56 | Skins | The LibKa0s v1.105.0 adoption run (Ka0sAddonsCommonTasks `docs/2026-11-17-LIBKA0S_V1_105_ADOPTION/`, AD-DS-PGFE): a new profile's skin is the library's per-client default |
 | SKIN-34..42 | Skins | The skin fonts and feedback run (2026-10-30, LibKa0s v1.82.0): the Font outline setting, the panel's text and the Font outline's default, the new faces, the attached panel's width parity across skins, the collapse button's chevron and place; the findings remediation's re-anchor check, the panel's flat dropdowns and the one media picker |
 
 ## Before you start
@@ -727,6 +728,12 @@ EllesmereUI read took a shorter path; nothing should look different.
   other skin → the same in each skin's own colors. Fail: no tooltip, a tooltip at the pointer or below
   the button with room above, a chevron that does not change color on hover, or a Lua error. SKIN-40's
   "the skin's arrow color" now reads "the skin's icon color". Result:
+- **SKIN-56. A new profile wears the client's default skin (AD-DS-PGFE, skinning-§2).** Settings →
+  Profiles: create a new profile and switch to it → the first-run skin picker shows with Ka0s Default
+  selected, and `/pgfe get skin.skin` prints `ka0s`. Switch back to your own profile → its stored skin
+  is worn unchanged (a stored choice is never rewritten). Nothing on screen differs from before on
+  Retail: the default now comes from the library's `Skin:DefaultSkin()` rather than a literal. Fail: a
+  new profile on another skin, a stored skin moved, or a Lua error. Result:
 
 ## Frame layering
 
@@ -814,5 +821,7 @@ Owed from the owner's sixth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-
 On 2026-11-04 the owner reported that every check of the seventh smoke round (Ka0sAddonsCommonTasks `docs/2026-11-04-SMOKE_ROUND7/`, R7-SMOKE, rows PG-1 to PG-12) passed: TEST-1, TEST-2, TEST-3, TEST-4, TEST-5 (R7-PG2), SKIN-52, SKIN-53 and SKIN-54, recorded on each `Result:` line as `Passed (owner, 2026-11-04)`.
 
 Owed from smoke round 1 of the LibKa0s #75+ run (Ka0sAddonsCommonTasks `docs/2026-11-16-LIBKA0S_ISSUES_75_PLUS/`, SR-PGFE): SKIN-55.
+
+Owed from the LibKa0s v1.105.0 adoption run (Ka0sAddonsCommonTasks `docs/2026-11-17-LIBKA0S_V1_105_ADOPTION/`, AD-DS-PGFE): SKIN-56.
 
 Still owed from the seventh smoke round (no round-7 row covered them): PANEL-6 as rewritten for the Test mode box, and SKIN-13's re-check.

@@ -88,6 +88,27 @@ test("skin seam: the owner is registered at file load, before the profile store 
     assertTrue(m.LibStub("LibKa0s-Skin-1.0"):IsOwner(OWNER), "not registered at file load")
 end)
 
+test("skin seam: the profile default is the client's default skin (skinning-§2, Skin:DefaultSkin)", function()
+    -- red under: a hard-coded "ka0s" profile default or pre-store read (a client whose library
+    -- default is another skin would open on Ka0s Default), or a default read from anywhere but
+    -- Skin:DefaultSkin(). The Retail answer is Ka0s Default; a stand-in default proves the read.
+    local NS, m = T.newAddon()
+    assertEqual(NS.DEFAULT_SKIN, m.LibStub("LibKa0s-Skin-1.0"):DefaultSkin(), "NS.DEFAULT_SKIN is Skin:DefaultSkin()")
+    assertEqual(NS.DEFAULT_SKIN, "ka0s", "Ka0s Default on Retail")
+    assertEqual(NS.C.PROFILE.skin.skin, NS.DEFAULT_SKIN, "the profile default")
+
+    local other = T.newAddon({ skin = "obsidian" })
+    assertEqual(other.DEFAULT_SKIN, "obsidian", "NS.DEFAULT_SKIN follows the library's answer")
+    assertEqual(other.C.PROFILE.skin.skin, "obsidian", "the profile default follows it")
+    assertEqual(other.C.PROFILE.skin.source, "ka0s", "the source stays the Ka0s skins")
+    local source, skin = other.SkinChoice()
+    assertEqual(source, "ka0s", "the read before the store: the source")
+    assertEqual(skin, "obsidian", "the read before the store: the client's default skin")
+
+    local booted = T.bootAddon({ skin = "obsidian" })
+    assertEqual(booted.addon.db.profile.skin.skin, "obsidian", "a new profile wears it")
+end)
+
 test("skin seam: the read answers Ka0s Default before the profile store exists", function()
     -- RegisterOwner calls `get` at FILE LOAD; a getter that raised there would be a Lua error on
     -- every login.

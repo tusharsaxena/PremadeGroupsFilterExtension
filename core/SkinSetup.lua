@@ -6,8 +6,10 @@ local addonName, NS = ...
 --   NS.Skin                 the owner's facade, `Skin:For("PremadeGroupsFilterExtension")`: the
 --                           painting vocabulary (Shell, Button, Checkbox, ...) and Token / Color /
 --                           Resolve / OnLooksChanged. Every surface that draws reads its colors here.
+--   NS.DEFAULT_SKIN         the skin a new profile wears, `Skin:DefaultSkin()` read at file load
+--                           (skinning-§2): Ka0s Default on Retail and without the library.
 --   NS.SkinChoice()         the stored (source, skin) pair, read through NS.SchemaRuntime.Get;
---                           "ka0s", "ka0s" before OnInitialize has built the profile store.
+--                           "ka0s", NS.DEFAULT_SKIN before OnInitialize has built the profile store.
 --   NS.WriteSkinChoice(s,k,i,m) the write seam: every half through NS.SchemaRuntime.Set, the one
 --                           seam `/pgfe set` and the settings panel already write through
 --                           (architecture-§5); `i`, the Scope's `{ panel, fonts }`, writes the two
@@ -94,7 +96,12 @@ local SOURCE_PATH, SKIN_PATH = "skin.source", "skin.skin"
 local PANEL_PATH, FONTS_PATH = "skin.ignorePanel", "skin.ignoreFonts"
 local FONT_PATH, TEXTURE_PATH = "skin.font", "skin.texture"
 local OUTLINE_PATH = "skin.outline"
+-- The source is the Ka0s skins on every client; the skin a new profile wears is the client's, as the
+-- library answers it (skinning-§2, Skin:DefaultSkin, Skin minor 18), read once at file load. It is
+-- Ka0s Default on Retail, the one client this addon ships; without the library, Ka0s Default, the
+-- only look the degraded facade draws. defaults/Profile.lua loads after this file and reads it.
 local DEFAULT = "ka0s"
+NS.DEFAULT_SKIN = Skin and type(Skin.DefaultSkin) == "function" and Skin:DefaultSkin() or DEFAULT
 
 -- The Ka0s Default tokens the DEGRADED facade answers, copied from the library and limited to the
 -- ones this addon reads. Both arms publish the table, so tests/test_skinsetup.lua can hold each
@@ -169,11 +176,12 @@ local function schema()
     return S
 end
 
---- The stored pair, lazily and nil-safely: Ka0s Default until the profile store exists.
+--- The stored pair, lazily and nil-safely: the Ka0s source and NS.DEFAULT_SKIN until the profile
+--- store exists.
 function NS.SkinChoice()
     local S = schema()
-    if not S then return DEFAULT, DEFAULT end
-    return S.Get(SOURCE_PATH) or DEFAULT, S.Get(SKIN_PATH) or DEFAULT
+    if not S then return DEFAULT, NS.DEFAULT_SKIN end
+    return S.Get(SOURCE_PATH) or DEFAULT, S.Get(SKIN_PATH) or NS.DEFAULT_SKIN
 end
 
 --- A stored override as the profile keeps it: the LSM key, or "" for the skin's own (false, nil, "").
