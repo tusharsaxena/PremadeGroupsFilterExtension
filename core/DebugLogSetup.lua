@@ -72,6 +72,21 @@ if not lib then
             return 0
         end,
         DebugVerb       = function() return false end,
+        -- LibKa0s v1.105.0 (DebugLogDiagnostics 11): with no console a report streams to chat,
+        -- with no pointer line, and a value serializes to one plain line.
+        Report          = function(_, _, _, fn)
+            local n = 0
+            if type(fn) == "function" then
+                fn(function(line)
+                    n = n + 1
+                    if NS.Print then NS.Print(NS.SafeToString(line)) end
+                end)
+            end
+            return n
+        end,
+        Serialize       = function(_, v)
+            return { NS.SafeToString(type(v) == "table" and "<table>" or v) }, false
+        end,
     }
     NS.Debug         = NS.DebugLog.Debug
     NS.DebugOnce     = NS.DebugLog.DebugOnce

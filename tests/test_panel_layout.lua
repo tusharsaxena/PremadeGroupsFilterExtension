@@ -27,7 +27,8 @@ end
 
 -- Owner request (screenshots): expanded shows the up arrow, collapsed the down one. Since the skin
 -- fonts and feedback run's PG-02 (ruling D-20, image-33/34) each is the skin's Button box with a
--- chevron from the shipped icon set on top, tinted `icon.arrow`: never S.PageButton, whose "up" and
+-- chevron from the shipped icon set on top, tinted `icon.tint` at rest (SR-PGFE; was `icon.arrow`, and
+-- the hover is tests/test_titlebar.lua's): never S.PageButton, whose "up" and
 -- "down" EllesmereUI's facade drew as the words.
 test("panel: the min/max arrows are chevron icons on the skin's button, expanded up and collapsed down", function()
     local NS, _, m = T.enableAddon{}
@@ -45,7 +46,7 @@ test("panel: the min/max arrows are chevron icons on the skin's button, expanded
         assertEqual(chev.__width, 12); assertEqual(chev.__height, 12)
         local p, rel, rp = chev:GetPoint(1)
         assertEqual(p, "CENTER"); assertTrue(rel == btn, icon .. ": centered on its button"); assertEqual(rp, "CENTER")
-        local r, g, b = Skin:Color("PremadeGroupsFilterExtension", "icon.arrow")
+        local r, g, b = Skin:Color("PremadeGroupsFilterExtension", "icon.tint")
         assertEqual(chev.__vertexColor[1], r); assertEqual(chev.__vertexColor[2], g)
         assertEqual(chev.__vertexColor[3], b)
         local holder = btn.chevronHolder

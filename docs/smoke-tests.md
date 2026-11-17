@@ -28,6 +28,7 @@ takes the next free number in its theme and a retired number is never reused.
 | SKIN-48 | Skins | The owner's third smoke round (R3-FRIZ): a stored pick of the deleted Ka0s Friz Quadrata TT lands on Ka0s Ubuntu |
 | SKIN-49.. | Skins | The owner's fifth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND5/`): the skin list's outside-press close, the panel's header centering |
 | SKIN-52.. | Skins | The owner's sixth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND6/`): the skin picker's preview contract; since the seventh round (`docs/2026-11-04-SMOKE_ROUND7/`, R7-PG) the test mode is the preview (SKIN-52 to SKIN-54) |
+| SKIN-55 | Skins | Smoke round 1 of the LibKa0s #75+ run (Ka0sAddonsCommonTasks `docs/2026-11-16-LIBKA0S_ISSUES_75_PLUS/`, SR-PGFE): the collapse button's tooltip and its rest and hover colors |
 | SKIN-34..42 | Skins | The skin fonts and feedback run (2026-10-30, LibKa0s v1.82.0): the Font outline setting, the panel's text and the Font outline's default, the new faces, the attached panel's width parity across skins, the collapse button's chevron and place; the findings remediation's re-anchor check, the panel's flat dropdowns and the one media picker |
 
 ## Before you start
@@ -716,6 +717,16 @@ EllesmereUI read took a shorter path; nothing should look different.
   mode off). Then `/pgfe test` first, and `/pgfe skin` → the eye is lit and nothing else moves; close the
   picker → the panel stays up in test mode until `/pgfe test` turns it off. Fail: the eye doing nothing,
   a close that turns off a mode you turned on yourself, or a Lua error. Result: Passed (owner, 2026-11-04)
+- **SKIN-55. The collapse button's tooltip and colors (SR-PGFE; rulings 2 to 4 of smoke round 1).**
+  Open PGF's dialog on Dungeons with the panel showing, under Ka0s Default. Hover the collapse button at
+  the panel's top right → a one-line tooltip, *Collapse*, opens centered **above** the button (below it
+  only when the panel sits against the top of the screen), in the skin's tooltip title color, and goes
+  on leave. Click it, then hover the expand button → *Expand*, the same way. At rest the chevron is the
+  skin's gray icon color (no longer gold); under the pointer the button keeps its highlight and the
+  chevron turns the skin's link color (orange under Ka0s Default). `/pgfe skin`, pick Obsidian and one
+  other skin → the same in each skin's own colors. Fail: no tooltip, a tooltip at the pointer or below
+  the button with room above, a chevron that does not change color on hover, or a Lua error. SKIN-40's
+  "the skin's arrow color" now reads "the skin's icon color". Result:
 
 ## Frame layering
 
@@ -801,5 +812,7 @@ Owed from the owner's fifth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-
 Owed from the owner's sixth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND6/`): PANEL-6 (SKIN-52 and SKIN-53, rewritten in the seventh round, passed 2026-11-04).
 
 On 2026-11-04 the owner reported that every check of the seventh smoke round (Ka0sAddonsCommonTasks `docs/2026-11-04-SMOKE_ROUND7/`, R7-SMOKE, rows PG-1 to PG-12) passed: TEST-1, TEST-2, TEST-3, TEST-4, TEST-5 (R7-PG2), SKIN-52, SKIN-53 and SKIN-54, recorded on each `Result:` line as `Passed (owner, 2026-11-04)`.
+
+Owed from smoke round 1 of the LibKa0s #75+ run (Ka0sAddonsCommonTasks `docs/2026-11-16-LIBKA0S_ISSUES_75_PLUS/`, SR-PGFE): SKIN-55.
 
 Still owed from the seventh smoke round (no round-7 row covered them): PANEL-6 as rewritten for the Test mode box, and SKIN-13's re-check.
