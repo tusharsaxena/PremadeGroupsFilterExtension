@@ -144,6 +144,50 @@ test("tooltips: a menu entry's tooltip is owned by its row at ANCHOR_NONE, for t
     end
 end)
 
+--- Hover a library menu entry of `dd` end to end on a 1920x1080 fake screen: its menu at `menuLeft`
+--- (200 wide), the row inside it, the row's OnEnter path (Widgets' __rowTip) run with the host's
+--- renderer. Answers the tooltip's screen rect, its owner and anchor type.
+local function hoverMenuEntry(m, dd, menuLeft)
+    local scr = dofile("tests/_kit/mock_screen.lua")(m, { width = 1920, height = 1080 })
+    local tip = scr.tooltip{ width = 250, height = 60, shown = false }
+    rawset(tip, "IsOwned", function(self, frame) return self:GetOwner() == frame end)  -- the client's
+    local menu = scr.frame{ left = menuLeft, bottom = 500, width = 200, height = 300 }
+    local row = scr.frame{ left = menuLeft, bottom = 700, width = 200, height = 18, parent = menu }
+    row.__menu = menu
+    local opt
+    for _, o in ipairs(dd._options) do if type(o.tooltip) == "function" then opt = o; break end end
+    assertTrue(opt ~= nil, "an entry with a renderer")
+    local saved = m.GameTooltip
+    m.GameTooltip = tip
+    m.LibStub("LibKa0s-Widgets-1.0").__rowTip(row, opt, { text = { 1, 1, 1 } })
+    local l, b, r, t = scr.rectOf(tip)
+    local got = { l = l, b = b, r = r, t = t, owner = tip.__owner, anchorType = tip.__anchorType,
+                  row = row, shown = tip:IsShown() }
+    m.GameTooltip = saved
+    scr.restore()
+    return got
+end
+
+test("tooltips: a menu entry's tooltip lands beside its menu through the library, right then left", function()
+    -- red under: a renderer that forgets Show(), or owns the tooltip by anything but the row (the
+    -- library then places nothing: rectOf answers nil). End to end through Widgets' __rowTip.
+    local NS, _, m = T.enableAddon{}
+    m.currentRegion = 1
+    local f = NS.Panel.Create()
+    for _, dd in ipairs({ f.regionSelect, f.playstyleSelect, f.compositionSelect }) do
+        local got = hoverMenuEntry(m, dd, 800)
+        assertTrue(got.shown, "the renderer showed it")
+        assertTrue(got.owner == got.row, "the row owns it")
+        assertEqual(got.l, 800 + 200 + 2, "right of the menu, TIP_GAP out")
+        assertEqual(got.t, 718, "its top level with the entry")
+        assertEqual(got.anchorType, "ANCHOR_RIGHT")
+        got = hoverMenuEntry(m, dd, 1920 - 200 - 10)
+        assertEqual(got.r, 1920 - 200 - 10 - 2, "left of the menu when the right does not fit")
+        assertEqual(got.t, 718)
+        assertEqual(got.anchorType, "ANCHOR_LEFT")
+    end
+end)
+
 test("tooltips: without the Tooltip library a panel option's tooltip attaches above it, not at a corner", function()
     -- red under: ANCHOR_RIGHT with the placer absent. The fallback is the chrome rule's shape by a
     -- relative point (the library's own fallback, Dropdown's placeRowTip), never the cursor.

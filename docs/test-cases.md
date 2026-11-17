@@ -454,12 +454,13 @@ Total.
 - title bar: the settings mark hides PGF's dialog, then opens this addon's settings
 - title bar: without the library the collapse toggle still shows its tooltip above it
 
-### test_tooltips.lua (6)
+### test_tooltips.lua (7)
 
 - tooltips: every option on the panel opens beside the panel (PlaceBeside), never at ANCHOR_RIGHT
 - tooltips: a panel option's tooltip opens right of the panel, top level with the option, 2px out
 - tooltips: with no room right of the panel the tooltip opens left of it, never over it
 - tooltips: a menu entry's tooltip is owned by its row at ANCHOR_NONE, for the library to place
+- tooltips: a menu entry's tooltip lands beside its menu through the library, right then left
 - tooltips: without the Tooltip library a panel option's tooltip attaches above it, not at a corner
 - tooltips: the panel's code carries no cursor anchor and no corner anchor
 
@@ -722,7 +723,7 @@ Total.
 | test_launcher_skin_entry.lua | 1 |
 | test_skin.lua | 24 |
 | test_titlebar.lua | 9 |
-| test_tooltips.lua | 6 |
+| test_tooltips.lua | 7 |
 | test_skin_picker.lua | 16 |
 | test_skin_eui.lua | 17 |
 | test_skin_outline.lua | 10 |
@@ -741,4 +742,4 @@ Total.
 | test_skin_switch.lua | 39 |
 | test_client_globals.lua | 3 |
 | Skipped | 1 |
-| **Total** | **563** |
+| **Total** | **564** |
