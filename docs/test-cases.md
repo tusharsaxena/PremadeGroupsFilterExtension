@@ -385,10 +385,12 @@ Total.
 - layout: under EllesmereUI a disabled or loaded PGF skin is named, with no link
 - layout: the header Defaults describes the reset in Reset all settings' own words
 
-### test_skinsetup.lua (21)
+### test_skinsetup.lua (23)
 
 - skin seam: the owner is the folder name, and NS.Skin is its facade
 - skin seam: the owner is registered at file load, before the profile store exists
+- skin seam: the profile default is the client's default skin (skinning-§2, Skin:DefaultSkin)
+- skin seam: without Skin:DefaultSkin the profile default is Ka0s Default (degraded paths)
 - skin seam: the read answers Ka0s Default before the profile store exists
 - skin seam: Core's window edge is handed the owner
 - skin seam: the eight skin keys default to Ka0s Default, the picker unseen
@@ -706,7 +708,7 @@ Total.
 | test_panel_layout.lua | 37 |
 | test_layers.lua | 9 |
 | test_settings_layout.lua | 13 |
-| test_skinsetup.lua | 21 |
+| test_skinsetup.lua | 23 |
 | test_launcher_skin_entry.lua | 1 |
 | test_skin.lua | 24 |
 | test_titlebar.lua | 6 |
@@ -728,4 +730,4 @@ Total.
 | test_skin_switch.lua | 41 |
 | test_client_globals.lua | 3 |
 | Skipped | 1 |
-| **Total** | **554** |
+| **Total** | **556** |

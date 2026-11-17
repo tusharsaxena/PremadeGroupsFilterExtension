@@ -76,9 +76,10 @@ local addonName, NS = ...
 -- this is the only registration of the folder name with EllesmereUI. AT FILE LOAD, never PLAYER_LOGIN (skinning-§1):
 -- the EllesmereUI provider has to offer the owner to EllesmereUI before EllesmereUI dispatches its
 -- skins, which `## OptionalDeps: EllesmereUI` makes it do after this file. Nothing here reads the
--- profile at load: RegisterOwner calls `get` once, before AceDB exists, and it answers Ka0s
--- Default; the profile's pair is applied by NS.ApplySkinChoice right after the store and its
--- migrations exist (core/PGFE.lua OnInitialize).
+-- profile at load: RegisterOwner calls `get` once, before AceDB exists, and it answers the Ka0s
+-- source and NS.DEFAULT_SKIN (the client's default skin, Ka0s Default on Retail); the profile's
+-- pair is applied by NS.ApplySkinChoice right after the store and its migrations exist
+-- (core/PGFE.lua OnInitialize).
 --
 -- ── WHY A ROW'S onChange PASSES ONE HALF ─────────────────────────────────────────────────────
 --

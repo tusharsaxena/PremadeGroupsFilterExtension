@@ -109,6 +109,33 @@ test("skin seam: the profile default is the client's default skin (skinning-§2,
     assertEqual(booted.addon.db.profile.skin.skin, "obsidian", "a new profile wears it")
 end)
 
+test("skin seam: without Skin:DefaultSkin the profile default is Ka0s Default (degraded paths)", function()
+    -- red under: NS.DEFAULT_SKIN read unguarded (an install without the library, or a library
+    -- older than Skin minor 18, which has no DefaultSkin, errors at file load) or a fallback to
+    -- anything but Ka0s Default, the only look the degraded facade draws.
+    local degraded = T.newAddon{ skip = NO_LIBKA0S }
+    assertEqual(degraded.DEFAULT_SKIN, "ka0s", "without the library: Ka0s Default")
+    assertEqual(degraded.C.PROFILE.skin.skin, "ka0s", "without the library: the profile default")
+    local source, skin = degraded.SkinChoice()
+    assertEqual(source, "ka0s", "without the library, before the store: the source")
+    assertEqual(skin, "ka0s", "without the library, before the store: the skin")
+
+    -- An older library: the method gone after the library loads and before core/SkinSetup.lua.
+    local mockRef, removed
+    local older = T.newAddon{
+        mock = function(mock) mockRef = mock end,
+        afterFile = function(path)
+            if path == "core/CoreSetup.lua" then
+                mockRef.LibStub("LibKa0s-Skin-1.0").DefaultSkin = nil
+                removed = true
+            end
+        end,
+    }
+    assertTrue(removed, "the older-library stand-in ran before core/SkinSetup.lua")
+    assertEqual(older.DEFAULT_SKIN, "ka0s", "a library without DefaultSkin: Ka0s Default")
+    assertEqual(older.C.PROFILE.skin.skin, "ka0s", "a library without DefaultSkin: the profile default")
+end)
+
 test("skin seam: the read answers Ka0s Default before the profile store exists", function()
     -- RegisterOwner calls `get` at FILE LOAD; a getter that raised there would be a Lua error on
     -- every login.
