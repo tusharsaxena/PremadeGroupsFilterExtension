@@ -114,7 +114,7 @@ test("tooltips: a panel option's tooltip opens right of the panel, top level wit
 end)
 
 test("tooltips: with no room right of the panel the tooltip opens left of it, never over it", function()
-    -- red under: a tooltip hung off the option's corner (over the panel's neighbours) or at the cursor.
+    -- red under: a tooltip hung off the option's corner (over the panel's neighbors) or at the cursor.
     local NS, _, m = T.enableAddon{}
     local f = NS.Panel.Create(); NS.Panel.Refresh()
     local got = hoverOnScreen(m, f, f.applyButton, 1920 - 420 - 10)
