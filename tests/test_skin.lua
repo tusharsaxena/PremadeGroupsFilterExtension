@@ -28,10 +28,11 @@ local function setup(opts)
     return NS, m, Skin
 end
 
---- Every own widget of a panel instance the skin paints: the frame, the min/max arrows, the eight
---- check buttons, the three edit boxes, the four dropdowns and the five buttons.
+--- Every own widget of a panel instance the skin paints: the frame, the title-bar marks' art (the
+--- strip paints each through the owner's Mark, LibKa0s#86), the eight check buttons, the three edit
+--- boxes, the four dropdowns and the five buttons.
 local function widgets(f)
-    local out = { f, f.MaximizeMinimizeFrame.MinimizeButton, f.MaximizeMinimizeFrame.MaximizeButton,
+    local out = { f, f.collapseMark.icon, f.settingsMark.icon,
         f.activeCheck, f.levelBox, f.ageBox, f.rangeBox,
         f.regionSelect, f.playstyleSelect, f.compositionSelect, f.presetDropdown,
         f.saveButton, f.saveAsButton, f.deleteButton, f.applyButton, f.clearButton }
@@ -77,7 +78,8 @@ test("skin: under Ka0s Default the one panel is painted through the facade, ever
     for _, fs in ipairs(texts(f)) do assertTrue(recorded(Skin, fs), "a label was not painted") end
     assertTrue(#texts(f) >= 10, "the label walk found the panel's font strings")
     assertTrue(Skin.painted[f].calls.Shell ~= nil, "the window is the skin's Shell")
-    assertTrue(Skin.painted[f.MaximizeMinimizeFrame.MinimizeButton].calls.Button ~= nil)
+    assertTrue(Skin.painted[f.collapseMark.icon].calls.Mark ~= nil, "the collapse mark, the owner's Mark")
+    assertTrue(Skin.painted[f.settingsMark.icon].calls.Mark ~= nil, "the settings mark, the owner's Mark")
     assertTrue(Skin.painted[f.activeCheck].calls.Checkbox ~= nil)
     assertTrue(Skin.painted[f.levelBox].calls.EditBox ~= nil)
     assertTrue(Skin.painted[f.presetDropdown].calls.Dropdown ~= nil)
@@ -281,15 +283,17 @@ end)
 
 -- PG-02 of the skin fonts and feedback run (ruling D-20, image-48..51): the min/max button had no
 -- size of its own and sat on the hidden template close button's anchor, so it landed on a different
--- part of the band, or the window edge, in each skin. Now it is one size everywhere, centered on
--- the skin's title band (the band Shell draws: `win.borderSize` in from a flat edge, else 1, and
--- `title.height` tall), 4px in from the right; the header's click band covers the band up to it.
-test("skin: the min/max button is one size and centered on the title band in every skin", function()
-    -- red under: the CloseButton anchor (no size), or a click band that ignores the skin's edge and
-    -- band height.
+-- part of the band, or the window edge, in each skin. Now every mark is one size everywhere, centered
+-- on the skin's title band (the band Shell draws: `win.borderSize` in from a flat edge, else 1, and
+-- `title.height` tall); the header's click band covers the band up to the marks. Re-pinned at
+-- LibKa0s#86 (AD-86-PGFE) to the strip's geometry (NS.HEADER, standalone-windows *Title-bar
+-- controls*): 18px marks, settings 6px in, the collapse toggle 6px past it, where one 20px arrow sat
+-- 4px in.
+test("skin: the title-bar marks are one size and the click band stops at them in every skin", function()
+    -- red under: the CloseButton anchor (no size), or a click band that ignores the skin's edge, its
+    -- band height or the settings mark.
     local NS, _, Skin = setup()
     local f = NS.Panel.frame
-    local mm = f.MaximizeMinimizeFrame
     local n = 0
     for _, def in ipairs(Skin:Skins()) do
         NS.ApplySkinChoice("ka0s", def.key)
@@ -297,21 +301,18 @@ test("skin: the min/max button is one size and centered on the title band in eve
         local style = Skin:Token(OWNER, "win.borderStyle") or "flat"
         local inset = style == "flat" and Skin:Token(OWNER, "win.borderSize") or 1
         local h = Skin:Token(OWNER, "title.height") or 30
-        assertEqual(mm.__width, 20, def.key .. ": width"); assertEqual(mm.__height, 20, def.key .. ": height")
-        for _, btn in ipairs({ mm.MinimizeButton, mm.MaximizeButton }) do
-            assertEqual(btn.__width, 20, def.key .. ": a button's width")
-            assertEqual(btn.__height, 20, def.key .. ": a button's height")
-            assertEqual(btn.chevron.__width, 12, def.key .. ": the chevron's size")
-            local p, rel = btn:GetPoint(1)
-            assertEqual(p, "CENTER"); assertTrue(rel == mm, def.key .. ": the button on its frame")
+        for _, b in ipairs({ f.collapseMark, f.settingsMark }) do
+            assertEqual(b.__width, 18, def.key .. ": a mark's width")
+            assertEqual(b.__height, 18, def.key .. ": a mark's height")
+            assertEqual(b.icon.__width, 12, def.key .. ": the art's size")
         end
-        -- Where it sits on the band (RIGHT 4px in, y 0) is the R5-PG1 case below.
+        -- Where they sit on the band (RIGHT 6 and 30px in, y 0) is the R5-PG1 case below.
         local _, _, _, _, bodyTop = f.body:GetPoint(1)
         assertEqual(f.headerClick.__height, math.min(inset + h, -bodyTop),
             def.key .. ": the click band covers the title band")
         assertTrue(f.headerClick.__height <= -bodyTop, def.key .. ": the click band stops above the body")
         local _, _, _, cx = f.headerClick:GetPoint(2)
-        assertEqual(cx, -(inset + 4 + 20), def.key .. ": the click band stops at the button")
+        assertEqual(cx, -(inset + 6 + 18 + 6 + 18), def.key .. ": the click band stops at the marks")
     end
     assertEqual(n, 9, "every registered skin")
 end)
@@ -335,12 +336,12 @@ local function assertOnBand(region, band, what)
     end
 end
 
-test("skin: the title and the min/max button are centered on the band in every skin", function()
+test("skin: the title and the title-bar marks are centered on the band in every skin", function()
     -- red under: the template's TOP anchor left on TitleText (centerTitle moving only its container),
     -- or the arrow placed by the host's own copy of the band's arithmetic instead of on the band.
     local NS, _, Skin = setup()
     local f = NS.Panel.frame
-    local title, mm = f.TitleContainer.TitleText, f.MaximizeMinimizeFrame
+    local title = f.TitleContainer.TitleText
     local n = 0
     for _, def in ipairs(Skin:Skins()) do
         NS.ApplySkinChoice("ka0s", def.key)
@@ -359,20 +360,25 @@ test("skin: the title and the min/max button are centered on the band in every s
         local align = Skin:Token(OWNER, "title.align") or "CENTER"
         assertEqual((title:GetPoint(1)), align, def.key .. ": the title by title.align")
         assertEqual(title.__justifyH, align, def.key .. ": and justified to it")
-        assertOnBand(mm, band, def.key .. ": the min/max button")
-        assertEqual(#mm.__points, 1, def.key .. ": the button's one anchor")
-        local mp, _, _, mx = mm:GetPoint(1)
-        assertEqual(mp, "RIGHT"); assertEqual(mx, -4, def.key .. ": 4px in from the band's right end")
+        -- Re-pinned at LibKa0s#86 (AD-86-PGFE): extras · settings, settings 6px in and the collapse
+        -- toggle 6px past it (NS.HEADER's PAD and GAP), where the one arrow sat 4px in.
+        for _, e in ipairs({ { f.settingsMark, -6, "the settings mark" }, { f.collapseMark, -30, "the collapse mark" } }) do
+            local b, want, what = e[1], e[2], e[3]
+            assertOnBand(b, band, def.key .. ": " .. what)
+            assertEqual(#b.__points, 1, def.key .. ": " .. what .. "'s one anchor")
+            local mp, _, _, mx = b:GetPoint(1)
+            assertEqual(mp, "RIGHT"); assertEqual(mx, want, def.key .. ": " .. what .. " in from the band's right end")
+        end
     end
     assertEqual(n, 9, "every registered skin")
 end)
 
-test("skin: a Refresh re-anchors the min/max button only when the band moved", function()
+test("skin: a Refresh re-anchors the title-bar marks only when the band moved", function()
     -- red under: placeHeader's ClearAllPoints and SetPoint running on every layout, which is what
     -- tests/perf.lua's combatEvents ceiling caught.
     local NS, _, Skin = setup()
     local f = NS.Panel.frame
-    local mm = f.MaximizeMinimizeFrame
+    local mm = f.collapseMark
     local anchors = 0
     local realClear = mm.ClearAllPoints
     mm.ClearAllPoints = function(self) anchors = anchors + 1; return realClear(self) end

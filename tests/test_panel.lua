@@ -420,11 +420,11 @@ end)
 test("panel: collapse folds to the title bar and is remembered in the profile", function()
     local NS = T.enableAddon{}
     local f = NS.Panel.Create(); NS.Panel.Refresh()
-    f.MaximizeMinimizeFrame.__onMinimized()
+    f.collapseMark:__fire("OnClick", "LeftButton")
     assertTrue(NS.addon.db.profile.panelCollapsed)
     assertFalse(f.body:IsShown())
     assertEqual(f.__height, 1 + 30 + 1, "Ka0s Default's title band and its 1px edges (R5-PG2)")
-    f.MaximizeMinimizeFrame.__onMaximized()
+    f.collapseMark:__fire("OnClick", "LeftButton")
     assertFalse(NS.addon.db.profile.panelCollapsed)
     assertTrue(f.body:IsShown())
     assertTrue(f.__height > 32)
@@ -514,24 +514,28 @@ test("panel: the expanded height fits every row", function()
 end)
 
 -- Owner report (screenshots): the arrow showed maximize while expanded. PGF's convention
--- (UI/Dialog.lua MaximizeMinimize): expanded shows the minimize arrow, collapsed the maximize one.
-test("panel: the min/max arrow follows the stored collapsed state", function()
+-- (UI/Dialog.lua MaximizeMinimize): expanded shows the collapse chevron (up), collapsed the expand one
+-- (down). Re-pinned at LibKa0s#86 (AD-86-PGFE): the toggle is the strip's one extra, a single mark
+-- whose chevron and words follow the state, where PGF's MaximizeMinimize template swapped two buttons.
+test("panel: the collapse mark follows the stored collapsed state", function()
     local NS = T.enableAddon{}
     local f = NS.Panel.Create()
-    local mm = f.MaximizeMinimizeFrame
-    local look
-    mm.SetMinimizedLook = function() look = "minimize" end
-    mm.SetMaximizedLook = function() look = "maximize" end
-    NS.Panel.Refresh(); assertEqual(look, "minimize"); assertFalse(mm.isMinimized)
-    mm.__onMinimized(); assertEqual(look, "maximize"); assertTrue(mm.isMinimized)
-    mm.__onMaximized(); assertEqual(look, "minimize")
+    local b = f.collapseMark
+    NS.Panel.Refresh()
+    assertEqual(b.icon.__texture, NS.Icon("chevron-up")); assertFalse(b.collapsed)
+    assertEqual(b.__tip, NS.L.PANEL_COLLAPSE_TIP)
+    b:__fire("OnClick", "LeftButton")
+    assertEqual(b.icon.__texture, NS.Icon("chevron-down")); assertTrue(b.collapsed)
+    assertEqual(b.__tip, NS.L.PANEL_EXPAND_TIP)
+    b:__fire("OnClick", "LeftButton")
+    assertEqual(b.icon.__texture, NS.Icon("chevron-up"))
     NS.addon.db.profile.panelCollapsed = true
     NS.addon:OnProfileChanged(nil, nil, "Other")
-    -- red under: drop syncMinMax from Panel's applyLayout
-    assertEqual(look, "maximize")
-    -- Stood down, a click must not change the state; the arrow is put back to match it.
+    -- red under: drop syncCollapseMark from Panel's applyLayout
+    assertEqual(b.icon.__texture, NS.Icon("chevron-down"))
+    -- Stood down, a click must not change the state, and the chevron keeps matching it.
     NS.addon:OnSlashCommand("disable")
-    mm.__onMaximized(); assertEqual(look, "maximize")
+    b:__fire("OnClick", "LeftButton"); assertEqual(b.icon.__texture, NS.Icon("chevron-down"))
     assertTrue(NS.addon.db.profile.panelCollapsed)
 end)
 
@@ -540,7 +544,7 @@ test("panel: collapsed shows only the skin's title band; no metal header copies 
     local NS = T.enableAddon{}
     local f = NS.Panel.Create()
     assertEqual(f.headerArt, nil)
-    f.MaximizeMinimizeFrame.__onMinimized()
+    f.collapseMark:__fire("OnClick", "LeftButton")
     assertEqual(f.__height, 1 + 30 + 1, "the band and its edges")
     assertFalse(f.body:IsShown())
     NS.addon.db.profile.panelCollapsed = false

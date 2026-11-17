@@ -312,14 +312,14 @@ Total.
 - panel: a blank preset name is refused
 - panel: each number box is anchored to the right of its own label
 - panel: the expanded height fits every row
-- panel: the min/max arrow follows the stored collapsed state
+- panel: the collapse mark follows the stored collapsed state
 - panel: collapsed shows only the skin's title band; no metal header copies are built
 - panel: Apply leaves focus alone; Enter in the copy box focuses the search box
 - panel: visibility logs on change only, and again after a stand-down
 
 ### test_panel_layout.lua (37)
 
-- panel: the min/max arrows are chevron icons on the skin's button, expanded up and collapsed down
+- panel: the collapse mark is the strip's chevron icon, expanded up and collapsed down
 - panel: the regions and playstyle dropdowns are 225 wide, right-aligned in one column
 - panel: each menu opens with Any; Any is ticked with nothing ticked and clears
 - panel: ticking every option stores Any and the button reads Any
@@ -425,9 +425,9 @@ Total.
 - skin: a pick before the panel exists builds the one panel, painted
 - skin: the panel's geometry: 24px check buttons on the rows' centers, flush under the dialog
 - skin: collapsed, the panel is exactly the band and its edges, nothing below it, in every skin
-- skin: the min/max button is one size and centered on the title band in every skin
-- skin: the title and the min/max button are centered on the band in every skin
-- skin: a Refresh re-anchors the min/max button only when the band moved
+- skin: the title-bar marks are one size and the click band stops at them in every skin
+- skin: the title and the title-bar marks are centered on the band in every skin
+- skin: a Refresh re-anchors the title-bar marks only when the band moved
 - skin: the panel writes the skin's colors: locked boxes, the dimmed label, the readout
 - skin: a pick after the panel is built rewrites the colors the panel reads from tokens
 - skin: with Ignore settings panel on, the panel's labels and title still wear the skin
@@ -442,14 +442,17 @@ Total.
 - skin: a pick while stood down builds nothing; the stand-up shows the same panel in the new skin
 - skin: modules/Panel.lua types no color: no literal SetTextColor, tooltip color or markup
 
-### test_titlebar.lua (6)
+### test_titlebar.lua (9)
 
 - title bar: every control on the filter panel's title band shows its tooltip, in every skin
 - title bar: the tooltip opens above its control (PlaceAttached), not below
-- title bar: a control's chevron rests in icon.tint and takes text.link on hover, in every skin
+- title bar: a control's art rests in icon.tint and takes text.link on hover, in every skin
 - title bar: Ka0s Default and Obsidian tell the rest and hover colors apart
-- title bar: no tooltip while the addon is stood down
-- title bar: without the library each control still shows its tooltip above it
+- title bar: the collapse toggle shows no tooltip while the addon is stood down
+- title bar: collapsed, the toggle says Expand; expanded again, Collapse
+- title bar: the marks are W.HeaderButtons', left to right collapse · settings, and no close
+- title bar: the settings mark hides PGF's dialog, then opens this addon's settings
+- title bar: without the library the collapse toggle still shows its tooltip above it
 
 ### test_skin_picker.lua (16)
 
@@ -485,7 +488,7 @@ Total.
 - eui: before EllesmereUI paints, the eui source wears Ka0s Default through the library
 - eui: no addon file reaches the library-internal __DrawsKey
 - eui: the collapsed panel folds to EllesmereUI's 25px shell bar
-- eui: the min/max button is EllesmereUI's box with the chevron, never a worded PageButton
+- eui: the title-bar marks are the strip's art, never EllesmereUI's box or a worded PageButton
 - eui diagnostics: the skin section names the key the library draws by, in every state
 - eui diagnostics: the skin section reports the choice and the library's EllesmereUI gate
 - friz migration: a stored Ka0s Friz Quadrata TT moves to Ka0s Ubuntu in every profile, Blizzard's Friz kept
@@ -635,19 +638,17 @@ Total.
 - skin values: no typed value outside the kit's categories and the host's rows
 - skin values: the check is falsifiable, a planted value of each shape is reported
 
-### test_skin_switch.lua (41)
+### test_skin_switch.lua (39)
 
 - skin switch: the check is falsifiable, a surface that redraws a literal is reported
 - skin switch: the window's bands and edge changes
 - skin switch: the window's bands and edge changes with the Scope ignored
 - skin switch: the title changes
 - skin switch: the title changes with the Scope ignored
-- skin switch: the collapse button's box changes
-- skin switch: the collapse button's box changes with the Scope ignored
-- skin switch: the collapse button's chevron changes
-- skin switch: the collapse button's chevron changes with the Scope ignored
-- skin switch: the expand button's chevron changes
-- skin switch: the expand button's chevron changes with the Scope ignored
+- skin switch: the collapse mark's chevron changes
+- skin switch: the collapse mark's chevron changes with the Scope ignored
+- skin switch: the settings mark changes
+- skin switch: the settings mark changes with the Scope ignored
 - skin switch: a check button changes
 - skin switch: a check button changes with the Scope ignored
 - skin switch: a row's label changes
@@ -711,7 +712,7 @@ Total.
 | test_skinsetup.lua | 23 |
 | test_launcher_skin_entry.lua | 1 |
 | test_skin.lua | 24 |
-| test_titlebar.lua | 6 |
+| test_titlebar.lua | 9 |
 | test_skin_picker.lua | 16 |
 | test_skin_eui.lua | 17 |
 | test_skin_outline.lua | 10 |
@@ -727,7 +728,7 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | test_skin_values.lua | 3 |
-| test_skin_switch.lua | 41 |
+| test_skin_switch.lua | 39 |
 | test_client_globals.lua | 3 |
 | Skipped | 1 |
-| **Total** | **556** |
+| **Total** | **557** |

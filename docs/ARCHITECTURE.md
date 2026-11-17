@@ -315,16 +315,12 @@ library's:
 - **The paint.** Once EllesmereUI paints the owner (`NS.SkinEUIPainted()`), the panel's recorded
   primitives go to EllesmereUI's facade. The panel keeps the host geometry: 24px check buttons, flush
   under the dialog, and a collapsed height of EllesmereUI's 25px shell bar, with the title and the
-  min/max button centered on that bar. The bar's geometry is the library's: `S.Band(f)` lays the band
+  title-bar marks centered on that bar. The bar's geometry is the library's: `S.Band(f)` lays the band
   frame flush and 25px high under that source, `modules/Panel.lua`'s `bandRect` reads it back, and
-  `S.Header` anchors the title and the button to it at y 0 (R5-PG1, LibKa0s v1.85.0 round 5). The min/max arrows are the
-  skin's `Button` box under the addon's own chevrons, never `PageButton`: EllesmereUI's facade takes
-  `"<"` or `">"` only and drew `"up"` / `"down"` as the words. They are the panel's one title-bar
-  control, so they follow the title-bar rule of every Ka0s window (SR-PGFE, smoke round 1 of the
-  LibKa0s #75+ run): each chevron rests in `icon.tint` and takes `text.link` under the pointer, the
-  button's highlight kept, and each button shows a one-line tooltip (*Collapse*, *Expand*) above it
-  through `LibKa0s-Tooltip-1.0`'s `AttachTitleTip`, in the owner's `gtip.title`; without the library,
-  the same line by a relative point. The click band over the rest of the title takes no tooltip. Before EllesmereUI paints, the `eui` source draws the stored skin (the
+  `S.Header` anchors the title and the marks to it at y 0 (R5-PG1, LibKa0s v1.85.0 round 5). The marks
+  are `W.HeaderButtons`' bare buttons (*The title-bar marks*, below), so nothing of them reaches
+  EllesmereUI's facade as a `Button` or a `PageButton` (its `PageButton` takes `"<"` or `">"` only and
+  drew `"up"` / `"down"` as the words). Before EllesmereUI paints, the `eui` source draws the stored skin (the
   library's live fallback), Ka0s Default unless the player chose another. The diagnostics' skin
   section names the key the library draws the owner by from its public `Skin:DrawsKey(owner)`
   (LibKa0s v1.81.0), never the internal `__DrawsKey`. Leaving `eui` after a paint asks for a reload
@@ -341,6 +337,39 @@ The old bridge's own decorations (the accent ring on checked boxes, the pixel-sn
 scale re-layout, the minus and plus glyphs on the arrows, the 12pt box font) are gone: under `eui`
 the controls are EllesmereUI's own (DECISIONS D4).
 
+## The title-bar marks
+
+The panel is the one window this addon draws itself: its own frame (`PremadeGroupsFilterExtensionPanel`,
+`PortraitFrameTemplateMinimizable`), docked under PGF's dialog or alone in the test mode, with its own
+skinned title band. Its marks are built with `LibKa0s-Widgets-1.0`'s `W.HeaderButtons` (LibKa0s#86,
+standalone-windows *Title-bar controls*, v2.113.0, adopted as AD-86-PGFE of Ka0sAddonsCommonTasks
+`docs/2026-11-17-LIBKA0S_V1_105_ADOPTION/`), through the seam `NS.HeaderButtons` (`core/WidgetsSetup.lua`),
+which names this addon's folder as the owner. Left to right, extras · settings · close:
+
+- **The collapse toggle**, the panel's one extra: the `chevron-up` icon and *Collapse* while expanded,
+  `chevron-down` and *Expand* while collapsed, written from the stored `profile.panelCollapsed` on every
+  layout (`syncCollapseMark`, on a change only). A click, like a click on the rest of the title band
+  (`headerClick`), toggles the stored state; neither does anything while stood down, and the toggle's
+  tooltip says nothing then. It replaced PGF's `MaximizeMinimizeButtonFrameTemplate` pair, whose two
+  buttons on the skin's `Button` box (the skin fonts and feedback run's PG-02, ruling D-20) the strip's
+  one size, pitch and paint path retire.
+- **The settings mark** opens this addon's settings through the opener `core/LauncherSetup.lua`
+  registered under the same name (`settings` nil). PGF's dialog is FULLSCREEN and would cover the HIGH
+  settings window, so it is hidden first (`hideOnSettings`), and the docked panel, its child, with it.
+  Alone in the test mode the panel is HIGH, and the settings window, toplevel, opens over it.
+- **No close** (`close = false`): the template's close is hidden, because it would hide the panel under
+  a dialog that stays open.
+
+The marks are 18px with 12px art, settings 6px in from the band's right end and the toggle 6px past it
+(`NS.HEADER`, the library's `W.HEADER`); `place = false`, so `S.Header` places them on the band from the
+offsets the strip recorded (`placeHeader` does it on Ka0s Default's band without the library), and the
+click band stops at the marks' reach. Each mark's art rests in `icon.tint` and takes `text.link` under the
+pointer through the owner's `Mark` (SR-PGFE, smoke round 1 of the LibKa0s #75+ run), and shows a
+one-line tooltip above it in the owner's `gtip.title`. Without the library the strip is the toggle alone,
+wearing `-` or `+`, its tooltip above it by a relative point, and no settings mark (the settings panel is
+the library's too). The addon builds no `DragHandle`, so the drag strip's settings mark has nothing to
+turn on.
+
 ## Frame layering
 
 The strata and levels the addon chooses are named once, in `NS.Constants.LAYERS`
@@ -352,9 +381,8 @@ first:
   (HIGH), StaticPopups (DIALOG), the debug console (DIALOG, toplevel) and its copy window, dropdown
   menus (FULLSCREEN_DIALOG), tooltips (TOOLTIP).
 - **The attached panel, a host-matched surface:** PGF's dialog strata, read from the dialog
-  (FULLSCREEN today), at the dialog's level + `LEVEL.ABOVE_HOST` = L. Inside it: body, min/max and
-  header click at L+1, widgets at L+2; each min/max arrow's chevron holder sits two levels over its
-  button, above the skin's button edge. Alone, in the session-only test mode (R7-PG), it is
+  (FULLSCREEN today), at the dialog's level + `LEVEL.ABOVE_HOST` = L. Inside it: body, the title-bar
+  marks and header click at L+1, widgets at L+2. Alone, in the session-only test mode (R7-PG), it is
   UIParent's child at `STRATA.ALONE` (HIGH), under the skin picker (DIALOG) that previews on it;
   docked again it reads the host's strata and level back. Alone it is otherwise the docked panel
   (R7-PG2): the plain title, the same header and paint, at the docked width (the one it last showed

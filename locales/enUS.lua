@@ -75,6 +75,7 @@ L.MSG_INACTIVE     = "The extension's filters are off; tick Use the extension's 
 L.PANEL_TITLE           = "Ka0s Premade Groups Filter Extension"
 L.PANEL_COLLAPSE_TIP    = "Collapse"
 L.PANEL_EXPAND_TIP      = "Expand"
+L.PANEL_SETTINGS_TIP    = "Open settings"
 -- The test mode (modules/Panel.lua, settings/Slash.lua; R7-PG)
 L.TEST_MODE_ON          = "Test mode on: the filter panel shows on its own until you turn it off with /pgfe test. Apply and Clear wait for Premade Groups Filter's window."
 L.TEST_MODE_OFF         = "Test mode off."

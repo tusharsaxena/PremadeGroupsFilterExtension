@@ -198,7 +198,7 @@ end)
 -- docked at, else the dungeon panel's desired width) and the dialog's effective scale.
 
 --- The title band and the header as docked: the skin's Shell, Band and Header recorded on the panel,
---- the band on the panel, the title and the arrow on the band's middle.
+--- the band on the panel, the title and the marks on the band's middle.
 local function assertDockedHeader(NS, m, what)
     local f = NS.Panel.frame
     local Skin = m.LibStub("LibKa0s-Skin-1.0")
@@ -211,8 +211,11 @@ local function assertDockedHeader(NS, m, what)
     local p, rel, _, _, y = title:GetPoint(1)
     assertEqual(p, "CENTER", what .. ": the title centered")
     assertTrue(rel == band and y == 0, what .. ": on the band's middle")
-    local mp, mrel, _, mx = f.MaximizeMinimizeFrame:GetPoint(1)
-    assertTrue(mp == "RIGHT" and mrel == band and mx == -4, what .. ": the arrow where it sits docked")
+    -- The marks where they sit docked: settings 6px in, the collapse toggle 30px (LibKa0s#86).
+    local mp, mrel, _, mx = f.collapseMark:GetPoint(1)
+    assertTrue(mp == "RIGHT" and mrel == band and mx == -30, what .. ": the collapse mark where it sits docked")
+    local sp, srel, _, sx = f.settingsMark:GetPoint(1)
+    assertTrue(sp == "RIGHT" and srel == band and sx == -6, what .. ": the settings mark where it sits docked")
 end
 
 test("test mode: alone, the panel takes the docked width, not the hidden dialog's template width", function()
