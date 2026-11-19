@@ -90,13 +90,14 @@ test("layers: the panel's level band (L, chrome L+1, widgets L+2)", function()
     local lv = function(fr) return m.__layers(fr).level end
     local got = {
         strata = m.__layers(f).strata,
-        body = lv(f.body), minmax = lv(f.MaximizeMinimizeFrame), header = lv(f.headerClick),
+        body = lv(f.body), minmax = lv(f.collapseMark), settings = lv(f.settingsMark), header = lv(f.headerClick),
         check = lv(f.checks[1] or f.body.__children[1]), apply = lv(f.applyButton),
     }
     restore()
     assertEqual(L, 25)
     assertEqual(got.strata, "FULLSCREEN")
-    assertEqual(got.body, L + 1); assertEqual(got.minmax, L + 1); assertEqual(got.header, L + 1)
+    assertEqual(got.body, L + 1); assertEqual(got.minmax, L + 1); assertEqual(got.settings, L + 1)
+    assertEqual(got.header, L + 1)
     assertEqual(got.check, L + 2); assertEqual(got.apply, L + 2)
 end)
 

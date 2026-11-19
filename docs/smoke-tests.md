@@ -19,7 +19,7 @@ takes the next free number in its theme and a retired number is never reused.
 | DIAG-1..3 | Diagnostics | Debug console, the diagnostics report, the console icons |
 | DEGRADED-1 | Degraded install | LibKa0s absent |
 | TEST-1..5 | Test mode | `/pgfe test` (R7-PG, smoke round 7): the panel alone, Apply and Clear disabled, the dialog docking it, the box and the launcher entry, combat and the off switch, and the panel alone looking like the docked one (R7-PG2) |
-| APPLY-1..26 | Attached panel and Apply | The panel under PGF, targeting, regions, playstyle, composition, leader, age, presets, Clear, PGF minimized, collapse, layout, tooltips, Smart key level, filters toggle, row spacing, region tags, the season-data request, region colors |
+| APPLY-1..27 | Attached panel and Apply | The panel under PGF, targeting, regions, playstyle, composition, leader, age, presets, Clear, PGF minimized, collapse, layout, tooltips, Smart key level, filters toggle, row spacing, region tags, the season-data request, region colors, where the panel's tooltips open (AD-92-PGFE) |
 | LAYER-1..3 | Frame layering | The panel layered with PGF's dialog, PGFE popups lifted over the panel and put back |
 | LOC-1..2 | Non-English client | Realm-name and dungeon-name seams on a deDE/frFR client |
 | SKIN-1..10 | EllesmereUI skin (retired) | The record of the addon's own EllesmereUI bridge, retired by the skinning rollout's PG-06 (2026-10-29); EllesmereUI is now the library's `eui` skin source |
@@ -29,6 +29,8 @@ takes the next free number in its theme and a retired number is never reused.
 | SKIN-49.. | Skins | The owner's fifth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND5/`): the skin list's outside-press close, the panel's header centering |
 | SKIN-52.. | Skins | The owner's sixth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-SMOKE_ROUND6/`): the skin picker's preview contract; since the seventh round (`docs/2026-11-04-SMOKE_ROUND7/`, R7-PG) the test mode is the preview (SKIN-52 to SKIN-54) |
 | SKIN-55 | Skins | Smoke round 1 of the LibKa0s #75+ run (Ka0sAddonsCommonTasks `docs/2026-11-16-LIBKA0S_ISSUES_75_PLUS/`, SR-PGFE): the collapse button's tooltip and its rest and hover colors |
+| SKIN-56 | Skins | The LibKa0s v1.105.0 adoption run (Ka0sAddonsCommonTasks `docs/2026-11-17-LIBKA0S_V1_105_ADOPTION/`, AD-DS-PGFE): a new profile's skin is the library's per-client default |
+| SKIN-57 | Skins | The LibKa0s v1.105.0 adoption run, wave B (AD-86-PGFE, LibKa0s#86): the panel's title-bar marks on `W.HeaderButtons`' strip, the collapse toggle and the new settings mark |
 | SKIN-34..42 | Skins | The skin fonts and feedback run (2026-10-30, LibKa0s v1.82.0): the Font outline setting, the panel's text and the Font outline's default, the new faces, the attached panel's width parity across skins, the collapse button's chevron and place; the findings remediation's re-anchor check, the panel's flat dropdowns and the one media picker |
 
 ## Before you start
@@ -285,6 +287,8 @@ substitute its numbers.
   does (OCE: Oceanic realms, in the Sydney data center); the button's own tooltip no longer lists the
   entries. No tooltip sticks after the pointer leaves or the menu closes.
   Result: Passed (owner, 2026-11-02)
+  Amended by AD-92-PGFE (LibKa0s#92): where each of these tooltips opens is APPLY-27's; the content
+  checked here is unchanged.
 - **APPLY-20. Smart key level.** On a character that never used the addon, *Smart* is ticked and
   the panel matches the owner's defaults: Toggle, Untimed dungeons, Smart, Server regions, Playstyle and
   Composition ticked (all three dropdowns read Any); Experienced leader and Max group age (15)
@@ -334,6 +338,21 @@ substitute its numbers.
   Open the color wheel and Cancel → the old color stays. `/pgfe set regionColors.oce 255 0 128` →
   pink; *Reset region tag colors* → every tag back to its default, other settings untouched. The color
   wheel shows no opacity slider. Result: pass (owner-marked 2026-10-23). Labels and placement changed by item 020 (2026-10-24): re-checked under PANEL-4, pass (owner-marked 2026-10-24).
+- **APPLY-27. The panel's tooltips open beside the panel (AD-92-PGFE, LibKa0s#92, standalone-windows
+  *Tooltip placement*).** Open PGF's dialog on Dungeons with the panel showing, expanded, under Ka0s
+  Default. Hover *Untimed dungeons* (the box, then its label), the key-level box, *Smart*, the Server
+  regions dropdown button, the Presets dropdown, Save, Apply, Clear and the copy box and its label →
+  each tooltip opens outside the panel's right edge, a hair (2px) off it, its top level with the
+  hovered control's top; moving the pointer along the control does not move it, and it covers none of
+  the panel's rows. The words are the same as before (APPLY-19). Drag the Group Finder (or move PGF's
+  dialog) so the panel's right edge is near the screen's right edge → the same tooltips open outside
+  the panel's left edge instead, never over the panel. Open the Server regions menu and hover *Any*
+  and OCE → each entry's tooltip opens beside the menu, right of it (left near the screen's edge),
+  level with the entry. `/pgfe test` with PGF's dialog closed → the panel alone shows the same
+  placements. Hover the collapse chevron and the gear → their tooltips stay centered above the mark
+  (SKIN-57). Degraded (DEGRADED-1's rename): an option's tooltip opens centered above it. Fail: a
+  tooltip at the pointer, hung off a control's corner over the next rows, over the panel, or a Lua
+  error. Result:
 
 ## EllesmereUI skin
 
@@ -586,6 +605,9 @@ one place to show: the panel's text, outlined from the skin's Font outline.
   folds; click again → it unfolds; click the title band left of it → the same toggle; the button's
   own click still works at its left edge. Fail: text in the box, a chevron missing or pointing the
   wrong way, a box off the band or a different size in one skin, or a Lua error. Result: Owner reported pass, 2026-10-31
+  Amended by AD-86-PGFE (LibKa0s#86): the box is retired. The toggle is one 18px mark with its 12px
+  chevron and no box, 30px in from the band's right end, with the settings mark 6px in beside it; the
+  rest of this check stands. SKIN-57 is the check for the new strip.
 
 The font pickers and skin faces run's check (Ka0sAddonsCommonTasks
 `docs/2026-10-31-FONT_PICKERS_AND_SKIN_FACES/`, LibKa0s v1.83.0, item PG-F01). This run also moved
@@ -610,6 +632,11 @@ EllesmereUI read took a shorter path; nothing should look different.
   shell bar until the reload the game asks for; turn EllesmereUI's third-party skinning off and press
   a filter checkbox → the same reload request appears. Fail: a box left on the old band, a stale chevron
   color, a missing reload request, or a Lua error. Result:
+  Amended by AD-86-PGFE (LibKa0s#86): the box is retired. Read "the box" as the strip of two marks,
+  collapse then settings (SKIN-57): after each pick both marks stay centered on the new band, the
+  chevron and the gear take the skin's icon color, and the click band ends just short of the
+  collapse mark. Under EllesmereUI both marks stay on the 25px shell bar until the reload. Fail: a mark
+  left on the old band, a stale mark color, a missing reload request, or a Lua error.
 - **SKIN-41. The panel's dropdowns are flat (PG-D1).** Open PGF's dialog on Dungeons with the panel
   showing, on Ka0s Default → Server regions, Playstyle, Composition and the Presets dropdown each draw
   a flat dark box with the skin's edge and one small gold triangle at the right end, the look of the
@@ -727,6 +754,33 @@ EllesmereUI read took a shorter path; nothing should look different.
   other skin → the same in each skin's own colors. Fail: no tooltip, a tooltip at the pointer or below
   the button with room above, a chevron that does not change color on hover, or a Lua error. SKIN-40's
   "the skin's arrow color" now reads "the skin's icon color". Result:
+  Amended by AD-86-PGFE: the toggle is one mark whose chevron and tooltip follow the state, with no
+  button highlight of its own; the settings mark beside it follows the same tooltip and color rule
+  (SKIN-57).
+- **SKIN-57. The title-bar marks: collapse · settings, on one strip (AD-86-PGFE, LibKa0s#86).** Open
+  PGF's dialog on Dungeons with the panel showing, under Ka0s Default. At the panel's top right, left to
+  right: the collapse chevron, then a gear (the settings mark), and no close X. Both are the same small
+  size (no box behind them), on the title band's middle, the gear about 6px in from the band's right
+  end and the chevron 6px left of the gear, the same pitch as the gear and X on the debug console
+  (`/pgfe debug`). Hover the gear → *Open settings*, one line centered above it, in the skin's tooltip
+  title color; at rest it is the skin's gray icon color and under the pointer the link color (orange
+  under Ka0s Default), as the chevron. Click the chevron → the panel folds and the chevron points
+  down, its tooltip *Expand*; click again → it unfolds, *Collapse*; click the title left of the
+  chevron → the same toggle, and the gear keeps its own click. Click the gear → PGF's dialog and the
+  panel close and this addon's settings open in front, unobscured. `/pgfe test` with PGF's dialog
+  closed → the panel alone shows the same two marks; click the gear → the settings window opens over
+  the panel. `/pgfe skin`, pick Obsidian, Glass and WoW Default → in each the marks stay on the band,
+  in that skin's own colors, and the click band ends at the chevron. With EllesmereUI painting the
+  panel → both marks on its 25px shell bar. Degraded (DEGRADED-1's rename): the chevron is a `-` that
+  turns `+` when folded, no gear, and its tooltip still opens above it. Fail: a mark missing or out of
+  order, a close X, a box behind a mark, settings opening behind PGF's dialog, a tooltip at the pointer
+  or below the mark with room above, or a Lua error. Result:
+- **SKIN-56. A new profile wears the client's default skin (AD-DS-PGFE, skinning-§2).** Settings →
+  Profiles: create a new profile and switch to it → the first-run skin picker shows with Ka0s Default
+  selected, and `/pgfe get skin.skin` prints `ka0s`. Switch back to your own profile → its stored skin
+  is worn unchanged (a stored choice is never rewritten). Nothing on screen differs from before on
+  Retail: the default now comes from the library's `Skin:DefaultSkin()` rather than a literal. Fail: a
+  new profile on another skin, a stored skin moved, or a Lua error. Result:
 
 ## Frame layering
 
@@ -814,5 +868,7 @@ Owed from the owner's sixth smoke round (Ka0sAddonsCommonTasks `docs/2026-11-03-
 On 2026-11-04 the owner reported that every check of the seventh smoke round (Ka0sAddonsCommonTasks `docs/2026-11-04-SMOKE_ROUND7/`, R7-SMOKE, rows PG-1 to PG-12) passed: TEST-1, TEST-2, TEST-3, TEST-4, TEST-5 (R7-PG2), SKIN-52, SKIN-53 and SKIN-54, recorded on each `Result:` line as `Passed (owner, 2026-11-04)`.
 
 Owed from smoke round 1 of the LibKa0s #75+ run (Ka0sAddonsCommonTasks `docs/2026-11-16-LIBKA0S_ISSUES_75_PLUS/`, SR-PGFE): SKIN-55.
+
+Owed from the LibKa0s v1.105.0 adoption run (Ka0sAddonsCommonTasks `docs/2026-11-17-LIBKA0S_V1_105_ADOPTION/`, AD-DS-PGFE): SKIN-56; from its wave B (AD-86-PGFE): SKIN-57, with SKIN-38, SKIN-40 and SKIN-55 re-checked as amended; and from its wave C (AD-92-PGFE): APPLY-27, with APPLY-19 re-checked as amended.
 
 Still owed from the seventh smoke round (no round-7 row covered them): PANEL-6 as rewritten for the Test mode box, and SKIN-13's re-check.

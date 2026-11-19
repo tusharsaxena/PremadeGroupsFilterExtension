@@ -1,4 +1,4 @@
-local addonName, NS = ...
+local _, NS = ...
 -- modules/Panel.lua — the filter panel attached under PGF's dialog.
 --
 -- TEST MODE (R7-PG): `/pgfe test`, the Master controls box, the launcher entry and the skin picker's
@@ -118,15 +118,33 @@ local function fillTooltip(tip, title, text)
     end
 end
 
--- A hover tooltip on a widget this file built. HookScript, not SetScript: UIPanelButtonTemplate
--- has its own OnEnter/OnLeave, which keep running. `text` may be a function, read at each hover (Apply
--- and Clear say why they are disabled while the panel shows alone).
+-- WHERE A PANEL TOOLTIP OPENS (LibKa0s#92, AD-92-PGFE; standalone-windows, *Tooltip placement*).
+-- Every option on the panel is a BODY element: the panel's content is its controls, and the chrome
+-- row names only the title band and its marks (W.HeaderButtons places those, above the mark). So
+-- the tooltip opens beside the window group, the panel alone (PGF's dialog it docks under is PGF's,
+-- not this addon's), right of it when it fits and otherwise left, its top level with the hovered
+-- control, TIP_GAP out: LibKa0s-Tooltip-1.0's PlaceBeside, on a tooltip owned at ANCHOR_NONE. It
+-- was owned at the right-hand corner anchor, the corner offset the rule retires. With the library
+-- absent, or the geometry unreadable (nothing placed), it attaches centered above the control by a
+-- relative point, as the library's own fallback does; never the cursor.
+local function placeTip(tip, widget)
+    local Tip = LibStub and LibStub("LibKa0s-Tooltip-1.0", true)
+    if Tip and Tip.PlaceBeside(tip, widget, Panel.frame) then return end
+    tip:ClearAllPoints()
+    tip:SetPoint("BOTTOM", widget, "TOP", 0, 2)
+end
+
+-- A hover tooltip on a widget this file built: owned, filled, shown (so its size is known), then
+-- placed. HookScript, not SetScript: UIPanelButtonTemplate has its own OnEnter/OnLeave, which keep
+-- running. `text` may be a function, read at each hover (Apply and Clear say why they are disabled
+-- while the panel shows alone).
 local function tooltip(widget, title, text)
     widget:HookScript("OnEnter", function(self)
         if stoodDown() then return end
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetOwner(self, "ANCHOR_NONE")
         fillTooltip(GameTooltip, title, type(text) == "function" and text() or text)
         GameTooltip:Show()
+        placeTip(GameTooltip, self)
     end)
     widget:HookScript("OnLeave", function()
         if stoodDown() then return end
@@ -147,11 +165,14 @@ end
 
 -- The library's menu row (the row options of W.ContextMenu, LibKa0s-Widgets-1.0 minor 21, which a
 -- dropdown's options share): a `tooltip` renderer, so the lines take the same two roles as every
--- other tooltip here. The library takes it off with the row and with the menu.
+-- other tooltip here. The library takes it off with the row and with the menu, and PLACES it: a
+-- renderer's tooltip shown and owned by the row opens beside the menu, the entry's window (body rule
+-- 6; Widgets' __rowTip, LibKa0s#92). So it is owned at ANCHOR_NONE and anchored nowhere here; it was
+-- owned at the right-hand corner anchor, the corner offset the rule retires.
 local function rowTooltip(title, text)
     return function(row)
         if stoodDown() then return end
-        GameTooltip:SetOwner(row, "ANCHOR_RIGHT")
+        GameTooltip:SetOwner(row, "ANCHOR_NONE")
         fillTooltip(GameTooltip, title, text)
         GameTooltip:Show()
     end
@@ -797,24 +818,35 @@ end
 
 -- ── layout and collapse ─────────────────────────────────────────────────────────────────────────
 
--- Collapsed, the panel shows only its title strip: the skin's title band and the arrow.
+-- Collapsed, the panel shows only its title strip: the skin's title band and its marks.
 -- Ka0s Default's title band, for a facade that names none (the degraded one, without the library).
 local HEADER_H    = 30
--- The min/max button (PG-02 of the skin fonts and feedback run, ruling D-20): one size in every
--- skin, its chevron one size inside it, ARROW_PAD in from the band's right end.
-local ARROW_BTN   = 20
-local ARROW_ICON  = 12
-local ARROW_PAD   = 4
+-- The title-bar marks (LibKa0s#86; standalone-windows, *Title-bar controls*, v2.113.0): the strip
+-- W.HeaderButtons builds (core/WidgetsSetup.lua's NS.HeaderButtons), right-aligned, left to right
+-- the collapse toggle (the panel's one extra) · settings, and no close. One size, pitch and paint
+-- path, NS.HEADER's: an 18px slot holding 12px art, PAD (6) in from the band's right end and GAP (6)
+-- apart. The degraded strip (no library) is the toggle alone, wearing its glyph.
+local MARK           = NS.HEADER
+local GLYPH_COLLAPSE = "-"
+local GLYPH_EXPAND   = "+"
+-- The title's room past the marks: S.Header's gap between a control and the title.
+local TITLE_GAP      = 4
 
--- PGF's wiring (UI/Dialog.lua MaximizeMinimize): expanded calls SetMinimizedLook, collapsed
--- SetMaximizedLook. Set from the stored state on every layout, because the template's own buttons
--- flip the arrow on click even when setCollapsed refuses (stood down), and a profile switch changes
--- the state without a click.
-local function syncMinMax(f, collapsed)
-    local mm = f.MaximizeMinimizeFrame
-    if not mm then return end
-    mm.isMinimized = collapsed
-    if collapsed then mm:SetMaximizedLook() else mm:SetMinimizedLook() end
+-- The collapse toggle follows the stored state on every layout, because a profile switch changes
+-- the state without a click: expanded it shows the collapse chevron (up) and says *Collapse*,
+-- collapsed the expand chevron (down) and *Expand* (PGF's convention, UI/Dialog.lua
+-- MaximizeMinimize). Written on a change only: every Refresh lands here.
+local function syncCollapseMark(f, collapsed)
+    local b = f.collapseMark
+    if not b or b.collapsed == collapsed then return end
+    b.collapsed = collapsed
+    b.__words = collapsed and L.PANEL_EXPAND_TIP or L.PANEL_COLLAPSE_TIP
+    b.__tip = b.__words
+    if b.icon then
+        b.icon:SetTexture(NS.Icon(collapsed and "chevron-down" or "chevron-up"))
+    elseif b.label then
+        b.label:SetText(collapsed and GLYPH_EXPAND or GLYPH_COLLAPSE)
+    end
 end
 
 -- The title band's inset and height, read off the band frame itself, S.Band(f) (LibKa0s
@@ -841,48 +873,34 @@ local function collapsedHeight(f)
     return inset + h + inset
 end
 
--- A chevron's color, the title-bar rule of every Ka0s window (smoke round 1 of LIBKA0S_ISSUES_75_PLUS,
--- ruling 4, SR-PGFE): the skin's `icon.tint` at rest and `text.link` under the pointer
--- (`btn.chevronHot`, set by the hover pair in buildMinMax), over the button's own highlight, which
--- stays. A skin that leaves the token alone leaves the art's white.
-local function tintChevron(btn)
-    if not (btn and btn.chevron) then return end
-    local r, g, b, a = NS.SkinColor(btn.chevronHot and "text.link" or "icon.tint")
-    if r == nil then return end
-    btn.chevron:SetVertexColor(r, g, b, a)
-end
-
-local function tintChevrons(mm)
-    tintChevron(mm.MinimizeButton)
-    tintChevron(mm.MaximizeButton)
-end
-
 -- The header's click band: the title band's depth, capped at the body's top so a click in the
 -- body's top gap never collapses the panel (a band deeper than BODY_TOP would reach into it).
 local function headerClickHeight(inset, h)
     return math.min(inset + h, -BODY_TOP)
 end
 
--- The header's click band covers the band up to the button. With the library the button and the
--- title are S.Header's (paint), which places them again on every switch; without it there is no
--- band frame, so the button is put on Ka0s Default's band middle here, RIGHT at y = the band's
--- middle, as S.Header would. Anchored only when the band moved: every Refresh lands here.
+-- The header's click band covers the band up to the marks. With the library the marks and the title
+-- are S.Header's (paint), which places them again on every switch; without it there is no band
+-- frame, so each mark is put on Ka0s Default's band middle here, RIGHT at y = the band's middle, at
+-- the offset the strip recorded, as S.Header would. Anchored only when the band moved: every
+-- Refresh lands here.
 local function placeHeader(f)
-    local mm = f.MaximizeMinimizeFrame
-    if not mm then return end
-    tintChevrons(mm)
+    local hb = f.headerButtons
+    if not hb then return end
     local inset, h = bandRect(f)
     if f.placedInset == inset and f.placedBand == h then return end
     f.placedInset, f.placedBand = inset, h
     if not f.band then
-        mm:ClearAllPoints()
-        mm:SetPoint("RIGHT", f, "TOPRIGHT", -(inset + ARROW_PAD), -(inset + h / 2))
+        for _, e in ipairs(hb.right) do
+            e.frame:ClearAllPoints()
+            e.frame:SetPoint("RIGHT", f, "TOPRIGHT", -(inset + e.x), -(inset + h / 2))
+        end
     end
     local hc = f.headerClick
     if not hc then return end
     hc:ClearAllPoints()
     hc:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
-    hc:SetPoint("TOPRIGHT", f, "TOPRIGHT", -(inset + ARROW_PAD + ARROW_BTN), 0)
+    hc:SetPoint("TOPRIGHT", f, "TOPRIGHT", -(inset + f.marksReach), 0)
     hc:SetHeight(headerClickHeight(inset, h))
 end
 
@@ -892,7 +910,7 @@ local function applyLayout(f)
     f:SetHeight(collapsed and collapsedHeight(f) or f.expandedHeight)
     placeHeader(f)
     syncArrows(f)
-    syncMinMax(f, collapsed)
+    syncCollapseMark(f, collapsed)
     f.body:SetShown(ok and not collapsed)
     f.unsupported:SetShown(not ok and not collapsed)
     if not ok then f.unsupported:SetText(L.PGF_UNSUPPORTED:format(missing)) end
@@ -907,88 +925,57 @@ local function setCollapsed(on)
     applyLayout(Panel.frame)
 end
 
--- One arrow button: its explicit size, centered on its template frame, and the chevron from the
--- shipped icon set (CLAUDE.md's `LibKa0s icons:` line keeps chevron-up and chevron-down) on a child
--- frame two levels up, so it draws over the skin's button edge (one level up) and is not one of the
--- button's own texture regions, which EllesmereUI's Button fades. No icon (the library absent): no
--- chevron, and the template keeps its own arrow art.
-local function sizeArrow(mm, btn, icon)
-    if not btn then return end
-    btn:ClearAllPoints()
-    btn:SetPoint("CENTER", mm, "CENTER", 0, 0)
-    btn:SetSize(ARROW_BTN, ARROW_BTN)
-    local path = NS.Icon(icon)
-    if not path then return end
-    local holder = CreateFrame("Frame", nil, btn)
-    holder:SetAllPoints(btn)
-    holder:SetFrameLevel(btn:GetFrameLevel() + 2)
-    local t = holder:CreateTexture(nil, "OVERLAY")
-    t:SetTexture(path)
-    t:SetSize(ARROW_ICON, ARROW_ICON)
-    t:SetPoint("CENTER", btn, "CENTER", 0, 0)
-    btn.chevronHolder, btn.chevron = holder, t
+-- The collapse toggle's click, and the header strip's: nothing while stood down.
+local function toggleCollapsed()
+    if stoodDown() then return end
+    setCollapsed(NS.addon.db.profile.panelCollapsed ~= true)
+    if PlaySound and SOUNDKIT then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end
 end
 
--- A title-bar control's tooltip and hover color (rulings 3 and 4 of the same smoke round): one line,
--- `words`, above the control in the owner's `gtip.title`, through LibKa0s-Tooltip-1.0's
--- AttachTitleTip, and nothing while stood down. Without the library, the same line above the
--- control by a relative point in the tooltip's own color. Hooked, so the template's pair still runs.
-local Tip = LibStub and LibStub("LibKa0s-Tooltip-1.0", true)
-
-local function titleTip(btn, words)
-    local function current() if not stoodDown() then return words end end
-    if Tip then Tip.AttachTitleTip(btn, current, addonName); return end
-    btn:HookScript("OnEnter", function(self)
-        if not current() then return end
-        GameTooltip:SetOwner(self, "ANCHOR_NONE")
-        GameTooltip:SetText(words, nil, nil, nil, nil, true)
-        GameTooltip:Show()
-        GameTooltip:ClearAllPoints()
-        GameTooltip:SetPoint("BOTTOM", self, "TOP", 0, 2)
+-- The toggle's tooltip says nothing while the addon is stood down, as every other panel tooltip:
+-- its words are put back on `__tip`, which the strip reads on each hover, only while standing up.
+local function guardTip(b)
+    local enter = b:GetScript("OnEnter")
+    b:SetScript("OnEnter", function(self, ...)
+        self.__tip = (not stoodDown()) and self.__words or nil
+        if enter then return enter(self, ...) end
     end)
-    btn:HookScript("OnLeave", function() GameTooltip:Hide() end)
 end
 
-local function wireTitleControl(btn, words)
-    if not btn then return end
-    btn:HookScript("OnEnter", function(self) self.chevronHot = true; tintChevron(self) end)
-    btn:HookScript("OnLeave", function(self) self.chevronHot = nil; tintChevron(self) end)
-    titleTip(btn, words)
-end
-
--- PGF's MaximizeMinimize wiring (UI/Dialog.lua OnLoad and MaximizeMinimize), on our own frame. The
--- template's close button would hide the panel under a dialog that stays open, so it is hidden and
--- the toggle takes its place, sized here and placed on the title band by S.Header (paint; placeHeader
--- without the library), not on the close button's template anchor (image-48..51 had it off the band,
--- differently per skin).
-local function buildMinMax(f)
+-- The title-bar marks through the strip (LibKa0s#86): the collapse toggle, then settings, and no
+-- close. The template's close would hide the panel under a dialog that stays open, so it is hidden
+-- and the strip builds none (`close = false`). The settings mark opens this addon's settings through
+-- the opener the launcher registered (`settings` nil); PGF's dialog is FULLSCREEN, over the HIGH
+-- settings window, so it is hidden first (`hideOnSettings`), and the docked panel, its child, with
+-- it. `place = false`: S.Header (paint) places the marks on the band from the recorded offsets, and
+-- placeHeader without the library. Each mark's color is the strip's: `icon.tint` at rest, `text.link`
+-- under the pointer, through the owner's facade, recorded, so a switch repaints it.
+local function buildMarks(f, dialog)
     if f.CloseButton then f.CloseButton:Hide() end
-    local mm = CreateFrame("Frame", nil, f, "MaximizeMinimizeButtonFrameTemplate")
-    mm:SetSize(ARROW_BTN, ARROW_BTN)
-    -- Expanded shows the collapse button (up), collapsed the expand one (down).
-    sizeArrow(mm, mm.MinimizeButton, "chevron-up")
-    sizeArrow(mm, mm.MaximizeButton, "chevron-down")
-    wireTitleControl(mm.MinimizeButton, L.PANEL_COLLAPSE_TIP)
-    wireTitleControl(mm.MaximizeButton, L.PANEL_EXPAND_TIP)
-    mm:SetOnMaximizedCallback(function() setCollapsed(false) end)
-    mm:SetOnMinimizedCallback(function() setCollapsed(true) end)
-    f.MaximizeMinimizeFrame = mm -- which arrow shows is set by applyLayout
+    local hb = NS.HeaderButtons(f, {
+        frame = f, place = false, close = false, hideOnSettings = dialog,
+        settingsTip = L.PANEL_SETTINGS_TIP,
+        extras = { { key = "collapse", icon = "chevron-up", glyph = GLYPH_COLLAPSE,
+            tip = L.PANEL_COLLAPSE_TIP, onClick = toggleCollapsed } },
+    })
+    f.collapseMark, f.settingsMark = hb.extras.collapse, hb.settings
+    if f.collapseMark then guardTip(f.collapseMark) end
+    local reach = 0
+    for _, e in ipairs(hb.right) do reach = math.max(reach, e.x + MARK.SIZE) end
+    f.marksReach = reach
 end
 
 -- The header strip toggles too (owner request): a click anywhere on the title band does what the
--- arrow does. It spans the band from the left edge to just short of the arrow (placeHeader), so the
--- arrow keeps its own click; the title text above it takes no mouse, so clicks reach this button.
+-- collapse toggle does. It spans the band from the left edge to just short of the marks
+-- (placeHeader), so each mark keeps its own click; the title text above it takes no mouse, so clicks
+-- reach this button.
 local function buildHeaderClick(f)
     local b = CreateFrame("Button", nil, f)
     b:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
-    b:SetPoint("TOPRIGHT", f, "TOPRIGHT", -(1 + ARROW_PAD + ARROW_BTN), 0)
+    b:SetPoint("TOPRIGHT", f, "TOPRIGHT", -(1 + f.marksReach), 0)
     b:SetHeight(headerClickHeight(1, HEADER_H))
     b:RegisterForClicks("LeftButtonUp")
-    b:SetScript("OnClick", function()
-        if stoodDown() then return end
-        setCollapsed(NS.addon.db.profile.panelCollapsed ~= true)
-        if PlaySound and SOUNDKIT then PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end
-    end)
+    b:SetScript("OnClick", toggleCollapsed)
     f.headerClick = b
 end
 
@@ -997,22 +984,26 @@ local BUILDERS = { buildActiveRow, buildKeyRow, buildRegionRow, buildPlaystyleRo
 
 -- PortraitFrameTemplateMinimizable starts its TitleContainer 58px in from the left (room for the
 -- portrait, hidden here) but only 24px in from the right (Blizzard SharedUIPanelTemplates.xml), so
--- the title sat ~17px right of center. Re-anchored 24px in on both sides: even on the whole header,
--- and still clear of the min/max button.
+-- the title sat ~17px right of center. Re-anchored the same distance in on both sides (titleInset):
+-- TITLE_INSET, or the marks' reach plus TITLE_GAP where that is more, even on the whole header and
+-- clear of the marks.
 --
 -- The template also anchors TitleText TOP 5px down that 20px container, which left the text about
 -- 4px above the arrow on the 30px band (R5-PG1, images 42 and 43). So the container takes Ka0s
 -- Default's band (1px down, HEADER_H high) and the text LEFT and RIGHT on it, which is its vertical
 -- middle: the degraded install's header. With the library, S.Header (paint) then anchors the text to
--- the band frame itself by `title.align`, in every skin.
+-- the band frame itself by `title.align`, in every skin, a LEFT title TITLE_INSET in.
 local TITLE_INSET = 24
+
+local function titleInset(f) return math.max(TITLE_INSET, f.marksReach + TITLE_GAP) end
 
 local function centerTitle(f)
     local tc = f.TitleContainer
     if type(tc) ~= "table" or not tc.ClearAllPoints then return end
+    local inset = titleInset(f)
     tc:ClearAllPoints()
-    tc:SetPoint("TOPLEFT", f, "TOPLEFT", TITLE_INSET, -1)
-    tc:SetPoint("TOPRIGHT", f, "TOPRIGHT", -TITLE_INSET, -1)
+    tc:SetPoint("TOPLEFT", f, "TOPLEFT", inset, -1)
+    tc:SetPoint("TOPRIGHT", f, "TOPRIGHT", -inset, -1)
     tc:SetHeight(HEADER_H)
     local title = tc.TitleText
     if type(title) ~= "table" or not title.ClearAllPoints then return end
@@ -1050,29 +1041,21 @@ end
 -- The panel through the owner's facade, once, at build: each call is recorded, so the library replays
 -- it on every later switch (and hands it to EllesmereUI's facade under the eui source). The template's
 -- border, its Bg and the title streaks fade under the skin's window (`stock` is the list of template
--- art to fade, under every skin); the template's title takes the title role; the arrows are the
--- skin's buttons under their chevrons (expanded shows the collapse button: up). The panel's own
--- SetScript calls all ran in the
+-- art to fade, under every skin); the template's title takes the title role. The title-bar marks are
+-- the strip's (buildMarks), which painted them as it built them: no box under them, one paint path
+-- with every Ka0s window's marks (LibKa0s#86). The panel's own SetScript calls all ran in the
 -- builders, before any primitive hooked a script.
 local function paint(f)
     local S = NS.Skin
     S.Shell(f, { stock = { f.Bg, f.TopTileStreaks } })
     local title = type(f.TitleContainer) == "table" and f.TitleContainer.TitleText
     if title then S.Text(title, "title") end
-    -- The arrows: the skin's button box under the chevrons buildMinMax drew (tinted by placeHeader).
-    -- Not S.PageButton: EllesmereUI's facade takes "<" or ">" only and draws "up" and "down" as the
-    -- words (image-33/34), and the in-client arrow it draws is rotated art, not the icon set's.
-    local mm = f.MaximizeMinimizeFrame
-    if mm then
-        S.Button(mm.MinimizeButton)
-        S.Button(mm.MaximizeButton)
-    end
     -- The header on the band (R5-PG1): S.Band is the band Shell lays, as a frame (nil without the
-    -- library); S.Header anchors the title by `title.align` and the arrow RIGHT ARROW_PAD in, both at
-    -- y 0 on the band, so both sit on its middle. Recorded, so every switch lays and places them again.
+    -- library); S.Header anchors the title by `title.align` and the marks RIGHT at the offsets the
+    -- strip recorded, both at y 0 on the band, so both sit on its middle. Recorded, so every switch
+    -- lays and places them again.
     f.band = S.Band(f)
-    S.Header(f, { title = title or nil, inset = TITLE_INSET,
-        right = mm and { { frame = mm, width = ARROW_BTN, x = ARROW_PAD } } or nil })
+    S.Header(f, { title = title or nil, inset = TITLE_INSET, right = f.headerButtons.right })
     S.Checkbox(f.activeCheck, { borderInset = CHECK_INSET })
     for _, cb in pairs(f.checks) do S.Checkbox(cb, { borderInset = CHECK_INSET }) end
     for _, box in ipairs({ f.levelBox, f.ageBox, f.rangeBox }) do S.EditBox(box) end
@@ -1133,7 +1116,6 @@ local function buildFrame(dialog)
     f:SetBorder(BORDER_LAYOUT)
     f:SetPortraitShown(false)
     f:SetTitle(L.PANEL_TITLE)
-    centerTitle(f)
     f:EnableMouse(true)
     dock(f, dialog)
     f.checks = {}
@@ -1147,7 +1129,8 @@ local function buildFrame(dialog)
     f.dropdowns = { f.regionSelect, f.playstyleSelect, f.compositionSelect, f.presetDropdown }
     f.unsupported = label(f, "", 14, BODY_TOP, "GameFontDisable")
     f:HookScript("OnHide", function() NS.CloseMenu() end)
-    buildMinMax(f)
+    buildMarks(f, dialog)
+    centerTitle(f)
     buildHeaderClick(f)
     paint(f)
     return f

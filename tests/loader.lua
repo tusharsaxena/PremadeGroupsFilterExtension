@@ -131,6 +131,10 @@ return function(root, mockBuilder)
     ---   opts.afterFile = function(path, NS) end runs after each of the addon's own files (never a
     ---                    library file), with its TOC-relative path: the sentinel-locale case swaps
     ---                    NS.L in place right after locales/enUS.lua. Default nil.
+    ---   opts.skin      = "<skin key>" makes that skin the client's default skin on this instance
+    ---                    (LibKa0s-Skin-1.0's DefaultSkin, so NS.DEFAULT_SKIN and skin.skin's
+    ---                    default), set after the library loads and before the addon's first file
+    ---                    (skinning-§2; DropWatcher's loader carries the same option).
     local function build(opts)
         opts = opts or {}
         local skipSet = {}
@@ -148,7 +152,16 @@ return function(root, mockBuilder)
         -- instance's saved table would otherwise be adopted by this one.
         _G.PremadeGroupsFilterExtensionDB = nil
 
+        local skinChosen = opts.skin == nil
         for _, src in ipairs(sources) do
+            if not skinChosen and not src.lib then
+                skinChosen = true
+                local Skin = mock.LibStub and mock.LibStub("LibKa0s-Skin-1.0", true)
+                if Skin then
+                    local key = opts.skin
+                    Skin.DefaultSkin = function() return key end
+                end
+            end
             if not skipSet[src.path] then
                 local chunk = chunkFor(src.path)
                 setfenv(chunk, env)

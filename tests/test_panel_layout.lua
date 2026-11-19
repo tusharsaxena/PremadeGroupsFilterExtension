@@ -25,32 +25,34 @@ local function hoverLines(m, widget)
     return lines
 end
 
--- Owner request (screenshots): expanded shows the up arrow, collapsed the down one. Since the skin
--- fonts and feedback run's PG-02 (ruling D-20, image-33/34) each is the skin's Button box with a
--- chevron from the shipped icon set on top, tinted `icon.tint` at rest (SR-PGFE; was `icon.arrow`, and
--- the hover is tests/test_titlebar.lua's): never S.PageButton, whose "up" and
--- "down" EllesmereUI's facade drew as the words.
-test("panel: the min/max arrows are chevron icons on the skin's button, expanded up and collapsed down", function()
+-- Owner request (screenshots): expanded shows the up arrow, collapsed the down one: a chevron from
+-- the shipped icon set, tinted `icon.tint` at rest (SR-PGFE; the hover is tests/test_titlebar.lua's),
+-- never S.PageButton, whose "up" and "down" EllesmereUI's facade drew as the words. Re-pinned at
+-- LibKa0s#86 (AD-86-PGFE): the toggle is W.HeaderButtons' extra, one 18px mark with 12px art and no
+-- button box (standalone-windows, *Title-bar controls*: one size, pitch and paint path), where the
+-- skin fonts and feedback run's PG-02 (ruling D-20) had the skin's Button box under its own chevrons.
+test("panel: the collapse mark is the strip's chevron icon, expanded up and collapsed down", function()
     local NS, _, m = T.enableAddon{}
-    local mm = NS.Panel.Create().MaximizeMinimizeFrame
+    local f = NS.Panel.Create(); NS.Panel.Refresh()
+    local b = f.collapseMark
     local Skin = m.LibStub("LibKa0s-Skin-1.0")
-    -- red under: the RedButton atlas swap left in Panel's buildMinMax, or the S.PageButton paint
-    assertEqual(mm.MinimizeButton.__normalAtlas ~= "RedButton-Expand", true)
-    for btn, icon in pairs({ [mm.MinimizeButton] = "chevron-up", [mm.MaximizeButton] = "chevron-down" }) do
-        local calls = Skin.painted[btn].calls
-        assertEqual(calls.PageButton, nil, icon .. ": no paging arrow")
-        assertTrue(calls.Button ~= nil, icon .. ": the skin's button box")
-        local chev = btn.chevron
+    -- red under: the template's two arrow buttons, or the S.PageButton / S.Button box paint
+    assertTrue(b ~= nil and f.headerButtons.extras.collapse == b, "the strip's extra")
+    local calls = Skin.painted[b] and Skin.painted[b].calls or {}
+    assertEqual(calls.PageButton, nil, "no paging arrow"); assertEqual(calls.Button, nil, "no button box")
+    assertEqual(b.__width, 18); assertEqual(b.__height, 18)
+    for _, icon in ipairs({ "chevron-up", "chevron-down" }) do
+        local chev = b.icon
         assertTrue(chev ~= nil, icon .. ": a chevron")
         assertEqual(chev.__texture, NS.Icon(icon), icon .. ": the shipped icon")
         assertEqual(chev.__width, 12); assertEqual(chev.__height, 12)
-        local p, rel, rp = chev:GetPoint(1)
-        assertEqual(p, "CENTER"); assertTrue(rel == btn, icon .. ": centered on its button"); assertEqual(rp, "CENTER")
-        local r, g, b = Skin:Color("PremadeGroupsFilterExtension", "icon.tint")
+        local p, _, rp = chev:GetPoint(1)
+        assertEqual(p, "CENTER"); assertEqual(rp, "CENTER")
+        assertTrue(Skin.painted[chev].calls.Mark ~= nil, icon .. ": the owner's Mark")
+        local r, g, bl = Skin:Color("PremadeGroupsFilterExtension", "icon.tint")
         assertEqual(chev.__vertexColor[1], r); assertEqual(chev.__vertexColor[2], g)
-        assertEqual(chev.__vertexColor[3], b)
-        local holder = btn.chevronHolder
-        assertEqual(holder:GetFrameLevel(), btn:GetFrameLevel() + 2, icon .. ": over the button's edge")
+        assertEqual(chev.__vertexColor[3], bl)
+        b:__fire("OnClick", "LeftButton")
     end
 end)
 
@@ -591,11 +593,15 @@ test("panel: without the library the title and the arrow share Ka0s Default's ba
         assertTrue(p == "LEFT" or p == "RIGHT", "point " .. tostring(p))
         assertTrue(rel == tc); assertEqual(rp, p); assertEqual(y, 0)
     end
-    local mm = f.MaximizeMinimizeFrame
-    assertEqual(#mm.__points, 1)
-    local p, rel, rp, x, y = mm:GetPoint(1)
+    -- Re-pinned at LibKa0s#86 (AD-86-PGFE): the degraded strip is the collapse toggle alone, PAD (6)
+    -- in from the band's end, where the 20px arrow sat 4 in.
+    local b = f.collapseMark
+    assertEqual(f.settingsMark, nil, "no settings mark without the library's settings panel")
+    assertEqual(b.label:GetText(), "-", "the collapse glyph")
+    assertEqual(#b.__points, 1)
+    local p, rel, rp, x, y = b:GetPoint(1)
     assertEqual(p, "RIGHT"); assertTrue(rel == f); assertEqual(rp, "TOPRIGHT")
-    assertEqual(x, -(1 + 4)); assertEqual(y, -(1 + 30 / 2), "the band's middle, the title's too")
+    assertEqual(x, -(1 + 6)); assertEqual(y, -(1 + 30 / 2), "the band's middle, the title's too")
 end)
 
 -- Owner request: with "Untimed dungeons at key level" off, the copy box and its label are dimmed and
@@ -661,7 +667,7 @@ test("panel: a click on the header strip collapses and expands, like the arrow",
     assertEqual(y, 0); assertEqual(p2, "TOPRIGHT"); assertTrue(x2 < 0, "short of the arrow")
     h:__fire("OnClick")
     assertTrue(NS.addon.db.profile.panelCollapsed); assertFalse(f.body:IsShown())
-    assertTrue(f.MaximizeMinimizeFrame.isMinimized, "the arrow follows")
+    assertTrue(f.collapseMark.collapsed, "the collapse mark follows")
     h:__fire("OnClick")
     assertFalse(NS.addon.db.profile.panelCollapsed); assertTrue(f.body:IsShown())
     NS.addon:OnSlashCommand("disable")

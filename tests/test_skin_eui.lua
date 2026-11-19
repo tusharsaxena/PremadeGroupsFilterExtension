@@ -184,28 +184,31 @@ end)
 
 -- PG-02 of the skin fonts and feedback run (image-33/34): S.PageButton is one of EllesmereUI's native
 -- names, and its facade takes "<" or ">" only, drawing anything else as text, so the panel's
--- "up" / "down" showed as the words. The button is now EllesmereUI's Button box, with the addon's own
--- chevron on a child frame (EllesmereUI's Button fades the button's own texture regions, not its
--- children's), centered on EllesmereUI's 25px shell bar.
-test("eui: the min/max button is EllesmereUI's box with the chevron, never a worded PageButton", function()
-    -- red under: S.PageButton(btn, "up") reaching EllesmereUI's facade.
+-- "up" / "down" showed as the words. Re-pinned at LibKa0s#86 (AD-86-PGFE): the marks are
+-- W.HeaderButtons', each a bare button whose art the library paints through the owner's Mark, so
+-- nothing of them reaches EllesmereUI's facade as a Button or a PageButton (EllesmereUI's Button
+-- faded the button's own texture regions, which is why the chevron once sat on a child frame), on
+-- EllesmereUI's 25px shell bar.
+test("eui: the title-bar marks are the strip's art, never EllesmereUI's box or a worded PageButton", function()
+    -- red under: S.PageButton(btn, "up") or S.Button(btn) reaching EllesmereUI's facade.
     local NS, m = painted()
     local f = NS.Panel.frame
-    local mm = f.MaximizeMinimizeFrame
     assertEqual(#m.eui.callsFor("PageButton"), 0, "no paging arrow went to EllesmereUI")
-    for btn, icon in pairs({ [mm.MinimizeButton] = "chevron-up", [mm.MaximizeButton] = "chevron-down" }) do
-        assertTrue(#m.eui.callsFor("Button", btn) >= 1, icon .. ": EllesmereUI's button box")
-        assertEqual(btn.chevron.__texture, NS.Icon(icon), icon .. ": the chevron, on top")
-        assertTrue(btn.chevronHolder.__parent == btn, icon .. ": a child frame, not a region EllesmereUI fades")
+    for _, e in ipairs({ { f.collapseMark, "chevron-up" }, { f.settingsMark, "settings" } }) do
+        local b, icon = e[1], e[2]
+        assertEqual(#m.eui.callsFor("Button", b), 0, icon .. ": no EllesmereUI button box")
+        assertEqual(b.icon.__texture, NS.Icon(icon), icon .. ": the shipped icon")
     end
     -- On the band frame (R5-PG1), which the library lays flush at the top and 25px high under the
-    -- EllesmereUI source: RIGHT 4px in at y 0, its middle.
+    -- EllesmereUI source: settings RIGHT 6px in, the collapse toggle 30px in, at y 0, its middle.
     local band = NS.Skin.Band(f)
     local _, _, _, bx, by = band:GetPoint(1)
     assertEqual(bx, 0); assertEqual(by, 0); assertEqual(band:GetHeight(), 25)
-    local p, rel, rp, x, y = mm:GetPoint(1)
-    assertEqual(p, "RIGHT"); assertTrue(rel == band, "on the band"); assertEqual(rp, "RIGHT")
-    assertEqual(x, -4); assertEqual(y, 0)
+    for _, e in ipairs({ { f.settingsMark, -6 }, { f.collapseMark, -30 } }) do
+        local p, rel, rp, x, y = e[1]:GetPoint(1)
+        assertEqual(p, "RIGHT"); assertTrue(rel == band, "on the band"); assertEqual(rp, "RIGHT")
+        assertEqual(x, e[2]); assertEqual(y, 0)
+    end
     local tp, trel, _, _, ty = f.TitleContainer.TitleText:GetPoint(1)
     assertEqual(tp, "CENTER"); assertTrue(trel == band, "the title on the band too"); assertEqual(ty, 0)
 end)

@@ -85,7 +85,7 @@ The feature modules, one purpose each:
 | Unit | File | Purpose |
 |---|---|---|
 | PGF bridge | `core/PGFBridge.lua` | The only file that touches PGF internals (see [PGF seams](#pgf-seams)) |
-| Skin seam | `core/SkinSetup.lua` | The LibKa0s-Skin-1.0 owner (the folder), the `skin.*` write seam, the first-run skin picker, and EllesmereUI as the library's `eui` provider reports it (see [EllesmereUI seams](#ellesmereui-seams)). The picker's `spec.preview` is the test mode (mode `test`, R7-PG): `enter` and `exit` write `state.testMode` through the schema seam, `isActive` is `NS.Panel.IsTestMode`, `isShown` is `NS.Panel.IsShown` (on screen, or shown by PGF's dialog). So `/pgfe skin` with the panel hidden turns test mode on, the eye toggles it, and every close puts it back; with PGF's dialog open nothing changes. No `onPreview`. Until R7-PG this was the standard's documented no-preview addon (R6-PV) |
+| Skin seam | `core/SkinSetup.lua` | The LibKa0s-Skin-1.0 owner (the folder), `NS.DEFAULT_SKIN` (`Skin:DefaultSkin()` read once at file load, skinning-§2: the skin `skin.skin` defaults to and the read before AceDB answers, Ka0s Default on Retail and without the library; `defaults/Profile.lua` names it, never the literal), the `skin.*` write seam, the first-run skin picker, and EllesmereUI as the library's `eui` provider reports it (see [EllesmereUI seams](#ellesmereui-seams)). The picker's `spec.preview` is the test mode (mode `test`, R7-PG): `enter` and `exit` write `state.testMode` through the schema seam, `isActive` is `NS.Panel.IsTestMode`, `isShown` is `NS.Panel.IsShown` (on screen, or shown by PGF's dialog). So `/pgfe skin` with the panel hidden turns test mode on, the eye toggles it, and every close puts it back; with PGF's dialog open nothing changes. No `onPreview`. Until R7-PG this was the standard's documented no-preview addon (R6-PV) |
 | Realm data | `defaults/Realms.lua` | `NS.RealmLists`: realm display names per portal and region bucket ([`realm-map-maintenance.md`](realm-map-maintenance.md)) |
 | Regions | `modules/Regions.lua` | Portal detection, realm normalization, leader name → region key |
 | Season | `modules/Season.lua` | Current-season dungeons: cmID, name, short keyword, best timed level |
@@ -315,16 +315,12 @@ library's:
 - **The paint.** Once EllesmereUI paints the owner (`NS.SkinEUIPainted()`), the panel's recorded
   primitives go to EllesmereUI's facade. The panel keeps the host geometry: 24px check buttons, flush
   under the dialog, and a collapsed height of EllesmereUI's 25px shell bar, with the title and the
-  min/max button centered on that bar. The bar's geometry is the library's: `S.Band(f)` lays the band
+  title-bar marks centered on that bar. The bar's geometry is the library's: `S.Band(f)` lays the band
   frame flush and 25px high under that source, `modules/Panel.lua`'s `bandRect` reads it back, and
-  `S.Header` anchors the title and the button to it at y 0 (R5-PG1, LibKa0s v1.85.0 round 5). The min/max arrows are the
-  skin's `Button` box under the addon's own chevrons, never `PageButton`: EllesmereUI's facade takes
-  `"<"` or `">"` only and drew `"up"` / `"down"` as the words. They are the panel's one title-bar
-  control, so they follow the title-bar rule of every Ka0s window (SR-PGFE, smoke round 1 of the
-  LibKa0s #75+ run): each chevron rests in `icon.tint` and takes `text.link` under the pointer, the
-  button's highlight kept, and each button shows a one-line tooltip (*Collapse*, *Expand*) above it
-  through `LibKa0s-Tooltip-1.0`'s `AttachTitleTip`, in the owner's `gtip.title`; without the library,
-  the same line by a relative point. The click band over the rest of the title takes no tooltip. Before EllesmereUI paints, the `eui` source draws the stored skin (the
+  `S.Header` anchors the title and the marks to it at y 0 (R5-PG1, LibKa0s v1.85.0 round 5). The marks
+  are `W.HeaderButtons`' bare buttons (*The title-bar marks*, below), so nothing of them reaches
+  EllesmereUI's facade as a `Button` or a `PageButton` (its `PageButton` takes `"<"` or `">"` only and
+  drew `"up"` / `"down"` as the words). Before EllesmereUI paints, the `eui` source draws the stored skin (the
   library's live fallback), Ka0s Default unless the player chose another. The diagnostics' skin
   section names the key the library draws the owner by from its public `Skin:DrawsKey(owner)`
   (LibKa0s v1.81.0), never the internal `__DrawsKey`. Leaving `eui` after a paint asks for a reload
@@ -341,6 +337,67 @@ The old bridge's own decorations (the accent ring on checked boxes, the pixel-sn
 scale re-layout, the minus and plus glyphs on the arrows, the 12pt box font) are gone: under `eui`
 the controls are EllesmereUI's own (DECISIONS D4).
 
+## The title-bar marks
+
+The panel is the one window this addon draws itself: its own frame (`PremadeGroupsFilterExtensionPanel`,
+`PortraitFrameTemplateMinimizable`), docked under PGF's dialog or alone in the test mode, with its own
+skinned title band. Its marks are built with `LibKa0s-Widgets-1.0`'s `W.HeaderButtons` (LibKa0s#86,
+standalone-windows *Title-bar controls*, v2.113.0, adopted as AD-86-PGFE of Ka0sAddonsCommonTasks
+`docs/2026-11-17-LIBKA0S_V1_105_ADOPTION/`), through the seam `NS.HeaderButtons` (`core/WidgetsSetup.lua`),
+which names this addon's folder as the owner. Left to right, extras · settings · close:
+
+- **The collapse toggle**, the panel's one extra: the `chevron-up` icon and *Collapse* while expanded,
+  `chevron-down` and *Expand* while collapsed, written from the stored `profile.panelCollapsed` on every
+  layout (`syncCollapseMark`, on a change only). A click, like a click on the rest of the title band
+  (`headerClick`), toggles the stored state; neither does anything while stood down, and the toggle's
+  tooltip says nothing then. It replaced PGF's `MaximizeMinimizeButtonFrameTemplate` pair, whose two
+  buttons on the skin's `Button` box (the skin fonts and feedback run's PG-02, ruling D-20) the strip's
+  one size, pitch and paint path retire.
+- **The settings mark** opens this addon's settings through the opener `core/LauncherSetup.lua`
+  registered under the same name (`settings` nil). PGF's dialog is FULLSCREEN and would cover the HIGH
+  settings window, so it is hidden first (`hideOnSettings`), and the docked panel, its child, with it.
+  Alone in the test mode the panel is HIGH, and the settings window, toplevel, opens over it.
+- **No close** (`close = false`): the template's close is hidden, because it would hide the panel under
+  a dialog that stays open.
+
+The marks are 18px with 12px art, settings 6px in from the band's right end and the toggle 6px past it
+(`NS.HEADER`, the library's `W.HEADER`); `place = false`, so `S.Header` places them on the band from the
+offsets the strip recorded (`placeHeader` does it on Ka0s Default's band without the library), and the
+click band stops at the marks' reach. Each mark's art rests in `icon.tint` and takes `text.link` under the
+pointer through the owner's `Mark` (SR-PGFE, smoke round 1 of the LibKa0s #75+ run), and shows a
+one-line tooltip above it in the owner's `gtip.title`. Without the library the strip is the toggle alone,
+wearing `-` or `+`, its tooltip above it by a relative point, and no settings mark (the settings panel is
+the library's too). The addon builds no `DragHandle`, so the drag strip's settings mark has nothing to
+turn on.
+
+## Tooltip placement
+
+Every tooltip this addon places itself follows standalone-windows *Tooltip placement* through
+`LibKa0s-Tooltip-1.0` (LibKa0s#92, adopted as AD-92-PGFE of Ka0sAddonsCommonTasks
+`docs/2026-11-17-LIBKA0S_V1_105_ADOPTION/`). No tooltip here is anchored at the cursor or offset from a
+corner of its control, and the addon's own Lua carries no `ANCHOR_*` owner but `ANCHOR_NONE` (pinned by
+`tests/test_tooltips.lua`). Each element is classified once:
+
+| Element | Class | Placement |
+|---|---|---|
+| Every option on the panel: a checkbox and its label, the three number boxes, the four dropdown buttons, Save, Save as..., Delete, Apply, Clear, the copy box and its label (`modules/Panel.lua`'s `tooltip`) | body (the panel's content is its controls; the chrome row names only the title band) | `PlaceBeside(GameTooltip, control, Panel.frame)`: beside the panel, right when it fits and otherwise left, top level with the control, `TIP_GAP` out. The window group is the panel alone, docked or alone in the test mode: PGF's dialog above it is PGF's, not this addon's. Owned at `ANCHOR_NONE`, filled, shown, then placed. Geometry unreadable or the library absent: centered above the control by a relative point (`BOTTOM` on its `TOP`, 2px), never the cursor |
+| An entry of a panel dropdown's menu (the library's `W.Dropdown`, `rowTooltip`) | body, with the menu frame as its window (body rule 6) | The renderer owns the tooltip by the row at `ANCHOR_NONE` and fills it; the library's `__rowTip` places it beside the menu, once the renderer showed it owned by the row. `tests/test_tooltips.lua` drives that path end to end on the kit's fake screen, right of the menu and, with no room, left |
+| The title band's marks, the collapse toggle and the settings mark (`W.HeaderButtons`) | chrome | The library's `PlaceAttached`, centered above the mark (*The title-bar marks*, above). Degraded (the library absent), the collapse toggle's tooltip is centered above it by a relative point (`core/WidgetsSetup.lua`'s `fallbackTip`), the chrome rule's shape |
+| The minimap button | launcher (launcher-§7) | The library's `PlaceLauncher` (Launcher minor 11), with no addon code |
+
+**Left as they are, out of the rule's scope** (standalone-windows, *What it does not bind*):
+
+- **The degraded dropdowns** (the library absent): the client's `WowStyle1DropdownTemplate` buttons and
+  the menu entries `Blizzard_Menu` draws. Their tooltips are placed by the client's menu code through
+  `SetTooltip` (`modules/Panel.lua`'s `menuTooltip` only fills them): a menu the client's menu system
+  draws.
+- **The settings pages** (`settings/`, `LibKa0s-Options-1.0` widgets on Blizzard's Settings canvas):
+  options-ui governs them.
+- **The launcher's right-click menu** (`MenuUtil.CreateContextMenu`, launcher-§2) and a LibDataBroker
+  display's bar: the client's menu and the display place those.
+- **PGF's dialog and Blizzard's Group Finder frames**, the listings' leader and group tooltips among
+  them: the client and PGF place them, and this addon writes no line onto them.
+
 ## Frame layering
 
 The strata and levels the addon chooses are named once, in `NS.Constants.LAYERS`
@@ -352,9 +409,8 @@ first:
   (HIGH), StaticPopups (DIALOG), the debug console (DIALOG, toplevel) and its copy window, dropdown
   menus (FULLSCREEN_DIALOG), tooltips (TOOLTIP).
 - **The attached panel, a host-matched surface:** PGF's dialog strata, read from the dialog
-  (FULLSCREEN today), at the dialog's level + `LEVEL.ABOVE_HOST` = L. Inside it: body, min/max and
-  header click at L+1, widgets at L+2; each min/max arrow's chevron holder sits two levels over its
-  button, above the skin's button edge. Alone, in the session-only test mode (R7-PG), it is
+  (FULLSCREEN today), at the dialog's level + `LEVEL.ABOVE_HOST` = L. Inside it: body, the title-bar
+  marks and header click at L+1, widgets at L+2. Alone, in the session-only test mode (R7-PG), it is
   UIParent's child at `STRATA.ALONE` (HIGH), under the skin picker (DIALOG) that previews on it;
   docked again it reads the host's strata and level back. Alone it is otherwise the docked panel
   (R7-PG2): the plain title, the same header and paint, at the docked width (the one it last showed
@@ -511,7 +567,7 @@ deviation not in this table is not ratified.
 | Rule | What differs | Why | Decided | Re-check trigger |
 |---|---|---|---|---|
 | library-stack-§6, toc-file-§1 | Hard `## Dependencies: PremadeGroupsFilter`; the addon reads/writes PGF state and hooks PGF's env builder | It is an extension of PGF and has no function without it (owner requirement, [`superpowers/specs/2026-10-09-m-plus-v0.1-design.md`](superpowers/specs/2026-10-09-m-plus-v0.1-design.md) §1 item 5 (the requirement) and §2 (recorded as a user-requirement deviation)) | 2026-10-09 | PGF ships a public API, or the standard gains an extension-addon rule |
-| architecture-§5 | The attached panel's per-character filter options (`char.filters`) and `profile.panelCollapsed` are set by the panel's own controls, outside the schema write seam, and no settings-page row or CLI path addresses them. Writers of `char.filters`: `Filters.Set`, `Filters.ToggleRegion` / `ClearRegions`, `Filters.TogglePlaystyle` / `ClearPlaystyles`, `Filters.ToggleComposition` / `ClearComposition` and `Filters.ApplySmartLevel` (`modules/Filters.lua`), reached from the panel controls and from `/pgfe apply` (`modules/Apply.lua` -> `ApplySmartLevel`), plus `Presets.Load` (`modules/Presets.lua`), which refills the table in place. Writer of `profile.panelCollapsed`: `setCollapsed` (`modules/Panel.lua`), from the min/max arrow and the header-strip click | Per-character scope is an owner requirement that the schema seam (profile and global roots only) cannot hold; presets snapshot and refill `char.filters` whole, keeping its identity; the panel is a feature surface attached to PGF's dialog, not a settings page (issue #10; audit `docs/audits/2026-10-10/` PGE-02) | 2026-10-10 (owner) | A filter option or `panelCollapsed` gains a settings-page row or a get/set CLI path, or LibKa0s-Schema gains a char root |
+| architecture-§5 | The attached panel's per-character filter options (`char.filters`) and `profile.panelCollapsed` are set by the panel's own controls, outside the schema write seam, and no settings-page row or CLI path addresses them. Writers of `char.filters`: `Filters.Set`, `Filters.ToggleRegion` / `ClearRegions`, `Filters.TogglePlaystyle` / `ClearPlaystyles`, `Filters.ToggleComposition` / `ClearComposition` and `Filters.ApplySmartLevel` (`modules/Filters.lua`), reached from the panel controls and from `/pgfe apply` (`modules/Apply.lua` -> `ApplySmartLevel`), plus `Presets.Load` (`modules/Presets.lua`), which refills the table in place. Writer of `profile.panelCollapsed`: `setCollapsed` (`modules/Panel.lua`), through the collapse toggle `toggleCollapsed`, from the collapse mark and the header-strip click (`headerClick`) | Per-character scope is an owner requirement that the schema seam (profile and global roots only) cannot hold; presets snapshot and refill `char.filters` whole, keeping its identity; the panel is a feature surface attached to PGF's dialog, not a settings page (issue #10; audit `docs/audits/2026-10-10/` PGE-02) | 2026-10-10 (owner) | A filter option or `panelCollapsed` gains a settings-page row or a get/set CLI path, or LibKa0s-Schema gains a char root |
 | architecture-§4, anti-patterns #19 | No AceEvent message bus, although the two-feature-module threshold is crossed (Apply, Panel, Filters, Presets, RegionTags, Targeting, EnvInject). Modules call each other through `NS`. The cross-module reactions: the shell's `reloadProfile` (`core/PGFE.lua`, on the three AceDB profile callbacks) fans out, in order, to `HideSkinPicker`, `RunMigrations`, `ApplySkinChoice`, `Settings.Helpers.RefreshAll` / `RefreshProfilesPage`, `Panel.Refresh`, the `enabled` latch re-read (`Lifecycle:Set` + `Reevaluate`) and `MaybeShowSkinPicker`; `Apply.OnFiltersToggled` (the `filtersActive` onChange) returns at once while stood down; otherwise it runs `Apply.Run` / `Apply.Clear` only while the dungeon panel is the active one, and then calls `Panel.Refresh` | Every reaction has one sender and a required order that CallbackHandler's fan-out does not promise: `reloadProfile` must take the first-run skin picker down before the incoming skin is applied and offer it again only after the latch re-read, so a disabled incoming profile shows nothing, and `Apply.OnFiltersToggled` must write or clear the PGF block before the panel readout refreshes. `reloadProfile` has several receivers, but none its sender should not know about, and with no messages defined the CallbackHandler clobber §4 guards against cannot occur (issue #10; audit `docs/audits/2026-10-10/` PGE-03) | 2026-10-10 (owner) | A reaction gains an order-independent receiver the sender should not name, a module outside the shell and Apply needs to hear profile-changed or filters-toggled, or the standard adds an ordered-dispatch carve-out |
 | standalone-windows; library-stack-§8; options-ui-§15 | The attached panel (`modules/Panel.lua` `buildFrame`) is built on PGF's dialog template (`PortraitFrameTemplateMinimizable` with the `ButtonFrameTemplateNoPortraitMinimizable` border layout) and is one frame the skin paints under every skin, Ka0s Default included, and under EllesmereUI once it paints (the skinning rollout's PG-02 and PG-06). Until 2026-10-30 Ka0s Default showed a never-painted metal instance in PGF's own chrome; LibKa0s v1.81.0 retired the stock look under Ka0s Default (owner ruling R-2) and the metal instance went with it (the skin library follow-ups' PG-01, decision D-05): a player who wants the client's look picks WoW Default. The panel is parented and anchored to PGF's dialog, is not movable and persists no geometry; the session-only test mode (R7-PG, owner ruling 2026-11-04) reparents it to UIParent, centered at the docked width and scale, until the mode ends or the dialog shows it, still unmovable and storing nothing. The General page has no General visibility row (`settings/Panel.lua` `omit = { visibility = true }`): the panel shows only with PGF's dialog on the dungeon category or, alone, in the session-only test mode, and the addon holds no visibility state | An extension surface must read as part of the host window it attaches to; its visibility is the host's, so a visibility setting would only duplicate Enable and `filtersActive` (issue #18; audit `docs/audits/2026-10-10/` PGE-17, PGE-19, PGE-26) | 2026-10-10 (owner); the Ka0s Default clause retired 2026-10-30 (owner ruling R-2); the test-mode clause 2026-11-04 (owner ruling, smoke round 7, R7-PG: the trigger's "independently shown" fired, and the row stands for the docked panel) | The panel becomes movable or stores geometry, is shown independently outside the session-only test mode, or the standard gains an attached-panel or extension-surface rule |
 | frame-layering-§1 | The attached panel takes PGF's dialog strata (FULLSCREEN today, read from the dialog in `modules/Panel.lua` `layerWithDialog`), so when the Group Finder stays open under `/pgfe config` it, and PGF's dialog, draw over the Blizzard Settings panel (HIGH). For the same reason the LibKa0s debug console (DIALOG) can sit under the panel while both are open; its descriptor takes no strata (LibKa0s v1.77.0) | The panel must layer with the host window it is part of (the host-matched surface of frame-layering-§1), and PGF's own dialog covers the Settings panel the same way; lowering the panel would let PGF's FULLSCREEN dialog draw over the panel's title strip. The console case is developer-facing only (item 030 analysis PRE-S05, PRE-S09; change PRE-Z08) | 2026-10-24 (owner, item 030) | PGF moves its dialog off FULLSCREEN, opening the Settings panel is found to close the Group Finder, or the LibKa0s DebugLog descriptor gains a `strata` field |

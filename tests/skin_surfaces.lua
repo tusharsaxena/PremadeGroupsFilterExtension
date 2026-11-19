@@ -18,7 +18,6 @@ return function(enableAddon)
     m.pgf.dialog.shown = true
     NS.Panel.UpdateVisibility()
     local f = NS.Panel.frame
-    local mm = f.MaximizeMinimizeFrame
 
     local function bodyLabel(text)
         for _, r in ipairs({ f.body:GetRegions() }) do
@@ -61,9 +60,9 @@ return function(enableAddon)
         surfaces = {
             surface("the window's bands and edge", ownRegions(f)),
             surface("the title", f.TitleContainer.TitleText),
-            surface("the collapse button's box", mm.MinimizeButton),
-            surface("the collapse button's chevron", mm.MinimizeButton.chevron, refresh),
-            surface("the expand button's chevron", mm.MaximizeButton.chevron, refresh),
+            -- The title-bar marks are W.HeaderButtons' (LibKa0s#86): no box, the art alone.
+            surface("the collapse mark's chevron", f.collapseMark.icon),
+            surface("the settings mark", f.settingsMark.icon),
             surface("a check button", f.activeCheck),
             surface("a row's label", bodyLabel(NS.L.EXPERIENCED_LEADER)),
             surface("the locked level box", f.levelBox, refresh),
