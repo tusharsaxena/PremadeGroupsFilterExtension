@@ -37,6 +37,11 @@ directory: `test_eol`, `test_prose`, `test_layout_cap`, `test_diagnostics_contra
 `test_lizard_sighted`, `test_skin_values` and `test_skin_switch` (skinning-§1, kit revision 50). The
 typed-value gate has no allow rows here (`Kit.skinValues` in `tests/run.lua`); the switch test's
 surfaces are declared in `tests/skin_surfaces.lua`, and a surface left out of that list is not tested.
+From kit revision 58 each setter family a surface draws (texture, color, font, shadow) has to move on
+its own; the window's bands and edge also take `expect = "texture"`, so the skin's band art is asked
+to move as well as its tint. Every panel control and label is declared (SD-SK-PGFE, 2026-11-20). The
+Region tags tab's preview line is not: the kit's AceGUI widgets have no FontString to spy, and its
+face is guarded by the library's own suite.
 
 `test_glyphs` wires the kit's display-glyph guard (`T.assertDisplayGlyphs`, kit revision 45): every
 string literal outside `libs/` and `tests/` carries only characters every shipped skin face draws.
