@@ -9,6 +9,15 @@
 -- no surface here takes `scope`. The Skin tab, the Region tags tab and the Launcher tooltip are the
 -- library's, which runs this test over its own surfaces.
 --
+-- Kit revision 58 (SD-SK-PGFE): each family a surface draws moves on its own. The addon creates no
+-- StatusBar and no data fill, so no surface takes `clear` and no ruling holds a family; the window's
+-- bands and edge carry the skin's art (S.Shell's bands), so that surface takes `expect = "texture"`
+-- and a band that stops following its skin's art fails even while its tint moves. The Region tags
+-- tab's preview line (settings/Panel.lua renderRegionTab, an O.TextRow) is not declared: the kit's
+-- AceGUI widgets are data recorders with no FontString to spy, so the line's face is the library's
+-- to guard (OptionsWidgets applyLabelFont, under its own skin-switch suite), and its color is the
+-- region hues, a meaning color (skinning-§9).
+--
 -- One instance, used by this file alone: the skin's choice is process state of that instance's
 -- mock, and the test puts it back after every surface.
 
@@ -58,7 +67,7 @@ return function(enableAddon)
         skin  = function() return m.LibStub("LibKa0s-Skin-1.0") end,
         reset = function() m.GameTooltip:Hide() end,
         surfaces = {
-            surface("the window's bands and edge", ownRegions(f)),
+            { name = "the window's bands and edge", build = function() return ownRegions(f) end, expect = "texture" },
             surface("the title", f.TitleContainer.TitleText),
             -- The title-bar marks are W.HeaderButtons' (LibKa0s#86): no box, the art alone.
             surface("the collapse mark's chevron", f.collapseMark.icon),
@@ -74,6 +83,18 @@ return function(enableAddon)
             surface("a dropdown's button", f.regionSelect),
             surface("the Presets dropdown's button", f.presetDropdown),
             surface("an action button", f.applyButton),
+            -- SD-SK-PGFE (Ka0sAddonsCommonTasks docs/2026-11-20-SKIN_DEFAULTS_AUDIT, the guard
+            -- coverage holes of tables/PremadeGroupsFilterExtension.md): the rest of what the panel
+            -- paints through the same calls, each declared so a regression on one cannot hide.
+            surface("the age box", f.ageBox, refresh),
+            surface("the Smart label", f.smartLabel),
+            surface("the 'minutes' label", bodyLabel(NS.L.MINUTES)),
+            surface("the playstyle dropdown's button", f.playstyleSelect),
+            surface("the composition dropdown's button", f.compositionSelect),
+            surface("the Save button", f.saveButton),
+            surface("the Save as button", f.saveAsButton),
+            surface("the Delete button", f.deleteButton),
+            surface("the Clear button", f.clearButton),
             tooltip("a panel tooltip's name and body", function() f.applyButton:__fire("OnEnter") end),
             tooltip("the Any row's tooltip", function() anyRow.tooltip(rowFrame, anyRow) end),
             tooltip("a menu entry's tooltip", function() entryRow.tooltip(rowFrame, entryRow) end),

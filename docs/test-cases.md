@@ -648,7 +648,7 @@ Total.
 - skin values: no typed value outside the kit's categories and the host's rows
 - skin values: the check is falsifiable, a planted value of each shape is reported
 
-### test_skin_switch.lua (40)
+### test_skin_switch.lua (58)
 
 - skin switch: the check is falsifiable, a surface that redraws a literal is reported
 - skin switch: the check is falsifiable, a bar whose texture never moves is reported
@@ -682,6 +682,24 @@ Total.
 - skin switch: the Presets dropdown's button changes with the Scope ignored
 - skin switch: an action button changes
 - skin switch: an action button changes with the Scope ignored
+- skin switch: the age box changes
+- skin switch: the age box changes with the Scope ignored
+- skin switch: the Smart label changes
+- skin switch: the Smart label changes with the Scope ignored
+- skin switch: the 'minutes' label changes
+- skin switch: the 'minutes' label changes with the Scope ignored
+- skin switch: the playstyle dropdown's button changes
+- skin switch: the playstyle dropdown's button changes with the Scope ignored
+- skin switch: the composition dropdown's button changes
+- skin switch: the composition dropdown's button changes with the Scope ignored
+- skin switch: the Save button changes
+- skin switch: the Save button changes with the Scope ignored
+- skin switch: the Save as button changes
+- skin switch: the Save as button changes with the Scope ignored
+- skin switch: the Delete button changes
+- skin switch: the Delete button changes with the Scope ignored
+- skin switch: the Clear button changes
+- skin switch: the Clear button changes with the Scope ignored
 - skin switch: a panel tooltip's name and body changes
 - skin switch: a panel tooltip's name and body changes with the Scope ignored
 - skin switch: the Any row's tooltip changes
@@ -740,7 +758,7 @@ Total.
 | test_diagnostics_contract.lua | 8 |
 | test_lizard_sighted.lua | 8 |
 | test_skin_values.lua | 3 |
-| test_skin_switch.lua | 40 |
+| test_skin_switch.lua | 58 |
 | test_client_globals.lua | 3 |
 | Skipped | 1 |
-| **Total** | **565** |
+| **Total** | **583** |
