@@ -31,7 +31,7 @@ child), its third-party skinning and this addon's Third-Party Addons entry are o
 ([`superpowers/plans/2026-10-09-eui-skin.md`](superpowers/plans/2026-10-09-eui-skin.md)) was
 retired by the skinning rollout (2026-10-29).
 
-Built to the Ka0s WoW Addon Standard: Ace3, vendored `LibKa0s` v1.108.0 (one setup file per adopted
+Built to the Ka0s WoW Addon Standard: Ace3, vendored `LibKa0s` v1.109.0 (one setup file per adopted
 major), schema-driven master settings, the launcher, one stand-down latch, headless tests and
 luacheck. Retail only (`## Interface: 120105`). The design is
 [`superpowers/specs/2026-10-09-m-plus-v0.1-design.md`](superpowers/specs/2026-10-09-m-plus-v0.1-design.md)
@@ -539,6 +539,7 @@ and `docs/investigations/`.
 | `profiles.md` | Present | The Profiles page ships in the options UI |
 | `debug.md` | Present | The diagnostics dump ships in every addon (debug-logging-§14) |
 | `midnight-quirks.md` | Present | Always (documentation-§3): the vendored client-quirks catalog (client-quirks-§1); the addon's own section is empty |
+| `forever-quirks.md` | Not applicable | Clients value `Retail`: forever-quirks-§1 binds only an addon that ships on WoW Forever |
 | `compat-layer.md` | Not applicable | `core/Compat.lua` publishes 6 shims, all supplied by `LibKa0s-Compat-1.0` (none addon-specific) |
 | `message-bus.md` | Not applicable | No AceEvent messages are defined |
 
