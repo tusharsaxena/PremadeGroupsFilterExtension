@@ -68,6 +68,9 @@ test("parity: the Compat arm carries every library member the addon wires", func
         "GetSpellInfo", "GetSpellName", "GetSpellTexture", "GetSpellCooldown",
         -- LibKa0s v1.92.0 (Compat minor 2) added these four client helpers. No caller here until the Forever port.
         "IsForever", "IsRetail", "ClientKey", "ForClient",
+        -- LibKa0s v1.110.0 (Compat minor 6) added the bag and bank helpers. PGFE reads no bag or bank.
+        "CONTAINER_PATTERNS_BY_CLIENT", "ContainerGroups", "CanViewCharacterBank", "NumPurchasedBankTabs",
+        "BankerKind", "UnreadyBankContainers",
     })
 end)
 

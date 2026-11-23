@@ -16,7 +16,7 @@ takes the next free number in its theme and a retired number is never reused.
 | PROFILE-1..2 | Profiles | The Profiles page and `/pgfe profile` |
 | STATE-1..2 | Enable / disable | Stand-down and stand-up |
 | COMBAT-1..2 | Combat | Apply refusal, settings panel in combat |
-| DIAG-1..3 | Diagnostics | Debug console, the diagnostics report, the console icons |
+| DIAG-1..4 | Diagnostics | Debug console, the diagnostics report, the console icons, the copy window's close-only title bar |
 | DEGRADED-1 | Degraded install | LibKa0s absent |
 | TEST-1..5 | Test mode | `/pgfe test` (R7-PG, smoke round 7): the panel alone, Apply and Clear disabled, the dialog docking it, the box and the launcher entry, combat and the off switch, and the panel alone looking like the docked one (R7-PG2) |
 | APPLY-1..27 | Attached panel and Apply | The panel under PGF, targeting, regions, playstyle, composition, leader, age, presets, Clear, PGF minimized, collapse, layout, tooltips, Smart key level, filters toggle, row spacing, region tags, the season-data request, region colors, where the panel's tooltips open (AD-92-PGFE) |
@@ -188,6 +188,14 @@ Finder. Headless stand-ins: the `test mode:` cases (`tests/test_testmode.lua`).
 - **DIAG-3. Console icons.** `/pgfe debug` → the console's title bar draws the clear, copy and close
   glyphs (none blank, no fallback `x`); Copy opens the copy window and its close glyph draws too.
   Result: pass (owner-marked 2026-10-23)
+- **DIAG-4. A clean load on LibKa0s v1.112.0, and the copy window is a companion (FB-PGFE-01;
+  standalone-windows *A companion window carries no settings mark*, standard v2.119.0).** `/reload`
+  → no Lua error naming a file under `libs/LibKa0s/`. `/pgfe debug`, then Copy → the copy window's
+  title bar carries the close glyph alone, no gear; the console keeps its gear. Open the group finder
+  with PGF → the attached panel still carries its collapse and settings marks (it is the addon's own
+  window, not a companion), and its Apply, Clear, Save and Delete buttons look as before, disabled
+  ones included. **Fail:** a Lua error, a gear on the copy window, or a mark missing on the panel.
+  Result:
 
 ## Degraded install
 
@@ -872,3 +880,5 @@ Owed from smoke round 1 of the LibKa0s #75+ run (Ka0sAddonsCommonTasks `docs/202
 Owed from the LibKa0s v1.105.0 adoption run (Ka0sAddonsCommonTasks `docs/2026-11-17-LIBKA0S_V1_105_ADOPTION/`, AD-DS-PGFE): SKIN-56; from its wave B (AD-86-PGFE): SKIN-57, with SKIN-38, SKIN-40 and SKIN-55 re-checked as amended; and from its wave C (AD-92-PGFE): APPLY-27, with APPLY-19 re-checked as amended.
 
 Still owed from the seventh smoke round (no round-7 row covered them): PANEL-6 as rewritten for the Test mode box, and SKIN-13's re-check.
+
+Owed from the feedback batch (Ka0sAddonsCommonTasks `docs/2026-11-24-FEEDBACK_BATCH/`, FB-PGFE-01, LibKa0s v1.112.0, 2026-11-24): DIAG-4, new.
