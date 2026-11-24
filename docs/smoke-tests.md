@@ -31,7 +31,7 @@ takes the next free number in its theme and a retired number is never reused.
 | SKIN-55 | Skins | Smoke round 1 of the LibKa0s #75+ run (Ka0sAddonsCommonTasks `docs/2026-11-16-LIBKA0S_ISSUES_75_PLUS/`, SR-PGFE): the collapse button's tooltip and its rest and hover colors |
 | SKIN-56 | Skins | The LibKa0s v1.105.0 adoption run (Ka0sAddonsCommonTasks `docs/2026-11-17-LIBKA0S_V1_105_ADOPTION/`, AD-DS-PGFE): a new profile's skin is the library's per-client default |
 | SKIN-57 | Skins | The LibKa0s v1.105.0 adoption run, wave B (AD-86-PGFE, LibKa0s#86): the panel's title-bar marks on `W.HeaderButtons`' strip, the collapse toggle and the new settings mark |
-| SKIN-58 | Skins | Round 2 of the feedback batch (Ka0sAddonsCommonTasks `docs/2026-11-24-FEEDBACK_BATCH/`, FB2-PGFE-01, LibKa0s v1.113.0): a clean load, and a dropdown's selected entry stands apart from the other rows under every skin, Azeroth's in gold |
+| SKIN-58 | Skins | Round 2 of the feedback batch (Ka0sAddonsCommonTasks `docs/2026-11-24-FEEDBACK_BATCH/`, FB2-PGFE-01, LibKa0s v1.113.0): a clean load, and a dropdown's selected entry stands apart from the other rows in Ka0s Default's gold under every skin (amended for the owner's ruling of 2026-11-24, FB2-PGFE-02) |
 | SKIN-34..42 | Skins | The skin fonts and feedback run (2026-10-30, LibKa0s v1.82.0): the Font outline setting, the panel's text and the Font outline's default, the new faces, the attached panel's width parity across skins, the collapse button's chevron and place; the findings remediation's re-anchor check, the panel's flat dropdowns and the one media picker |
 
 ## Before you start
@@ -791,8 +791,10 @@ EllesmereUI read took a shorter path; nothing should look different.
   menu's plain text color. Tick one Playstyle entry and open its dropdown → the ticked entry is gold
   beside its tick, the unticked ones plain. `/pgfe skin`, pick Azeroth → both menus again show the
   selection in gold, now clearly apart from the parchment text (it used to read like every other row);
-  pick Obsidian and Glass → the selection is that skin's own selected color and still plainly differs
-  from the other rows. Pick Ka0s Default back. **Fail:** a selected entry the same color as the rows
+  pick Obsidian, Glass and WoW Forever → the selection is still Ka0s Default's gold, not the skin's own
+  accent (WoW Forever's tan was the owner's failing case), and plainly differs from the other rows.
+  The selection is gold in every skin (amended 2026-11-24 for the owner's ruling on round 2,
+  FB2-PGFE-02, LibKa0s v1.113.0 re-cut). Pick Ka0s Default back. **Fail:** a selected entry the same color as the rows
   around it in any skin, a selection that shows only by its tick, or a Lua error.
   Result:
 - **SKIN-56. A new profile wears the client's default skin (AD-DS-PGFE, skinning-§2).** Settings →
