@@ -127,6 +127,7 @@ Kit.run{
         "test_skin",
         "test_titlebar",
         "test_tooltips",
+        "test_menu_selected",
         "test_skin_picker",
         "test_skin_eui",
         "test_skin_outline",
