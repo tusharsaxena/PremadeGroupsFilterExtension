@@ -1,0 +1,4 @@
+FB2 independent review (workflow wf_0f1c645f-6fa, 2026-11-24): ok
+Fixes: none
+Gate: I re-ran the gate myself through ka0s-bounded. Retail: 587 passed, 0 failed, 1 skipped (588 total). The one skip was already there and test-cases.md records it. Forever: not run, because the TOC's ## Interface is 120105 only, with no 16001. luacheck: 0 warnings / 0 errors in 77 files. Working tree clean. The review needed no fix, so it made no FB2-PGFE-REV commit.
+Open:
