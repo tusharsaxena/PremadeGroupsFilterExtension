@@ -464,6 +464,11 @@ Total.
 - tooltips: without the Tooltip library a panel option's tooltip attaches above it, not at a corner
 - tooltips: the panel's code carries no cursor anchor and no corner anchor
 
+### test_menu_selected.lua (2)
+
+- menu selected: the selected preset stands off a plain preset under every shipped skin
+- menu selected: a ticked multi-select entry stands off an unticked one, and wears no value color
+
 ### test_skin_picker.lua (16)
 
 - skin picker: skin.pickerSeen defaults to false, a skip-render row on the Skin tab
@@ -550,6 +555,11 @@ Total.
 - test mode: /pgfe skin with the panel hidden turns it on, and every close puts it back
 - test mode: with PGF's dialog open, /pgfe skin and its close change nothing
 - test mode: the eye toggles it, and a mode the player turned on stays after the close
+
+### test_sample_names.lua (2)
+
+- sample names: the guard sees a name literal and lets an English word through
+- sample names: no Sample*/Mock* name literal lives outside tests/, libs/ and the frozen bundles
 
 ### test_reset.lua (5)
 
@@ -743,11 +753,13 @@ Total.
 | test_skin.lua | 24 |
 | test_titlebar.lua | 9 |
 | test_tooltips.lua | 7 |
+| test_menu_selected.lua | 2 |
 | test_skin_picker.lua | 16 |
 | test_skin_eui.lua | 17 |
 | test_skin_outline.lua | 10 |
 | test_skin_verb.lua | 6 |
 | test_testmode.lua | 23 |
+| test_sample_names.lua | 2 |
 | test_reset.lua | 5 |
 | test_diagnostics.lua | 6 |
 | test_glyphs.lua | 3 |
@@ -761,4 +773,4 @@ Total.
 | test_skin_switch.lua | 58 |
 | test_client_globals.lua | 3 |
 | Skipped | 1 |
-| **Total** | **583** |
+| **Total** | **587** |

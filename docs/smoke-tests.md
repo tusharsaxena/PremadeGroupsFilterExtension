@@ -16,7 +16,7 @@ takes the next free number in its theme and a retired number is never reused.
 | PROFILE-1..2 | Profiles | The Profiles page and `/pgfe profile` |
 | STATE-1..2 | Enable / disable | Stand-down and stand-up |
 | COMBAT-1..2 | Combat | Apply refusal, settings panel in combat |
-| DIAG-1..3 | Diagnostics | Debug console, the diagnostics report, the console icons |
+| DIAG-1..4 | Diagnostics | Debug console, the diagnostics report, the console icons, the copy window's close-only title bar |
 | DEGRADED-1 | Degraded install | LibKa0s absent |
 | TEST-1..5 | Test mode | `/pgfe test` (R7-PG, smoke round 7): the panel alone, Apply and Clear disabled, the dialog docking it, the box and the launcher entry, combat and the off switch, and the panel alone looking like the docked one (R7-PG2) |
 | APPLY-1..27 | Attached panel and Apply | The panel under PGF, targeting, regions, playstyle, composition, leader, age, presets, Clear, PGF minimized, collapse, layout, tooltips, Smart key level, filters toggle, row spacing, region tags, the season-data request, region colors, where the panel's tooltips open (AD-92-PGFE) |
@@ -31,6 +31,7 @@ takes the next free number in its theme and a retired number is never reused.
 | SKIN-55 | Skins | Smoke round 1 of the LibKa0s #75+ run (Ka0sAddonsCommonTasks `docs/2026-11-16-LIBKA0S_ISSUES_75_PLUS/`, SR-PGFE): the collapse button's tooltip and its rest and hover colors |
 | SKIN-56 | Skins | The LibKa0s v1.105.0 adoption run (Ka0sAddonsCommonTasks `docs/2026-11-17-LIBKA0S_V1_105_ADOPTION/`, AD-DS-PGFE): a new profile's skin is the library's per-client default |
 | SKIN-57 | Skins | The LibKa0s v1.105.0 adoption run, wave B (AD-86-PGFE, LibKa0s#86): the panel's title-bar marks on `W.HeaderButtons`' strip, the collapse toggle and the new settings mark |
+| SKIN-58 | Skins | Round 2 of the feedback batch (Ka0sAddonsCommonTasks `docs/2026-11-24-FEEDBACK_BATCH/`, FB2-PGFE-01, LibKa0s v1.113.0): a clean load, and a dropdown's selected entry stands apart from the other rows in Ka0s Default's gold under every skin (amended for the owner's ruling of 2026-11-24, FB2-PGFE-02) |
 | SKIN-34..42 | Skins | The skin fonts and feedback run (2026-10-30, LibKa0s v1.82.0): the Font outline setting, the panel's text and the Font outline's default, the new faces, the attached panel's width parity across skins, the collapse button's chevron and place; the findings remediation's re-anchor check, the panel's flat dropdowns and the one media picker |
 
 ## Before you start
@@ -188,6 +189,14 @@ Finder. Headless stand-ins: the `test mode:` cases (`tests/test_testmode.lua`).
 - **DIAG-3. Console icons.** `/pgfe debug` → the console's title bar draws the clear, copy and close
   glyphs (none blank, no fallback `x`); Copy opens the copy window and its close glyph draws too.
   Result: pass (owner-marked 2026-10-23)
+- **DIAG-4. A clean load on LibKa0s v1.112.0, and the copy window is a companion (FB-PGFE-01;
+  standalone-windows *A companion window carries no settings mark*, standard v2.119.0).** `/reload`
+  → no Lua error naming a file under `libs/LibKa0s/`. `/pgfe debug`, then Copy → the copy window's
+  title bar carries the close glyph alone, no gear; the console keeps its gear. Open the group finder
+  with PGF → the attached panel still carries its collapse and settings marks (it is the addon's own
+  window, not a companion), and its Apply, Clear, Save and Delete buttons look as before, disabled
+  ones included. **Fail:** a Lua error, a gear on the copy window, or a mark missing on the panel.
+  Result:
 
 ## Degraded install
 
@@ -775,6 +784,19 @@ EllesmereUI read took a shorter path; nothing should look different.
   turns `+` when folded, no gear, and its tooltip still opens above it. Fail: a mark missing or out of
   order, a close X, a box behind a mark, settings opening behind PGF's dialog, a tooltip at the pointer
   or below the mark with room above, or a Lua error. Result:
+- **SKIN-58. A dropdown's selected entry always stands apart (FB2-PGFE-01; LibKa0s v1.113.0, skinning-§4
+  *A selected entry reads apart*, standard v2.120.0).** `/reload` → no Lua error naming a file under
+  `libs/LibKa0s/`. Open PGF's dialog on Dungeons with the panel showing, save two presets and pick one.
+  Under Ka0s Default open the Presets dropdown → the selected preset's name is gold and the other is the
+  menu's plain text color. Tick one Playstyle entry and open its dropdown → the ticked entry is gold
+  beside its tick, the unticked ones plain. `/pgfe skin`, pick Azeroth → both menus again show the
+  selection in gold, now clearly apart from the parchment text (it used to read like every other row);
+  pick Obsidian, Glass and WoW Forever → the selection is still Ka0s Default's gold, not the skin's own
+  accent (WoW Forever's tan was the owner's failing case), and plainly differs from the other rows.
+  The selection is gold in every skin (amended 2026-11-24 for the owner's ruling on round 2,
+  FB2-PGFE-02, LibKa0s v1.113.0 re-cut). Pick Ka0s Default back. **Fail:** a selected entry the same color as the rows
+  around it in any skin, a selection that shows only by its tick, or a Lua error.
+  Result:
 - **SKIN-56. A new profile wears the client's default skin (AD-DS-PGFE, skinning-§2).** Settings →
   Profiles: create a new profile and switch to it → the first-run skin picker shows with Ka0s Default
   selected, and `/pgfe get skin.skin` prints `ka0s`. Switch back to your own profile → its stored skin
@@ -872,3 +894,7 @@ Owed from smoke round 1 of the LibKa0s #75+ run (Ka0sAddonsCommonTasks `docs/202
 Owed from the LibKa0s v1.105.0 adoption run (Ka0sAddonsCommonTasks `docs/2026-11-17-LIBKA0S_V1_105_ADOPTION/`, AD-DS-PGFE): SKIN-56; from its wave B (AD-86-PGFE): SKIN-57, with SKIN-38, SKIN-40 and SKIN-55 re-checked as amended; and from its wave C (AD-92-PGFE): APPLY-27, with APPLY-19 re-checked as amended.
 
 Still owed from the seventh smoke round (no round-7 row covered them): PANEL-6 as rewritten for the Test mode box, and SKIN-13's re-check.
+
+Owed from the feedback batch (Ka0sAddonsCommonTasks `docs/2026-11-24-FEEDBACK_BATCH/`, FB-PGFE-01, LibKa0s v1.112.0, 2026-11-24): DIAG-4, new.
+
+Owed from round 2 of the feedback batch (Ka0sAddonsCommonTasks `docs/2026-11-24-FEEDBACK_BATCH/R2_SMOKE_FEEDBACK.md`, FB2-PGFE-01, LibKa0s v1.113.0, 2026-11-24): SKIN-58, new. No sim check: this addon runs no sim mode.

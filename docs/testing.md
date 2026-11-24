@@ -48,6 +48,13 @@ string literal outside `libs/` and `tests/` carries only characters every shippe
 `defaults/Realms.lua`'s realm lists are marked `glyph: data` (lookup keys, never drawn; the Russian
 names are Cyrillic, which no shipped face draws).
 
+`test_sample_names` holds preview-mode's *Every name comes from the library* (standard v2.120.0,
+LibKa0s#104): no `Sample…`/`Mock…` person literal in any tracked file outside `tests/`, `libs/` and the
+frozen bundles. The addon draws no sample person at all (it runs no sim, and the test mode shows the
+panel with nobody in it), so the guard keeps it that way. `test_menu_selected` proves the panel's four
+menus mark their selection apart from a plain row under every shipped skin (skinning-§4, *A selected
+entry reads apart*).
+
 `lua tests/run.lua --list` prints the case inventory; it is committed as
 [`test-cases.md`](test-cases.md), and its pass count is the README's `[tests]` badge. Regenerate both
 in the change that moves the count (testing-§5).
