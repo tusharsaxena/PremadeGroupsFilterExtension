@@ -556,6 +556,11 @@ Total.
 - test mode: with PGF's dialog open, /pgfe skin and its close change nothing
 - test mode: the eye toggles it, and a mode the player turned on stays after the close
 
+### test_sample_names.lua (2)
+
+- sample names: the guard sees a name literal and lets an English word through
+- sample names: no Sample*/Mock* name literal lives outside tests/, libs/ and the frozen bundles
+
 ### test_reset.lua (5)
 
 - reset: Reset all settings resets only the active profile
@@ -754,6 +759,7 @@ Total.
 | test_skin_outline.lua | 10 |
 | test_skin_verb.lua | 6 |
 | test_testmode.lua | 23 |
+| test_sample_names.lua | 2 |
 | test_reset.lua | 5 |
 | test_diagnostics.lua | 6 |
 | test_glyphs.lua | 3 |
@@ -767,4 +773,4 @@ Total.
 | test_skin_switch.lua | 58 |
 | test_client_globals.lua | 3 |
 | Skipped | 1 |
-| **Total** | **585** |
+| **Total** | **587** |

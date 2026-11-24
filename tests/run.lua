@@ -133,6 +133,7 @@ Kit.run{
         "test_skin_outline",
         "test_skin_verb",
         "test_testmode",
+        "test_sample_names",
         "test_reset",
         "test_diagnostics",
         "test_glyphs",
